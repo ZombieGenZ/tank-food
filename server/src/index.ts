@@ -4,6 +4,10 @@ import { Server, Socket } from 'socket.io'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import bodyParser from 'body-parser'
+import databaseService from './services/database.services'
+import { startBot, stopBot } from './utils/discord.utils'
+import { writeInfoLog } from './utils/log.utils'
+import { formatDateFull2 } from './utils/date.utils'
 
 dotenv.config()
 const port = process.env.APP_PORT || 3000
@@ -27,6 +31,9 @@ const io = new Server(server, {
   allowEIO3: true
 })
 
+databaseService.connect()
+
+// realtime middleware
 app.use((req, res, next) => {
   ;(req as any).io = io
   next()
@@ -40,6 +47,11 @@ app.set('trust proxy', true)
 app.get('/', (req, res) => {
   res.send('Hello world')
 })
+
+// import api router
+import api_users from '~/routes/users.routes'
+
+app.use('/api/users', api_users)
 
 // realtime logic
 io.on('connection', (socket: Socket) => {
@@ -59,11 +71,14 @@ io.on('connection', (socket: Socket) => {
 })
 
 server.listen(port, async () => {
+  await writeInfoLog(`Thời gian chạy máy chủ ${formatDateFull2(serverRunningTime)}`)
   console.log()
-  console.log(`\x1b[33mThời gian chạy máy chủ \x1b[36m${serverRunningTime}\x1b[0m`)
+  console.log(`\x1b[33mThời gian chạy máy chủ \x1b[36m${formatDateFull2(serverRunningTime)}\x1b[0m`)
+  console.log()
+  await startBot()
   console.log()
   console.log(`\x1b[33mMáy chủ đang chạy trên port \x1b[36m${port}\x1b[0m`)
-  console.log(`\x1b[33mTruy cập tại: \x1b[36m${process.env.APP_URL}/\x1b[0m`)
+  console.log(`\x1b[33mTruy cập tại: \x1b[36m${process.env.API_URL}/\x1b[0m`)
   console.log()
 })
 
@@ -72,7 +87,10 @@ process.on('SIGINT', async () => {
   console.log()
   console.log(`\x1b[33mMáy chủ đã ngừng hoạt động\x1b[0m`)
   console.log()
-  console.log(`\x1b[33mThời gian tắt máy chủ \x1b[36m${date}\x1b[0m`)
+  await stopBot()
+  await writeInfoLog(`Thời gian tắt máy chủ ${formatDateFull2(date)}`)
+  console.log()
+  console.log(`\x1b[33mThời gian tắt máy chủ \x1b[36m${formatDateFull2(date)}\x1b[0m`)
   console.log()
   process.exit(0)
 })
