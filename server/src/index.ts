@@ -8,6 +8,7 @@ import databaseService from './services/database.services'
 import { startBot, stopBot } from './utils/discord.utils'
 import { writeInfoLog } from './utils/log.utils'
 import { formatDateFull2 } from './utils/date.utils'
+import { LANGUAGE } from './constants/language.constants'
 
 dotenv.config()
 const port = process.env.APP_PORT || 3000
@@ -15,6 +16,7 @@ const port = process.env.APP_PORT || 3000
 const app = express()
 const server = createServer(app)
 const serverRunningTime = new Date()
+const serverLanguage = process.env.APP_LANGUAGE as string
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -55,44 +57,81 @@ app.use('/api/users', api_users)
 
 // realtime logic
 io.on('connection', (socket: Socket) => {
-  console.log(
-    `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến máy chủ \x1b[36m${process.env.TRADEMARK_NAME} ${port}\x1b[0m`
-  )
+  if (serverLanguage == LANGUAGE.VIETNAMESE) {
+    console.log(
+      `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến máy chủ \x1b[36m${process.env.TRADEMARK_NAME} ${port}.\x1b[0m`
+    )
+  } else {
+    console.log(
+      `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m has connected to the \x1b[36m${process.env.TRADEMARK_NAME} ${port} server.\x1b[0m`
+    )
+  }
 
   socket.on('join-room', async (refresh_token: string) => {
     // code join room realtime
   })
 
   socket.on('disconnect', () => {
-    console.log(
-      `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã ngắt kết nối đến máy chủ \x1b[36m${process.env.TRADEMARK_NAME} ${port}\x1b[0m`
-    )
+    if (serverLanguage == LANGUAGE.VIETNAMESE) {
+      console.log(
+        `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã ngắt kết nối đến máy chủ \x1b[36m${process.env.TRADEMARK_NAME} ${port}\x1b[0m`
+      )
+    } else {
+      console.log(
+        `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m has disconnected from the \x1b[36m${process.env.TRADEMARK_NAME} ${port} server.\x1b[0m`
+      )
+    }
   })
 })
 
 server.listen(port, async () => {
-  await writeInfoLog(`Thời gian chạy máy chủ ${formatDateFull2(serverRunningTime)}`)
-  console.log()
-  console.log(`\x1b[33mThời gian chạy máy chủ \x1b[36m${formatDateFull2(serverRunningTime)}\x1b[0m`)
-  console.log()
-  await startBot()
-  console.log()
-  console.log(`\x1b[33mMáy chủ đang chạy trên port \x1b[36m${port}\x1b[0m`)
-  console.log(`\x1b[33mTruy cập tại: \x1b[36m${process.env.API_URL}/\x1b[0m`)
-  console.log()
+  if (serverLanguage == LANGUAGE.VIETNAMESE) {
+    await writeInfoLog(`Thời gian chạy máy chủ ${formatDateFull2(serverRunningTime)}`)
+    console.log()
+    console.log(`\x1b[33mThời gian chạy máy chủ \x1b[36m${formatDateFull2(serverRunningTime)}\x1b[0m`)
+    console.log()
+    await startBot()
+    console.log()
+    console.log(`\x1b[33mMáy chủ đang chạy trên port \x1b[36m${port}\x1b[0m`)
+    console.log(`\x1b[33mTruy cập tại: \x1b[36m${process.env.API_URL}/\x1b[0m`)
+    console.log()
+  } else {
+    await writeInfoLog(`Server running time ${formatDateFull2(serverRunningTime)}`)
+    console.log()
+    console.log(`\x1b[33mServer running time \x1b[36m${formatDateFull2(serverRunningTime)}\x1b[0m`)
+    console.log()
+    await startBot()
+    console.log()
+    console.log(`\x1b[33mServer is running on port \x1b[36m${port}\x1b[0m`)
+    console.log(`\x1b[33mAccess at: \x1b[36m${process.env.API_URL}/\x1b[0m`)
+    console.log()
+  }
 })
 
 process.on('SIGINT', async () => {
-  const date = new Date()
-  console.log()
-  console.log(`\x1b[33mMáy chủ đã ngừng hoạt động\x1b[0m`)
-  console.log()
-  await stopBot()
-  await writeInfoLog(`Thời gian tắt máy chủ ${formatDateFull2(date)}`)
-  console.log()
-  console.log(`\x1b[33mThời gian tắt máy chủ \x1b[36m${formatDateFull2(date)}\x1b[0m`)
-  console.log()
-  process.exit(0)
+  if (serverLanguage == LANGUAGE.VIETNAMESE) {
+    const date = new Date()
+    console.log()
+    console.log(`\x1b[33mMáy chủ đã ngừng hoạt động\x1b[0m`)
+    console.log()
+    await stopBot()
+    await writeInfoLog(`Thời gian tắt máy chủ ${formatDateFull2(date)}`)
+    console.log()
+    console.log(`\x1b[33mThời gian tắt máy chủ \x1b[36m${formatDateFull2(date)}\x1b[0m`)
+    console.log()
+    process.exit(0)
+  } else {
+    const date = new Date()
+    console.log()
+    console.log(`\x1b[33mServer has stopped working\x1b[0m`)
+    console.log()
+    await stopBot()
+    await writeInfoLog(`Server shutdown time ${formatDateFull2(date)}`)
+    console.log()
+    console.log(`\x1b[33mServer shutdown time \x1b[36m${formatDateFull2(date)}\x1b[0m`)
+    console.log()
+    process.exit(0)
+  }
 })
 
-export { io, serverRunningTime }
+export { io, serverRunningTime, serverLanguage }
