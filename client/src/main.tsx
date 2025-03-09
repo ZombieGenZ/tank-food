@@ -1,10 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import Loading from './views/components/loading_page_components.tsx'
 import './index.css'
-import App from './App.tsx'
+import 'antd/dist/reset.css';
+import { MantineProvider } from '@mantine/core';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <MantineProvider>
+      <Loading />
+    </MantineProvider>
   </StrictMode>,
 )
