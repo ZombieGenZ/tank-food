@@ -1,9 +1,12 @@
 import { Spin } from "antd";
 
-function Loading() {
+const Loading = () => {
     return(
         <>
-            <Spin size="large" tip="loading... 🚚💨📦" fullscreen />
+            <Spin 
+                size="large"   
+                tip="loading... 🚚💨📦" 
+                fullscreen />
         </>
     )
 }
