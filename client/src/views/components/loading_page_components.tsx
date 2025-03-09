@@ -3,7 +3,7 @@ import { Spin } from "antd";
 function Loading() {
     return(
         <>
-            <Spin tip="loading..." fullscreen />
+            <Spin size="large" tip="loading... 🚚💨📦" fullscreen />
         </>
     )
 }
