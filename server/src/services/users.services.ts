@@ -1,4 +1,4 @@
-import { RegisterUser, LoginUser } from '~/models/requests/users.requests'
+import { RegisterUserRequestsBody, LoginUserRequestsBody } from '~/models/requests/users.requests'
 import databaseService from './database.services'
 import { signToken } from '~/utils/jwt.utils'
 import { TokenType } from '~/constants/jwt.constants'
@@ -19,7 +19,7 @@ class UserService {
     const user = await databaseService.users.findOne({ phone })
     return Boolean(user)
   }
-  async register(payload: RegisterUser, language: string) {
+  async register(payload: RegisterUserRequestsBody, language: string) {
     const user_id = new ObjectId()
 
     const emailVerifyToken = await this.signEmailVerify(user_id.toString())
@@ -138,11 +138,16 @@ class UserService {
       }
     )
   }
-  async login(user: User, payload: LoginUser, language: string) {
+  async login(user: User, payload: LoginUserRequestsBody, language: string) {
     const authenticate = await this.signAccessTokenAndRefreshToken(user._id.toString())
     await this.insertRefreshToken(user._id.toString(), authenticate[1])
 
     return authenticate
+  }
+  async logout(token: string) {
+    await databaseService.refreshToken.deleteOne({
+      token: token
+    })
   }
 }
 
