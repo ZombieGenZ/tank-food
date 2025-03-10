@@ -6,7 +6,7 @@ const Loading = () => {
             <Spin 
                 size="large"   
                 tip="loading... 🚚💨📦" 
-                fullscreen />
+            />
         </>
     )
 }

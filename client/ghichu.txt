@@ -1,0 +1,21 @@
+Màu chính:
+
+Cam đậm (header): #FF8000
+Đỏ banner chính: #D62300
+Trắng (background): #FFFFFF
+
+Màu phụ:
+
+Cam nhạt (highlight): #FF9A3D
+Đỏ đậm (phụ): #B01C00
+Xám nhẹ (nền phụ): #F2F2F2
+
+Màu text:
+
+Trắng (text trên nền đỏ/cam): #FFFFFF
+Đen (text chính): #333333
+
+Header chính: Sử dụng màu cam đậm (#FF8000)
+Banner quảng cáo lớn: Sử dụng màu đỏ tươi (#D62300) làm nền
+Nền trang web: Trắng sáng (#FFFFFF) cho phần menu và các mục chính
+Phần highlight: Cam nhạt (#FF9A3D) cho các mục cần nhấn mạnh
