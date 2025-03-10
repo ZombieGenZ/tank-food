@@ -1,4 +1,4 @@
-export interface RegisterUser {
+export interface RegisterUserRequestsBody {
   language?: string
   display_name: string
   email: string
@@ -7,8 +7,13 @@ export interface RegisterUser {
   confirm_password: string
 }
 
-export interface LoginUser {
+export interface LoginUserRequestsBody {
   language?: string
   email: string
   password: string
+}
+
+export interface LogoutUserRequestsBody {
+  language?: string
+  refresh_token: string
 }

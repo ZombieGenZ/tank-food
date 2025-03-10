@@ -31,7 +31,20 @@ export class VIETNAMESE_STATIC_MESSAGE {
     REGISTER_FAILURE: 'Đăng ký tài khoản thất bại',
     INCORRECT_EMAIL_OR_PASSWORD: 'Địa chỉ email hoặc mật khẩu không chính xác',
     LOGIN_SUCCESS: 'Đăng nhập tài khoản thành công!',
-    LOGIN_FAILURE: 'Đăng nhập tài khoản thất bại'
+    LOGIN_FAILURE: 'Đăng nhập tài khoản thất bại',
+    LOGOUT_SUCCESS: 'Đăng xuất tài khoản thành công!',
+    LOGOUT_FAILURE: 'Đăng xuất tài khoản thất bại'
+  } as const
+
+  static AUTHENTICATE_MESSAGE = {
+    ACCESS_TOKEN_IS_REQUIRED: 'Không được bỏ trống Access token',
+    ACCESS_TOKEN_MUST_BE_A_STRING: 'Access token phải là một chuổi ký tự',
+    ACCESS_TOKEN_INVALID: 'Access token không hợp lệ',
+    USER_DOES_NOT_EXIST: 'Người dùng không tồn tại',
+    REFRESH_TOKEN_IS_REQUIRED: 'Không được bỏ trống Refresh token',
+    REFRESH_TOKEN_MUST_BE_A_STRING: 'Refresh token phải là một chuổi ký tự',
+    REFRESH_TOKEN_INVALID: 'Refresh token không hợp lệ',
+    AUTHENTICATION_FAILED: 'Yêu cầu xác thực trước khi thực hiện hành động này'
   } as const
 }
 
@@ -69,7 +82,20 @@ export class ENGLISH_STATIC_MESSAGE {
     REGISTER_FAILURE: 'Account registration failed',
     INCORRECT_EMAIL_OR_PASSWORD: 'Incorrect email or password',
     LOGIN_SUCCESS: 'Account login successful!',
-    LOGIN_FAILURE: 'Account login failed'
+    LOGIN_FAILURE: 'Account login failed',
+    LOGOUT_SUCCESS: 'Account logout successful!',
+    LOGOUT_FAILURE: 'Account logout failed'
+  } as const
+
+  static AUTHENTICATE_MESSAGE = {
+    ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
+    ACCESS_TOKEN_MUST_BE_A_STRING: 'Access token must be a string',
+    ACCESS_TOKEN_INVALID: 'Access token is invalid',
+    USER_DOES_NOT_EXIST: 'User does not exist',
+    REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
+    REFRESH_TOKEN_MUST_BE_A_STRING: 'Refresh token must be a string',
+    REFRESH_TOKEN_INVALID: 'Refresh token is invalid',
+    AUTHENTICATION_FAILED: 'Authentication is required before performing this action'
   } as const
 }
 
@@ -86,6 +112,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static UserLoggedInFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện đăng nhập tài khoản ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static UserLoggedOutSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện đăng xuất tài khoản ${user_id} thành công (IP: ${ip})`
+  }
+  static UserLoggedOutFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện đăng xuất tài khoản ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -100,5 +132,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static UserLoggedInFailed(user_id: string, ip: string, err: unknown) {
     return `User login for account ${user_id} failed (IP: ${ip}) | Error: ${err}`
+  }
+  static UserLoggedOutSuccessfully(user_id: string, ip: string) {
+    return `User logout for account ${user_id} successful (IP: ${ip})`
+  }
+  static UserLoggedOutFailed(user_id: string, ip: string, err: unknown) {
+    return `User logout for account ${user_id} failed (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { checkSchema, validationResult } from 'express-validator'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { LANGUAGE } from '~/constants/language.constants'
-import { RegisterUser, LoginUser } from '~/models/requests/users.requests'
+import { RegisterUserRequestsBody, LoginUserRequestsBody } from '~/models/requests/users.requests'
 import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { writeWarnLog } from '~/utils/log.utils'
 import { VIETNAMESE_STATIC_MESSAGE, ENGLISH_STATIC_MESSAGE } from '~/constants/message.constants'
@@ -13,7 +13,7 @@ import databaseService from '~/services/database.services'
 import { HashPassword } from '~/utils/encryption.utils'
 
 export const registerUserValidator = async (
-  req: Request<ParamsDictionary, any, RegisterUser>,
+  req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
   res: Response,
   next: NextFunction
 ) => {
@@ -250,7 +250,7 @@ export const registerUserValidator = async (
 }
 
 export const loginUserValidator = async (
-  req: Request<ParamsDictionary, any, LoginUser>,
+  req: Request<ParamsDictionary, any, LoginUserRequestsBody>,
   res: Response,
   next: NextFunction
 ) => {

@@ -1,5 +1,6 @@
 import express from 'express'
-import { registerUserController, loginUserController } from '~/controllers/users.controllers'
+import { registerUserController, loginUserController, logoutUserController } from '~/controllers/users.controllers'
+import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import { registerUserValidator, loginUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -30,5 +31,19 @@ router.post('/register', registerUserValidator, wrapRequestHandler(registerUserC
  * }
  */
 router.post('/login', loginUserValidator, wrapRequestHandler(loginUserController))
+
+/*
+ * Description: Đăng xuất khỏi một tài khoản có trong CSDL
+ * Path: /api/users/logout
+ * Method: DELETE
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post('/logout', authenticateValidator, wrapRequestHandler(logoutUserController))
 
 export default router
