@@ -76,6 +76,68 @@ export class VIETNAMESE_DYNAMIC_MAIL {
       `
     }
   }
+  static emailVerifyMail(url: string) {
+    return {
+      subject: `Xác thực tài khoản - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <!-- Header with solid color -->
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Fast Food. Fast Delivery.</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <!-- Banner section -->
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Xác thực Tài khoản của Bạn</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Chỉ còn một bước nữa để thưởng thức ẩm thực tuyệt vời!</p>
+                    </td>
+                </tr>
+                
+                <!-- Main Content -->
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Xin chào,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Cảm ơn bạn đã đăng ký tài khoản tại ${process.env.TRADEMARK_NAME}. Để hoàn tất quá trình đăng ký, vui lòng xác thực email của bạn bằng cách nhấp vào nút bên dưới:</p>
+                        
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${url}" style="background-color: #FF8000; color: #FFFFFF; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 20px rgba(255,128,0,0.4); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                <span style="position: relative; z-index: 1;">XÁC THỰC TÀI KHOẢN</span>
+                            </a>
+                        </div>
+                        
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Hoặc, bạn có thể sao chép và dán đường dẫn sau vào trình duyệt của mình:</p>
+                        
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 8px; height: 100%; background-color: #FF8000;"></div>
+                            <p style="padding-left: 15px; margin: 0; word-break: break-all; color: #333333; font-size: 15px; font-family: monospace;">${url}</p>
+                        </div>
+                        
+                        <p style="margin: 30px 0 0 0; font-size: 18px; color: #333333; line-height: 1.7;"><strong>Lưu ý:</strong> Liên kết này chỉ có hiệu lực trong 24 giờ.</p>
+                    </td>
+                </tr>
+                
+                <!-- Footer with solid color instead of gradient (matching the provided example) -->
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Tất cả các quyền được bảo lưu.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px; transition: all 0.3s ease;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </body>
+      `
+    }
+  }
 }
 
 export class ENGLIS_DYNAMIC_MAIL {
@@ -142,6 +204,64 @@ export class ENGLIS_DYNAMIC_MAIL {
                             <p style="margin: 0 0 25px 0; font-size: 16px; color: #555555; max-width: 450px; display: inline-block; line-height: 1.7;">Explore our full menu, special offers, and locations near you on our official website.</p>
                             <a href="${process.env.APP_URL}" style="display: inline-block; background-color: #FFFFFF; color: #FF8000; font-weight: bold; padding: 12px 25px; border: 2px solid #FF8000; border-radius: 6px; text-decoration: none; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">${process.env.APP_URL_DISPLAY}</a>
                         </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px; transition: all 0.3s ease;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </body>
+      `
+    }
+  }
+  static emailVerifyMail(url: string) {
+    return {
+      subject: `Account Verification - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Fast Food. Fast Delivery.</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Verify Your Account</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Just one more step to enjoy amazing food!</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Hello,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Thank you for registering an account at ${process.env.TRADEMARK_NAME}. To complete your registration, please verify your email by clicking the button below:</p>
+                        
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${url}" style="background-color: #FF8000; color: #FFFFFF; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 20px rgba(255,128,0,0.4); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                <span style="position: relative; z-index: 1;">VERIFY ACCOUNT</span>
+                            </a>
+                        </div>
+                        
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Or, you can copy and paste the following link into your browser:</p>
+                        
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 8px; height: 100%; background-color: #FF8000;"></div>
+                            <p style="padding-left: 15px; margin: 0; word-break: break-all; color: #333333; font-size: 15px; font-family: monospace;">${url}</p>
+                        </div>
+                        
+                        <p style="margin: 30px 0 0 0; font-size: 18px; color: #333333; line-height: 1.7;"><strong>Note:</strong> This link is valid for 24 hours only.</p>
                     </td>
                 </tr>
                 

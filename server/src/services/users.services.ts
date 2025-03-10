@@ -38,18 +38,31 @@ class UserService {
     const authenticate = await this.signAccessTokenAndRefreshToken(user_id.toString())
     await this.insertRefreshToken(user_id.toString(), authenticate[1])
 
-    let email_subject
-    let email_html
+    const emailVerifyToken = await this.signEmailVerify(user_id.toString())
+    const emailVerifyUrl = `${process.env.APP_URL}/email-verify?token=${emailVerifyToken}`
+
+    let email_welcome_subject
+    let email_welcome_html
+
+    let email_verify_subject
+    let email_verify_html
 
     if (language == LANGUAGE.VIETNAMESE) {
-      email_subject = VIETNAMESE_DYNAMIC_MAIL.welcomeMail(payload.display_name).subject
-      email_html = VIETNAMESE_DYNAMIC_MAIL.welcomeMail(payload.display_name).html
+      email_welcome_subject = VIETNAMESE_DYNAMIC_MAIL.welcomeMail(payload.display_name).subject
+      email_welcome_html = VIETNAMESE_DYNAMIC_MAIL.welcomeMail(payload.display_name).html
+      email_verify_subject = VIETNAMESE_DYNAMIC_MAIL.emailVerifyMail(emailVerifyUrl).subject
+      email_verify_html = VIETNAMESE_DYNAMIC_MAIL.emailVerifyMail(emailVerifyUrl).html
     } else {
-      email_subject = ENGLIS_DYNAMIC_MAIL.welcomeMail(payload.display_name).subject
-      email_html = ENGLIS_DYNAMIC_MAIL.welcomeMail(payload.display_name).html
+      email_welcome_subject = ENGLIS_DYNAMIC_MAIL.welcomeMail(payload.display_name).subject
+      email_welcome_html = ENGLIS_DYNAMIC_MAIL.welcomeMail(payload.display_name).html
+      email_verify_subject = ENGLIS_DYNAMIC_MAIL.emailVerifyMail(emailVerifyUrl).subject
+      email_verify_html = ENGLIS_DYNAMIC_MAIL.emailVerifyMail(emailVerifyUrl).html
     }
 
-    await sendMail(payload.email, email_subject, email_html)
+    await Promise.all([
+      sendMail(payload.email, email_welcome_subject, email_welcome_html),
+      sendMail(payload.email, email_verify_subject, email_verify_html)
+    ])
 
     return authenticate
   }
