@@ -1,6 +1,6 @@
 
 
-const Login_Signup = () => {
+const Login = () => {
     return (
         <>
         
@@ -8,4 +8,4 @@ const Login_Signup = () => {
     )
 }
 
-export default Login_Signup
+export default Login
