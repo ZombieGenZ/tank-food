@@ -28,7 +28,10 @@ export class VIETNAMESE_STATIC_MESSAGE {
       'Xác nhận mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt',
     CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD: 'Xác nhận mật khẩu phải khớp với mật khẩu',
     REGISTER_SUCCESS: 'Đăng ký tài khoản thành công!',
-    REGISTER_FAILURE: 'Đăng ký tài khoản thất bại'
+    REGISTER_FAILURE: 'Đăng ký tài khoản thất bại',
+    INCORRECT_EMAIL_OR_PASSWORD: 'Địa chỉ email hoặc mật khẩu không chính xác',
+    LOGIN_SUCCESS: 'Đăng nhập tài khoản thành công!',
+    LOGIN_FAILURE: 'Đăng nhập tài khoản thất bại'
   } as const
 }
 
@@ -63,7 +66,10 @@ export class ENGLISH_STATIC_MESSAGE {
       'Confirm password must be at least 8 characters long, including uppercase, lowercase, numbers, and special characters',
     CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD: 'Confirm password does not match password',
     REGISTER_SUCCESS: 'Account registration successful!',
-    REGISTER_FAILURE: 'Account registration failed'
+    REGISTER_FAILURE: 'Account registration failed',
+    INCORRECT_EMAIL_OR_PASSWORD: 'Incorrect email or password',
+    LOGIN_SUCCESS: 'Account login successful!',
+    LOGIN_FAILURE: 'Account login failed'
   } as const
 }
 
@@ -74,6 +80,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static UserRegistrationFailed(email: string, ip: string, err: unknown) {
     return `Thực hiện đăng ký tài khoản ${email} thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static UserLoggedInSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện đăng nhập tài khoản ${user_id} thành công (IP: ${ip})`
+  }
+  static UserLoggedInFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện đăng nhập tài khoản ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -82,5 +94,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static UserRegistrationFailed(email: string, ip: string, err: unknown) {
     return `User registration for ${email} failed (IP: ${ip}) | Error: ${err}`
+  }
+  static UserLoggedInSuccessfully(user_id: string, ip: string) {
+    return `User login for account ${user_id} successful (IP: ${ip})`
+  }
+  static UserLoggedInFailed(user_id: string, ip: string, err: unknown) {
+    return `User login for account ${user_id} failed (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -1,6 +1,6 @@
 import express from 'express'
-import { registerUserController } from '~/controllers/users.controllers'
-import { registerUserValidator } from '~/middlewares/users.middlewares'
+import { registerUserController, loginUserController } from '~/controllers/users.controllers'
+import { registerUserValidator, loginUserValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -18,5 +18,17 @@ const router = express.Router()
  * }
  */
 router.post('/register', registerUserValidator, wrapRequestHandler(registerUserController))
+
+/*
+ * Description: Đăng nhập vào một tài khoản có trong CSDL
+ * Path: /api/users/login
+ * Method: POST
+ * Body: {
+ *    language?: string,
+ *    email: string,
+ *    password: string
+ * }
+ */
+router.post('/login', loginUserValidator, wrapRequestHandler(loginUserController))
 
 export default router

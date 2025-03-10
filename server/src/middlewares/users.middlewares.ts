@@ -2,13 +2,15 @@ import { Request, Response, NextFunction } from 'express'
 import { checkSchema, validationResult } from 'express-validator'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { LANGUAGE } from '~/constants/language.constants'
-import { RegisterUser } from '~/models/requests/users.requests'
+import { RegisterUser, LoginUser } from '~/models/requests/users.requests'
 import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { writeWarnLog } from '~/utils/log.utils'
 import { VIETNAMESE_STATIC_MESSAGE, ENGLISH_STATIC_MESSAGE } from '~/constants/message.constants'
 import { serverLanguage } from '..'
 import userService from '~/services/users.services'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
+import databaseService from '~/services/database.services'
+import { HashPassword } from '~/utils/encryption.utils'
 
 export const registerUserValidator = async (
   req: Request<ParamsDictionary, any, RegisterUser>,
@@ -209,6 +211,107 @@ export const registerUserValidator = async (
 
             return true
           }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const loginUserValidator = async (
+  req: Request<ParamsDictionary, any, LoginUser>,
+  res: Response,
+  next: NextFunction
+) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      email: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.EMAIL_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.EMAIL_MUST_BE_A_STRING
+        },
+        isEmail: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_NOT_VALID
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_NOT_VALID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const result = await databaseService.users.findOne({
+              email: value,
+              password: HashPassword(req.body.password)
+            })
+
+            if (!result) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.INCORRECT_EMAIL_OR_PASSWORD
+                  : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.INCORRECT_EMAIL_OR_PASSWORD
+              )
+            }
+
+            ;(req as Request).user = result
+
+            return true
+          }
+        }
+      },
+      password: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_MUST_BE_A_STRING
         }
       }
     },

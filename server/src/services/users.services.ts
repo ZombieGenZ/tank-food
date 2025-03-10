@@ -1,4 +1,4 @@
-import { RegisterUser } from '~/models/requests/users.requests'
+import { RegisterUser, LoginUser } from '~/models/requests/users.requests'
 import databaseService from './database.services'
 import { signToken } from '~/utils/jwt.utils'
 import { TokenType } from '~/constants/jwt.constants'
@@ -22,7 +22,8 @@ class UserService {
   async register(payload: RegisterUser, language: string) {
     const user_id = new ObjectId()
 
-    const email_verify = await this.signEmailVerify(user_id.toString())
+    const emailVerifyToken = await this.signEmailVerify(user_id.toString())
+    const emailVerifyUrl = `${process.env.APP_URL}/email-verify?token=${emailVerifyToken}`
 
     await databaseService.users.insertOne(
       new User({
@@ -31,15 +32,12 @@ class UserService {
         email: payload.email,
         password: HashPassword(payload.password),
         phone: payload.phone,
-        email_verify_token: email_verify
+        email_verify_token: emailVerifyToken
       })
     )
 
     const authenticate = await this.signAccessTokenAndRefreshToken(user_id.toString())
     await this.insertRefreshToken(user_id.toString(), authenticate[1])
-
-    const emailVerifyToken = await this.signEmailVerify(user_id.toString())
-    const emailVerifyUrl = `${process.env.APP_URL}/email-verify?token=${emailVerifyToken}`
 
     let email_welcome_subject
     let email_welcome_html
@@ -139,6 +137,12 @@ class UserService {
         }
       }
     )
+  }
+  async login(user: User, payload: LoginUser, language: string) {
+    const authenticate = await this.signAccessTokenAndRefreshToken(user._id.toString())
+    await this.insertRefreshToken(user._id.toString(), authenticate[1])
+
+    return authenticate
   }
 }
 
