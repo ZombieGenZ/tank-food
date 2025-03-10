@@ -84,15 +84,3 @@ export class ENGLIS_DYNAMIC_MESSAGE {
     return `User registration for ${email} failed (IP: ${ip}) | Error: ${err}`
   }
 }
-
-export class VIETNAMESE_DYNAMIC_MAIL {
-  static welcomeMail() {
-    return ``
-  }
-}
-
-export class ENGLIS_DYNAMIC_MAIL {
-  static welcomeMail() {
-    return ``
-  }
-}

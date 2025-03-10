@@ -6,6 +6,9 @@ import RefreshToken from '~/models/schemas/refreshtoken.schemas'
 import { ObjectId } from 'mongodb'
 import User from '~/models/schemas/users.schemas'
 import { HashPassword } from '~/utils/encryption.utils'
+import { LANGUAGE } from '~/constants/language.constants'
+import { ENGLIS_DYNAMIC_MAIL, VIETNAMESE_DYNAMIC_MAIL } from '~/constants/mail.constants'
+import { sendMail } from '~/utils/mail.utils'
 
 class UserService {
   async checkEmailExits(email: string) {
@@ -16,7 +19,7 @@ class UserService {
     const user = await databaseService.users.findOne({ phone })
     return Boolean(user)
   }
-  async register(payload: RegisterUser) {
+  async register(payload: RegisterUser, language: string) {
     const user_id = new ObjectId()
 
     const email_verify = await this.signEmailVerify(user_id.toString())
@@ -34,6 +37,19 @@ class UserService {
 
     const authenticate = await this.signAccessTokenAndRefreshToken(user_id.toString())
     await this.insertRefreshToken(user_id.toString(), authenticate[1])
+
+    let email_subject
+    let email_html
+
+    if (language == LANGUAGE.VIETNAMESE) {
+      email_subject = VIETNAMESE_DYNAMIC_MAIL.welcomeMail(payload.display_name).subject
+      email_html = VIETNAMESE_DYNAMIC_MAIL.welcomeMail(payload.display_name).html
+    } else {
+      email_subject = ENGLIS_DYNAMIC_MAIL.welcomeMail(payload.display_name).subject
+      email_html = ENGLIS_DYNAMIC_MAIL.welcomeMail(payload.display_name).html
+    }
+
+    await sendMail(payload.email, email_subject, email_html)
 
     return authenticate
   }

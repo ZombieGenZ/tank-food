@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterUser } from '~/models/requests/users.requests'
 import { serverLanguage } from '~/index'
@@ -11,21 +11,23 @@ import {
   ENGLISH_STATIC_MESSAGE
 } from '~/constants/message.constants'
 import userService from '~/services/users.services'
+import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 
 export const registerUserController = async (req: Request<ParamsDictionary, any, RegisterUser>, res: Response) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
   const language = req.body.language || serverLanguage
 
   try {
-    const authenticate = await userService.register(req.body)
+    const authenticate = await userService.register(req.body, language)
 
     await writeInfoLog(
-      language == LANGUAGE.VIETNAMESE
+      serverLanguage == LANGUAGE.VIETNAMESE
         ? VIETNAMESE_DYNAMIC_MESSAGE.UserRegistrationSuccessful(req.body.email, ip)
         : ENGLIS_DYNAMIC_MESSAGE.UserRegistrationSuccessful(req.body.email, ip)
     )
 
     res.json({
+      code: RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.REGISTER_SUCCESS
@@ -34,12 +36,13 @@ export const registerUserController = async (req: Request<ParamsDictionary, any,
     })
   } catch (err) {
     await writeErrorLog(
-      language == LANGUAGE.VIETNAMESE
+      serverLanguage == LANGUAGE.VIETNAMESE
         ? VIETNAMESE_DYNAMIC_MESSAGE.UserRegistrationFailed(req.body.email, ip, err)
         : ENGLIS_DYNAMIC_MESSAGE.UserRegistrationFailed(req.body.email, ip, err)
     )
 
     res.json({
+      code: RESPONSE_CODE.USER_REGISTRATION_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.REGISTER_FAILURE
