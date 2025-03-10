@@ -33,7 +33,9 @@ export class VIETNAMESE_STATIC_MESSAGE {
     LOGIN_SUCCESS: 'Đăng nhập tài khoản thành công!',
     LOGIN_FAILURE: 'Đăng nhập tài khoản thất bại',
     LOGOUT_SUCCESS: 'Đăng xuất tài khoản thành công!',
-    LOGOUT_FAILURE: 'Đăng xuất tài khoản thất bại'
+    LOGOUT_FAILURE: 'Đăng xuất tài khoản thất bại',
+    VERIFY_TOKEN_SUCCESS: 'Xác thực token thành công!',
+    VERIFY_TOKEN_FAILURE: 'Xác thực token thất bại'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -84,7 +86,9 @@ export class ENGLISH_STATIC_MESSAGE {
     LOGIN_SUCCESS: 'Account login successful!',
     LOGIN_FAILURE: 'Account login failed',
     LOGOUT_SUCCESS: 'Account logout successful!',
-    LOGOUT_FAILURE: 'Account logout failed'
+    LOGOUT_FAILURE: 'Account logout failed',
+    VERIFY_TOKEN_SUCCESS: 'Token verification successful!',
+    VERIFY_TOKEN_FAILURE: 'Token verification failed'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -118,6 +122,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static UserLoggedOutFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện đăng xuất tài khoản ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static UserVerifyTokenSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xác thực token truy cập người dùng ${user_id} thành công (IP: ${ip})`
+  }
+  static UserVerifyTokenFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xác thực token truy cập người dùng ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -138,5 +148,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static UserLoggedOutFailed(user_id: string, ip: string, err: unknown) {
     return `User logout for account ${user_id} failed (IP: ${ip}) | Error: ${err}`
+  }
+  static UserVerifyTokenSuccessfully(user_id: string, ip: string) {
+    return `User access token verification for user ${user_id} successful (IP: ${ip})`
+  }
+  static UserVerifyTokenFailed(user_id: string, ip: string, err: unknown) {
+    return `User access token verification for user ${user_id} failed (IP: ${ip}) | Error: ${err}`
   }
 }

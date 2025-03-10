@@ -18,6 +18,7 @@ import userService from '~/services/users.services'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import User from '~/models/schemas/users.schemas'
 import RefreshToken from '~/models/schemas/refreshtoken.schemas'
+import { AuthenticateRequestsBody } from '~/models/requests/authenticate.requests'
 
 export const registerUserController = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -146,6 +147,76 @@ export const logoutUserController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.LOGOUT_FAILURE
           : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.LOGOUT_FAILURE
+    })
+  }
+}
+
+export const verifyTokenUserController = async (
+  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const access_token = req.headers.authorization || null
+  const refresh_token = req.refresh_token as RefreshToken
+  const language = req.body.language || serverLanguage
+
+  try {
+    const access = access_token?.split(' ')
+    let changed: boolean
+    let result: {
+      access_token: string
+      refresh_token: string
+    }
+    if (!access || !access[1]) {
+      const authenticate = await userService.signAccessTokenAndRefreshToken(refresh_token.user_id.toString())
+
+      await userService.updateRefreshToken(refresh_token.token, authenticate[1])
+
+      result = {
+        access_token: authenticate[0],
+        refresh_token: authenticate[1]
+      }
+
+      changed = true
+    } else {
+      result = {
+        access_token: access[1],
+        refresh_token: refresh_token.token
+      }
+
+      changed = false
+    }
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.UserVerifyTokenSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.UserVerifyTokenSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: changed
+        ? RESPONSE_CODE.TOKEN_AUTHENTICATION_SUCCESSFUL_TOKEN_CHANGED
+        : RESPONSE_CODE.TOKEN_VERIFICATION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_TOKEN_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_TOKEN_SUCCESS,
+      authenticate: result
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.UserVerifyTokenFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.UserVerifyTokenFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.TOKEN_VERIFICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_TOKEN_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_TOKEN_FAILURE
     })
   }
 }

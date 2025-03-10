@@ -64,7 +64,7 @@ class UserService {
 
     return authenticate
   }
-  private signAccessToken(user_id: string) {
+  signAccessToken(user_id: string) {
     return signToken({
       payload: {
         user_id: user_id,
@@ -76,7 +76,7 @@ class UserService {
       }
     })
   }
-  private signRefreshToken(user_id: string) {
+  signRefreshToken(user_id: string) {
     return signToken({
       payload: {
         user_id: user_id,
@@ -112,7 +112,7 @@ class UserService {
       }
     })
   }
-  private signAccessTokenAndRefreshToken(user_id: string) {
+  signAccessTokenAndRefreshToken(user_id: string) {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
   async insertRefreshToken(user_id: string, token: string) {

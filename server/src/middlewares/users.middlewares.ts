@@ -11,6 +11,9 @@ import userService from '~/services/users.services'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import databaseService from '~/services/database.services'
 import { HashPassword } from '~/utils/encryption.utils'
+import { AuthenticateRequestsBody } from '~/models/requests/authenticate.requests'
+import { verifyToken } from '~/utils/jwt.utils'
+import { TokenPayload } from '~/models/requests/authentication.requests'
 
 export const registerUserValidator = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -344,6 +347,112 @@ export const loginUserValidator = async (
       writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
       res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
         code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const verifyTokenValidator = async (
+  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      refresh_token: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_MUST_BE_A_STRING
+        },
+        custom: {
+          options: async (value, { req }) => {
+            try {
+              const decoded_refresh_token = (await verifyToken({
+                token: value,
+                publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
+              })) as TokenPayload
+
+              ;(req as Request).decoded_refresh_token = decoded_refresh_token
+
+              const refresh_token = await databaseService.refreshToken.findOne({ token: value })
+
+              if (!refresh_token) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                )
+              }
+
+              ;(req as Request).refresh_token = refresh_token
+
+              const user = await databaseService.users.findOne({
+                _id: refresh_token.user_id
+              })
+
+              if (!user) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.USER_DOES_NOT_EXIST
+                    : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.USER_DOES_NOT_EXIST
+                )
+              }
+
+              ;(req as Request).user = user
+            } catch {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                  : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+              )
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['headers', 'body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNAUTHORIZED).json({
+            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
         message: err
       })
       return

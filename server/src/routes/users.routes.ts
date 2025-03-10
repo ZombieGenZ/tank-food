@@ -1,7 +1,12 @@
 import express from 'express'
-import { registerUserController, loginUserController, logoutUserController } from '~/controllers/users.controllers'
+import {
+  registerUserController,
+  loginUserController,
+  logoutUserController,
+  verifyTokenUserController
+} from '~/controllers/users.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
-import { registerUserValidator, loginUserValidator } from '~/middlewares/users.middlewares'
+import { registerUserValidator, loginUserValidator, verifyTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -45,5 +50,19 @@ router.post('/login', loginUserValidator, wrapRequestHandler(loginUserController
  * }
  */
 router.post('/logout', authenticateValidator, wrapRequestHandler(logoutUserController))
+
+/*
+ * Description: Xác thực token và cấp token mới cho người dùng
+ * Path: /api/users/verify-token
+ * Method: POST
+ * headers: {
+ *    authorization?: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post('/verify-token', verifyTokenValidator, wrapRequestHandler(verifyTokenUserController))
 
 export default router
