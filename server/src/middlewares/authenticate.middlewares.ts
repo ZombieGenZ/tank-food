@@ -55,8 +55,6 @@ export const authenticateValidator = async (req: Request, res: Response, next: N
             }
 
             try {
-              console.log(authorization[1])
-
               const decoded_access_token = (await verifyToken({
                 token: authorization[1],
                 publicKey: process.env.SECURITY_JWT_SECRET_ACCESS_TOKEN as string
@@ -78,8 +76,6 @@ export const authenticateValidator = async (req: Request, res: Response, next: N
 
               ;(req as Request).user = user
             } catch {
-              console.log('here')
-
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.ACCESS_TOKEN_INVALID
@@ -227,8 +223,6 @@ export const authenticateShipperValidator = async (req: Request, res: Response, 
 export const authenticateAdministratorValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
   const user = req.user as User
-
-  console.log(user.role)
 
   if (user.role !== UserRoleEnum.ADMINISTRATOR) {
     res.status(HTTPSTATUS.UNAUTHORIZED).json({

@@ -3,6 +3,7 @@ import { Server as SocketIOServer } from 'socket.io'
 import { TokenPayload } from '~/models/requests/authentication.requests'
 import User from '~/models/schemas/users.schemas'
 import RefreshToken from './models/schemas/refreshtoken.schemas'
+import Category from './models/schemas/categories.schemas'
 
 declare module 'express' {
   interface Request {
@@ -11,5 +12,6 @@ declare module 'express' {
     decoded_access_token?: TokenPayload
     decoded_refresh_token?: TokenPayload
     refresh_token?: RefreshToken
+    category?: Category
   }
 }

@@ -57,7 +57,13 @@ export class VIETNAMESE_STATIC_MESSAGE {
     INDEX_IS_REQUIRED: 'Không được bỏ trống độ ưu tiên của danh mục',
     INDEX_MUST_BE_A_NUMBER: 'Độ ưu tiên của danh mục phải là một chuổi ký tự',
     CREATE_CATEGORY_SUCCESS: 'Tạo danh mục thành công',
-    CREATE_CATEGORY_FAILURE: 'Tạo danh mục thất bại'
+    CREATE_CATEGORY_FAILURE: 'Tạo danh mục thất bại',
+    CATEGORY_ID_IS_REQUIRED: 'Không được bỏ trống ID danh mục',
+    CATEGORY_ID_MUST_BE_A_STRING: 'ID Danh mục phải là một chuổi ký tự',
+    CATEGORY_ID_IS_MUST_BE_A_ID: 'ID Danh mục không đúng định dạn',
+    CATEGORY_ID_DOES_NOT_EXIST: 'ID Danh mục không tồn tại',
+    DELETE_CATEGORY_SUCCESS: 'Xóa danh mục thành công',
+    DELETE_CATEGORY_FAILURE: 'Xóa danh mục thất bại'
   } as const
 }
 
@@ -121,7 +127,13 @@ export class ENGLISH_STATIC_MESSAGE {
     INDEX_IS_REQUIRED: 'Category index is required',
     INDEX_MUST_BE_A_NUMBER: 'Category index must be a number',
     CREATE_CATEGORY_SUCCESS: 'Category created successfully',
-    CREATE_CATEGORY_FAILURE: 'Category creation failed'
+    CREATE_CATEGORY_FAILURE: 'Category creation failed',
+    CATEGORY_ID_IS_REQUIRED: 'Category ID is required',
+    CATEGORY_ID_MUST_BE_A_STRING: 'Category ID must be a string',
+    CATEGORY_ID_IS_MUST_BE_A_ID: 'Category ID is invalid',
+    CATEGORY_ID_DOES_NOT_EXIST: 'Category ID does not exist',
+    DELETE_CATEGORY_SUCCESS: 'Category deleted successfully',
+    DELETE_CATEGORY_FAILURE: 'Category deletion failed'
   } as const
 }
 
@@ -156,6 +168,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CategoryCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tạo danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static CategoryDeleteSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xóa danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xóa danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -188,5 +206,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static CategoryCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Category creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CategoryDeleteSuccessfully(user_id: string, ip: string) {
+    return `Category deletion successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Category deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -1,8 +1,9 @@
-import { CreateCategoryRequestsBody } from '~/models/requests/categories.requests'
+import { CreateCategoryRequestsBody, DeleteCategoryRequestsBody } from '~/models/requests/categories.requests'
 import databaseService from './database.services'
 import Category from '~/models/schemas/categories.schemas'
 import { translateContent } from '~/utils/ai.utils'
 import { SplitTranslationString } from '~/utils/string.utils'
+import { ObjectId } from 'mongodb'
 
 class CategoryService {
   async create(payload: CreateCategoryRequestsBody) {
@@ -18,6 +19,12 @@ class CategoryService {
         index: Number(payload.index)
       })
     )
+  }
+
+  async delete(payload: DeleteCategoryRequestsBody) {
+    await databaseService.categories.deleteOne({
+      _id: new ObjectId(payload.category_id)
+    })
   }
 }
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { CreateCategoryRequestsBody } from '~/models/requests/categories.requests'
+import { CreateCategoryRequestsBody, DeleteCategoryRequestsBody } from '~/models/requests/categories.requests'
 import User from '~/models/schemas/users.schemas'
 import { serverLanguage } from '~/index'
 import categoryService from '~/services/categories.services'
@@ -51,6 +51,47 @@ export const createCategoryController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.CREATE_CATEGORY_FAILURE
           : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.CREATE_CATEGORY_FAILURE
+    })
+  }
+}
+
+export const deleteCategoryController = async (
+  req: Request<ParamsDictionary, any, DeleteCategoryRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await categoryService.delete(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CategoryDeleteSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.CategoryDeleteSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.DELETE_CATEGORY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.DELETE_CATEGORY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.DELETE_CATEGORY_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CategoryDeleteFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.CategoryDeleteFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.DELETE_CATEGORY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.DELETE_CATEGORY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.DELETE_CATEGORY_FAILURE
     })
   }
 }
