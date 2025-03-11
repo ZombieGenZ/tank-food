@@ -1,5 +1,5 @@
 import React, { FormEvent, useState } from "react"
-import { Modal } from 'antd';
+import { message } from 'antd';
 
 interface Signup {
     display_name: string,
@@ -15,6 +15,7 @@ interface Login {
 }
 
 const Signup: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
     const [formData, setFormData] = useState<Signup>({
         display_name: "",
@@ -76,13 +77,14 @@ const Signup: React.FC = () => {
         e.preventDefault();
         if (validateForm()) {
             console.log("Dữ liệu đăng ký:", formData);
-            Modal.success({
-              content: 'Đăng nhập thành công',
+            messageApi.open({
+              type: 'success',
+              content: 'Đăng ký thành công',
             });
         } else {
             console.log(errors)
-            Modal.error({
-              title: 'This is an error message',
+            messageApi.open({
+              type: 'error',
               content: `${errors}`,
             });
         }
@@ -91,7 +93,8 @@ const Signup: React.FC = () => {
     const handleLoginSubmit = (e: FormEvent) => {
         e.preventDefault();
         console.log('Login Data:', loginData);
-        Modal.success({
+        messageApi.open({
+          type: 'success',
           content: 'Đăng nhập thành công',
         });
       };
@@ -102,6 +105,7 @@ const Signup: React.FC = () => {
 
     return (
         <div style={styles.body}>
+          {contextHolder}
             <div style={styles.container}>
                 <div style={styles.infoSide}>
                 <div>
