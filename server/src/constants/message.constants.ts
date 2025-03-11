@@ -62,6 +62,8 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CATEGORY_ID_MUST_BE_A_STRING: 'ID Danh mục phải là một chuổi ký tự',
     CATEGORY_ID_IS_MUST_BE_A_ID: 'ID Danh mục không đúng định dạn',
     CATEGORY_ID_DOES_NOT_EXIST: 'ID Danh mục không tồn tại',
+    UPDATE_CATEGORY_SUCCESS: 'Cập nhật danh mục thành công',
+    UPDATE_CATEGORY_FAILURE: 'Cập nhật danh mục thất bại',
     DELETE_CATEGORY_SUCCESS: 'Xóa danh mục thành công',
     DELETE_CATEGORY_FAILURE: 'Xóa danh mục thất bại'
   } as const
@@ -132,6 +134,8 @@ export class ENGLISH_STATIC_MESSAGE {
     CATEGORY_ID_MUST_BE_A_STRING: 'Category ID must be a string',
     CATEGORY_ID_IS_MUST_BE_A_ID: 'Category ID is invalid',
     CATEGORY_ID_DOES_NOT_EXIST: 'Category ID does not exist',
+    UPDATE_CATEGORY_SUCCESS: 'Category updated successfully',
+    UPDATE_CATEGORY_FAILURE: 'Category update failed',
     DELETE_CATEGORY_SUCCESS: 'Category deleted successfully',
     DELETE_CATEGORY_FAILURE: 'Category deletion failed'
   } as const
@@ -167,6 +171,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static CategoryCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tạo danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static CategoryUpdateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện cập nhật danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập nhật danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static CategoryDeleteSuccessfully(user_id: string, ip: string) {
     return `Thực hiện xóa danh mục thành công (User: ${user_id}) (IP: ${ip})`
@@ -206,6 +216,12 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static CategoryCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Category creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CategoryUpdateSuccessfully(user_id: string, ip: string) {
+    return `Category update successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Category update failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static CategoryDeleteSuccessfully(user_id: string, ip: string) {
     return `Category deletion successful (User: ${user_id}) (IP: ${ip})`

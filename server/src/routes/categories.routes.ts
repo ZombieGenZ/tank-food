@@ -1,7 +1,15 @@
 import express from 'express'
-import { createCategoryController, deleteCategoryController } from '~/controllers/categories.controllers'
+import {
+  createCategoryController,
+  updateCategoryController,
+  deleteCategoryController
+} from '~/controllers/categories.controllers'
 import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
-import { createCategoryValidator, deleteCategoryValidator } from '~/middlewares/categories.middlewares'
+import {
+  createCategoryValidator,
+  updateCategoryValidator,
+  deleteCategoryValidator
+} from '~/middlewares/categories.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -42,6 +50,13 @@ router.post(
  *    index: number
  * }
  */
+router.put(
+  '/update',
+  authenticateValidator,
+  authenticateAdministratorValidator,
+  updateCategoryValidator,
+  wrapRequestHandler(updateCategoryController)
+)
 
 /*
  * Description: Xóa một danh mục đã có trên CSDL

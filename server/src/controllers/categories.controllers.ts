@@ -1,6 +1,10 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { CreateCategoryRequestsBody, DeleteCategoryRequestsBody } from '~/models/requests/categories.requests'
+import {
+  CreateCategoryRequestsBody,
+  UpdateCategoryRequestsBody,
+  DeleteCategoryRequestsBody
+} from '~/models/requests/categories.requests'
 import User from '~/models/schemas/users.schemas'
 import { serverLanguage } from '~/index'
 import categoryService from '~/services/categories.services'
@@ -51,6 +55,47 @@ export const createCategoryController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.CREATE_CATEGORY_FAILURE
           : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.CREATE_CATEGORY_FAILURE
+    })
+  }
+}
+
+export const updateCategoryController = async (
+  req: Request<ParamsDictionary, any, UpdateCategoryRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await categoryService.update(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CategoryUpdateSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.CategoryUpdateSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_CATEGORY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.UPDATE_CATEGORY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.UPDATE_CATEGORY_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CategoryUpdateFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.CategoryUpdateFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_CATEGORY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.UPDATE_CATEGORY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.UPDATE_CATEGORY_FAILURE
     })
   }
 }
