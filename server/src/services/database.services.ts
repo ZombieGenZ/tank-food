@@ -5,6 +5,8 @@ import RefreshToken from '~/models/schemas/refreshtoken.schemas'
 import Log from '~/models/schemas/logs.schemas'
 import { LANGUAGE } from '~/constants/language.constants'
 import { serverLanguage } from '~/index'
+import Category from '~/models/schemas/categories.schemas'
+import Prompt from '~/models/schemas/prompt.schemas'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@tank-food.l2yv7.mongodb.net/?retryWrites=true&w=majority&appName=TANK-Food`
@@ -41,6 +43,12 @@ class DatabaseService {
   }
   get refreshToken(): Collection<RefreshToken> {
     return this.db.collection(process.env.DATABASE_REFRESH_TOKEN_COLLECTION as string)
+  }
+  get categories(): Collection<Category> {
+    return this.db.collection(process.env.DATABASE_CATEGORY_COLLECTION as string)
+  }
+  get prompt(): Collection<Prompt> {
+    return this.db.collection(process.env.DATABASE_PROMPT_COLLECTION as string)
   }
   get logs(): Collection<Log> {
     return this.db.collection(process.env.DATABASE_LOG_COLLECTION as string)

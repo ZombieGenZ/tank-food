@@ -27,14 +27,14 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CONFIRM_PASSWORD_MUST_BE_STRONG:
       'Xác nhận mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt',
     CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD: 'Xác nhận mật khẩu phải khớp với mật khẩu',
-    REGISTER_SUCCESS: 'Đăng ký tài khoản thành công!',
+    REGISTER_SUCCESS: 'Đăng ký tài khoản thành công',
     REGISTER_FAILURE: 'Đăng ký tài khoản thất bại',
     INCORRECT_EMAIL_OR_PASSWORD: 'Địa chỉ email hoặc mật khẩu không chính xác',
-    LOGIN_SUCCESS: 'Đăng nhập tài khoản thành công!',
+    LOGIN_SUCCESS: 'Đăng nhập tài khoản thành công',
     LOGIN_FAILURE: 'Đăng nhập tài khoản thất bại',
-    LOGOUT_SUCCESS: 'Đăng xuất tài khoản thành công!',
+    LOGOUT_SUCCESS: 'Đăng xuất tài khoản thành công',
     LOGOUT_FAILURE: 'Đăng xuất tài khoản thất bại',
-    VERIFY_TOKEN_SUCCESS: 'Xác thực token thành công!',
+    VERIFY_TOKEN_SUCCESS: 'Xác thực token thành công',
     VERIFY_TOKEN_FAILURE: 'Xác thực token thất bại'
   } as const
 
@@ -46,7 +46,26 @@ export class VIETNAMESE_STATIC_MESSAGE {
     REFRESH_TOKEN_IS_REQUIRED: 'Không được bỏ trống Refresh token',
     REFRESH_TOKEN_MUST_BE_A_STRING: 'Refresh token phải là một chuổi ký tự',
     REFRESH_TOKEN_INVALID: 'Refresh token không hợp lệ',
-    AUTHENTICATION_FAILED: 'Yêu cầu xác thực trước khi thực hiện hành động này'
+    AUTHENTICATION_FAILED: 'Yêu cầu xác thực trước khi thực hiện hành động này',
+    YOU_DONT_HAVE_PERMISSION_TO_DO_THIS: 'Bạn không có quyền làm điều này'
+  } as const
+
+  static CATEGORY_MESSAGE = {
+    CATEGORY_NAME_IS_REQUIRED: 'Không được bỏ trống tên danh mục',
+    CATEGORY_NAME_MUST_BE_A_STRING: 'Tên danh mục phải là một chuổi ký tự',
+    CATEGORY_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Tên danh mục phải có độ dài từ 1 đến 100 ký tự',
+    INDEX_IS_REQUIRED: 'Không được bỏ trống độ ưu tiên của danh mục',
+    INDEX_MUST_BE_A_NUMBER: 'Độ ưu tiên của danh mục phải là một chuổi ký tự',
+    CREATE_CATEGORY_SUCCESS: 'Tạo danh mục thành công',
+    CREATE_CATEGORY_FAILURE: 'Tạo danh mục thất bại',
+    CATEGORY_ID_IS_REQUIRED: 'Không được bỏ trống ID danh mục',
+    CATEGORY_ID_MUST_BE_A_STRING: 'ID Danh mục phải là một chuổi ký tự',
+    CATEGORY_ID_IS_MUST_BE_A_ID: 'ID Danh mục không đúng định dạn',
+    CATEGORY_ID_DOES_NOT_EXIST: 'ID Danh mục không tồn tại',
+    UPDATE_CATEGORY_SUCCESS: 'Cập nhật danh mục thành công',
+    UPDATE_CATEGORY_FAILURE: 'Cập nhật danh mục thất bại',
+    DELETE_CATEGORY_SUCCESS: 'Xóa danh mục thành công',
+    DELETE_CATEGORY_FAILURE: 'Xóa danh mục thất bại'
   } as const
 }
 
@@ -80,14 +99,14 @@ export class ENGLISH_STATIC_MESSAGE {
     CONFIRM_PASSWORD_MUST_BE_STRONG:
       'Confirm password must be at least 8 characters long, including uppercase, lowercase, numbers, and special characters',
     CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD: 'Confirm password does not match password',
-    REGISTER_SUCCESS: 'Account registration successful!',
+    REGISTER_SUCCESS: 'Account registration successful',
     REGISTER_FAILURE: 'Account registration failed',
     INCORRECT_EMAIL_OR_PASSWORD: 'Incorrect email or password',
-    LOGIN_SUCCESS: 'Account login successful!',
+    LOGIN_SUCCESS: 'Account login successful',
     LOGIN_FAILURE: 'Account login failed',
-    LOGOUT_SUCCESS: 'Account logout successful!',
+    LOGOUT_SUCCESS: 'Account logout successful',
     LOGOUT_FAILURE: 'Account logout failed',
-    VERIFY_TOKEN_SUCCESS: 'Token verification successful!',
+    VERIFY_TOKEN_SUCCESS: 'Token verification successful',
     VERIFY_TOKEN_FAILURE: 'Token verification failed'
   } as const
 
@@ -99,7 +118,26 @@ export class ENGLISH_STATIC_MESSAGE {
     REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
     REFRESH_TOKEN_MUST_BE_A_STRING: 'Refresh token must be a string',
     REFRESH_TOKEN_INVALID: 'Refresh token is invalid',
-    AUTHENTICATION_FAILED: 'Authentication is required before performing this action'
+    AUTHENTICATION_FAILED: 'Authentication is required before performing this action',
+    YOU_DONT_HAVE_PERMISSION_TO_DO_THIS: 'You do not have permission to do this'
+  } as const
+
+  static CATEGORY_MESSAGE = {
+    CATEGORY_NAME_IS_REQUIRED: 'Category name is required',
+    CATEGORY_NAME_MUST_BE_A_STRING: 'Category name must be a string',
+    CATEGORY_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Category name must be between 1 and 100 characters',
+    INDEX_IS_REQUIRED: 'Category index is required',
+    INDEX_MUST_BE_A_NUMBER: 'Category index must be a number',
+    CREATE_CATEGORY_SUCCESS: 'Category created successfully',
+    CREATE_CATEGORY_FAILURE: 'Category creation failed',
+    CATEGORY_ID_IS_REQUIRED: 'Category ID is required',
+    CATEGORY_ID_MUST_BE_A_STRING: 'Category ID must be a string',
+    CATEGORY_ID_IS_MUST_BE_A_ID: 'Category ID is invalid',
+    CATEGORY_ID_DOES_NOT_EXIST: 'Category ID does not exist',
+    UPDATE_CATEGORY_SUCCESS: 'Category updated successfully',
+    UPDATE_CATEGORY_FAILURE: 'Category update failed',
+    DELETE_CATEGORY_SUCCESS: 'Category deleted successfully',
+    DELETE_CATEGORY_FAILURE: 'Category deletion failed'
   } as const
 }
 
@@ -128,6 +166,24 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static UserVerifyTokenFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xác thực token truy cập người dùng ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static CategoryCreateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện tạo danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryCreateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện tạo danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static CategoryUpdateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện cập nhật danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập nhật danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static CategoryDeleteSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xóa danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xóa danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -154,5 +210,23 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static UserVerifyTokenFailed(user_id: string, ip: string, err: unknown) {
     return `User access token verification for user ${user_id} failed (IP: ${ip}) | Error: ${err}`
+  }
+  static CategoryCreateSuccessfully(user_id: string, ip: string) {
+    return `Category creation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryCreateFailed(user_id: string, ip: string, err: unknown) {
+    return `Category creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CategoryUpdateSuccessfully(user_id: string, ip: string) {
+    return `Category update successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Category update failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CategoryDeleteSuccessfully(user_id: string, ip: string) {
+    return `Category deletion successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Category deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

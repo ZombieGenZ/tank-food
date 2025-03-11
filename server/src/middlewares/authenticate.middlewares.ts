@@ -12,12 +12,10 @@ import { ObjectId } from 'mongodb'
 import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { writeWarnLog } from '~/utils/log.utils'
+import User from '~/models/schemas/users.schemas'
+import { UserRoleEnum } from '~/constants/users.constants'
 
-export const authenticateValidator = async (
-  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticateValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
@@ -184,4 +182,58 @@ export const authenticateValidator = async (
       })
       return
     })
+}
+
+export const authenticateEmployeeValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+  const user = req.user as User
+
+  if (user.role !== UserRoleEnum.EMPLOYEE && user.role !== UserRoleEnum.ADMINISTRATOR) {
+    res.status(HTTPSTATUS.UNAUTHORIZED).json({
+      code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS
+          : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS
+    })
+    return
+  }
+
+  next()
+}
+
+export const authenticateShipperValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+  const user = req.user as User
+
+  if (user.role !== UserRoleEnum.SHIPPER && user.role !== UserRoleEnum.ADMINISTRATOR) {
+    res.status(HTTPSTATUS.UNAUTHORIZED).json({
+      code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS
+          : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS
+    })
+    return
+  }
+
+  next()
+}
+
+export const authenticateAdministratorValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+  const user = req.user as User
+
+  if (user.role !== UserRoleEnum.ADMINISTRATOR) {
+    res.status(HTTPSTATUS.UNAUTHORIZED).json({
+      code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS
+          : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.YOU_DONT_HAVE_PERMISSION_TO_DO_THIS
+    })
+    return
+  }
+
+  next()
 }
