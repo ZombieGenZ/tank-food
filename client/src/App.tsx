@@ -1,12 +1,14 @@
 import FormMain from "./views/pages/main.pages"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
-
+const App = () => {
   return (
-    <div className="w-full">
-      <FormMain />
-    </div>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        <Route path="/*" element={<FormMain />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export default App

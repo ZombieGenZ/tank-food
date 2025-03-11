@@ -1,29 +1,29 @@
 import Loading from '../components/loading_page_components.tsx'
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from 'react'
 import Signup from './signup.pages.tsx';
 
 const FormMain = () => {
   const [loading, setLoading] = useState(true)
+  const location = useLocation()
 
   useEffect(() => {
+    setLoading(true)
     setTimeout(() => {
       setLoading(false)
     }, 1500)
-  }, [])
+  }, [location.pathname])
 
   return(
     <>
       {
         loading ? <Loading /> : 
-        <BrowserRouter>
-          <div>
-            <NavigationButtons />
-            <Routes>
-              <Route path="/signup" element={<Signup />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
+        <div>
+          <NavigationButtons />
+          <Routes>
+            <Route path="/signup" element={<Signup />} />
+          </Routes>
+        </div>
       }
     </>
   )   
