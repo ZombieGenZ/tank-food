@@ -52,8 +52,10 @@ app.get('/', (req, res) => {
 
 // import api router
 import api_users from '~/routes/users.routes'
+import api_categories from '~/routes/categories.routes'
 
 app.use('/api/users', api_users)
+app.use('/api/categories', api_categories)
 
 // realtime logic
 io.on('connection', (socket: Socket) => {
