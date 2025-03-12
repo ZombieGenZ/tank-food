@@ -1,10 +1,21 @@
 import express from 'express'
-import { createProductController } from '~/controllers/products.controllers'
+import {
+  createProductController,
+  updateProductController,
+  updateProductChangeImageController,
+  deleteProductController
+} from '~/controllers/products.controllers'
 import {
   authenticateAdministratorUploadImageValidator,
   authenticateUploadImageValidator
 } from '~/middlewares/authenticate.middlewares'
-import { createProductValidator, setupProductImage } from '~/middlewares/products.middlewares'
+import {
+  setupProductImage,
+  createProductValidator,
+  updateProductValidator,
+  updateProductChangeImageValidator,
+  deleteProductValidator
+} from '~/middlewares/products.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 import { uploadProduct } from '~/utils/image.utils'
 const router = express.Router()
@@ -36,6 +47,83 @@ router.post(
   setupProductImage,
   createProductValidator,
   wrapRequestHandler(createProductController)
+)
+
+/*
+ * Description: Cập nhật sản phẩm (không sửa ảnh) trong CSDL
+ * Path: /api/products/update
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    product_id: string,
+ *    title: string,
+ *    description: string,
+ *    price: number,
+ *    availability: boolean,
+ *    category_id: string,
+ *    tag?: string
+ * }
+ */
+router.put(
+  '/update',
+  authenticateUploadImageValidator,
+  authenticateAdministratorUploadImageValidator,
+  updateProductValidator,
+  wrapRequestHandler(updateProductController)
+)
+
+/*
+ * Description: Cập nhật sản phẩm (Có sửa ảnh) trong CSDL
+ * Path: /api/products/update-change-image
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    product_id: string,
+ *    title: string,
+ *    description: string,
+ *    price: number,
+ *    availability: boolean,
+ *    category_id: string,
+ *    tag?: string
+ * }
+ */
+router.put(
+  '/update-change-image',
+  uploadProduct.single('preview'),
+  authenticateUploadImageValidator,
+  authenticateAdministratorUploadImageValidator,
+  setupProductImage,
+  updateProductChangeImageValidator,
+  wrapRequestHandler(updateProductChangeImageController)
+)
+
+/*
+ * Description: Xóa sản phẩm khỏi CSDL
+ * Path: /api/products/delete
+ * Method: DELETE
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    product_id: string
+ * }
+ */
+router.delete(
+  '/delete',
+  authenticateUploadImageValidator,
+  authenticateAdministratorUploadImageValidator,
+  deleteProductValidator,
+  wrapRequestHandler(deleteProductController)
 )
 
 export default router

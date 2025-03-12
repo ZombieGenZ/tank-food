@@ -77,28 +77,67 @@ io.on('connection', (socket: Socket) => {
   socket.on('connect-guest-realtime', async () => {
     // Phòng: freshSync
     // sự kiện:
-    // create-category: Cập nhật danh mục mới
-    // update-category: Cập nhật danh mục đã có
-    // delete-category: Xóa danh mục
+    // create-category: Cập nhật thông tin danh mục vừa được thêm vào CSDL
+    // update-category: Cập nhật thông tin danh mục vừa được cập nhật vào CSDL
+    // delete-category: Cập nhật thông tin danh mục vừa được xóa khỏi CSDL
     //
     // mô tả chi tiết sự kiện:
-    // sự kiện: update-balance
-    // mô tả: cập nhật thông tin số dư của người dùng
-    // dử liệu: type, value
-    // type: loại phàn hồi (gồm 2 loại '+' và '-')
-    // value: giá trị của phản hồi
+    // sự kiện: create-category
+    // mô tả: Cập nhật thông tin danh mục vừa được thêm vào CSDL
+    // dử liệu:
+    // _id,
+    // category_name_translate_1,
+    // translate_1_language,
+    // category_name_translate_2,
+    // translate_2_language,
+    // index
+    // Mô tả chi tiết công dụng của dử liệu:
+    // _id: ID Danh mục
+    // category_name_translate_1:
+    // Tên danh mục ở bản dịch số 1
+    // (có thể là tiếng việt hoặc tiếng anh)
+    // translate_1_language:
+    // Mã ngôn ngử của bản dịch số 1
+    // (có 2 loại vi-VN và en-US)
+    // category_name_translate_2:
+    // Tên danh mục ở bản dịch số 2
+    // (có thể là tiếng việt hoặc tiếng anh)
+    // translate_2_language:
+    // Mã ngôn ngử của bản dịch số 2
+    // (có 2 loại vi-VN và en-US)
+    // index: độ ưu tiên của danh mục
     //
-    // sự kiện: update-revenue
-    // mô tả: cập nhật thông tin doanh thu của doanh nghiệp/quản trị viên
-    // dử liệu: type, value
-    // type: loại phàn hồi (gồm 2 loại '+' và '-')
-    // value: giá trị của phản hồi
+    // sự kiện: update-category
+    // mô tả: Cập nhật thông tin danh mục vừa được cập nhật vào CSDL
+    // dử liệu:
+    // _id,
+    // category_name_translate_1,
+    // translate_1_language,
+    // category_name_translate_2,
+    // translate_2_language,
+    // index
+    // Mô tả chi tiết công dụng của dử liệu:
+    // _id: ID Danh mục
+    // category_name_translate_1:
+    // Tên danh mục ở bản dịch số 1
+    // (có thể là tiếng việt hoặc tiếng anh)
+    // translate_1_language:
+    // Mã ngôn ngử của bản dịch số 1
+    // (có 2 loại vi-VN và en-US)
+    // category_name_translate_2:
+    // Tên danh mục ở bản dịch số 2
+    // (có thể là tiếng việt hoặc tiếng anh)
+    // translate_2_language:
+    // Mã ngôn ngử của bản dịch số 2
+    // (có 2 loại vi-VN và en-US)
+    // index: độ ưu tiên của danh mục
     //
-    // sự kiện: new-private-notificaton
-    // mô tả: cập nhật thông báo mới cho người dùng
-    // dử liệu: sender, message
-    // sender: là người gửi thông báo
-    // message: tin nhắn được gửi tới
+    // sự kiện: delete-category
+    // mô tả: Cập nhật thông tin danh mục vừa được xóa khỏi CSDL
+    // dử liệu: _id
+    // Mô tả chi tiết công dụng của dử liệu:
+    // _id: ID Danh mục
+    //
 
     socket.join(`freshSync`)
     console.log(`\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync\x1b[0m`)

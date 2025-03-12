@@ -5,6 +5,7 @@ import User from '~/models/schemas/users.schemas'
 import RefreshToken from './models/schemas/refreshtoken.schemas'
 import Category from './models/schemas/categories.schemas'
 import { ImageType } from './constants/images.constants'
+import Product from './models/schemas/product.schemas'
 
 declare module 'express' {
   interface Request {
@@ -14,6 +15,7 @@ declare module 'express' {
     decoded_refresh_token?: TokenPayload
     refresh_token?: RefreshToken
     category?: Category
+    product?: Product
     image?: ImageType
   }
 }
