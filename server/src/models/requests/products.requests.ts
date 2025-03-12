@@ -4,5 +4,6 @@ export interface CreateProductRequestsBody {
   description: string
   price: number
   availability: boolean
+  tag: string
   category_id: string
 }

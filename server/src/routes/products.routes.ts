@@ -24,6 +24,7 @@ const router = express.Router()
  *    price: number,
  *    availability: boolean,
  *    category_id: string,
+ *    tag?: string,
  *    preview: file
  * }
  */

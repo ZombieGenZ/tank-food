@@ -74,8 +74,34 @@ io.on('connection', (socket: Socket) => {
     )
   }
 
-  socket.on('join-room', async (refresh_token: string) => {
-    // code join room realtime
+  socket.on('connect-guest-realtime', async () => {
+    // Phòng: freshSync
+    // sự kiện:
+    // new-category: Cập nhật danh mục mới
+    // update-category: Cập nhật danh mục đã có
+    // delete-category: Xóa danh mục
+    //
+    // mô tả chi tiết sự kiện:
+    // sự kiện: update-balance
+    // mô tả: cập nhật thông tin số dư của người dùng
+    // dử liệu: type, value
+    // type: loại phàn hồi (gồm 2 loại '+' và '-')
+    // value: giá trị của phản hồi
+    //
+    // sự kiện: update-revenue
+    // mô tả: cập nhật thông tin doanh thu của doanh nghiệp/quản trị viên
+    // dử liệu: type, value
+    // type: loại phàn hồi (gồm 2 loại '+' và '-')
+    // value: giá trị của phản hồi
+    //
+    // sự kiện: new-private-notificaton
+    // mô tả: cập nhật thông báo mới cho người dùng
+    // dử liệu: sender, message
+    // sender: là người gửi thông báo
+    // message: tin nhắn được gửi tới
+
+    socket.join(`freshSync`)
+    console.log(`\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync\x1b[0m`)
   })
 
   socket.on('disconnect', () => {
