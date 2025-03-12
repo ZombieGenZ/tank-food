@@ -13,7 +13,7 @@ const App = () => {
           <Route path="/*" element={<FormMain />} />
         </Routes>
       </BrowserRouter>
-      <button onClick={() => scrollTo({ y: 0})}
+      <button onClick={() => scrollTo({ y: 0 })}
               className="fixed bottom-5 right-5">Trở về đầu trang</button>
     </div>
   );

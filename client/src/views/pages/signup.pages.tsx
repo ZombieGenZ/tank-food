@@ -1,5 +1,6 @@
 import React, { FormEvent, useState } from "react"
 import { message } from 'antd';
+import { useNavigate } from "react-router-dom";
 
 // interface đăng ký
 
@@ -19,6 +20,7 @@ interface Login {
 }
 
 const Signup: React.FC = () => {
+    const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
     const [formData, setFormData] = useState<Signup>({
@@ -92,7 +94,7 @@ const Signup: React.FC = () => {
       }
 
       setErrorsLogin(newErrors)
-      return Object.keys(newErrors).length == 0
+      return Object.keys(newErrors).length === 0
     }
 
     const handleLoginChange = (e: FormEvent<HTMLInputElement>) => {
@@ -106,26 +108,59 @@ const Signup: React.FC = () => {
 
     // 
     
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-        ...formData,
-        [name]: value,
+    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+      const { id, value } = e.currentTarget;
+      const fieldName = id.replace('register-', ''); // Loại bỏ 'register-' để lấy đúng tên thuộc tính
+      setFormData({
+          ...formData,
+          [fieldName]: value
         });
     };
+  
 
     // Nút đăng ký
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
             console.log("Dữ liệu đăng ký:", formData);
-            messageApi.open({
-              type: 'success',
-              content: 'Đăng ký thành công',
-              style: {
-                marginTop: '10vh',
+
+            const bodyResignter = {
+              language: null,
+              display_name: formData.display_name,
+              email: formData.email,
+              phone: formData.phone,
+              password: formData.password,
+              confirm_password: formData.confirm_pass
+            }
+
+            fetch('http://localhost:3000/api/users/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
               },
-            });
+              body: JSON.stringify(bodyResignter)
+            }).then((response) => {
+              return response.json()
+            }).then((data) => {
+              console.log(data)
+              if(data.message == "Đăng ký tài khoản thành công") {
+                messageApi.open({
+                  type: 'success',
+                  content: 'Đăng ký thành công',
+                  style: {
+                    marginTop: '10vh',
+                  },
+                });
+              } else {
+                messageApi.open({
+                  type: 'error',
+                  content: 'Lỗi khi đăng ký tài khoản',
+                  style: {
+                    marginTop: '10vh',
+                  },
+                })
+              }
+            })
         } else {
             messageApi.open({
               type: 'error',
@@ -142,10 +177,35 @@ const Signup: React.FC = () => {
         e.preventDefault();
         if(valiteLoginform()) {
           console.log('Login Data:', loginData);
-          messageApi.open({
-            type: 'success',
-            content: 'Đăng nhập thành công',
-          });
+          const body = {
+            language: null,
+            email: loginData.email,
+            password: loginData.password
+          }
+          fetch('http://localhost:3000/api/users/login' , {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            if(data) {
+              messageApi.open({
+                type: 'success',
+                content: 'Đăng nhập thành công',
+                style: {
+                  marginTop: '10vh',
+                },
+              }).then(() => {
+                setTimeout(() => {
+                  navigate("/*");
+                }, 1500);
+              });
+            }
+          })
         } else {
           messageApi.open({
             type: 'error',
@@ -300,7 +360,7 @@ const Signup: React.FC = () => {
                             <label htmlFor="register-confirm_password" style={styles.label}>Xác nhận mật khẩu</label>
                             <input 
                             type="password" 
-                            id="register-confirm_password" 
+                            id="register-confirm_pass" 
                             style={styles.input}
                             placeholder="Nhập lại mật khẩu" 
                             value={formData.confirm_pass}

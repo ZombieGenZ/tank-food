@@ -99,7 +99,9 @@ function NavigationButtons() {
 function Main() {
   
   return (
-    <p>đây là trang chủ</p>
+    <div>
+      
+    </div>
   )
 }
 
