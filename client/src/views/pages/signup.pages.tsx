@@ -1,6 +1,8 @@
 import React, { FormEvent, useState } from "react"
 import { message } from 'antd';
 
+// interface đăng ký
+
 interface Signup {
     display_name: string,
     phone: string,
@@ -9,13 +11,15 @@ interface Signup {
     confirm_pass: string
 }
 
+// interface đăng nhập
+
 interface Login {
     email: string,
     password: string,
 }
 
 const Signup: React.FC = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
     const [formData, setFormData] = useState<Signup>({
         display_name: "",
@@ -30,18 +34,36 @@ const Signup: React.FC = () => {
         password: "",
     })
 
+    // lỗi của đăng ký 
     const [errors, setErrors] = useState<Partial<Signup>>({});
 
+    // lỗi của đăng nhập
+    const [errorLogin, setErrorsLogin] = useState<Partial<Login>>({});
+
+    // kiểm tra email nhập liệu
+    const validateEmail = (email: string): boolean => {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    };
+
+    // kiểm tra số điện thoại nhập liệu
+    const validatePhoneNumber = (phone: string): boolean => {
+      const phoneRegex = /^(0|\+84)[3-9][0-9]{8}$/;
+      return phoneRegex.test(phone);
+    };
+    
+
+    // kiểm tra dữ liệu đầu vào đăng ký
     const validateForm = (): boolean => {
         const newErrors: Partial<Signup> = {};
     
         if (!formData.display_name.trim()) {
           newErrors.display_name = "Tên hiển thị không được để trống";
         }
-        if (!formData.phone.match(/^\d{10}$/)) {
-          newErrors.phone = "Số điện thoại phải có 10 chữ số";
+        if (!formData.phone.match(/^\d{10}$/) || !validatePhoneNumber(formData.phone)) {
+          newErrors.phone = "Số điện thoại phải có 10 chữ số và đúng định dạng";
         }
-        if (!formData.email.includes("@")) {
+        if (!formData.email.includes("@") || !validateEmail(formData.email)) {
           newErrors.email = "Email không hợp lệ";
         }
         if (formData.password.length < 6) {
@@ -55,6 +77,24 @@ const Signup: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    // kiểm tra dữ liệu đầu vào đăng nhập
+    const valiteLoginform = (): boolean => {
+      const newErrors: Partial<Login> = {};
+
+      if(!loginData.email.trim()) {
+        newErrors.email = 'Tên user đăng nhập không được để trống'
+      }
+      if(!validateEmail(loginData.email)) {
+        newErrors.email = 'Vui lòng nhập đúng gmail user'
+      }
+      if(!loginData.password.trim()) {
+        newErrors.password = 'Mật khẩu không được để trống'
+      }
+
+      setErrorsLogin(newErrors)
+      return Object.keys(newErrors).length == 0
+    }
+
     const handleLoginChange = (e: FormEvent<HTMLInputElement>) => {
         const { id, value } = e.currentTarget; // Sử dụng e.currentTarget thay vì e.target
       
@@ -63,16 +103,18 @@ const Signup: React.FC = () => {
           [id.replace('login-', '')]: value 
         });
     };
+
+    // 
     
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
         setFormData({
         ...formData,
         [name]: value,
         });
     };
-    
+
+    // Nút đăng ký
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
@@ -80,23 +122,39 @@ const Signup: React.FC = () => {
             messageApi.open({
               type: 'success',
               content: 'Đăng ký thành công',
+              style: {
+                marginTop: '10vh',
+              },
             });
         } else {
-            console.log(errors)
             messageApi.open({
               type: 'error',
-              content: `${errors}`,
+              content: `Đăng ký thất bại vui lòng thử lại sau`,
+              style: {
+                marginTop: '10vh',
+              },
             });
         }
     };
 
+    // Nút đăng nhập
     const handleLoginSubmit = (e: FormEvent) => {
         e.preventDefault();
-        console.log('Login Data:', loginData);
-        messageApi.open({
-          type: 'success',
-          content: 'Đăng nhập thành công',
-        });
+        if(valiteLoginform()) {
+          console.log('Login Data:', loginData);
+          messageApi.open({
+            type: 'success',
+            content: 'Đăng nhập thành công',
+          });
+        } else {
+          messageApi.open({
+            type: 'error',
+            content: `Đăng nhập thất bại vui lòng thử lại sau`,
+            style: {
+              marginTop: '10vh',
+            },
+          });
+        }
       };
 
     const showForm = (type: string) => {
@@ -160,9 +218,9 @@ const Signup: React.FC = () => {
                             style={styles.input}
                             placeholder="Nhập địa chỉ email của bạn" 
                             value={loginData.email}
-                            onChange={handleLoginChange}
-                            required 
+                            onChange={handleLoginChange} 
                             />
+                            {errorLogin.email && <p className="text-red-500 mt-2.5">{errorLogin.email}</p>}
                         </div>
                         
                         <div style={styles.formGroup}>
@@ -174,8 +232,8 @@ const Signup: React.FC = () => {
                             placeholder="Nhập mật khẩu của bạn" 
                             value={loginData.password}
                             onChange={handleLoginChange}
-                            required 
                             />
+                            {errorLogin.password && <p className="text-red-500 mt-2.5">{errorLogin.password}</p>}
                         </div>
                         
                         <div style={styles.forgotPassword}>
@@ -195,8 +253,8 @@ const Signup: React.FC = () => {
                             placeholder="Nhập họ tên đầy đủ" 
                             value={formData.display_name}
                             onChange={handleChange}
-                            required 
                             />
+                            {errors.display_name && <p className="text-red-500 mt-2.5">{errors.display_name}</p>}
                         </div>
                         
                         <div style={styles.formGroup}>
@@ -208,8 +266,8 @@ const Signup: React.FC = () => {
                             placeholder="Nhập địa chỉ email của bạn" 
                             value={formData.email}
                             onChange={handleChange}
-                            required 
                             />
+                            {errors.email && <p className="text-red-500 mt-2.5">{errors.email}</p>}
                         </div>
                         
                         <div style={styles.formGroup}>
@@ -221,8 +279,8 @@ const Signup: React.FC = () => {
                             placeholder="Nhập số điện thoại của bạn" 
                             value={formData.phone}
                             onChange={handleChange}
-                            required 
                             />
+                            {errors.phone && <p className="text-red-500 mt-2.5">{errors.phone}</p>}
                         </div>
                         
                         <div style={styles.formGroup}>
@@ -234,8 +292,8 @@ const Signup: React.FC = () => {
                             placeholder="Tạo mật khẩu" 
                             value={formData.password}
                             onChange={handleChange}
-                            required 
                             />
+                            {errors.password && <p className="text-red-500 mt-2.5">{errors.password}</p>}
                         </div>
                         
                         <div style={styles.formGroup}>
@@ -247,8 +305,8 @@ const Signup: React.FC = () => {
                             placeholder="Nhập lại mật khẩu" 
                             value={formData.confirm_pass}
                             onChange={handleChange}
-                            required 
                             />
+                            {errors.confirm_pass && <p className="text-red-500 mt-2.5">{errors.confirm_pass}</p>}
                         </div>
                         
                         <button type="submit" style={styles.btn}>Đăng ký</button>
