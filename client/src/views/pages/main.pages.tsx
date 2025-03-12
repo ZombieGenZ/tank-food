@@ -16,7 +16,7 @@ const FormMain = () => {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-    }, 1500)
+    }, 3000)
   }, [location.pathname])
 
   return(

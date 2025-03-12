@@ -1,2 +1,2 @@
 cách đặt tên file:
-<tên file/module>.<tên folder>.ts
+<tên file/module>.<tên folder>.tsx
