@@ -8,6 +8,13 @@ import { ImageType } from '~/constants/images.constants'
 
 class ProductService {
   async create(payload: CreateProductRequestsBody, image: ImageType) {
+    let translateTagResult = null
+    if (payload.tag) {
+      const translateTag = await translateContent(payload.tag)
+
+      translateTagResult = SplitTranslationString(translateTag)
+    }
+
     const [translateTile, translateDescription] = await Promise.all([
       translateContent(payload.title),
       translateContent(payload.description)
@@ -29,6 +36,10 @@ class ProductService {
         price: payload.price,
         availability: payload.availability,
         category: new ObjectId(payload.category_id),
+        tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
+        tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
+        tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
+        tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
         preview: image
       })
     )
