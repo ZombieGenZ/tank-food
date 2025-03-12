@@ -305,6 +305,8 @@ export const updateProductValidator = async (req: Request, res: Response, next: 
               )
             }
 
+            ;(req as Request).product = product
+
             return true
           }
         }
@@ -506,6 +508,8 @@ export const updateProductChangeImageValidator = async (req: Request, res: Respo
                   : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_DOES_NOT_EXIST
               )
             }
+
+            ;(req as Request).product = product
 
             return true
           }

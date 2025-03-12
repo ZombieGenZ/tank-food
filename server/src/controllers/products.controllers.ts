@@ -69,9 +69,10 @@ export const updateProductController = async (
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
   const user = req.user as User
   const language = req.body.language || serverLanguage
+  const product = req.product as Product
 
   try {
-    await productService.update(req.body)
+    await productService.update(req.body, product)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -110,10 +111,11 @@ export const updateProductChangeImageController = async (
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
   const user = req.user as User
   const language = req.body.language || serverLanguage
+  const product = req.product as Product
   const image = req.image as ImageType
 
   try {
-    await productService.updateChangeImage(req.body, image)
+    await productService.updateChangeImage(req.body, image, product)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
