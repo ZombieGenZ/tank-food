@@ -49,7 +49,7 @@ function NavigationButtons() {
 
   return (
     <div className='sticky top-0 z-50 bg-white'>
-      <div className="p-4 lg:text-xl flex md:justify-around justify-between">
+      <div className="p-2 lg:text-xl flex md:justify-around justify-between">
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
           <p onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
@@ -82,7 +82,7 @@ function NavigationButtons() {
                   Navbar.map((item) => {
                     return <li key={item.id}>
                             <button onClick={() => navigate(item.path)}
-                                    className="cursor-pointer font-semibold bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">{item.title}</button> 
+                                    className="cursor-pointer font-semibold text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white px-4 py-2 rounded-md transition duration-300">{item.title}</button> 
                           </li>
                   })
                 }

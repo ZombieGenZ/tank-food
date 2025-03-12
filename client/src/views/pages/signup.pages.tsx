@@ -320,7 +320,6 @@ const Signup: React.FC = () => {
 
 const styles = {
     body: {
-      backgroundColor: '#f9f9f9',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
