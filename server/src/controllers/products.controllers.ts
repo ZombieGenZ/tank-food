@@ -1,6 +1,10 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { CreateProductRequestsBody } from '~/models/requests/products.requests'
+import {
+  CreateProductRequestsBody,
+  UpdateProductRequestsBody,
+  DeleteProductRequestsBody
+} from '~/models/requests/products.requests'
 import User from '~/models/schemas/users.schemas'
 import { serverLanguage } from '~/index'
 import productService from '~/services/products.services'
@@ -14,6 +18,7 @@ import {
 } from '~/constants/message.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { ImageType } from '~/constants/images.constants'
+import Product from '~/models/schemas/product.schemas'
 
 export const createProductController = async (
   req: Request<ParamsDictionary, any, CreateProductRequestsBody>,
@@ -53,6 +58,131 @@ export const createProductController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.CREATE_PRODUCT_FAILURE
           : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.CREATE_PRODUCT_FAILURE
+    })
+  }
+}
+
+export const updateProductController = async (
+  req: Request<ParamsDictionary, any, UpdateProductRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await productService.update(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ProductUpdateSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ProductUpdateSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ProductUpdateFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ProductUpdateFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_PRODUCT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_FAILURE
+    })
+  }
+}
+
+export const updateProductChangeImageController = async (
+  req: Request<ParamsDictionary, any, UpdateProductRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+  const image = req.image as ImageType
+
+  try {
+    await productService.updateChangeImage(req.body, image)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ProductUpdateSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ProductUpdateSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ProductUpdateFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ProductUpdateFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_PRODUCT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.UPDATE_PRODUCT_FAILURE
+    })
+  }
+}
+
+export const deleteProductController = async (
+  req: Request<ParamsDictionary, any, DeleteProductRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+  const product = req.product as Product
+
+  try {
+    await productService.delete(req.body, product)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ProductDeleteSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ProductDeleteSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.DELETE_PRODUCT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.DELETE_PRODUCT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.DELETE_PRODUCT_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ProductDeleteFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ProductDeleteFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.DELETE_PRODUCT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.DELETE_PRODUCT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.DELETE_PRODUCT_FAILURE
     })
   }
 }

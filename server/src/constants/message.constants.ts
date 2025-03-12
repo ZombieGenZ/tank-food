@@ -92,7 +92,15 @@ export class VIETNAMESE_STATIC_MESSAGE {
     PRODUCT_CATEGORY_DOES_NOT_EXIST: 'Danh mục sản phẩm không tồn tại',
     PRODUCT_PREVIEW_IS_REQUIRED: 'Không được bỏ trống ảnh sản phẩm',
     CREATE_PRODUCT_SUCCESS: 'Tạo sản phẩm thành công',
-    CREATE_PRODUCT_FAILURE: 'Tạo sản phẩm thất bại'
+    CREATE_PRODUCT_FAILURE: 'Tạo sản phẩm thất bại',
+    PRODUCT_ID_IS_REQUIRED: 'Không được bỏ trống ID sản phẩm',
+    PRODUCT_ID_MUST_BE_A_STRING: 'ID sản phẩm phải là một chuổi ký tự',
+    PRODUCT_ID_MUST_BE_A_ID: 'ID sản phẩm không đúng định dạng',
+    PRODUCT_DOES_NOT_EXIST: 'ID sản phẩm không tồn tại',
+    UPDATE_PRODUCT_SUCCESS: 'Cập nhật sản phẩm thành công',
+    UPDATE_PRODUCT_FAILURE: 'Cập nhật sản phẩm thất bại',
+    DELETE_PRODUCT_SUCCESS: 'Xóa sản phẩm thành công',
+    DELETE_PRODUCT_FAILURE: 'Xóa sản phẩm thất bại'
   } as const
 }
 
@@ -191,7 +199,15 @@ export class ENGLISH_STATIC_MESSAGE {
     PRODUCT_CATEGORY_DOES_NOT_EXIST: 'Product category does not exist',
     PRODUCT_PREVIEW_IS_REQUIRED: 'Product preview image is required',
     CREATE_PRODUCT_SUCCESS: 'Product created successfully',
-    CREATE_PRODUCT_FAILURE: 'Product creation failed'
+    CREATE_PRODUCT_FAILURE: 'Product creation failed',
+    PRODUCT_ID_IS_REQUIRED: 'Product ID is required',
+    PRODUCT_ID_MUST_BE_A_STRING: 'Product ID must be a string',
+    PRODUCT_ID_MUST_BE_A_ID: 'Product ID is invalid',
+    PRODUCT_DOES_NOT_EXIST: 'Product ID does not exist',
+    UPDATE_PRODUCT_SUCCESS: 'Product updated successfully',
+    UPDATE_PRODUCT_FAILURE: 'Product update failed',
+    DELETE_PRODUCT_SUCCESS: 'Product deleted successfully',
+    DELETE_PRODUCT_FAILURE: 'Product deletion failed'
   } as const
 }
 
@@ -256,6 +272,18 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static ProductCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tạo sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static ProductUpdateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện cập nhật sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ProductUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập nhật sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ProductDeleteSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xóa sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ProductDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xóa sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -318,5 +346,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static ProductCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Product creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ProductUpdateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện cập nhật sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ProductUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập nhật sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ProductDeleteSuccessfully(user_id: string, ip: string) {
+    return `Product deletion successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static ProductDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Product deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

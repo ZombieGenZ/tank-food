@@ -45,3 +45,12 @@ export const deleteTemporaryFile = async (file: any) => {
     return
   }
 }
+
+export const deleteCurrentFile = async (filePath: string) => {
+  try {
+    fs.unlinkSync(path.join(__dirname, filePath))
+  } catch (err) {
+    console.log(err)
+    return
+  }
+}
