@@ -132,7 +132,7 @@ export const updateCategoryValidator = async (
         },
         custom: {
           options: async (value) => {
-            const category = databaseService.categories.findOne({ _id: new ObjectId(value) })
+            const category = await databaseService.categories.findOne({ _id: new ObjectId(value) })
 
             if (!category) {
               throw new Error(
@@ -253,7 +253,7 @@ export const deleteCategoryValidator = async (
         },
         custom: {
           options: async (value) => {
-            const category = databaseService.categories.findOne({ _id: new ObjectId(value) })
+            const category = await databaseService.categories.findOne({ _id: new ObjectId(value) })
 
             if (!category) {
               throw new Error(

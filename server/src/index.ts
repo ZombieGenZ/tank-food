@@ -77,7 +77,7 @@ io.on('connection', (socket: Socket) => {
   socket.on('connect-guest-realtime', async () => {
     // Phòng: freshSync
     // sự kiện:
-    // new-category: Cập nhật danh mục mới
+    // create-category: Cập nhật danh mục mới
     // update-category: Cập nhật danh mục đã có
     // delete-category: Xóa danh mục
     //
