@@ -60,7 +60,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CREATE_CATEGORY_FAILURE: 'Tạo danh mục thất bại',
     CATEGORY_ID_IS_REQUIRED: 'Không được bỏ trống ID danh mục',
     CATEGORY_ID_MUST_BE_A_STRING: 'ID Danh mục phải là một chuổi ký tự',
-    CATEGORY_ID_IS_MUST_BE_A_ID: 'ID Danh mục không đúng định dạn',
+    CATEGORY_ID_IS_MUST_BE_A_ID: 'ID Danh mục không đúng định dạng',
     CATEGORY_ID_DOES_NOT_EXIST: 'ID Danh mục không tồn tại',
     UPDATE_CATEGORY_SUCCESS: 'Cập nhật danh mục thành công',
     UPDATE_CATEGORY_FAILURE: 'Cập nhật danh mục thất bại',
@@ -72,6 +72,27 @@ export class VIETNAMESE_STATIC_MESSAGE {
     FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
     KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký'
+  } as const
+
+  static PRODUCT_MESSAGE = {
+    PRODUCT_NAME_IS_REQUIRED: 'Không được bỏ trống tên sản phẩm',
+    PRODUCT_NAME_MUST_BE_A_STRING: 'Tên sản phẩm phải là một chuổi ký tự',
+    PRODUCT_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Tên sản phẩm phải có độ dài từ 1 đến 100 ký tự',
+    PRODUCT_DESCRIPTION_IS_REQUIRED: 'Không được bỏ trống mô tả sản phẩm',
+    PRODUCT_DESCRIPTION_MUST_BE_A_STRING: 'Mô tả sản phẩm phải là một chuổi ký tự',
+    PRODUCT_DESCRIPTION_LENGTH_MUST_BE_FROM_1_TO_1000: 'Mô tả sản phẩm phải có độ dài từ 1 đến 1000 ký tự',
+    PRODUCT_PRICE_IS_REQUIRED: 'Không được bỏ trống giá sản phẩm',
+    PRODUCT_PRICE_MUST_BE_A_NUMBER: 'Giá sản phẩm phải là một số',
+    PRODUCT_PRICE_MUST_BE_GREATER_THAN_0: 'Giá sản phẩm phải lớn hơn 0',
+    PRODUCT_AVAILABILITY_IS_REQUIRED: 'Không được bỏ trống tình trạng hàng',
+    PRODUCT_AVAILABILITY_MUST_BE_A_BOOLEAN: 'Tình trạng hàng phải là một boolean',
+    PRODUCT_CATEGORY_IS_REQUIRED: 'Không được bỏ trống danh mục sản phẩm',
+    PRODUCT_CATEGORY_MUST_BE_A_STRING: 'Danh mục sản phẩm phải là một chuổi ký tự',
+    PRODUCT_CATEGORY_MUST_BE_A_ID: 'Danh mục sản phẩm không đúng định dạng',
+    PRODUCT_CATEGORY_DOES_NOT_EXIST: 'Danh mục sản phẩm không tồn tại',
+    PRODUCT_PREVIEW_IS_REQUIRED: 'Không được bỏ trống ảnh sản phẩm',
+    CREATE_PRODUCT_SUCCESS: 'Tạo sản phẩm thành công',
+    CREATE_PRODUCT_FAILURE: 'Tạo sản phẩm thất bại'
   } as const
 }
 
@@ -151,6 +172,27 @@ export class ENGLISH_STATIC_MESSAGE {
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
     KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
   } as const
+
+  static PRODUCT_MESSAGE = {
+    PRODUCT_NAME_IS_REQUIRED: 'Product name is required',
+    PRODUCT_NAME_MUST_BE_A_STRING: 'Product name must be a string',
+    PRODUCT_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Product name must be between 1 and 100 characters',
+    PRODUCT_DESCRIPTION_IS_REQUIRED: 'Product description is required',
+    PRODUCT_DESCRIPTION_MUST_BE_A_STRING: 'Product description must be a string',
+    PRODUCT_DESCRIPTION_LENGTH_MUST_BE_FROM_1_TO_1000: 'Product description must be between 1 and 1000 characters',
+    PRODUCT_PRICE_IS_REQUIRED: 'Product price is required',
+    PRODUCT_PRICE_MUST_BE_A_NUMBER: 'Product price must be a number',
+    PRODUCT_PRICE_MUST_BE_GREATER_THAN_0: 'Product price must be greater than 0',
+    PRODUCT_AVAILABILITY_IS_REQUIRED: 'Product availability is required',
+    PRODUCT_AVAILABILITY_MUST_BE_A_BOOLEAN: 'Product availability must be a boolean',
+    PRODUCT_CATEGORY_IS_REQUIRED: 'Product category is required',
+    PRODUCT_CATEGORY_MUST_BE_A_STRING: 'Product category must be a string',
+    PRODUCT_CATEGORY_MUST_BE_A_ID: 'Product category is invalid',
+    PRODUCT_CATEGORY_DOES_NOT_EXIST: 'Product category does not exist',
+    PRODUCT_PREVIEW_IS_REQUIRED: 'Product preview image is required',
+    CREATE_PRODUCT_SUCCESS: 'Product created successfully',
+    CREATE_PRODUCT_FAILURE: 'Product creation failed'
+  } as const
 }
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
@@ -208,6 +250,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static FindCategoryFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tìm kiếm thông tin danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static ProductCreateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện tạo sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ProductCreateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện tạo sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -264,5 +312,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static FindCategoryFailed(user_id: string, ip: string, err: unknown) {
     return `Category information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ProductCreateSuccessfully(user_id: string, ip: string) {
+    return `Product creation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static ProductCreateFailed(user_id: string, ip: string, err: unknown) {
+    return `Product creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

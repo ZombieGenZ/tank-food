@@ -9,6 +9,7 @@ import { startBot, stopBot } from './utils/discord.utils'
 import { writeInfoLog } from './utils/log.utils'
 import { formatDateFull2 } from './utils/date.utils'
 import { LANGUAGE } from './constants/language.constants'
+import { defaultErrorHandler } from './middlewares/errors.middlewares'
 
 dotenv.config()
 const port = process.env.APP_PORT || 3000
@@ -53,9 +54,13 @@ app.get('/', (req, res) => {
 // import api router
 import api_users from '~/routes/users.routes'
 import api_categories from '~/routes/categories.routes'
+import api_products from '~/routes/products.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
+app.use('/api/products', api_products)
+
+app.use(defaultErrorHandler)
 
 // realtime logic
 io.on('connection', (socket: Socket) => {

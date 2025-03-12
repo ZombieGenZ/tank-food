@@ -42,17 +42,33 @@ class CategoryService {
           category_name_translate_2: translateResult.translate_string.trim(),
           translate_2_language: translateResult.language_2,
           index: Number(payload.index)
+        },
+        $currentDate: {
+          updated_at: true
         }
       }
     )
   }
 
   async delete(payload: DeleteCategoryRequestsBody) {
-    // DOITAFTER: Thực hiện hành động khi xóa danh mục
-
-    await databaseService.categories.deleteOne({
-      _id: new ObjectId(payload.category_id)
-    })
+    await Promise.all([
+      databaseService.categories.deleteOne({
+        _id: new ObjectId(payload.category_id)
+      }),
+      databaseService.products.updateMany(
+        {
+          category: new ObjectId(payload.category_id)
+        },
+        {
+          $set: {
+            category: null
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      )
+    ])
   }
 
   async getCategory() {
