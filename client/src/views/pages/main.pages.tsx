@@ -5,12 +5,26 @@ import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { Drawer } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
 
-const FormMain = () => {
-  const [loading, setLoading] = useState(true);
-  const location = useLocation()
+// Define the Navbar item type
+interface NavbarItem {
+  id: number;
+  title: string;
+  path: string;
+}
+
+// Define the slide type for the slideshow
+interface Slide {
+  src: string;
+  alt: string;
+  effect: "zoom" | "fade" | "slide" | "fade-zoom";
+}
+
+const FormMain = (): JSX.Element => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const location = useLocation();
 
   useEffect(() => {
     setLoading(true)
@@ -35,15 +49,15 @@ const FormMain = () => {
   )   
 }
 
-function NavigationButtons() {
+function NavigationButtons(): JSX.Element {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
-  const openDrawer = () => {
+  const openDrawer = (): void => {
     setOpen(true)
   }
 
-  const closeDrawer = () => {
+  const closeDrawer = (): void => {
     setOpen(false)
   }
 
@@ -60,7 +74,7 @@ function NavigationButtons() {
         <div className='hidden md:block px-6 py-2'>
           <ul className='flex items-center gap-10'>
             {
-              Navbar.map((item) => {
+              Navbar.map((item: NavbarItem) => {
                 return <li key={item.id}>
                         <button className="cursor-pointer font-semibold text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white px-4 py-2 rounded-md  transition duration-300"
                                 onClick={() => navigate(item.path)}>{item.title}</button> 
@@ -79,7 +93,7 @@ function NavigationButtons() {
             <div className='w-full'>
               <ul className='flex items-center flex-col gap-10'>
                 {
-                  Navbar.map((item) => {
+                  Navbar.map((item: NavbarItem) => {
                     return <li key={item.id}>
                             <button onClick={() => navigate(item.path)}
                                     className="cursor-pointer font-semibold text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white px-4 py-2 rounded-md transition duration-300">{item.title}</button> 
@@ -96,20 +110,20 @@ function NavigationButtons() {
   );
 }
 
-function Main() {
-  const Slideshow = () => {
-    const [slideIndex, setSlideIndex] = useState(0);
-    const slideTimerRef = useRef(null);
+function Main(): JSX.Element {
+  const Slideshow = (): JSX.Element => {
+    const [slideIndex, setSlideIndex] = useState<number>(0);
+    const slideTimerRef = useRef<NodeJS.Timeout | null>(null);
     
-    const slides = [
-      { src: "/api/placeholder/1300/650", alt: "Slide 1", effect: "zoom" },
-      { src: "/api/placeholder/1300/650", alt: "Slide 2", effect: "fade" },
-      { src: "/api/placeholder/1300/650", alt: "Slide 3", effect: "slide" },
-      { src: "/api/placeholder/1300/650", alt: "Slide 4", effect: "fade" }
+    const slides: Slide[] = [
+      { src: "/public/images/system/1.png", alt: "Slide 1", effect: "fade-zoom" },
+      { src: "/public/images/system/2.png", alt: "Slide 2", effect: "fade" },
+      { src: "/public/images/system/3.png", alt: "Slide 3", effect: "slide" },
+      { src: "/public/images/system/4.png", alt: "Slide 4", effect: "fade" }
     ];
   
     // Hiển thị slideshow tự động
-    const showSlides = () => {
+    const showSlides = (): void => {
       let newIndex = slideIndex + 1;
       if (newIndex >= slides.length) {
         newIndex = 0;
@@ -118,14 +132,14 @@ function Main() {
     };
   
     // Chuyển đến slide cụ thể
-    const currentSlide = (index) => {
-      clearTimeout(slideTimerRef.current);
+    const currentSlide = (index: number): void => {
+      if (slideTimerRef.current) clearTimeout(slideTimerRef.current);
       setSlideIndex(index);
     };
   
     // Thay đổi slide khi nhấn nút prev/next
-    const changeSlide = (direction) => {
-      clearTimeout(slideTimerRef.current);
+    const changeSlide = (direction: number): void => {
+      if (slideTimerRef.current) clearTimeout(slideTimerRef.current);
       
       let newIndex = slideIndex + direction;
       
@@ -143,12 +157,12 @@ function Main() {
       slideTimerRef.current = setTimeout(showSlides, 10000);
       
       return () => {
-        clearTimeout(slideTimerRef.current);
+        if (slideTimerRef.current) clearTimeout(slideTimerRef.current);
       };
     }, [slideIndex]);
   
-    // Tạo hiệu ứng dựa trên loại
-    const getEffectClasses = (index, effect) => {
+    // Tạo hiệu ứng dựa trên loại - Enhanced with new effects
+    const getEffectClasses = (index: number, effect: string): string => {
       const baseClasses = 'absolute w-full h-full transition-all duration-1000 ease-in-out transform';
       const activeClasses = index === slideIndex ? 'opacity-100 z-10' : 'opacity-0 z-0';
       
@@ -157,6 +171,9 @@ function Main() {
         switch (effect) {
           case 'zoom':
             effectClasses = 'scale-105';
+            break;
+          case 'fade-zoom': // New enhanced effect for slide 1
+            effectClasses = 'scale-110';
             break;
           case 'slide':
             effectClasses = 'translate-x-0';
@@ -169,6 +186,9 @@ function Main() {
           case 'slide':
             effectClasses = index < slideIndex ? '-translate-x-full' : 'translate-x-full';
             break;
+          case 'fade-zoom': // Add exit animation for the new effect
+            effectClasses = 'scale-100';
+            break;
           default:
             effectClasses = '';
         }
@@ -178,9 +198,9 @@ function Main() {
     };
   
     return (
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center mb-16">
         {/* Slideshow container */}
-        <div className="relative max-w-6xl w-full mx-auto my-10 overflow-hidden rounded-lg shadow-2xl h-96 md:h-[650px]">
+        <div className="relative max-w-300 h-150 w-full mx-auto my-10 overflow-hidden rounded-lg shadow-2xl aspect-[16/9]">
           {slides.map((slide, index) => (
             <div 
               key={index}
@@ -189,8 +209,12 @@ function Main() {
               <img 
                 src={slide.src} 
                 alt={slide.alt} 
-                className={`w-full h-full object-cover transition-transform duration-7000 ease-in-out ${
-                  index === slideIndex && slide.effect === 'zoom' ? 'scale-110' : 'scale-100'
+                className={`w-full h-full object-cover transition-transform duration-3000 ease-in-out ${
+                  index === slideIndex && slide.effect === 'fade-zoom' 
+                    ? 'scale-100 animate-pulse-subtle' 
+                    : index === slideIndex && slide.effect === 'zoom'
+                    ? 'scale-100'
+                    : 'scale-100'
                 }`}
               />
             </div>
@@ -228,6 +252,8 @@ function Main() {
       </div>
     );
   };
+
+  return <Slideshow />;
 }
 
 export default FormMain
