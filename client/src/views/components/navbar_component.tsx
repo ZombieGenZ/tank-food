@@ -12,16 +12,16 @@ export const Navbar = [
     {
         id: 3,
         title: "Thực đơn",
-        path: "/"
+        path: "/menu"
     },
     {
         id: 4,
         title: "Khuyến mãi",
-        path: "/"
+        path: "/deal"
     },
     {
         id: 5,
         title: "Liên hệ",
-        path: "/"
+        path: "/contact"
     },
 ];
