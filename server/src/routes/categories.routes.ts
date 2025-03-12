@@ -2,13 +2,17 @@ import express from 'express'
 import {
   createCategoryController,
   updateCategoryController,
-  deleteCategoryController
+  deleteCategoryController,
+  getCategoryController,
+  findCategoryController,
+  getCategoryShortController
 } from '~/controllers/categories.controllers'
 import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
 import {
   createCategoryValidator,
   updateCategoryValidator,
-  deleteCategoryValidator
+  deleteCategoryValidator,
+  findCategoryValidator
 } from '~/middlewares/categories.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -77,6 +81,65 @@ router.delete(
   authenticateAdministratorValidator,
   deleteCategoryValidator,
   wrapRequestHandler(deleteCategoryController)
+)
+
+/*
+ * Description: Lấy danh sách danh mục đang có trên CSDL
+ * Path: /api/categories/get-category
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post(
+  '/get-category',
+  authenticateValidator,
+  authenticateAdministratorValidator,
+  wrapRequestHandler(getCategoryController)
+)
+
+/*
+ * Description: Tìm kiếm danh sách danh mục đang có trên CSDL
+ * Path: /api/categories/find-category
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    keywords: string
+ * }
+ */
+router.post(
+  '/find-category',
+  authenticateValidator,
+  authenticateAdministratorValidator,
+  findCategoryValidator,
+  wrapRequestHandler(findCategoryController)
+)
+
+/*
+ * Description: Lấy danh sách danh mục (Dạn rút gọn) có trên CSDL
+ * Path: /api/categories/get-category-short
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post(
+  '/get-category-short',
+  authenticateValidator,
+  authenticateAdministratorValidator,
+  wrapRequestHandler(getCategoryShortController)
 )
 
 export default router

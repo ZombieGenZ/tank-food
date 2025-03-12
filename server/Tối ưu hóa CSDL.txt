@@ -3,3 +3,8 @@ db.users.createIndex({ "email": 1 }, { name: "email_1", unique: true })
 db.users.createIndex({ "phone": 1 }, { name: "phone_1", unique: true })
 // refresh_token collections
 db.refresh_token.createIndex({ "token": 1 }, { name: "token_1", unique: true })
+// categories collections
+db.categories.createIndex({
+  category_name_translate_1: "text",
+  category_name_translate_2: "text"
+}, { name: "category_name_translate_1_text_category_name_translate_2_text" })

@@ -65,7 +65,13 @@ export class VIETNAMESE_STATIC_MESSAGE {
     UPDATE_CATEGORY_SUCCESS: 'Cập nhật danh mục thành công',
     UPDATE_CATEGORY_FAILURE: 'Cập nhật danh mục thất bại',
     DELETE_CATEGORY_SUCCESS: 'Xóa danh mục thành công',
-    DELETE_CATEGORY_FAILURE: 'Xóa danh mục thất bại'
+    DELETE_CATEGORY_FAILURE: 'Xóa danh mục thất bại',
+    GET_CATEGORY_SUCCESS: 'Lấy thông tin danh mục thành công',
+    GET_CATEGORY_FAILURE: 'Lấy thông tin danh mục thất bại',
+    FIND_CATEGORY_SUCCESS: 'Tìm kiếm thông tin danh mục thành công',
+    FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại',
+    KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký'
   } as const
 }
 
@@ -137,7 +143,13 @@ export class ENGLISH_STATIC_MESSAGE {
     UPDATE_CATEGORY_SUCCESS: 'Category updated successfully',
     UPDATE_CATEGORY_FAILURE: 'Category update failed',
     DELETE_CATEGORY_SUCCESS: 'Category deleted successfully',
-    DELETE_CATEGORY_FAILURE: 'Category deletion failed'
+    DELETE_CATEGORY_FAILURE: 'Category deletion failed',
+    GET_CATEGORY_SUCCESS: 'Category information retrieved successfully',
+    GET_CATEGORY_FAILURE: 'Category information retrieval failed',
+    FIND_CATEGORY_SUCCESS: 'Category information search successful',
+    FIND_CATEGORY_FAILURE: 'Category information search failed',
+    KEYWORD_IS_REQUIRED: 'Search keyword is required',
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
   } as const
 }
 
@@ -184,6 +196,18 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xóa danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static GetCategorySuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetCategoryFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static FindCategorySuccessfully(user_id: string, ip: string) {
+    return `Thực hiện tìm kiếm thông tin danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static FindCategoryFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện tìm kiếm thông tin danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -228,5 +252,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Category deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static GetCategorySuccessfully(user_id: string, ip: string) {
+    return `Category information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetCategoryFailed(user_id: string, ip: string, err: unknown) {
+    return `Category information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static FindCategorySuccessfully(user_id: string, ip: string) {
+    return `Category information search successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static FindCategoryFailed(user_id: string, ip: string, err: unknown) {
+    return `Category information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -1,7 +1,9 @@
 import {
   CreateCategoryRequestsBody,
   UpdateCategoryRequestsBody,
-  DeleteCategoryRequestsBody
+  DeleteCategoryRequestsBody,
+  GetCategoryRequestsBody,
+  FindCategoryRequestsBody
 } from '~/models/requests/categories.requests'
 import databaseService from './database.services'
 import Category from '~/models/schemas/categories.schemas'
@@ -51,6 +53,28 @@ class CategoryService {
     await databaseService.categories.deleteOne({
       _id: new ObjectId(payload.category_id)
     })
+  }
+
+  async getCategory() {
+    const categories = await databaseService.categories.find({}).sort({ created_at: -1 }).toArray()
+    return categories
+  }
+
+  async findCategory(payload: FindCategoryRequestsBody) {
+    const categories = await databaseService.categories
+      .find({ $text: { $search: payload.keywords } })
+      .sort({ created_at: -1 })
+      .toArray()
+    return categories
+  }
+
+  async getCategoryShort() {
+    const categories = await databaseService.categories
+      .find({})
+      .sort({ index: 1 })
+      .project({ created_at: 0, updated_at: 0 })
+      .toArray()
+    return categories
   }
 }
 

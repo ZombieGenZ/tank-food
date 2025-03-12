@@ -4,7 +4,8 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateCategoryRequestsBody,
   UpdateCategoryRequestsBody,
-  DeleteCategoryRequestsBody
+  DeleteCategoryRequestsBody,
+  FindCategoryRequestsBody
 } from '~/models/requests/categories.requests'
 import { serverLanguage } from '~/index'
 import { LANGUAGE } from '~/constants/language.constants'
@@ -264,6 +265,66 @@ export const deleteCategoryValidator = async (
 
             return true
           }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const findCategoryValidator = async (
+  req: Request<ParamsDictionary, any, FindCategoryRequestsBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      keywords: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.KEYWORD_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.KEYWORD_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.KEYWORD_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.KEYWORD_MUST_BE_A_STRING
         }
       }
     },

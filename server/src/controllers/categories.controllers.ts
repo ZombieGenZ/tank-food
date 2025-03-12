@@ -3,7 +3,9 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   CreateCategoryRequestsBody,
   UpdateCategoryRequestsBody,
-  DeleteCategoryRequestsBody
+  DeleteCategoryRequestsBody,
+  GetCategoryRequestsBody,
+  FindCategoryRequestsBody
 } from '~/models/requests/categories.requests'
 import User from '~/models/schemas/users.schemas'
 import { serverLanguage } from '~/index'
@@ -137,6 +139,132 @@ export const deleteCategoryController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.DELETE_CATEGORY_FAILURE
           : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.DELETE_CATEGORY_FAILURE
+    })
+  }
+}
+
+export const getCategoryController = async (
+  req: Request<ParamsDictionary, any, GetCategoryRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const categories = await categoryService.getCategory()
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_CATEGORY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_SUCCESS,
+      categories
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_CATEGORY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
+    })
+  }
+}
+
+export const findCategoryController = async (
+  req: Request<ParamsDictionary, any, FindCategoryRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const categories = await categoryService.findCategory(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategorySuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.FindCategorySuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.FIND_CATEGORY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_SUCCESS,
+      categories
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategoryFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.FindCategoryFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.FIND_CATEGORY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_FAILURE
+    })
+  }
+}
+
+export const getCategoryShortController = async (
+  req: Request<ParamsDictionary, any, GetCategoryRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const categories = await categoryService.getCategoryShort()
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_CATEGORY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_SUCCESS,
+      categories
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_CATEGORY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
     })
   }
 }

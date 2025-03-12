@@ -15,3 +15,12 @@ export interface DeleteCategoryRequestsBody {
   language?: string
   category_id: string
 }
+
+export interface GetCategoryRequestsBody {
+  language?: string
+}
+
+export interface FindCategoryRequestsBody {
+  language?: string
+  keywords: string
+}
