@@ -242,7 +242,7 @@ function Main(): JSX.Element {
     return (
       <div className="flex flex-col items-center mb-16 w-full">
         {/* Slideshow container */}
-        <div className="relative max-w-300 h-150 w-full mx-auto my-10 overflow-hidden rounded-lg shadow-2xl aspect-[16/9]">
+        <div className="relative max-w-340 h-170 w-full mx-auto my-10 overflow-hidden rounded-lg shadow-2xl aspect-[16/9]">
           {slides.map((slide, index) => (
             <div 
               key={index}
