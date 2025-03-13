@@ -1,0 +1,19 @@
+.links::after{
+    content: '';
+    height: 5px;
+    width: 0;
+    position: absolute;
+    background-color: #FF6B35;
+    left: 0;
+    bottom: 0;
+    border-radius: 10px;
+    transition: .2s ease-in-out;
+}
+
+.links{
+    position: relative;
+}
+
+.links:hover::after {
+    width: 100%;
+}

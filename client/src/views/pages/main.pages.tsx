@@ -7,6 +7,8 @@ import { Drawer } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
+import Category from './category.management.pages.tsx';
+import '/public/css/main.css'
 
 // Define the Navbar item type
 interface NavbarItem {
@@ -42,6 +44,7 @@ const FormMain = (): JSX.Element => {
           <Routes>
             <Route path="/*" element={<Main />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path='/category' element={<Category />}/>
           </Routes>
         </div>
       }
@@ -66,17 +69,17 @@ function NavigationButtons(): JSX.Element {
       <div className="p-2 lg:text-xl flex md:justify-around justify-between">
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
-          <p onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
+          <div onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
             <IoFastFood /> 
             <p>Tank<span className='text-[#ffcc00]'>Food</span></p>
-          </p>
+          </div>
         </div>
         <div className='hidden md:block px-6 py-2'>
           <ul className='flex items-center gap-10'>
             {
               Navbar.map((item: NavbarItem) => {
                 return <li key={item.id}>
-                        <button className="cursor-pointer font-semibold text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white px-4 py-2 rounded-md  transition duration-300"
+                        <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
                                 onClick={() => navigate(item.path)}>{item.title}</button> 
                       </li>
               })
@@ -89,14 +92,14 @@ function NavigationButtons(): JSX.Element {
           <div className='md:hidden'>
             <button onClick={openDrawer}><IoMenu /></button>
           </div>
-          <Drawer title="Basic Drawer" onClose={closeDrawer} open={open}>
+          <Drawer title="TankFood" onClose={closeDrawer} open={open}>
             <div className='w-full'>
               <ul className='flex items-center flex-col gap-10'>
                 {
                   Navbar.map((item: NavbarItem) => {
                     return <li key={item.id}>
                             <button onClick={() => navigate(item.path)}
-                                    className="cursor-pointer font-semibold text-[#FF6B35] hover:bg-[#FF6B35] hover:text-white px-4 py-2 rounded-md transition duration-300">{item.title}</button> 
+                                    className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">{item.title}</button> 
                           </li>
                   })
                 }
@@ -198,7 +201,7 @@ function Main(): JSX.Element {
     };
   
     return (
-      <div className="flex flex-col items-center mb-16">
+      <div className="flex flex-col items-center mb-16 w-full">
         {/* Slideshow container */}
         <div className="relative max-w-300 h-150 w-full mx-auto my-10 overflow-hidden rounded-lg shadow-2xl aspect-[16/9]">
           {slides.map((slide, index) => (

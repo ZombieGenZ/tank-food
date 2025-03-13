@@ -5,7 +5,9 @@ const Loading = () => {
       alignItems: 'center',
       justifyContent: 'center',
       height: '100vh',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      background: 'rgba(255, 255, 255, 0.3)',
+      backdropFilter: 'blur(5px)'
     }}>
       <div className="loader">
         <div className="truckWrapper">

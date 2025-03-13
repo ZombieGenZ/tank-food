@@ -24,4 +24,9 @@ export const Navbar = [
         title: "Liên hệ",
         path: "/contact"
     },
+    {
+        id: 6,
+        title: "Quản lý danh mục",
+        path: "/category"
+    }
 ];
