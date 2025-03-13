@@ -1,4 +1,3 @@
-import Loading from '../components/loading_page_components.tsx'
 import { Navbar } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
@@ -11,6 +10,7 @@ import Category from './category.management.pages.tsx';
 import { Avatar, Popover } from "antd";
 import { FaUserCircle } from "react-icons/fa";
 import '/public/css/main.css'
+import { gsap } from 'gsap';
 
 // Define the Navbar item type
 interface NavbarItem {
@@ -28,21 +28,28 @@ interface Slide {
 }
 
 const FormMain = (): JSX.Element => {
-  const [loading, setLoading] = useState<boolean>(true);
   const location = useLocation();
+  const pageRef = useRef(null);
 
   useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 3000)
-  }, [location.pathname])
+    // Hiệu ứng khi chuyển trang
+    gsap.from(pageRef.current, {
+      scale: 0.8, // Bắt đầu với kích thước nhỏ hơn
+      duration: 0.3,
+      ease: 'back.out(1.7)', // Easing với hiệu ứng "bounce"
+    });
+
+    gsap.to(pageRef.current, {
+      scale: 1, // Trở về kích thước ban đầu
+      duration: 0.3,
+      ease: 'back.out(1.7)',
+    });
+  }, [location]);
 
   return(
     <>
       {
-        loading ? <Loading /> : 
-        <div>
+        <div ref={pageRef}>
           <NavigationButtons />
           <Routes>
             <Route path="/*" element={<Main />} />
