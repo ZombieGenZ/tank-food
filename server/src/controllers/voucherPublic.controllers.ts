@@ -1,6 +1,12 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { CreateVoucherRequestsBody } from '~/models/requests/voucherPublic.requests'
+import {
+  CreateVoucherRequestsBody,
+  UpdateVoucherRequestsBody,
+  DeleteVoucherRequestsBody,
+  GetVoucherRequestsBody,
+  FindVoucherRequestsBody
+} from '~/models/requests/voucherPublic.requests'
 import { serverLanguage } from '~/index'
 import User from '~/models/schemas/users.schemas'
 import { LANGUAGE } from '~/constants/language.constants'
@@ -51,6 +57,159 @@ export const createVoucherController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.CREATE_VOUCHER_FAILURE
           : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.CREATE_VOUCHER_FAILURE
+    })
+  }
+}
+
+export const updateVoucherController = async (
+  req: Request<ParamsDictionary, any, UpdateVoucherRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await voucherPublicService.update(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VoucherUpdateSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.VoucherUpdateSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_VOUCHER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.UPDATE_VOUCHER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.UPDATE_VOUCHER_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VoucherUpdateFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.VoucherUpdateFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UPDATE_VOUCHER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.UPDATE_VOUCHER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.UPDATE_VOUCHER_FAILURE
+    })
+  }
+}
+
+export const deleteVoucherController = async (
+  req: Request<ParamsDictionary, any, DeleteVoucherRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await voucherPublicService.delete(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VoucherDeleteSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.VoucherDeleteSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.DELETE_VOUCHER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.DELETE_VOUCHER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.DELETE_VOUCHER_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VoucherDeleteFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.VoucherDeleteFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.DELETE_VOUCHER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.DELETE_VOUCHER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.DELETE_VOUCHER_FAILURE
+    })
+  }
+}
+
+export const getVoucherController = async (
+  req: Request<ParamsDictionary, any, GetVoucherRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const voucher = await voucherPublicService.getVoucher()
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_SUCCESS,
+      voucher
+    })
+  } catch (err) {
+    res.json({
+      code: RESPONSE_CODE.GET_VOUCHER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
+    })
+  }
+}
+
+export const findVoucherController = async (
+  req: Request<ParamsDictionary, any, FindVoucherRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const voucher = await voucherPublicService.findVoucher(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.FindVoucherSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.FindVoucherSuccessfully(user._id.toString(), ip)
+    )
+    res.json({
+      code: RESPONSE_CODE.GET_CATEGORY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.FIND_VOUCHER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.FIND_VOUCHER_SUCCESS,
+      voucher
+    })
+  } catch (err) {
+    res.json({
+      code: RESPONSE_CODE.GET_VOUCHER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
     })
   }
 }

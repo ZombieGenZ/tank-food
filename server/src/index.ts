@@ -57,6 +57,9 @@ import api_categories from '~/routes/categories.routes'
 import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
+import { verifyToken } from './utils/jwt.utils'
+import { TokenPayload } from './models/requests/authentication.requests'
+import { ObjectId } from 'mongodb'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -310,9 +313,97 @@ io.on('connection', (socket: Socket) => {
     // dữ liệu: _id: ObjectId
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID Sản phẩm
+    //
 
     socket.join(`freshSync`)
-    console.log(`\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync\x1b[0m`)
+    if (serverLanguage == LANGUAGE.VIETNAMESE) {
+      console.log(`\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync\x1b[0m`)
+    } else {
+      console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m has connected to the room \x1b[36mfreshSync\x1b[0m`)
+    }
+  })
+
+  socket.on('connect-admin-realtime', async (refresh_token: string) => {
+    // Phòng: freshSync-admin
+    // sự kiện:
+    // create-public-voucher: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
+    // update-public-voucer: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
+    // delete-public-voucher: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
+    //
+    // mô tả chi tiết sự kiện:
+    // sự kiện: create-public-voucher
+    // mô tả: Thêm thông tin voucher (công khai) vừa được thêm vào CSDL
+    // dữ liệu:
+    // _id: ObjectId,
+    // code: string,
+    // discount: number,
+    // quantity: number,
+    // expiration_date: Date,
+    // requirement: number
+    // Mô tả chi tiết công dụng của dữ liệu:
+    // _id: ID voucher (Công khai)
+    // code: mã giảm giá
+    // discount: số tiền giảm
+    // quantity: số lượng voucher
+    // expiration_date: thời gian hết hạn
+    // requirement: yêu cầu tối thiểu để xử dụng voucher
+    //
+    // sự kiện: update-public-voucher
+    // mô tả: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
+    // dữ liệu:
+    // _id: ObjectId,
+    // code: string,
+    // discount: number,
+    // quantity: number,
+    // expiration_date: Date,
+    // requirement: number
+    // Mô tả chi tiết công dụng của dữ liệu:
+    // _id: ID voucher (Công khai)
+    // code: mã giảm giá
+    // discount: số tiền giảm
+    // quantity: số lượng voucher
+    // expiration_date: thời gian hết hạn
+    // requirement: yêu cầu tối thiểu để xử dụng voucher
+    //
+    // sự kiện: delete-public-voucher
+    // mô tả: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
+    // dữ liệu: _id: ObjectId
+    // Mô tả chi tiết công dụng của dữ liệu:
+    // _id: ID voucher (Công khai)
+    //
+
+    if (!refresh_token) {
+      return
+    }
+
+    try {
+      const decoded_refresh_token = (await verifyToken({
+        token: refresh_token,
+        publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_refresh_token) {
+        return
+      }
+
+      const user = await databaseService.users.findOne({ _id: new ObjectId(decoded_refresh_token.user_id) })
+
+      if (!user) {
+        return
+      }
+
+      if (serverLanguage == LANGUAGE.VIETNAMESE) {
+        console.log(
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
+        )
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-admin`)
+      } else {
+        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-admin\x1b[0m`)
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-admin`)
+      }
+    } catch {
+      return
+    }
   })
 
   socket.on('disconnect', () => {

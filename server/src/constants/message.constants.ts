@@ -1,28 +1,28 @@
 export class VIETNAMESE_STATIC_MESSAGE {
   static SYSTEM_MESSAGE = {
-    VALIDATION_ERROR: 'Lỗi dử liệu đầu vào'
+    VALIDATION_ERROR: 'Lỗi dữ liệu đầu vào'
   } as const
 
   static USER_MESSAGE = {
     DISPLAY_NAME_IS_REQUIRED: 'Không được bỏ trống tên hiển thị',
-    DISPLAY_NAME_MUST_BE_A_STRING: 'Tên hiển thị phải là chuổi ký tự',
+    DISPLAY_NAME_MUST_BE_A_STRING: 'Tên hiển thị phải là chuỗi ký tự',
     DISPLAY_NAME_LENGTH_MUST_BE_FROM_1_TO_50: 'Tên hiển thị phải có độ dài từ 1 đến 50 ký tự',
     EMAIL_IS_REQUIRED: 'Không được bỏ trống địa chỉ email',
-    EMAIL_MUST_BE_A_STRING: 'Địa chỉ email phải là một chuổi ký tự',
+    EMAIL_MUST_BE_A_STRING: 'Địa chỉ email phải là một chuỗi ký tự',
     EMAIL_LENGTH_MUST_BE_FROM_5_TO_100: 'Địa chỉ email phải có độ dài từ 5 đến 100 ký tự',
-    EMAIL_IS_NOT_VALID: 'Địa chỉ email không đúng định dạngg',
+    EMAIL_IS_NOT_VALID: 'Địa chỉ email không đúng định dạng',
     EMAIL_ALREADY_EXISTS: 'Địa chỉ email đã được sử dụng',
     PHONE_IS_REQUIRED: 'Không được bỏ trống số điện thoại',
-    PHONE_MUST_BE_A_STRING: 'Số điện thoại phải là một chuổi ký tự',
+    PHONE_MUST_BE_A_STRING: 'Số điện thoại phải là một chuỗi ký tự',
     PHONE_LENGTH_MUST_BE_FROM_10_TO_11: 'Số điện thoại phải có độ dài từ 10 đến 11 ký tự',
     PHONE_IS_NOT_VALID: 'Số điện thoại không hợp lệ',
     PHONE_ALREADY_EXISTS: 'Số điện thoại đã được sử dụng',
     PASSWORD_IS_REQUIRED: 'Không được bỏ trống mật khẩu',
-    PASSWORD_MUST_BE_A_STRING: 'Mật khẩu phải là một chuổi ký tự',
+    PASSWORD_MUST_BE_A_STRING: 'Mật khẩu phải là một chuỗi ký tự',
     PASSWORD_LENGTH_MUST_BE_FROM_8_TO_100: 'Mật khẩu phải có độ dài từ 8 đến 100 ký tự',
     PASSWORD_MUST_BE_STRONG: 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt',
     CONFIRM_PASSWORD_IS_REQUIRED: 'Không được bỏ trống xác nhận mật khẩu',
-    CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Xác nhận mật khẩu phải là một chuổi ký tự',
+    CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Xác nhận mật khẩu phải là một chuỗi ký tự',
     CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_100: 'Xác nhận mật khẩu phải có độ dài từ 8 đến 100 ký tự',
     CONFIRM_PASSWORD_MUST_BE_STRONG:
       'Xác nhận mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt',
@@ -40,11 +40,11 @@ export class VIETNAMESE_STATIC_MESSAGE {
 
   static AUTHENTICATE_MESSAGE = {
     ACCESS_TOKEN_IS_REQUIRED: 'Không được bỏ trống Access token',
-    ACCESS_TOKEN_MUST_BE_A_STRING: 'Access token phải là một chuổi ký tự',
+    ACCESS_TOKEN_MUST_BE_A_STRING: 'Access token phải là một chuỗi ký tự',
     ACCESS_TOKEN_INVALID: 'Access token không hợp lệ',
     USER_DOES_NOT_EXIST: 'Người dùng không tồn tại',
     REFRESH_TOKEN_IS_REQUIRED: 'Không được bỏ trống Refresh token',
-    REFRESH_TOKEN_MUST_BE_A_STRING: 'Refresh token phải là một chuổi ký tự',
+    REFRESH_TOKEN_MUST_BE_A_STRING: 'Refresh token phải là một chuỗi ký tự',
     REFRESH_TOKEN_INVALID: 'Refresh token không hợp lệ',
     AUTHENTICATION_FAILED: 'Yêu cầu xác thực trước khi thực hiện hành động này',
     YOU_DONT_HAVE_PERMISSION_TO_DO_THIS: 'Bạn không có quyền làm điều này'
@@ -52,14 +52,14 @@ export class VIETNAMESE_STATIC_MESSAGE {
 
   static CATEGORY_MESSAGE = {
     CATEGORY_NAME_IS_REQUIRED: 'Không được bỏ trống tên danh mục',
-    CATEGORY_NAME_MUST_BE_A_STRING: 'Tên danh mục phải là một chuổi ký tự',
+    CATEGORY_NAME_MUST_BE_A_STRING: 'Tên danh mục phải là một chuỗi ký tự',
     CATEGORY_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Tên danh mục phải có độ dài từ 1 đến 100 ký tự',
     INDEX_IS_REQUIRED: 'Không được bỏ trống độ ưu tiên của danh mục',
-    INDEX_MUST_BE_A_NUMBER: 'Độ ưu tiên của danh mục phải là một chuổi ký tự',
+    INDEX_MUST_BE_A_NUMBER: 'Độ ưu tiên của danh mục phải là một chuỗi ký tự',
     CREATE_CATEGORY_SUCCESS: 'Tạo danh mục thành công',
     CREATE_CATEGORY_FAILURE: 'Tạo danh mục thất bại',
     CATEGORY_ID_IS_REQUIRED: 'Không được bỏ trống ID danh mục',
-    CATEGORY_ID_MUST_BE_A_STRING: 'ID Danh mục phải là một chuổi ký tự',
+    CATEGORY_ID_MUST_BE_A_STRING: 'ID Danh mục phải là một chuỗi ký tự',
     CATEGORY_ID_IS_MUST_BE_A_ID: 'ID Danh mục không đúng định dạng',
     CATEGORY_ID_DOES_NOT_EXIST: 'ID Danh mục không tồn tại',
     UPDATE_CATEGORY_SUCCESS: 'Cập nhật danh mục thành công',
@@ -69,17 +69,17 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_CATEGORY_SUCCESS: 'Lấy thông tin danh mục thành công',
     GET_CATEGORY_FAILURE: 'Lấy thông tin danh mục thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký',
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
     FIND_CATEGORY_SUCCESS: 'Tìm kiếm thông tin danh mục thành công',
     FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại'
   } as const
 
   static PRODUCT_MESSAGE = {
     PRODUCT_NAME_IS_REQUIRED: 'Không được bỏ trống tên sản phẩm',
-    PRODUCT_NAME_MUST_BE_A_STRING: 'Tên sản phẩm phải là một chuổi ký tự',
+    PRODUCT_NAME_MUST_BE_A_STRING: 'Tên sản phẩm phải là một chuỗi ký tự',
     PRODUCT_NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Tên sản phẩm phải có độ dài từ 1 đến 100 ký tự',
     PRODUCT_DESCRIPTION_IS_REQUIRED: 'Không được bỏ trống mô tả sản phẩm',
-    PRODUCT_DESCRIPTION_MUST_BE_A_STRING: 'Mô tả sản phẩm phải là một chuổi ký tự',
+    PRODUCT_DESCRIPTION_MUST_BE_A_STRING: 'Mô tả sản phẩm phải là một chuỗi ký tự',
     PRODUCT_DESCRIPTION_LENGTH_MUST_BE_FROM_1_TO_1000: 'Mô tả sản phẩm phải có độ dài từ 1 đến 1000 ký tự',
     PRODUCT_PRICE_IS_REQUIRED: 'Không được bỏ trống giá sản phẩm',
     PRODUCT_PRICE_MUST_BE_A_NUMBER: 'Giá sản phẩm phải là một số',
@@ -87,14 +87,14 @@ export class VIETNAMESE_STATIC_MESSAGE {
     PRODUCT_AVAILABILITY_IS_REQUIRED: 'Không được bỏ trống tình trạng hàng',
     PRODUCT_AVAILABILITY_MUST_BE_A_BOOLEAN: 'Tình trạng hàng phải là một boolean',
     PRODUCT_CATEGORY_IS_REQUIRED: 'Không được bỏ trống danh mục sản phẩm',
-    PRODUCT_CATEGORY_MUST_BE_A_STRING: 'Danh mục sản phẩm phải là một chuổi ký tự',
+    PRODUCT_CATEGORY_MUST_BE_A_STRING: 'Danh mục sản phẩm phải là một chuỗi ký tự',
     PRODUCT_CATEGORY_MUST_BE_A_ID: 'Danh mục sản phẩm không đúng định dạng',
     PRODUCT_CATEGORY_DOES_NOT_EXIST: 'Danh mục sản phẩm không tồn tại',
     PRODUCT_PREVIEW_IS_REQUIRED: 'Không được bỏ trống ảnh sản phẩm',
     CREATE_PRODUCT_SUCCESS: 'Tạo sản phẩm thành công',
     CREATE_PRODUCT_FAILURE: 'Tạo sản phẩm thất bại',
     PRODUCT_ID_IS_REQUIRED: 'Không được bỏ trống ID sản phẩm',
-    PRODUCT_ID_MUST_BE_A_STRING: 'ID sản phẩm phải là một chuổi ký tự',
+    PRODUCT_ID_MUST_BE_A_STRING: 'ID sản phẩm phải là một chuỗi ký tự',
     PRODUCT_ID_MUST_BE_A_ID: 'ID sản phẩm không đúng định dạng',
     PRODUCT_DOES_NOT_EXIST: 'ID sản phẩm không tồn tại',
     UPDATE_PRODUCT_SUCCESS: 'Cập nhật sản phẩm thành công',
@@ -104,14 +104,14 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Lấy thông tin sản phẩm thành công',
     GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký',
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
     FIND_PRODUCT_SUCCESS: 'Tìm kiếm thông tin sản phẩm thành công',
     FIND_PRODUCT_FAILURE: 'Tìm kiếm thông tin sản phẩm thất bại'
   } as const
 
   static VOUCHER_MESSAGE = {
     CODE_IS_REQUIRED: 'Không được bỏ trống mã giảm giá',
-    CODE_MUST_BE_A_STRING: 'Mã giảm giá phải là một chuổi ký tự',
+    CODE_MUST_BE_A_STRING: 'Mã giảm giá phải là một chuỗi ký tự',
     CODE_LENGTH_MUST_BE_FROM_1_TO_50: 'Mã giảm giá phải có độ dài từ 1 đến 50 ký tự',
     CODE_ALREADY_EXISTS: 'Mã giảm giá đã được tồn tại',
     VOUCHER_QUANTITY_IS_REQUIRED: 'Không được bỏ trống số lượng mã giảm giá',
@@ -127,7 +127,23 @@ export class VIETNAMESE_STATIC_MESSAGE {
     VOUCHER_EXPIRATION_IS_NOT_VALID: 'Ngày hết hạn không hợp lệ',
     PRODUCT_EXPIRATION_MUST_BE_GREATER_THAN_CURRENT_DATE: 'Ngày hết hạn phải lớn hơn ngày hiện tại',
     CREATE_VOUCHER_SUCCESS: 'Tạo mã giảm giá thành công',
-    CREATE_VOUCHER_FAILURE: 'Tạo mã giảm giá thất bại'
+    CREATE_VOUCHER_FAILURE: 'Tạo mã giảm giá thất bại',
+    VOUCHER_ID_REQUIRED: 'Không được bỏ trống ID mã giảm giá',
+    VOUCHER_ID_MUST_BE_A_STRING: 'ID mã giảm giá phải là một chuỗi ký tự',
+    VOUCHER_ID_MUST_BE_A_ID: 'ID mã giảm giá không đúng định dạng',
+    VOUCHER_DOES_NOT_EXIST: 'ID mã giảm giá không tồn tại',
+    UPDATE_VOUCHER_SUCCESS: 'Cập nhật mã giảm giá thành công',
+    UPDATE_VOUCHER_FAILURE: 'Cập nhật mã giảm giá thất bại',
+    DELETE_VOUCHER_SUCCESS: 'Xóa mã giảm giá thành công',
+    DELETE_VOUCHER_FAILURE: 'Xóa mã giảm giá thất bại',
+    KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
+    GET_VOUCHER_SUCCESS: 'Lấy thông tin mã giảm giá thành công',
+    GET_VOUCHER_FAILURE: 'Lấy thông tin mã giảm giá thất bại',
+    FIND_VOUCHER_SUCCESS: 'Tìm kiếm thông tin mã giảm giá thành công',
+    FIND_VOUCHER_FAILURE: 'Tìm kiếm thông tin mã giảm giá thất bại',
+    CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
+      'Mã voucher chỉ được chứa chữ hoa, chữ thường, số và dấu gạch dưới (_)'
   } as const
 }
 
@@ -262,7 +278,23 @@ export class ENGLISH_STATIC_MESSAGE {
     PRODUCT_EXPIRATION_MUST_BE_GREATER_THAN_CURRENT_DATE:
       'Voucher expiration date must be greater than the current date',
     CREATE_VOUCHER_SUCCESS: 'Voucher created successfully',
-    CREATE_VOUCHER_FAILURE: 'Voucher creation failed'
+    CREATE_VOUCHER_FAILURE: 'Voucher creation failed',
+    VOUCHER_ID_REQUIRED: 'Voucher ID is required',
+    VOUCHER_ID_MUST_BE_A_STRING: 'Voucher ID must be a string',
+    VOUCHER_ID_MUST_BE_A_ID: 'Voucher ID is invalid',
+    VOUCHER_DOES_NOT_EXIST: 'Voucher ID does not exist',
+    UPDATE_VOUCHER_SUCCESS: 'Voucher updated successfully',
+    UPDATE_VOUCHER_FAILURE: 'Voucher update failed',
+    DELETE_VOUCHER_SUCCESS: 'Voucher deleted successfully',
+    DELETE_VOUCHER_FAILURE: 'Voucher deletion failed',
+    KEYWORD_IS_REQUIRED: 'Search keyword is required',
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
+    GET_VOUCHER_SUCCESS: 'Voucher information retrieved successfully',
+    GET_VOUCHER_FAILURE: 'Voucher information retrieval failed',
+    FIND_VOUCHER_SUCCESS: 'Voucher information search successful',
+    FIND_VOUCHER_FAILURE: 'Voucher information search failed',
+    CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
+      'Voucher code can only contain uppercase, lowercase, numbers, and underscores (_)'
   } as const
 }
 
@@ -357,6 +389,30 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static VoucherCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tạo mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static VoucherUpdateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện cập nhật mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static VoucherUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập nhật mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static VoucherDeleteSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xóa mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static VoucherDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xóa mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static GetVoucherSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static FindVoucherSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện tìm kiếm thông tin mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện tìm kiếm thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -449,5 +505,29 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static VoucherCreateFailed(user_id: string, ip: string, err: unknown) {
     return `Voucher creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static VoucherUpdateSuccessfully(user_id: string, ip: string) {
+    return `Voucher update successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static VoucherUpdateFailed(user_id: string, ip: string, err: unknown) {
+    return `Voucher update failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static VoucherDeleteSuccessfully(user_id: string, ip: string) {
+    return `Voucher deletion successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static VoucherDeleteFailed(user_id: string, ip: string, err: unknown) {
+    return `Voucher deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static GetVoucherSuccessfully(user_id: string, ip: string) {
+    return `Voucher information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
+    return `Voucher information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static FindVoucherSuccessfully(user_id: string, ip: string) {
+    return `Voucher information search successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
+    return `Voucher information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -1,18 +1,81 @@
-import { CreateVoucherRequestsBody } from '~/models/requests/voucherPublic.requests'
+import {
+  CreateVoucherRequestsBody,
+  UpdateVoucherRequestsBody,
+  DeleteVoucherRequestsBody,
+  FindVoucherRequestsBody
+} from '~/models/requests/voucherPublic.requests'
 import databaseService from './database.services'
 import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
+import { ObjectId } from 'mongodb'
+import { notificationRealtime } from '~/utils/realtime.utils'
 
 class VoucherPublicService {
   async create(payload: CreateVoucherRequestsBody) {
-    await databaseService.voucherPublic.insertOne(
-      new VoucherPublic({
-        code: payload.code,
-        discount: payload.discount,
-        quantity: payload.quantity,
-        expiration_date: new Date(payload.expiration_date),
-        requirement: payload.requirement
-      })
-    )
+    const voucher_id = new ObjectId()
+    const voucher = new VoucherPublic({
+      _id: voucher_id,
+      code: payload.code,
+      discount: payload.discount,
+      quantity: payload.quantity,
+      expiration_date: new Date(payload.expiration_date),
+      requirement: payload.requirement
+    })
+
+    await Promise.all([
+      databaseService.voucherPublic.insertOne(voucher),
+      notificationRealtime('freshSync-admin', 'create-public-voucher', 'voucher/public/create', voucher)
+    ])
+  }
+  async update(payload: UpdateVoucherRequestsBody) {
+    const voucher_id = new ObjectId(payload.voucher_id)
+    const voucher = new VoucherPublic({
+      _id: voucher_id,
+      code: payload.code,
+      discount: payload.discount,
+      quantity: payload.quantity,
+      expiration_date: new Date(payload.expiration_date),
+      requirement: payload.requirement
+    })
+
+    await Promise.all([
+      databaseService.voucherPublic.updateOne(
+        {
+          _id: voucher_id
+        },
+        {
+          $set: {
+            code: payload.code,
+            quantity: payload.quantity,
+            discount: payload.discount,
+            requirement: payload.requirement,
+            expiration_date: new Date(payload.expiration_date)
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime('freshSync-admin', 'update-public-voucher', 'voucher/public/update', voucher)
+    ])
+  }
+  async delete(payload: DeleteVoucherRequestsBody) {
+    const data = {
+      _id: new ObjectId(payload.voucher_id)
+    }
+    await Promise.all([
+      databaseService.voucherPublic.deleteOne({
+        _id: new ObjectId(payload.voucher_id)
+      }),
+      notificationRealtime('freshSync-admin', 'delete-public-voucher', 'voucher/public/delete', data)
+    ])
+  }
+  async getVoucher() {
+    const voucher = await databaseService.voucherPublic.find({}).toArray()
+    return voucher
+  }
+  async findVoucher(payload: FindVoucherRequestsBody) {
+    const voucher = await databaseService.voucherPublic.find({ $text: { $search: payload.keywords } }).toArray()
+    return voucher
   }
 }
 
