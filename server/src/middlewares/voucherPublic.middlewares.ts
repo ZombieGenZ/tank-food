@@ -5,6 +5,7 @@ import { LANGUAGE } from '~/constants/language.constants'
 import { ENGLISH_STATIC_MESSAGE, VIETNAMESE_STATIC_MESSAGE } from '~/constants/message.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { serverLanguage } from '~/index'
+import databaseService from '~/services/database.services'
 import { writeWarnLog } from '~/utils/log.utils'
 
 export const createVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
@@ -35,6 +36,24 @@ export const createVoucherValidator = async (req: Request, res: Response, next: 
             language == LANGUAGE.VIETNAMESE
               ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_LENGTH_MUST_BE_FROM_1_TO_50
               : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_LENGTH_MUST_BE_FROM_1_TO_50
+        },
+        custom: {
+          options: async (value) => {
+            const [voucherPublic, voucherPrivate] = await Promise.all([
+              databaseService.voucherPublic.findOne({ code: value }),
+              databaseService.voucherPrivate.findOne({ code: value })
+            ])
+
+            if (voucherPublic || voucherPrivate) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_ALREADY_EXISTS
+                  : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_ALREADY_EXISTS
+              )
+            }
+
+            return true
+          }
         }
       },
       quantity: {

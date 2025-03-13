@@ -17,3 +17,5 @@ db.products.createIndex({
   tag_translate_1: "text",
   tag_translate_2: "text"
 }, { name: "title_translate_1_text_title_translate_2_text_description_translate_1_text_description_translate_2_text_tag_translate_1_text_tag_translate_2_text" })
+// voucher_public collections
+db.voucher_public.createIndex({ "code": 1 }, { name: "code_1", unique: true })
