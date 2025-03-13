@@ -4,8 +4,7 @@ import {
   updateCategoryController,
   deleteCategoryController,
   getCategoryController,
-  findCategoryController,
-  getCategoryShortController
+  findCategoryController
 } from '~/controllers/categories.controllers'
 import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
 import {
@@ -87,59 +86,21 @@ router.delete(
  * Description: Lấy danh sách danh mục đang có trên CSDL
  * Path: /api/categories/get-category
  * Method: POST
- * headers: {
- *    authorization: Bearer <token>
- * },
  * Body: {
- *    language?: string,
- *    refresh_token: string
+ *    language?: string
  * }
  */
-router.post(
-  '/get-category',
-  authenticateValidator,
-  authenticateAdministratorValidator,
-  wrapRequestHandler(getCategoryController)
-)
+router.post('/get-category', wrapRequestHandler(getCategoryController))
 
 /*
  * Description: Tìm kiếm danh sách danh mục đang có trên CSDL
  * Path: /api/categories/find-category
  * Method: POST
- * headers: {
- *    authorization: Bearer <token>
- * },
  * Body: {
  *    language?: string,
- *    refresh_token: string,
  *    keywords: string
  * }
  */
-router.post(
-  '/find-category',
-  authenticateValidator,
-  authenticateAdministratorValidator,
-  findCategoryValidator,
-  wrapRequestHandler(findCategoryController)
-)
-
-/*
- * Description: Lấy danh sách danh mục (Dạn rút gọn) có trên CSDL
- * Path: /api/categories/get-category-short
- * Method: POST
- * headers: {
- *    authorization: Bearer <token>
- * },
- * Body: {
- *    language?: string,
- *    refresh_token: string
- * }
- */
-router.post(
-  '/get-category-short',
-  authenticateValidator,
-  authenticateAdministratorValidator,
-  wrapRequestHandler(getCategoryShortController)
-)
+router.post('/find-category', findCategoryValidator, wrapRequestHandler(findCategoryController))
 
 export default router

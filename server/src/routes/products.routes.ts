@@ -126,4 +126,25 @@ router.delete(
   wrapRequestHandler(deleteProductController)
 )
 
+/*
+ * Description: Lấy danh sách sản phẩm (quyền Admin) có trong CSDL
+ * Path: /api/products/
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    product_id: string
+ * }
+ */
+router.delete(
+  '/delete',
+  authenticateUploadImageValidator,
+  authenticateAdministratorUploadImageValidator,
+  deleteProductValidator,
+  wrapRequestHandler(deleteProductController)
+)
+
 export default router

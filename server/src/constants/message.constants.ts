@@ -254,17 +254,17 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xóa danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
-  static GetCategorySuccessfully(user_id: string, ip: string) {
-    return `Thực hiện lấy thông tin danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  static GetCategorySuccessfully(ip: string) {
+    return `Thực hiện lấy thông tin danh mục thành công ((IP: ${ip})`
   }
-  static GetCategoryFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện lấy thông tin danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  static GetCategoryFailed(ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin danh mục thất bại ((IP: ${ip}) | Lỗi: ${err}`
   }
-  static FindCategorySuccessfully(user_id: string, ip: string) {
-    return `Thực hiện tìm kiếm thông tin danh mục thành công (User: ${user_id}) (IP: ${ip})`
+  static FindCategorySuccessfully(ip: string) {
+    return `Thực hiện tìm kiếm thông tin danh mục thành công ((IP: ${ip})`
   }
-  static FindCategoryFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  static FindCategoryFailed(ip: string, err: unknown) {
+    return `Thực hiện tìm kiếm thông tin danh mục thất bại ((IP: ${ip}) | Lỗi: ${err}`
   }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
@@ -329,17 +329,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static CategoryDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Category deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
-  static GetCategorySuccessfully(user_id: string, ip: string) {
-    return `Category information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  static GetCategorySuccessfully(ip: string) {
+    return `Category information retrieval successful ((IP: ${ip})`
   }
-  static GetCategoryFailed(user_id: string, ip: string, err: unknown) {
-    return `Category information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  static GetCategoryFailed(ip: string, err: unknown) {
+    return `Category information retrieval failed ((IP: ${ip}) | Error: ${err}`
   }
-  static FindCategorySuccessfully(user_id: string, ip: string) {
-    return `Category information search successful (User: ${user_id}) (IP: ${ip})`
+  static FindCategorySuccessfully(ip: string) {
+    return `Category information search successful (IP: ${ip})`
   }
-  static FindCategoryFailed(user_id: string, ip: string, err: unknown) {
-    return `Category information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  static FindCategoryFailed(ip: string, err: unknown) {
+    return `Category information search failed (IP: ${ip}) | Error: ${err}`
   }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Product creation successful (User: ${user_id}) (IP: ${ip})`

@@ -148,7 +148,6 @@ export const getCategoryController = async (
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const user = req.user as User
   const language = req.body.language || serverLanguage
 
   try {
@@ -156,8 +155,8 @@ export const getCategoryController = async (
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategorySuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetCategorySuccessfully(ip)
     )
 
     res.json({
@@ -171,8 +170,8 @@ export const getCategoryController = async (
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategoryFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetCategoryFailed(ip, err)
     )
 
     res.json({
@@ -190,7 +189,6 @@ export const findCategoryController = async (
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const user = req.user as User
   const language = req.body.language || serverLanguage
 
   try {
@@ -198,8 +196,8 @@ export const findCategoryController = async (
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategorySuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.FindCategorySuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategorySuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.FindCategorySuccessfully(ip)
     )
 
     res.json({
@@ -213,8 +211,8 @@ export const findCategoryController = async (
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategoryFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.FindCategoryFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategoryFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.FindCategoryFailed(ip, err)
     )
 
     res.json({
@@ -223,48 +221,6 @@ export const findCategoryController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_FAILURE
           : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_FAILURE
-    })
-  }
-}
-
-export const getCategoryShortController = async (
-  req: Request<ParamsDictionary, any, GetCategoryRequestsBody>,
-  res: Response
-) => {
-  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const user = req.user as User
-  const language = req.body.language || serverLanguage
-
-  try {
-    const categories = await categoryService.getCategoryShort()
-
-    await writeInfoLog(
-      serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.GetCategorySuccessfully(user._id.toString(), ip)
-    )
-
-    res.json({
-      code: RESPONSE_CODE.GET_CATEGORY_SUCCESSFUL,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_SUCCESS,
-      categories
-    })
-  } catch (err) {
-    await writeErrorLog(
-      serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.GetCategoryFailed(user._id.toString(), ip, err)
-    )
-
-    res.json({
-      code: RESPONSE_CODE.GET_CATEGORY_FAILED,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
-          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
     })
   }
 }

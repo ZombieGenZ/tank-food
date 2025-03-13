@@ -98,23 +98,14 @@ class CategoryService {
   }
 
   async getCategory() {
-    const categories = await databaseService.categories.find({}).sort({ created_at: -1 }).toArray()
+    const categories = await databaseService.categories.find({}).sort({ index: 1 }).toArray()
     return categories
   }
 
   async findCategory(payload: FindCategoryRequestsBody) {
     const categories = await databaseService.categories
       .find({ $text: { $search: payload.keywords } })
-      .sort({ created_at: -1 })
-      .toArray()
-    return categories
-  }
-
-  async getCategoryShort() {
-    const categories = await databaseService.categories
-      .find({})
-      .sort({ index: 1 })
-      .project({ created_at: 0, updated_at: 0 })
+      .sort({ index: -1 })
       .toArray()
     return categories
   }
