@@ -7,6 +7,7 @@ import { Drawer } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
+import { Divider, Avatar } from '@mantine/core';
 import Category from './category.management.pages.tsx';
 import '/public/css/main.css'
 
@@ -64,8 +65,10 @@ function NavigationButtons(): JSX.Element {
     setOpen(false)
   }
 
+  const refresh_token = localStorage.getItem('refresh_token')
+
   return (
-    <div className='sticky top-0 z-50 bg-white'>
+    <div className='sticky top-0 z-50 navbarName'>
       <div className="p-2 lg:text-xl flex md:justify-around justify-between">
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
@@ -75,7 +78,7 @@ function NavigationButtons(): JSX.Element {
           </div>
         </div>
         <div className='hidden md:block px-6 py-2'>
-          <ul className='flex items-center gap-10'>
+          <ul className='flex items-center gap-5'>
             {
               Navbar.map((item: NavbarItem) => {
                 return <li key={item.id}>
@@ -87,20 +90,28 @@ function NavigationButtons(): JSX.Element {
           </ul>
         </div>
         <div className='flex items-center gap-4'>
-          <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
-                  onClick={() => navigate("/signup")}><IoIosLogIn /> Đăng nhập</button>
+          {
+            refresh_token !== null
+            ?  <div className='cursor-pointer text-lg'>
+                <Avatar radius="xl"/>
+                <p>User</p>
+            </div>
+            : <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
+                      onClick={() => navigate("/signup")}><IoIosLogIn /> Đăng nhập</button>
+          }
           <div className='md:hidden'>
             <button onClick={openDrawer}><IoMenu /></button>
           </div>
           <Drawer title="TankFood" onClose={closeDrawer} open={open}>
             <div className='w-full'>
-              <ul className='flex items-center flex-col gap-10'>
+              <ul className='flex items-center flex-col gap-5'>
                 {
                   Navbar.map((item: NavbarItem) => {
-                    return <li key={item.id}>
-                            <button onClick={() => navigate(item.path)}
-                                    className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">{item.title}</button> 
-                          </li>
+                    return <li key={item.id} className="text-xl">
+                              <button onClick={() => navigate(item.path)}
+                                      className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">{item.title}</button> 
+                              <Divider my="md" />
+                            </li>
                   })
                 }
               </ul>

@@ -26,7 +26,7 @@ export const Navbar = [
     },
     {
         id: 6,
-        title: "Quản lý danh mục",
+        title: "Danh mục",
         path: "/category"
     }
 ];

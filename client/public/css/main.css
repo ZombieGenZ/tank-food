@@ -7,7 +7,7 @@
     left: 0;
     bottom: 0;
     border-radius: 10px;
-    transition: .2s ease-in-out;
+    transition: .3s ease-in-out;
 }
 
 .links{
@@ -16,4 +16,13 @@
 
 .links:hover::after {
     width: 100%;
+}
+
+.navbarName {
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 0px 0px 16px 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(8.3px);
+    border: 1px solid rgba(212, 206, 23, 0.43);
 }

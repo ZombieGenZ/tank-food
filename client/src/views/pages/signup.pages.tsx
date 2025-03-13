@@ -122,8 +122,6 @@ const Signup: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log("Dữ liệu đăng ký:", formData);
-
             const bodyResignter = {
               language: null,
               display_name: formData.display_name,
@@ -150,6 +148,10 @@ const Signup: React.FC = () => {
                   style: {
                     marginTop: '10vh',
                   },
+                }).then(() => {
+                  setTimeout(() => {
+                    navigate("/*");
+                  }, 1500);
                 });
               } else {
                 messageApi.open({
@@ -176,7 +178,6 @@ const Signup: React.FC = () => {
     const handleLoginSubmit = (e: FormEvent) => {
         e.preventDefault();
         if(valiteLoginform()) {
-          console.log('Login Data:', loginData);
           const body = {
             language: null,
             email: loginData.email,
@@ -192,7 +193,10 @@ const Signup: React.FC = () => {
             return response.json()
           }).then((data) => {
             console.log(data)
-            if(data) {
+            if(data.message == "Đăng nhập tài khoản thành công") {
+              localStorage.setItem('access_token', data.authenticate.access_token)
+              localStorage.setItem('refresh_token', data.authenticate.refresh_token)
+              console.log(data.authenticate.refresh_token)
               messageApi.open({
                 type: 'success',
                 content: 'Đăng nhập thành công',
