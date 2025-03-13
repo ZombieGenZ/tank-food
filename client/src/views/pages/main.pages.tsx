@@ -69,10 +69,10 @@ function NavigationButtons(): JSX.Element {
       <div className="p-2 lg:text-xl flex md:justify-around justify-between">
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
-          <p onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
+          <div onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
             <IoFastFood /> 
             <p>Tank<span className='text-[#ffcc00]'>Food</span></p>
-          </p>
+          </div>
         </div>
         <div className='hidden md:block px-6 py-2'>
           <ul className='flex items-center gap-10'>
