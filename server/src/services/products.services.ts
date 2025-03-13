@@ -1,7 +1,8 @@
 import {
   CreateProductRequestsBody,
   UpdateProductRequestsBody,
-  DeleteProductRequestsBody
+  DeleteProductRequestsBody,
+  FindProductRequestsBody
 } from '~/models/requests/products.requests'
 import { translateContent } from '~/utils/ai.utils'
 import { SplitTranslationString } from '~/utils/string.utils'
@@ -202,6 +203,57 @@ class ProductService {
       databaseService.products.deleteOne({ _id: new ObjectId(payload.product_id) }),
       notificationRealtime('freshSync', 'delete-product', 'product/delete', data)
     ])
+  }
+  async getProduct() {
+    const products = await databaseService.products
+      .aggregate([
+        { $sort: { created_at: -1 } },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'tempCategory'
+          }
+        },
+        {
+          $addFields: {
+            categories: { $arrayElemAt: ['$tempCategory', 0] }
+          }
+        },
+        {
+          $project: {
+            category: 0,
+            tempCategory: 0
+          }
+        }
+      ])
+      .toArray()
+
+    return products
+  }
+  async findProduct(payload: FindProductRequestsBody) {
+    const products = await databaseService.products
+      .aggregate([
+        { $match: { $text: { $search: payload.keywords } } },
+        { $sort: { created_at: 1 } },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'categories'
+          }
+        },
+        {
+          $addFields: {
+            categoryInfo: { $arrayElemAt: ['$categories', 0] }
+          }
+        }
+      ])
+      .toArray()
+
+    return products
   }
 }
 

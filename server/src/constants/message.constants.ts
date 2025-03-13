@@ -68,10 +68,10 @@ export class VIETNAMESE_STATIC_MESSAGE {
     DELETE_CATEGORY_FAILURE: 'Xóa danh mục thất bại',
     GET_CATEGORY_SUCCESS: 'Lấy thông tin danh mục thành công',
     GET_CATEGORY_FAILURE: 'Lấy thông tin danh mục thất bại',
-    FIND_CATEGORY_SUCCESS: 'Tìm kiếm thông tin danh mục thành công',
-    FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký',
+    FIND_CATEGORY_SUCCESS: 'Tìm kiếm thông tin danh mục thành công',
+    FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -100,7 +100,13 @@ export class VIETNAMESE_STATIC_MESSAGE {
     UPDATE_PRODUCT_SUCCESS: 'Cập nhật sản phẩm thành công',
     UPDATE_PRODUCT_FAILURE: 'Cập nhật sản phẩm thất bại',
     DELETE_PRODUCT_SUCCESS: 'Xóa sản phẩm thành công',
-    DELETE_PRODUCT_FAILURE: 'Xóa sản phẩm thất bại'
+    DELETE_PRODUCT_FAILURE: 'Xóa sản phẩm thất bại',
+    GET_PRODUCT_SUCCESS: 'Lấy thông tin sản phẩm thành công',
+    GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
+    KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký',
+    FIND_PRODUCT_SUCCESS: 'Tìm kiếm thông tin sản phẩm thành công',
+    FIND_PRODUCT_FAILURE: 'Tìm kiếm thông tin sản phẩm thất bại'
   } as const
 }
 
@@ -175,10 +181,10 @@ export class ENGLISH_STATIC_MESSAGE {
     DELETE_CATEGORY_FAILURE: 'Category deletion failed',
     GET_CATEGORY_SUCCESS: 'Category information retrieved successfully',
     GET_CATEGORY_FAILURE: 'Category information retrieval failed',
-    FIND_CATEGORY_SUCCESS: 'Category information search successful',
-    FIND_CATEGORY_FAILURE: 'Category information search failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
-    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
+    FIND_CATEGORY_SUCCESS: 'Category information search successful',
+    FIND_CATEGORY_FAILURE: 'Category information search failed'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -207,7 +213,13 @@ export class ENGLISH_STATIC_MESSAGE {
     UPDATE_PRODUCT_SUCCESS: 'Product updated successfully',
     UPDATE_PRODUCT_FAILURE: 'Product update failed',
     DELETE_PRODUCT_SUCCESS: 'Product deleted successfully',
-    DELETE_PRODUCT_FAILURE: 'Product deletion failed'
+    DELETE_PRODUCT_FAILURE: 'Product deletion failed',
+    GET_PRODUCT_SUCCESS: 'Product information retrieved successfully',
+    GET_PRODUCT_FAILURE: 'Product information retrieval failed',
+    KEYWORD_IS_REQUIRED: 'Search keyword is required',
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
+    FIND_PRODUCT_SUCCESS: 'Product information search successful',
+    FIND_PRODUCT_FAILURE: 'Product information search failed'
   } as const
 }
 
@@ -255,16 +267,16 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
     return `Thực hiện xóa danh mục thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static GetCategorySuccessfully(ip: string) {
-    return `Thực hiện lấy thông tin danh mục thành công ((IP: ${ip})`
+    return `Thực hiện lấy thông tin danh mục thành công (IP: ${ip})`
   }
   static GetCategoryFailed(ip: string, err: unknown) {
-    return `Thực hiện lấy thông tin danh mục thất bại ((IP: ${ip}) | Lỗi: ${err}`
+    return `Thực hiện lấy thông tin danh mục thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
   static FindCategorySuccessfully(ip: string) {
-    return `Thực hiện tìm kiếm thông tin danh mục thành công ((IP: ${ip})`
+    return `Thực hiện tìm kiếm thông tin danh mục thành công (IP: ${ip})`
   }
   static FindCategoryFailed(ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin danh mục thất bại ((IP: ${ip}) | Lỗi: ${err}`
+    return `Thực hiện tìm kiếm thông tin danh mục thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
@@ -283,6 +295,18 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static ProductDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xóa sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static GetProductSuccessfully(ip: string) {
+    return `Thực hiện lấy thông tin sản phẩm thành công (IP: ${ip})`
+  }
+  static GetProductFailed(ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static FindProductSuccessfully(ip: string) {
+    return `Thực hiện tìm kiếm thông tin sản phẩm thành công (IP: ${ip})`
+  }
+  static FindProductFailed(ip: string, err: unknown) {
+    return `Thực hiện tìm kiếm thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
 }
 
@@ -330,10 +354,10 @@ export class ENGLIS_DYNAMIC_MESSAGE {
     return `Category deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static GetCategorySuccessfully(ip: string) {
-    return `Category information retrieval successful ((IP: ${ip})`
+    return `Category information retrieval successful (IP: ${ip})`
   }
   static GetCategoryFailed(ip: string, err: unknown) {
-    return `Category information retrieval failed ((IP: ${ip}) | Error: ${err}`
+    return `Category information retrieval failed (IP: ${ip}) | Error: ${err}`
   }
   static FindCategorySuccessfully(ip: string) {
     return `Category information search successful (IP: ${ip})`
@@ -358,5 +382,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static ProductDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Product deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static GetProductSuccessfully(ip: string) {
+    return `Product information retrieval successful (IP: ${ip})`
+  }
+  static GetProductFailed(ip: string, err: unknown) {
+    return `Product information retrieval failed (IP: ${ip}) | Error: ${err}`
+  }
+  static FindProductSuccessfully(ip: string) {
+    return `Product information search successful (IP: ${ip})`
+  }
+  static FindProductFailed(ip: string, err: unknown) {
+    return `Product information search failed (IP: ${ip}) | Error: ${err}`
   }
 }

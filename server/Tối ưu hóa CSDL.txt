@@ -8,3 +8,12 @@ db.categories.createIndex({
   category_name_translate_1: "text",
   category_name_translate_2: "text"
 }, { name: "category_name_translate_1_text_category_name_translate_2_text" })
+// products collections
+db.products.createIndex({
+  title_translate_1: "text",
+  title_translate_2: "text",
+  description_translate_1: "text",
+  description_translate_2: "text",
+  tag_translate_1: "text",
+  tag_translate_2: "text"
+}, { name: "title_translate_1_text_title_translate_2_text_description_translate_1_text_description_translate_2_text_tag_translate_1_text_tag_translate_2_text" })

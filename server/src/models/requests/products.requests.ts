@@ -23,3 +23,12 @@ export interface DeleteProductRequestsBody {
   language?: string
   product_id: string
 }
+
+export interface GetProductRequestsBody {
+  language?: string
+}
+
+export interface FindProductRequestsBody {
+  language?: string
+  keywords: string
+}
