@@ -1,9 +1,8 @@
 import Loading from '../components/loading_page_components.tsx'
 import { Navbar } from '../components/navbar_component.tsx';
-import { IoFastFood } from "react-icons/io5";
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
-import { Drawer } from "antd";
+import { Drawer , Select } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
@@ -15,6 +14,7 @@ import '/public/css/main.css'
 interface NavbarItem {
   id: number;
   title: string;
+  english: string,
   path: string;
 }
 
@@ -45,7 +45,7 @@ const FormMain = (): JSX.Element => {
           <Routes>
             <Route path="/*" element={<Main />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path='/category' element={<Category />}/>
+            <Route path='/menu' element={<Category />}/>
           </Routes>
         </div>
       }
@@ -56,6 +56,21 @@ const FormMain = (): JSX.Element => {
 function NavigationButtons(): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
+
+  const handleChange = (value: string) => {
+    console.log("Giá trị được chọn:", value);
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+  };
 
   const openDrawer = (): void => {
     setOpen(true)
@@ -73,7 +88,7 @@ function NavigationButtons(): JSX.Element {
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
           <div onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
-            <IoFastFood /> 
+            <img src="/public/images/system/logo tank food.png" className='w-16' alt="logo" /> 
             <p>Tank<span className='text-[#ffcc00]'>Food</span></p>
           </div>
         </div>
@@ -83,13 +98,26 @@ function NavigationButtons(): JSX.Element {
               Navbar.map((item: NavbarItem) => {
                 return <li key={item.id}>
                         <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
-                                onClick={() => navigate(item.path)}>{item.title}</button> 
+                                onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
                       </li>
               })
             }
           </ul>
         </div>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-10'>
+          <div className='flex items-center'>
+            <Select
+              defaultValue={language}
+              size='large'
+              style={{ width: 120, height: '100%', color: '#FF9A3D' }}
+              options={[
+                { value: 'Tiếng Việt', label: 'Tiếng Việt' },
+                { value: 'English', label: 'English' },
+              ]}
+              className='border-2 rounded-[10px] border-[#FF9A3D] px-6 py-2'
+              onChange={handleChange}
+            />
+          </div>
           {
             refresh_token !== null
             ?  <div className='cursor-pointer text-lg'>
@@ -97,9 +125,9 @@ function NavigationButtons(): JSX.Element {
                 <p>User</p>
             </div>
             : <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
-                      onClick={() => navigate("/signup")}><IoIosLogIn /> Đăng nhập</button>
+                      onClick={() => navigate("/signup")}><IoIosLogIn />{language == "Tiếng Việt" ? "Đăng nhập" : "Login"}</button>
           }
-          <div className='md:hidden'>
+          <div className='md:hidden px-4 py-2 bg-[#FF6B35] rounded-full text-[#ffffff]'>
             <button onClick={openDrawer}><IoMenu /></button>
           </div>
           <Drawer title="TankFood" onClose={closeDrawer} open={open}>
@@ -252,12 +280,12 @@ function Main(): JSX.Element {
         </div>
   
         {/* Điểm điều hướng */}
-        <div className="flex justify-center mt-5 mb-10">
+        <div className="flex justify-center mt-[-80px] mb-10 z-50">
           {slides.map((_, index) => (
             <span 
               key={index}
-              className={`inline-block h-3 w-3 mx-1 rounded-full cursor-pointer transition-colors ${
-                index === slideIndex ? 'bg-gray-800' : 'bg-gray-400 hover:bg-gray-600'
+              className={`inline-block h-3 w-3 mx-1 rounded-full cursor-pointer border-1 border-[#ffffff] transition-colors ${
+                index === slideIndex ? 'bg-[#ff9b42]' : 'bg-transparent hover:bg-[#ff9b42]'
               }`}
               onClick={() => currentSlide(index)}
             ></span>
