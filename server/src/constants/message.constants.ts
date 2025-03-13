@@ -10,7 +10,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     EMAIL_IS_REQUIRED: 'Không được bỏ trống địa chỉ email',
     EMAIL_MUST_BE_A_STRING: 'Địa chỉ email phải là một chuổi ký tự',
     EMAIL_LENGTH_MUST_BE_FROM_5_TO_100: 'Địa chỉ email phải có độ dài từ 5 đến 100 ký tự',
-    EMAIL_IS_NOT_VALID: 'Địa chỉ email không đúng định dạn',
+    EMAIL_IS_NOT_VALID: 'Địa chỉ email không đúng định dạngg',
     EMAIL_ALREADY_EXISTS: 'Địa chỉ email đã được sử dụng',
     PHONE_IS_REQUIRED: 'Không được bỏ trống số điện thoại',
     PHONE_MUST_BE_A_STRING: 'Số điện thoại phải là một chuổi ký tự',
@@ -107,6 +107,26 @@ export class VIETNAMESE_STATIC_MESSAGE {
     KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuổi ký',
     FIND_PRODUCT_SUCCESS: 'Tìm kiếm thông tin sản phẩm thành công',
     FIND_PRODUCT_FAILURE: 'Tìm kiếm thông tin sản phẩm thất bại'
+  } as const
+
+  static VOUCHER_MESSAGE = {
+    CODE_IS_REQUIRED: 'Không được bỏ trống mã giảm giá',
+    CODE_MUST_BE_A_STRING: 'Mã giảm giá phải là một chuổi ký tự',
+    CODE_LENGTH_MUST_BE_FROM_1_TO_50: 'Mã giảm giá phải có độ dài từ 1 đến 50 ký tự',
+    VOUCHER_QUANTITY_IS_REQUIRED: 'Không được bỏ trống số lượng mã giảm giá',
+    VOUCHER_QUANTITY_MUST_BE_A_NUMBER: 'Số lượng mã giảm giá phải là một số',
+    PRODUCT_QUANTITY_MUST_BE_GREATER_THAN_0: 'Số lượng mã giảm giá phải lớn hơn 0',
+    VOUCHER_DISCOUNT_IS_REQUIRED: 'Không được bỏ trống giá tiền giảm giá',
+    VOUCHER_DISCOUNT_MUST_BE_A_NUMBER: 'Giá tiền giảm giá phải là một số',
+    PRODUCT_DISCOUNT_MUST_BE_GREATER_THAN_0: 'Giá tiền giảm giá phải lớn hơn 0',
+    VOUCHER_REQUIREMENT_IS_REQUIRED: 'Không được bỏ trống yêu cầu mã giảm giá',
+    VOUCHER_REQUIREMENT_MUST_BE_A_NUMBER: 'Yêu cầu mã giảm giá phải là một số',
+    PRODUCT_REQUIREMENT_MUST_BE_GREATER_THAN_0: 'Yêu cầu mã giảm giá phải lớn hơn 0',
+    VOUCHER_EXPIRATION_IS_REQUIRED: 'Không được bỏ trống ngày hết hạn',
+    VOUCHER_EXPIRATION_IS_NOT_VALID: 'Ngày hết hạn không hợp lệ',
+    PRODUCT_EXPIRATION_MUST_BE_GREATER_THAN_CURRENT_DATE: 'Ngày hết hạn phải lớn hơn ngày hiện tại',
+    CREATE_VOUCHER_SUCCESS: 'Tạo mã giảm giá thành công',
+    CREATE_VOUCHER_FAILURE: 'Tạo mã giảm giá thất bại'
   } as const
 }
 
@@ -221,6 +241,27 @@ export class ENGLISH_STATIC_MESSAGE {
     FIND_PRODUCT_SUCCESS: 'Product information search successful',
     FIND_PRODUCT_FAILURE: 'Product information search failed'
   } as const
+
+  static VOUCHER_MESSAGE = {
+    CODE_IS_REQUIRED: 'Voucher code is required',
+    CODE_MUST_BE_A_STRING: 'Voucher code must be a string',
+    CODE_LENGTH_MUST_BE_FROM_1_TO_50: 'Voucher code must be between 1 and 50 characters',
+    VOUCHER_QUANTITY_IS_REQUIRED: 'Voucher quantity is required',
+    VOUCHER_QUANTITY_MUST_BE_A_NUMBER: 'Voucher quantity must be a number',
+    PRODUCT_QUANTITY_MUST_BE_GREATER_THAN_0: 'Voucher quantity must be greater than 0',
+    VOUCHER_DISCOUNT_IS_REQUIRED: 'Voucher discount is required',
+    VOUCHER_DISCOUNT_MUST_BE_A_NUMBER: 'Voucher discount must be a number',
+    PRODUCT_DISCOUNT_MUST_BE_GREATER_THAN_0: 'Voucher discount must be greater than 0',
+    VOUCHER_REQUIREMENT_IS_REQUIRED: 'Voucher requirement is required',
+    VOUCHER_REQUIREMENT_MUST_BE_A_NUMBER: 'Voucher requirement must be a number',
+    PRODUCT_REQUIREMENT_MUST_BE_GREATER_THAN_0: 'Voucher requirement must be greater than 0',
+    VOUCHER_EXPIRATION_IS_REQUIRED: 'Voucher expiration date is required',
+    VOUCHER_EXPIRATION_IS_NOT_VALID: 'Voucher expiration date is invalid',
+    PRODUCT_EXPIRATION_MUST_BE_GREATER_THAN_CURRENT_DATE:
+      'Voucher expiration date must be greater than the current date',
+    CREATE_VOUCHER_SUCCESS: 'Voucher created successfully',
+    CREATE_VOUCHER_FAILURE: 'Voucher creation failed'
+  } as const
 }
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
@@ -308,6 +349,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static FindProductFailed(ip: string, err: unknown) {
     return `Thực hiện tìm kiếm thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static VoucherCreateSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện tạo mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static VoucherCreateFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện tạo mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -372,10 +419,10 @@ export class ENGLIS_DYNAMIC_MESSAGE {
     return `Product creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static ProductUpdateSuccessfully(user_id: string, ip: string) {
-    return `Thực hiện cập nhật sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
+    return `Product update successful (User: ${user_id}) (IP: ${ip})`
   }
   static ProductUpdateFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện cập nhật sản phẩm thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+    return `Product update failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static ProductDeleteSuccessfully(user_id: string, ip: string) {
     return `Product deletion successful (User: ${user_id}) (IP: ${ip})`
@@ -394,5 +441,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static FindProductFailed(ip: string, err: unknown) {
     return `Product information search failed (IP: ${ip}) | Error: ${err}`
+  }
+  static VoucherCreateSuccessfully(user_id: string, ip: string) {
+    return `Voucher creation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static VoucherCreateFailed(user_id: string, ip: string, err: unknown) {
+    return `Voucher creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

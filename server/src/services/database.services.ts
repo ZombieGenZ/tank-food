@@ -8,6 +8,8 @@ import { serverLanguage } from '~/index'
 import Category from '~/models/schemas/categories.schemas'
 import Prompt from '~/models/schemas/prompt.schemas'
 import Product from '~/models/schemas/product.schemas'
+import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
+import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@tank-food.l2yv7.mongodb.net/?retryWrites=true&w=majority&appName=TANK-Food`
@@ -50,6 +52,12 @@ class DatabaseService {
   }
   get products(): Collection<Product> {
     return this.db.collection(process.env.DATABASE_PRODUCT_COLLECTION as string)
+  }
+  get voucherPublic(): Collection<VoucherPublic> {
+    return this.db.collection(process.env.DATABASE_VOUCHER_PUBLIC_COLLECTION as string)
+  }
+  get voucherPrivate(): Collection<VoucherPrivate> {
+    return this.db.collection(process.env.DATABASE_VOUCHER_PRIVATE_COLLECTION as string)
   }
   get prompt(): Collection<Prompt> {
     return this.db.collection(process.env.DATABASE_PROMPT_COLLECTION as string)

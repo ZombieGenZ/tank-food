@@ -55,10 +55,14 @@ app.get('/', (req, res) => {
 import api_users from '~/routes/users.routes'
 import api_categories from '~/routes/categories.routes'
 import api_products from '~/routes/products.routes'
+import api_voucher_public from '~/routes/voucherPublic.routes'
+import api_voucher_private from '~/routes/voucherPrivate.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
 app.use('/api/products', api_products)
+app.use('/api/voucher-public', api_voucher_public)
+app.use('/api/voucher-private', api_voucher_private)
 
 app.use(defaultErrorHandler)
 
