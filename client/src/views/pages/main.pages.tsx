@@ -6,8 +6,10 @@ import { Drawer , Select } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
-import { Divider, Avatar } from '@mantine/core';
+import { Divider } from '@mantine/core';
 import Category from './category.management.pages.tsx';
+import { Avatar, Popover } from "antd";
+import { FaUserCircle } from "react-icons/fa";
 import '/public/css/main.css'
 
 // Define the Navbar item type
@@ -120,10 +122,9 @@ function NavigationButtons(): JSX.Element {
           </div>
           {
             refresh_token !== null
-            ?  <div className='cursor-pointer text-lg'>
-                <Avatar radius="xl"/>
-                <p>User</p>
-            </div>
+            ?  <Popover content="Nam đen" className='cursor-pointer text-lg'>
+                  <Avatar size="large" icon={<FaUserCircle />} />
+                </Popover>
             : <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
                       onClick={() => navigate("/signup")}><IoIosLogIn />{language == "Tiếng Việt" ? "Đăng nhập" : "Login"}</button>
           }
@@ -295,7 +296,11 @@ function Main(): JSX.Element {
     );
   };
 
-  return <Slideshow />;
+  return (
+      <>
+        <Slideshow />
+      </>
+    );
 }
 
 export default FormMain
