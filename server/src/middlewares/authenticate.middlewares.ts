@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema, validationResult } from 'express-validator'
-import { ParamsDictionary } from 'express-serve-static-core'
 import { LANGUAGE } from '~/constants/language.constants'
-import { AuthenticateRequestsBody } from '~/models/requests/authenticate.requests'
 import { serverLanguage } from '~/index'
 import { VIETNAMESE_STATIC_MESSAGE, ENGLISH_STATIC_MESSAGE } from '~/constants/message.constants'
 import { verifyToken } from '~/utils/jwt.utils'

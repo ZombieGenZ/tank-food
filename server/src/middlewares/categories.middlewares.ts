@@ -303,11 +303,7 @@ export const deleteCategoryValidator = async (
     })
 }
 
-export const findCategoryValidator = async (
-  req: Request<ParamsDictionary, any, FindCategoryRequestsBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const findCategoryValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
