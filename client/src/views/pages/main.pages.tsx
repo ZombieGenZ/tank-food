@@ -5,12 +5,16 @@ import { Drawer , Select } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
-import { Divider } from '@mantine/core';
+import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
-import { Avatar, Popover } from "antd";
-import { FaUserCircle } from "react-icons/fa";
+import { Dropdown, Button } from "antd";
+import { message } from 'antd';
 import '/public/css/main.css'
 import { gsap } from 'gsap';
+import type { MenuProps } from 'antd';
+import { FaRegUserCircle } from "react-icons/fa";
+import { IoLogOutOutline } from "react-icons/io5";
+
 
 // Define the Navbar item type
 interface NavbarItem {
@@ -65,13 +69,13 @@ const FormMain = (): JSX.Element => {
 function NavigationButtons(): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
   const [language, setLanguage] = useState<string>(() => {
     const SaveedLanguage = localStorage.getItem('language')
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
   })
 
   const handleChange = (value: string) => {
-    console.log("Giá trị được chọn:", value);
     setLanguage(value)
     localStorage.setItem('language', JSON.stringify(value))
     if(value == "Tiếng Việt") {
@@ -90,10 +94,57 @@ function NavigationButtons(): JSX.Element {
   }
 
   const refresh_token = localStorage.getItem('refresh_token')
+  const access_token = localStorage.getItem('access_token')
 
+  const Logout = () => {
+    const body = {
+      language: null,
+      refresh_token: refresh_token
+    }
+    fetch('http://localhost:3000/api/users/logout', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`
+      },
+      body: JSON.stringify(body)
+    }).then(response => {
+      return response.json()
+    }).then((data) => {
+      console.log(data)
+      messageApi.open({
+        type: 'success',
+        content: 'Đăng nhập thành công',
+        style: {
+          marginTop: '10vh',
+        },
+      })
+    })
+  }
+  
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <button
+          className='flex gap-2 items-center'
+        ><FaRegUserCircle /> Thông tin tài khoản</button>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <button
+          onClick={() => Logout()}
+          className='flex gap-2 items-center'
+        ><IoLogOutOutline /> Đăng xuất</button>
+      ),
+    },
+  ];
   return (
     <div className='sticky top-0 z-50 navbarName'>
-      <div className="p-2 lg:text-xl flex md:justify-around justify-between">
+      {contextHolder}
+      <div className="p-2 lg:text-xl flex xl:justify-around justify-between">
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
           <div onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
@@ -101,7 +152,7 @@ function NavigationButtons(): JSX.Element {
             <p>Tank<span className='text-[#ffcc00]'>Food</span></p>
           </div>
         </div>
-        <div className='hidden md:block px-6 py-2'>
+        <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
             {
               Navbar.map((item: NavbarItem) => {
@@ -118,24 +169,30 @@ function NavigationButtons(): JSX.Element {
             <Select
               defaultValue={language}
               size='large'
-              style={{ width: 120, height: '100%', color: '#FF9A3D' }}
+              style={{ color: '#FF9A3D' }}
               options={[
                 { value: 'Tiếng Việt', label: 'Tiếng Việt' },
                 { value: 'English', label: 'English' },
               ]}
-              className='border-2 rounded-[10px] border-[#FF9A3D] px-6 py-2'
               onChange={handleChange}
             />
           </div>
           {
             refresh_token !== null
-            ?  <Popover content="Nam đen" className='cursor-pointer text-lg'>
-                  <Avatar size="large" icon={<FaUserCircle />} />
-                </Popover>
-            : <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
-                      onClick={() => navigate("/signup")}><IoIosLogIn />{language == "Tiếng Việt" ? "Đăng nhập" : "Login"}</button>
+            ?  // <Popover content="Nam đen" className='cursor-pointer text-lg'>
+            //       <Avatar size="large" icon={<FaUserCircle />} />
+            //     </Popover>
+            <Dropdown menu={{ items }} 
+                      placement="bottom" 
+                      arrow>
+              <Button>Tài khoản</Button>
+            </Dropdown>
+            : 
+            <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
+                onClick={() => navigate("/signup")}><IoIosLogIn />{language == "Tiếng Việt" ? "Đăng nhập" : "Login"}
+            </button>
           }
-          <div className='md:hidden px-4 py-2 bg-[#FF6B35] rounded-full text-[#ffffff]'>
+          <div className='xl:hidden px-4 py-2 bg-[#FF6B35] rounded-full text-[#ffffff]'>
             <button onClick={openDrawer}><IoMenu /></button>
           </div>
           <Drawer title="TankFood" onClose={closeDrawer} open={open}>
@@ -145,7 +202,8 @@ function NavigationButtons(): JSX.Element {
                   Navbar.map((item: NavbarItem) => {
                     return <li key={item.id} className="text-xl">
                               <button onClick={() => navigate(item.path)}
-                                      className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">{item.title}</button> 
+                                      className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                                      {language == "Tiếng Việt" ? item.title : item.english}</button> 
                               <Divider my="md" />
                             </li>
                   })

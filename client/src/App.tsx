@@ -5,7 +5,6 @@ import { Transition } from '@mantine/core';
 
 const App = () => {
   const [scroll, scrollTo] = useWindowScroll();
-  console.log(scroll.y)
   return (
     <div>
       <BrowserRouter>
