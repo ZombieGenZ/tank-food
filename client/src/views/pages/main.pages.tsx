@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
 import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
+import ContactUs from './contact.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message } from 'antd';
 import '/public/css/main.css'
@@ -14,7 +15,7 @@ import { gsap } from 'gsap';
 import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
-
+import { MdAccountBox } from "react-icons/md";
 
 // Define the Navbar item type
 interface NavbarItem {
@@ -59,6 +60,7 @@ const FormMain = (): JSX.Element => {
             <Route path="/*" element={<Main />} />
             <Route path="/signup" element={<Signup />} />
             <Route path='/menu' element={<Category />}/>
+            <Route path='/contact' element={<ContactUs />}/>
           </Routes>
         </div>
       }
@@ -185,7 +187,9 @@ function NavigationButtons(): JSX.Element {
             <Dropdown menu={{ items }} 
                       placement="bottom" 
                       arrow>
-              <Button>Tài khoản</Button>
+              <Button
+                className='p-10'
+              ><MdAccountBox /> Tài khoản</Button>
             </Dropdown>
             : 
             <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
