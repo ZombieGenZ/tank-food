@@ -29,6 +29,7 @@
     "client": "file:",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
+    "framer-motion": "^12.5.0",
     "gsap": "^3.12.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
