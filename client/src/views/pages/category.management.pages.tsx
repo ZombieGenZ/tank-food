@@ -1,4 +1,5 @@
 import { JSX, useState, useEffect } from "react";
+import CardProduct from "../components/Card.components";
 
 interface CategoryItem {
     category_name_translate_1: string;
@@ -10,7 +11,9 @@ interface CategoryItem {
     updated_at: string;
     id: string;
 }
+
 const Category = (): JSX.Element => {
+
     const [product, setProduct] = useState<CategoryItem[]>([])
     const [category, setCategory] = useState<CategoryItem[]>([])
     useEffect(() => {
@@ -46,8 +49,7 @@ const Category = (): JSX.Element => {
     
     return(
         <div>
-           <h1 className="text-3xl font-bold text-center mt-4">Danh Mục</h1>
-
+            <CardProduct />
         </div>
     )
 }
