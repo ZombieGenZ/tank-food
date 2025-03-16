@@ -12,9 +12,10 @@ import { ObjectId } from 'mongodb'
 import { ImageType } from '~/constants/images.constants'
 import { deleteCurrentFile } from '~/utils/image.utils'
 import { notificationRealtime } from '~/utils/realtime.utils'
+import User from '~/models/schemas/users.schemas'
 
 class ProductService {
-  async create(payload: CreateProductRequestsBody, image: ImageType) {
+  async create(payload: CreateProductRequestsBody, image: ImageType, user: User) {
     let translateTagResult = null
     if (payload.tag) {
       const translateTag = await translateContent(payload.tag)
@@ -48,7 +49,9 @@ class ProductService {
       tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-      preview: image
+      preview: image,
+      created_by: user._id,
+      updated_by: user._id
     })
 
     Promise.all([
@@ -56,7 +59,7 @@ class ProductService {
       notificationRealtime('freshSync', 'create-product', 'product/create', product)
     ])
   }
-  async update(payload: UpdateProductRequestsBody, product: Product) {
+  async update(payload: UpdateProductRequestsBody, product: Product, user: User) {
     let translateTagResult = null
     if (payload.tag) {
       const translateTag = await translateContent(payload.tag)
@@ -73,7 +76,7 @@ class ProductService {
     const translateDescriptionResult = SplitTranslationString(translateDescription)
 
     const product_id = new ObjectId()
-    const data = new Product({
+    const data = {
       _id: product_id,
       title_translate_1: payload.title.trim(),
       title_translate_1_language: translateTitleResult.language_1,
@@ -90,8 +93,9 @@ class ProductService {
       tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-      preview: product.preview
-    })
+      preview: product.preview,
+      updated_by: user._id
+    }
 
     await Promise.all([
       databaseService.products.updateOne(
@@ -114,7 +118,8 @@ class ProductService {
             tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
             tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
             tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
-            tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2
+            tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
+            updated_by: user._id
           },
           $currentDate: {
             updated_at: true
@@ -124,7 +129,7 @@ class ProductService {
       notificationRealtime('freshSync', 'update-product', 'product/update', data)
     ])
   }
-  async updateChangeImage(payload: UpdateProductRequestsBody, image: ImageType, product: Product) {
+  async updateChangeImage(payload: UpdateProductRequestsBody, image: ImageType, product: Product, user: User) {
     let translateTagResult = null
     if (payload.tag) {
       const translateTag = await translateContent(payload.tag)
@@ -141,7 +146,7 @@ class ProductService {
     const translateDescriptionResult = SplitTranslationString(translateDescription)
 
     const product_id = new ObjectId()
-    const data = new Product({
+    const data = {
       _id: product_id,
       title_translate_1: payload.title.trim(),
       title_translate_1_language: translateTitleResult.language_1,
@@ -158,8 +163,9 @@ class ProductService {
       tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-      preview: product.preview
-    })
+      preview: product.preview,
+      updated_by: user._id
+    }
 
     await Promise.all([
       databaseService.products.updateOne(
@@ -183,7 +189,8 @@ class ProductService {
             tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
             tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
             tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-            preview: image
+            preview: image,
+            updated_by: user._id
           },
           $currentDate: {
             updated_at: true

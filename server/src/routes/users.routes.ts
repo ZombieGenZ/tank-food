@@ -3,7 +3,8 @@ import {
   registerUserController,
   loginUserController,
   logoutUserController,
-  verifyTokenUserController
+  verifyTokenUserController,
+  getUserInfomationController
 } from '~/controllers/users.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import { registerUserValidator, loginUserValidator, verifyTokenValidator } from '~/middlewares/users.middlewares'
@@ -64,5 +65,19 @@ router.post('/logout', authenticateValidator, wrapRequestHandler(logoutUserContr
  * }
  */
 router.post('/verify-token', verifyTokenValidator, wrapRequestHandler(verifyTokenUserController))
+
+/*
+ * Description: Lấy thông tin người dùng
+ * Path: /api/users/get-user-infomation
+ * Method: POST
+ * headers: {
+ *    authorization?: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post('/get-user-infomation', authenticateValidator, wrapRequestHandler(getUserInfomationController))
 
 export default router

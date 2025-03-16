@@ -29,7 +29,7 @@ export const createCategoryController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await categoryService.create(req.body)
+    await categoryService.create(req.body, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -70,7 +70,7 @@ export const updateCategoryController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await categoryService.update(req.body)
+    await categoryService.update(req.body, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE

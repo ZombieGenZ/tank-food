@@ -60,12 +60,57 @@ import api_voucher_private from '~/routes/voucherPrivate.routes'
 import { verifyToken } from './utils/jwt.utils'
 import { TokenPayload } from './models/requests/authentication.requests'
 import { ObjectId } from 'mongodb'
+import OrderOnline from './models/schemas/orderOnline.schemas'
+import OrderOffline from './models/schemas/orderOffline.schemas'
+import VoucherPrivate from './models/schemas/voucherPrivate.schemas'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
 app.use('/api/products', api_products)
 app.use('/api/voucher-public', api_voucher_public)
 app.use('/api/voucher-private', api_voucher_private)
+
+databaseService.voucherPrivate.insertOne(
+  new VoucherPrivate({
+    code: 'AAA',
+    discount: 100000,
+    requirement: 0,
+    user: new ObjectId('67ced2c2c8d0bd54b4ac2ffe')
+  })
+)
+
+databaseService.orderOnline.insertOne(
+  new OrderOnline({
+    product: {
+      product_id: new ObjectId('67d13785863cd2b42a140c88'),
+      price: 1000,
+      quantity: 1
+    },
+    total_quantity: 1,
+    total_price: 1000,
+    fee: 500,
+    total_bill: 1500,
+    shipper: new ObjectId('67d195ccf615535dee9ec973'),
+    user: new ObjectId('67ced2c2c8d0bd54b4ac2ffe'),
+    name: 'Khoa',
+    email: 'khoa@gmail.com',
+    phone: '0000000000',
+    address: 'addbccbbc'
+  })
+)
+
+databaseService.orderOffline.insertOne(
+  new OrderOffline({
+    product: {
+      product_id: new ObjectId('67d13785863cd2b42a140c88'),
+      price: 1000,
+      quantity: 1
+    },
+    total_quantity: 1,
+    total_price: 1000,
+    total_bill: 1500
+  })
+)
 
 app.use(defaultErrorHandler)
 
@@ -100,7 +145,9 @@ io.on('connection', (socket: Socket) => {
     // translate_1_language: string,
     // category_name_translate_2: string,
     // translate_2_language: string,
-    // index: number
+    // index: number,
+    // created_by: string,
+    // updated_by: string
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID Danh mục
     // category_name_translate_1:
@@ -116,6 +163,10 @@ io.on('connection', (socket: Socket) => {
     // Mã ngôn ngữ của bản dịch số 2
     // (có 2 loại vi-VN và en-US)
     // index: độ ưu tiên của danh mục
+    // created_by:
+    // ID người tạo danh mục
+    // updated_by:
+    // ID người cập nhật danh mục
     //
     // sự kiện: update-category
     // mô tả: Cập nhật thông tin danh mục vừa được cập nhật vào CSDL
@@ -125,7 +176,8 @@ io.on('connection', (socket: Socket) => {
     // translate_1_language: string,
     // category_name_translate_2: string,
     // translate_2_language: string,
-    // index: number
+    // index: number,
+    // updated_by: string
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID Danh mục
     // category_name_translate_1:
@@ -141,6 +193,8 @@ io.on('connection', (socket: Socket) => {
     // Mã ngôn ngữ của bản dịch số 2
     // (có 2 loại vi-VN và en-US)
     // index: độ ưu tiên của danh mục
+    // updated_by:
+    // ID người cập nhật danh mục
     //
     // sự kiện: delete-category
     // mô tả: Cập nhật thông tin danh mục vừa được xóa khỏi CSDL
@@ -173,7 +227,9 @@ io.on('connection', (socket: Socket) => {
     //    path: string
     //    url: string
     //    size: number
-    // }
+    //}
+    // created_by: string
+    // updated_by: string
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID Sản phẩm,
     // title_translate_1:
@@ -227,6 +283,10 @@ io.on('connection', (socket: Socket) => {
     // path: Đường dẫn ảnh (serve only)
     // url: URL ảnh (web url)
     // size: Kích thước ảnh
+    // created_by:
+    // ID người tạo sản phẩm
+    // updated_by:
+    // ID người cập nhật sản phẩm
     //
     // sự kiện: update-product
     // mô tả: Cập nhật thông tin sản phẩm vừa được cập nhật vào CSDL
@@ -254,6 +314,7 @@ io.on('connection', (socket: Socket) => {
     //    url: string
     //    size: number
     // }
+    // updated_by: string
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID Sản phẩm,
     // title_translate_1:
@@ -307,8 +368,10 @@ io.on('connection', (socket: Socket) => {
     // path: Đường dẫn ảnh (serve only)
     // url: URL ảnh (web url)
     // size: Kích thước ảnh
+    // updated_by:
+    // ID người cập nhật sản phẩm
     //
-    // sự kiện: delete-productproduct
+    // sự kiện: delete-product
     // mô tả: Cập nhật thông tin sản phẩm vừa được xóa khỏi CSDL
     // dữ liệu: _id: ObjectId
     // Mô tả chi tiết công dụng của dữ liệu:
@@ -340,6 +403,8 @@ io.on('connection', (socket: Socket) => {
     // quantity: number,
     // expiration_date: Date,
     // requirement: number
+    // create_by: string
+    // update_by: string
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID voucher (Công khai)
     // code: mã giảm giá
@@ -347,6 +412,8 @@ io.on('connection', (socket: Socket) => {
     // quantity: số lượng voucher
     // expiration_date: thời gian hết hạn
     // requirement: yêu cầu tối thiểu để xử dụng voucher
+    // create_by: ID người tạo voucher
+    // update_by: ID người cập nhật voucher
     //
     // sự kiện: update-public-voucher
     // mô tả: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
@@ -357,6 +424,7 @@ io.on('connection', (socket: Socket) => {
     // quantity: number,
     // expiration_date: Date,
     // requirement: number
+    // update_by: string
     // Mô tả chi tiết công dụng của dữ liệu:
     // _id: ID voucher (Công khai)
     // code: mã giảm giá
@@ -364,6 +432,7 @@ io.on('connection', (socket: Socket) => {
     // quantity: số lượng voucher
     // expiration_date: thời gian hết hạn
     // requirement: yêu cầu tối thiểu để xử dụng voucher
+    // update_by: ID người cập nhật voucher
     //
     // sự kiện: delete-public-voucher
     // mô tả: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL

@@ -29,7 +29,7 @@ export const createVoucherController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await voucherPublicService.create(req.body)
+    await voucherPublicService.create(req.body, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -70,7 +70,7 @@ export const updateVoucherController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await voucherPublicService.update(req.body)
+    await voucherPublicService.update(req.body, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE

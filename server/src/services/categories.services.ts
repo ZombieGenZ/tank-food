@@ -10,9 +10,10 @@ import { translateContent } from '~/utils/ai.utils'
 import { SplitTranslationString } from '~/utils/string.utils'
 import { ObjectId } from 'mongodb'
 import { notificationRealtime } from '~/utils/realtime.utils'
+import User from '~/models/schemas/users.schemas'
 
 class CategoryService {
-  async create(payload: CreateCategoryRequestsBody) {
+  async create(payload: CreateCategoryRequestsBody, user: User) {
     const translate = await translateContent(payload.category_name)
     const translateResult = SplitTranslationString(translate)
 
@@ -23,6 +24,8 @@ class CategoryService {
       translate_1_language: translateResult.language_1,
       category_name_translate_2: translateResult.translate_string.trim(),
       translate_2_language: translateResult.language_2,
+      created_by: user._id,
+      updated_by: user._id,
       index: Number(payload.index)
     })
 
@@ -32,7 +35,7 @@ class CategoryService {
     ])
   }
 
-  async update(payload: UpdateCategoryRequestsBody) {
+  async update(payload: UpdateCategoryRequestsBody, user: User) {
     const translate = await translateContent(payload.category_name)
     const translateResult = SplitTranslationString(translate)
 
@@ -44,6 +47,7 @@ class CategoryService {
       translate_1_language: translateResult.language_1,
       category_name_translate_2: translateResult.translate_string.trim(),
       translate_2_language: translateResult.language_2,
+      updated_by: user._id,
       index: Number(payload.index)
     }
 
@@ -58,6 +62,7 @@ class CategoryService {
             translate_1_language: translateResult.language_1,
             category_name_translate_2: translateResult.translate_string.trim(),
             translate_2_language: translateResult.language_2,
+            updated_by: user._id,
             index: Number(payload.index)
           },
           $currentDate: {

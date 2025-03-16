@@ -9,7 +9,7 @@ interface OrderOnlineType {
   fee: number
   total_bill: number
   shipper?: ObjectId | null
-  user: ObjectId
+  user?: ObjectId | null
   name: string
   email: string
   phone: string
@@ -31,7 +31,7 @@ export default class OrderOnline {
   fee: number
   total_bill: number
   shipper: ObjectId | null
-  user: ObjectId
+  user: ObjectId | null
   name: string
   email: string
   phone: string
@@ -54,7 +54,7 @@ export default class OrderOnline {
     this.fee = order.fee
     this.total_bill = order.total_bill
     this.shipper = order.shipper || null
-    this.user = order.user
+    this.user = order.user || null
     this.name = order.name
     this.email = order.email
     this.phone = order.phone

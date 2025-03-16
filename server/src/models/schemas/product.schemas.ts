@@ -14,11 +14,13 @@ interface ProductType {
   price: number
   availability?: boolean
   category?: ObjectId
-  preview: ImageType
   tag_translate_1?: string
   tag_translate_1_language?: string
   tag_translate_2?: string
   tag_translate_2_language?: string
+  preview: ImageType
+  created_by: ObjectId
+  updated_by: ObjectId
   created_at?: Date
   updated_at?: Date
 }
@@ -41,6 +43,8 @@ export default class Product {
   tag_translate_2: string
   tag_translate_2_language: string
   preview: ImageType
+  created_by: ObjectId
+  updated_by: ObjectId
   created_at: Date
   updated_at: Date
 
@@ -59,11 +63,13 @@ export default class Product {
     this.price = product.price
     this.availability = product.availability || true
     this.category = product.category || null
-    this.preview = product.preview
     this.tag_translate_1 = product.tag_translate_1 || ''
     this.tag_translate_1_language = product.tag_translate_1_language || ''
     this.tag_translate_2 = product.tag_translate_2 || ''
     this.tag_translate_2_language = product.tag_translate_2_language || ''
+    this.preview = product.preview
+    this.created_by = product.created_by
+    this.updated_by = product.updated_by
     this.created_at = product.created_at || date
     this.updated_at = product.updated_at || date
   }

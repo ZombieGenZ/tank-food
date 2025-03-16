@@ -35,7 +35,9 @@ export class VIETNAMESE_STATIC_MESSAGE {
     LOGOUT_SUCCESS: 'Đăng xuất tài khoản thành công',
     LOGOUT_FAILURE: 'Đăng xuất tài khoản thất bại',
     VERIFY_TOKEN_SUCCESS: 'Xác thực token thành công',
-    VERIFY_TOKEN_FAILURE: 'Xác thực token thất bại'
+    VERIFY_TOKEN_FAILURE: 'Xác thực token thất bại',
+    GET_USER_INFORMATION_SUCCESS: 'Lấy thông tin người dùng thành công',
+    GET_USER_INFORMATION_FAILURE: 'Lấy thông tin người dùng thất bại'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -185,7 +187,9 @@ export class ENGLISH_STATIC_MESSAGE {
     LOGOUT_SUCCESS: 'Account logout successful',
     LOGOUT_FAILURE: 'Account logout failed',
     VERIFY_TOKEN_SUCCESS: 'Token verification successful',
-    VERIFY_TOKEN_FAILURE: 'Token verification failed'
+    VERIFY_TOKEN_FAILURE: 'Token verification failed',
+    GET_USER_INFORMATION_SUCCESS: 'Get user information successful',
+    GET_USER_INFORMATION_FAILURE: 'Get user information failed'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -323,6 +327,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static UserVerifyTokenFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xác thực token truy cập người dùng ${user_id} thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static GetUserInformationSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin người dùng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetUserInformationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin người dùng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
   static CategoryCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo danh mục thành công (User: ${user_id}) (IP: ${ip})`
   }
@@ -439,6 +449,12 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static UserVerifyTokenFailed(user_id: string, ip: string, err: unknown) {
     return `User access token verification for user ${user_id} failed (IP: ${ip}) | Error: ${err}`
+  }
+  static GetUserInformationSuccessfully(user_id: string, ip: string) {
+    return `User information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetUserInformationFailed(user_id: string, ip: string, err: unknown) {
+    return `User information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static CategoryCreateSuccessfully(user_id: string, ip: string) {
     return `Category creation successful (User: ${user_id}) (IP: ${ip})`

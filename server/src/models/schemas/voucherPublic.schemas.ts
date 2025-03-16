@@ -7,6 +7,8 @@ interface VoucherPublicType {
   expiration_date: Date
   discount: number
   requirement: number
+  created_by: ObjectId
+  updated_by: ObjectId
   created_at?: Date
   updated_at?: Date
 }
@@ -18,6 +20,8 @@ export default class VoucherPublic {
   expiration_date: Date
   discount: number
   requirement: number
+  created_by: ObjectId
+  updated_by: ObjectId
   created_at: Date
   updated_at: Date
 
@@ -30,6 +34,8 @@ export default class VoucherPublic {
     this.expiration_date = voucher.expiration_date
     this.discount = voucher.discount
     this.requirement = voucher.requirement
+    this.created_by = voucher.created_by
+    this.updated_by = voucher.updated_by
     this.created_at = voucher.created_at || date
     this.updated_at = voucher.updated_at || date
   }

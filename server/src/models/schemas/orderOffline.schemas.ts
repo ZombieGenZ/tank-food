@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 import { ProductList, PaymentStatus, OrderOfflineStatus } from '~/constants/order.constants'
 
-interface OrderOnlineType {
+interface OrderOfflineType {
   _id?: ObjectId
   product: ProductList | ProductList[]
   total_quantity: number
@@ -13,7 +13,7 @@ interface OrderOnlineType {
   updated_at?: Date
 }
 
-export default class OrderOnline {
+export default class OrderOffline {
   _id: ObjectId
   product: ProductList | ProductList[]
   total_quantity: number
@@ -24,7 +24,7 @@ export default class OrderOnline {
   created_at: Date
   updated_at: Date
 
-  constructor(order: OrderOnlineType) {
+  constructor(order: OrderOfflineType) {
     const date = new Date()
 
     this._id = order._id || new ObjectId()

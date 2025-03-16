@@ -257,3 +257,43 @@ export const verifyTokenUserController = async (
     })
   }
 }
+
+export const getUserInfomationController = async (
+  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetUserInformationSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetUserInformationSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_USER_INFOMATION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_SUCCESS,
+      infomation: user
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetUserInformationFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetUserInformationFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_USER_INFOMATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_FAILURE
+    })
+  }
+}

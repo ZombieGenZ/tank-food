@@ -8,9 +8,10 @@ import databaseService from './database.services'
 import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
 import { ObjectId } from 'mongodb'
 import { notificationRealtime } from '~/utils/realtime.utils'
+import User from '~/models/schemas/users.schemas'
 
 class VoucherPublicService {
-  async create(payload: CreateVoucherRequestsBody) {
+  async create(payload: CreateVoucherRequestsBody, user: User) {
     const voucher_id = new ObjectId()
     const voucher = new VoucherPublic({
       _id: voucher_id,
@@ -18,7 +19,9 @@ class VoucherPublicService {
       discount: payload.discount,
       quantity: payload.quantity,
       expiration_date: new Date(payload.expiration_date),
-      requirement: payload.requirement
+      requirement: payload.requirement,
+      created_by: user._id,
+      updated_by: user._id
     })
 
     await Promise.all([
@@ -26,16 +29,17 @@ class VoucherPublicService {
       notificationRealtime('freshSync-admin', 'create-public-voucher', 'voucher/public/create', voucher)
     ])
   }
-  async update(payload: UpdateVoucherRequestsBody) {
+  async update(payload: UpdateVoucherRequestsBody, user: User) {
     const voucher_id = new ObjectId(payload.voucher_id)
-    const voucher = new VoucherPublic({
+    const voucher = {
       _id: voucher_id,
       code: payload.code,
       discount: payload.discount,
       quantity: payload.quantity,
       expiration_date: new Date(payload.expiration_date),
-      requirement: payload.requirement
-    })
+      requirement: payload.requirement,
+      updated_by: user._id
+    }
 
     await Promise.all([
       databaseService.voucherPublic.updateOne(
@@ -48,7 +52,8 @@ class VoucherPublicService {
             quantity: payload.quantity,
             discount: payload.discount,
             requirement: payload.requirement,
-            expiration_date: new Date(payload.expiration_date)
+            expiration_date: new Date(payload.expiration_date),
+            updated_by: user._id
           },
           $currentDate: {
             updated_at: true

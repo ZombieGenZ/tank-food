@@ -7,6 +7,8 @@ interface CategoryType {
   category_name_translate_2?: string
   translate_2_language?: string
   index: number
+  created_by: ObjectId
+  updated_by: ObjectId
   created_at?: Date
   updated_at?: Date
 }
@@ -18,6 +20,8 @@ export default class Category {
   category_name_translate_2: string
   translate_2_language: string
   index: number
+  created_by: ObjectId
+  updated_by: ObjectId
   created_at: Date
   updated_at: Date
   constructor(category: CategoryType) {
@@ -29,6 +33,8 @@ export default class Category {
     this.category_name_translate_2 = category.category_name_translate_2 || ''
     this.translate_2_language = category.translate_2_language || ''
     this.index = category.index
+    this.created_by = category.created_by
+    this.updated_by = category.updated_by
     this.created_at = category.created_at || date
     this.updated_at = category.updated_at || date
   }

@@ -32,7 +32,7 @@ export const createProductController = async (
   const image = req.image as ImageType
 
   try {
-    await productService.create(req.body, image)
+    await productService.create(req.body, image, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -74,7 +74,7 @@ export const updateProductController = async (
   const product = req.product as Product
 
   try {
-    await productService.update(req.body, product)
+    await productService.update(req.body, product, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -117,7 +117,7 @@ export const updateProductChangeImageController = async (
   const image = req.image as ImageType
 
   try {
-    await productService.updateChangeImage(req.body, image, product)
+    await productService.updateChangeImage(req.body, image, product, user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
