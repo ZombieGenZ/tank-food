@@ -52,9 +52,7 @@ const FormMain = (): JSX.Element => {
   }, [location]);
 
   return(
-    <>
-      {
-        <div ref={pageRef}>
+        <div className='flex gap-5 flex-col' ref={pageRef}>
           <NavigationButtons />
           <Routes>
             <Route path="/*" element={<Main />} />
@@ -63,8 +61,6 @@ const FormMain = (): JSX.Element => {
             <Route path='/contact' element={<ContactUs />}/>
           </Routes>
         </div>
-      }
-    </>
   )   
 }
 
@@ -85,6 +81,7 @@ function NavigationButtons(): JSX.Element {
     } else {
       localStorage.setItem('code_language', JSON.stringify("en-US"))
     }
+    window.location.reload();
   };
 
   const openDrawer = (): void => {
