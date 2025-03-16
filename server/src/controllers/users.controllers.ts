@@ -23,6 +23,7 @@ import { TokenPayload } from '~/models/requests/authentication.requests'
 import { verifyToken } from '~/utils/jwt.utils'
 import databaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
+import { omit } from 'lodash'
 
 export const registerUserController = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -279,7 +280,7 @@ export const getUserInfomationController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_SUCCESS
           : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_SUCCESS,
-      infomation: user
+      infomation: omit(user, ['password', 'email_verify_token', 'forgot_password_token'])
     })
   } catch (err) {
     await writeErrorLog(
