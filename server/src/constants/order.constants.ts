@@ -3,7 +3,12 @@ import { ObjectId } from 'mongodb'
 export interface ProductList {
   product_id: ObjectId
   quantity: number
-  price: number
+  price?: number
+}
+
+export enum PaymentType {
+  CASH,
+  BANK
 }
 
 export enum PaymentStatus {
@@ -12,15 +17,26 @@ export enum PaymentStatus {
   FAILED
 }
 
-export enum OrderOnlineStatus {
+export enum OrderStatus {
   PENDING,
   CONFIRMED,
   DELIVERING,
-  DELIVERED
+  DELIVERED,
+  COMPLETED,
+  CANCELED
 }
 
-export enum OrderOfflineStatus {
-  PENDING,
-  CONFIRMED,
-  COMPLETED
-}
+// export enum OrderOnlineStatus {
+//   PENDING,
+//   CONFIRMED,
+//   DELIVERING,
+//   DELIVERED,
+//   CANCELED
+// }
+
+// export enum OrderOfflineStatus {
+//   PENDING,
+//   CONFIRMED,
+//   COMPLETED,
+//   CANCELED
+// }

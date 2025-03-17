@@ -9,6 +9,9 @@ import { startBot, stopBot } from './utils/discord.utils'
 import { writeInfoLog } from './utils/log.utils'
 import { formatDateFull2 } from './utils/date.utils'
 import { LANGUAGE } from './constants/language.constants'
+import { ObjectId } from 'mongodb'
+import { verifyToken } from './utils/jwt.utils'
+import { TokenPayload } from './models/requests/authentication.requests'
 import { defaultErrorHandler } from './middlewares/errors.middlewares'
 
 dotenv.config()
@@ -57,60 +60,16 @@ import api_categories from '~/routes/categories.routes'
 import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
-import { verifyToken } from './utils/jwt.utils'
-import { TokenPayload } from './models/requests/authentication.requests'
-import { ObjectId } from 'mongodb'
-import OrderOnline from './models/schemas/orderOnline.schemas'
-import OrderOffline from './models/schemas/orderOffline.schemas'
-import VoucherPrivate from './models/schemas/voucherPrivate.schemas'
+import api_order_online from '~/routes/orderOnline.routes'
+import api_order_offline from '~/routes/orderOffline.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
 app.use('/api/products', api_products)
 app.use('/api/voucher-public', api_voucher_public)
 app.use('/api/voucher-private', api_voucher_private)
-
-// databaseService.voucherPrivate.insertOne(
-//   new VoucherPrivate({
-//     code: 'AAA',
-//     discount: 100000,
-//     requirement: 0,
-//     user: new ObjectId('67ced2c2c8d0bd54b4ac2ffe')
-//   })
-// )
-
-// databaseService.orderOnline.insertOne(
-//   new OrderOnline({
-//     product: {
-//       product_id: new ObjectId('67d13785863cd2b42a140c88'),
-//       price: 1000,
-//       quantity: 1
-//     },
-//     total_quantity: 1,
-//     total_price: 1000,
-//     fee: 500,
-//     total_bill: 1500,
-//     shipper: new ObjectId('67d195ccf615535dee9ec973'),
-//     user: new ObjectId('67ced2c2c8d0bd54b4ac2ffe'),
-//     name: 'Khoa',
-//     email: 'khoa@gmail.com',
-//     phone: '0000000000',
-//     address: 'addbccbbc'
-//   })
-// )
-
-// databaseService.orderOffline.insertOne(
-//   new OrderOffline({
-//     product: {
-//       product_id: new ObjectId('67d13785863cd2b42a140c88'),
-//       price: 1000,
-//       quantity: 1
-//     },
-//     total_quantity: 1,
-//     total_price: 1000,
-//     total_bill: 1500
-//   })
-// )
+app.use('/api/order-online', api_order_online)
+app.use('/api/order-offline', api_order_offline)
 
 app.use(defaultErrorHandler)
 

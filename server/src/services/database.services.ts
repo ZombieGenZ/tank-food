@@ -10,8 +10,9 @@ import Prompt from '~/models/schemas/prompt.schemas'
 import Product from '~/models/schemas/product.schemas'
 import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
 import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
-import OrderOnline from '~/models/schemas/orderOnline.schemas'
-import OrderOffline from '~/models/schemas/orderOffline.schemas'
+import Order from '~/models/schemas/orders.schemas'
+// import OrderOnline from '~/models/schemas/orderOnline.schemas'
+// import OrderOffline from '~/models/schemas/orderOffline.schemas'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@tank-food.l2yv7.mongodb.net/?retryWrites=true&w=majority&appName=TANK-Food`
@@ -61,11 +62,14 @@ class DatabaseService {
   get voucherPrivate(): Collection<VoucherPrivate> {
     return this.db.collection(process.env.DATABASE_VOUCHER_PRIVATE_COLLECTION as string)
   }
-  get orderOnline(): Collection<OrderOnline> {
-    return this.db.collection(process.env.DATABASE_ORDER_ONLINE_COLLECTION as string)
-  }
-  get orderOffline(): Collection<OrderOffline> {
-    return this.db.collection(process.env.DATABASE_ORDER_OFFLINE_COLLECTION as string)
+  // get orderOnline(): Collection<OrderOnline> {
+  //   return this.db.collection(process.env.DATABASE_ORDER_ONLINE_COLLECTION as string)
+  // }
+  // get orderOffline(): Collection<OrderOffline> {
+  //   return this.db.collection(process.env.DATABASE_ORDER_OFFLINE_COLLECTION as string)
+  // }
+  get order(): Collection<Order> {
+    return this.db.collection(process.env.DATABASE_ORDER_COLLECTION as string)
   }
   get prompt(): Collection<Prompt> {
     return this.db.collection(process.env.DATABASE_PROMPT_COLLECTION as string)
