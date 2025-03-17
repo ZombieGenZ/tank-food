@@ -1,4 +1,4 @@
-import { Navbar } from '../components/navbar_component.tsx';
+import { NavbarUser, NavbarAdmin } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { Drawer , Select } from "antd";
@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
 import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
+import CategoryManagement from './CategoryManagement.pages.tsx';
 import ContactUs from './contact.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message } from 'antd';
@@ -16,6 +17,18 @@ import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdAccountBox } from "react-icons/md";
+
+interface UserInfo {
+  created_at: string;
+  display_name: string;
+  email: string;
+  penalty: string | null;
+  phone: string;
+  role: number;
+  updated_at: string;
+  user_type: number;
+  _id: string;
+}
 
 // Define the Navbar item type
 interface NavbarItem {
@@ -59,6 +72,7 @@ const FormMain = (): JSX.Element => {
             <Route path="/signup" element={<Signup />} />
             <Route path='/menu' element={<Category />}/>
             <Route path='/contact' element={<ContactUs />}/>
+            <Route path='/category' element={<CategoryManagement />}/>
           </Routes>
         </div>
   )   
@@ -94,6 +108,31 @@ function NavigationButtons(): JSX.Element {
 
   const refresh_token = localStorage.getItem('refresh_token')
   const access_token = localStorage.getItem('access_token')
+  const [user, setUser] = useState<UserInfo[]>([])
+
+  useEffect(()=> {
+    if(refresh_token === "") {
+      console.log("Hãy đăng nhập để chúng tôi xác minh vai trò !")
+    } else if(refresh_token !== null) {
+      console.log("Đăng nhập thành công !")
+      const body = {
+        language: null,
+        refresh_token: refresh_token
+      }
+      fetch('http://localhost:3000/api/users/get-user-infomation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify(body)
+      }).then(response => {
+        return response.json()
+      }).then((data) => {
+        setUser(data.infomation)
+      })
+    }
+  }, [refresh_token, access_token])
 
   const Logout = () => {
     const body = {
@@ -153,8 +192,8 @@ function NavigationButtons(): JSX.Element {
         </div>
         <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
-            {
-              Navbar.map((item: NavbarItem) => {
+            {/* { user.role == 3 */}
+            {  NavbarUser.map((item: NavbarItem) => {
                 return <li key={item.id}>
                         <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
                                 onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
@@ -186,7 +225,7 @@ function NavigationButtons(): JSX.Element {
                       arrow>
               <Button
                 className='p-10'
-              ><MdAccountBox /> Tài khoản</Button>
+              ><MdAccountBox /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
             </Dropdown>
             : 
             <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
@@ -200,7 +239,7 @@ function NavigationButtons(): JSX.Element {
             <div className='w-full'>
               <ul className='flex items-center flex-col gap-5'>
                 {
-                  Navbar.map((item: NavbarItem) => {
+                  NavbarUser.map((item: NavbarItem) => {
                     return <li key={item.id} className="text-xl">
                               <button onClick={() => navigate(item.path)}
                                       className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">

@@ -66,7 +66,7 @@ const Category = (): JSX.Element => {
             const productRes = await fetch("http://localhost:3000/api/products/get-product", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                 body: JSON.stringify(body),
+                body: JSON.stringify(body),
             });
             const productData = await productRes.json();
 

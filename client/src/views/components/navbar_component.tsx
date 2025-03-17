@@ -1,4 +1,4 @@
-export const Navbar = [
+export const NavbarUser = [
     {
         id: 1,
         title: "Trang chủ",
@@ -29,5 +29,13 @@ export const Navbar = [
         english: "Contact",
         path: "/contact"
     },
-
 ];
+
+export const NavbarAdmin = [
+    {
+        id: 1,
+        title: "Quản lý danh mục",
+        english: "Category management",
+        path: "/category"
+    },
+]
