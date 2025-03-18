@@ -8,7 +8,6 @@ import { ObjectId } from 'mongodb'
 import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { writeWarnLog } from '~/utils/log.utils'
-import { ProductList } from '~/constants/order.constants'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -227,6 +226,76 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
       }
     },
     ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const sepayApiKeyValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = serverLanguage
+
+  checkSchema(
+    {
+      Authorization: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.API_KEY_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.API_KEY_REQUIRED
+        },
+        custom: {
+          options: (value) => {
+            if (!value.startsWith('Apikey ')) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.API_KEY_INVALID
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.API_KEY_INVALID
+              )
+            }
+
+            if (value.split(' ')[1] !== process.env.SEPAY_API_KEY) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.API_KEY_INVALID
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.API_KEY_INVALID
+              )
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['headers']
   )
     .run(req)
     .then(() => {

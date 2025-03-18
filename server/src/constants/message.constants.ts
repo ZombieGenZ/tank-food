@@ -171,6 +171,10 @@ export class VIETNAMESE_STATIC_MESSAGE {
     ORDER_LONGITUDE_IS_REQUIRED: 'Không được bỏ trống kinh độ',
     CREATE_ORDER_SUCCESS: 'Tạo đơn hàng thành công',
     CREATE_ORDER_FAILURE: 'Tạo đơn hàng thất bại',
+    API_KEY_REQUIRED: 'Không được bỏ trống API Key',
+    API_KEY_INVALID: 'API Key không hợp lệ',
+    CHECKOUT_ORDER_SUCCESS: 'Xác thực thanh toán đơn hàng thành công',
+    CHECKOUT_ORDER_FAILURE: 'Xác thực thanh toán đơn hàng thất bại'
   } as const
 }
 
@@ -349,6 +353,10 @@ export class ENGLISH_STATIC_MESSAGE {
     ORDER_LONGITUDE_IS_REQUIRED: 'Longitude is required',
     CREATE_ORDER_SUCCESS: 'Order created successfully',
     CREATE_ORDER_FAILURE: 'Order creation failed',
+    API_KEY_REQUIRED: 'API Key is required',
+    API_KEY_INVALID: 'Invalid API Key',
+    CHECKOUT_ORDER_SUCCESS: 'Order checkout successful',
+    CHECKOUT_ORDER_FAILURE: 'Order checkout failed'
   } as const
 }
 
@@ -479,6 +487,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static OrderOnlineFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tạo đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static CheckoutOrderSuccessfully(ip: string) {
+    return `Thực hiện xác nhận thanh toán đơn hàng thành công (IP: ${ip})`
+  }
+  static CheckoutOrderFailed(ip: string, err: unknown) {
+    return `Thực hiện xác nhận đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -607,5 +621,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static OrderOnlineFailed(user_id: string, ip: string, err: unknown) {
     return `Order creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CheckoutOrderSuccessfully(ip: string) {
+    return `Order checkout successful (IP: ${ip})`
+  }
+  static CheckoutOrderFailed(ip: string, err: unknown) {
+    return `Order checkout failed (IP: ${ip}) | Error: ${err}`
   }
 }

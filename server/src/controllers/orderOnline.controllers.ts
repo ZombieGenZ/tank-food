@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import User from '~/models/schemas/users.schemas'
-import { OrderOnlineRequestsBody } from '~/models/requests/orderOnline.requests'
+import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/orderOnline.requests'
 import { serverLanguage } from '~/index'
 import {
   VIETNAMESE_STATIC_MESSAGE,
@@ -57,6 +57,47 @@ export const orderOnlineController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_FAILURE
+    })
+  }
+}
+
+export const checkoutOrderController = async (
+  req: Request<ParamsDictionary, any, CheckoutOrderRequestBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const language = serverLanguage
+
+  try {
+    const infomation = await orderOnlineService.checkout(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CheckoutOrderSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.CheckoutOrderSuccessfully(ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CHECKOUT_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_SUCCESS,
+      infomation
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CheckoutOrderFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.CheckoutOrderFailed(ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CHECKOUT_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_FAILURE
     })
   }
 }
