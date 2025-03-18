@@ -78,6 +78,14 @@ const FormMain = (): JSX.Element => {
   )   
 }
 
+function NavigationAdmin(): JSX.Element {
+  return (
+    <>
+      
+    </>
+  )
+}
+
 function NavigationButtons(): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
@@ -202,7 +210,9 @@ function NavigationButtons(): JSX.Element {
     },
   ];
   return (
-    <div className='sticky top-0 z-50 navbarName'>
+    <>
+      {user?.role === 3}
+      <div className='sticky top-0 z-50 navbarName'>
       {contextHolder}
       <div className="p-2 lg:text-xl flex xl:justify-around justify-between">
         {/* logo */}
@@ -215,29 +225,32 @@ function NavigationButtons(): JSX.Element {
         <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
             {/* { user.role == 3 */}
-            { user !== null && user.role == 3 ? NavbarAdmin.map((item: NavbarItem) => {
+            { user !== null &&
+                    // Thanh nav cho Admin
+                    user.role == 3 ? NavbarAdmin.map((item: NavbarItem) => {
                   return <li key={item.id}>
                           <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
                                   onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
                         </li>
+                    // Thanh nav cho nhân viên
               }) : (user !== null && user.role == 1 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
                           </li>
+                    // Thanh nav cho shipper
               }) : (user !== null && user.role == 2 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
-                            <Divider my="md" />
                           </li>}) : NavbarUser.map((item: NavbarItem) => {
+                    // Thanh nav cho khách hàng
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
-                            <Divider my="md" />
                           </li>
                       })
                   )
@@ -297,7 +310,8 @@ function NavigationButtons(): JSX.Element {
         </div>
         {/* Thanh nav responsive */}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
