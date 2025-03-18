@@ -11,11 +11,12 @@ export const translateContent = async (content: string) => {
 
   const prompt = GeminiAIPrompt.translate(content)
 
-  await promptService.insertPrompt(prompt)
-
   const result = await model.generateContent(prompt)
   const response = await result.response
   const text = response.text()
+
+  await promptService.insertPrompt(prompt, text)
+
   return text
 }
 
@@ -24,10 +25,11 @@ export const CalculateShippingCosts = async (delivery_address: string, receiving
 
   const prompt = GeminiAIPrompt.CalculateShippingCosts(delivery_address, receiving_address)
 
-  await promptService.insertPrompt(prompt)
-
   const result = await model.generateContent(prompt)
   const response = await result.response
   const text = response.text()
+
+  await promptService.insertPrompt(prompt, text)
+
   return text
 }

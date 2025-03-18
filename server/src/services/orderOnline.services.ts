@@ -7,6 +7,7 @@ import databaseService from './database.services'
 import Order from '~/models/schemas/orders.schemas'
 import { PaymentStatus, PaymentType, ProductList } from '~/constants/order.constants'
 import { ObjectId } from 'mongodb'
+import paymentHistoryService from './paymentHistory.services'
 
 class OrderOnlineService {
   async order(
@@ -96,7 +97,14 @@ class OrderOnlineService {
 
     const order = await databaseService.order.findOne({ _id: new ObjectId(order_id) })
 
-    if (!order || order.payment_type == PaymentType.CASH) {
+    await paymentHistoryService.insertHistory(payload)
+
+    if (
+      !order ||
+      order.payment_type == PaymentType.CASH ||
+      order.payment_status !== PaymentStatus.PENDING ||
+      payload.transferAmount !== order.total_bill
+    ) {
       return
     }
 
