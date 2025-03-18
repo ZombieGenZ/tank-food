@@ -1,14 +1,34 @@
+import { Request, Response } from 'express'
+import { ParamsDictionary } from 'express-serve-static-core'
+import User from '~/models/schemas/users.schemas'
+import { OrderOnlineRequestsBody } from '~/models/requests/orderOnline.requests'
+import { serverLanguage } from '~/index'
+import {
+  VIETNAMESE_STATIC_MESSAGE,
+  ENGLISH_STATIC_MESSAGE,
+  VIETNAMESE_DYNAMIC_MESSAGE,
+  ENGLIS_DYNAMIC_MESSAGE
+} from '~/constants/message.constants'
+import { writeErrorLog, writeInfoLog } from '~/utils/log.utils'
+import { LANGUAGE } from '~/constants/language.constants'
+import { RESPONSE_CODE } from '~/constants/responseCode.constants'
+import orderOnlineService from '~/services/orderOnline.services'
+import { ProductList } from '~/constants/order.constants'
+
 export const orderOnlineController = async (
   req: Request<ParamsDictionary, any, OrderOnlineRequestsBody>,
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
   const user = req.user as User
+  const product_list = req.product_list as ProductList[]
   const language = req.body.language || serverLanguage
-  const image = req.image as ImageType
+
+  const total_quantity = req.total_quantity as number
+  const total_price = req.total_price as number
 
   try {
-    await productService.create(req.body, image, user)
+    const infomation = await orderOnlineService.order(req.body, user, total_quantity, total_price, product_list)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -17,11 +37,12 @@ export const orderOnlineController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.CREATE_PRODUCT_SUCCESSFUL,
+      code: RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.CREATE_PRODUCT_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.CREATE_PRODUCT_SUCCESS
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_SUCCESS,
+      infomation
     })
   } catch (err) {
     await writeErrorLog(
@@ -31,11 +52,11 @@ export const orderOnlineController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.CREATE_PRODUCT_FAILED,
+      code: RESPONSE_CODE.CREATE_ORDER_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.CREATE_PRODUCT_FAILURE
-          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.CREATE_PRODUCT_FAILURE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_FAILURE
     })
   }
 }

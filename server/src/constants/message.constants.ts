@@ -473,6 +473,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện tìm kiếm thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static OrderOnlineSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện tạo đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static OrderOnlineFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện tạo đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -595,5 +601,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Voucher information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static OrderOnlineSuccessfully(user_id: string, ip: string) {
+    return `Order creation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static OrderOnlineFailed(user_id: string, ip: string, err: unknown) {
+    return `Order creation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

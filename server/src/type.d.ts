@@ -17,5 +17,8 @@ declare module 'express' {
     category?: Category
     product?: Product
     image?: ImageType
+    total_quantity?: number
+    total_price?: number
+    product_list?: ProductList
   }
 }

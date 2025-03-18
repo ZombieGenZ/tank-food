@@ -1,4 +1,8 @@
 import express from 'express'
+import { orderOnlineController } from '~/controllers/orderOnline.controllers'
+import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
+import { orderOnlineValidator } from '~/middlewares/orderOnline.middlewares'
+import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
 /*
@@ -25,6 +29,6 @@ const router = express.Router()
  *    receiving_latitude: number
  * }
  */
-router.post('/order', orderOnlineValidator)
+router.post('/order', authenticateValidator, orderOnlineValidator, wrapRequestHandler(orderOnlineController))
 
 export default router

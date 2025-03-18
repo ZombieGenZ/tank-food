@@ -16,10 +16,15 @@ interface OrderType {
   phone?: string
   delivery_address?: string // địa chỉ giao
   receiving_address?: string // địa chỉ nhận
+  delivery_nation?: string // quốc gia giao
+  receiving_nation?: string // quốc gia nhận
   delivery_longitude?: number // kinh độ giao hàng
   receiving_longitude?: number // kinh độ nhận hàng
   delivery_latitude?: number // vĩ độ giao hàng
   receiving_latitude?: number // vĩ độ nhận hàng
+  distance?: number // khoản cách
+  suggested_route?: string // tuyến đường đề xuất
+  estimated_time?: string // thời gian ước tính
   is_first_transaction?: boolean
   payment_type: PaymentType
   payment_status?: PaymentStatus
@@ -48,10 +53,15 @@ export default class Order {
   phone: string | null
   delivery_address: string | null
   receiving_address: string | null
+  delivery_nation: string | null
+  receiving_nation: string | null
   delivery_longitude: number | null
   receiving_longitude: number | null
   delivery_latitude: number | null
   receiving_latitude: number | null
+  distance: number | null
+  suggested_route: string | null
+  estimated_time: string | null
   is_first_transaction: boolean | null
   payment_type: PaymentType
   payment_status: PaymentStatus
@@ -81,10 +91,15 @@ export default class Order {
     this.phone = order.phone || null
     this.delivery_address = order.delivery_address || null
     this.receiving_address = order.receiving_address || null
+    this.delivery_nation = order.delivery_nation || null
+    this.receiving_nation = order.receiving_nation || null
     this.delivery_longitude = order.delivery_longitude || null
     this.receiving_longitude = order.receiving_longitude || null
     this.delivery_latitude = order.delivery_latitude || null
     this.receiving_latitude = order.receiving_latitude || null
+    this.distance = order.distance || null
+    this.suggested_route = order.suggested_route || null
+    this.estimated_time = order.estimated_time || null
     this.is_first_transaction = order.is_first_transaction || false
     this.payment_type = order.payment_type
     this.payment_status = order.payment_status || PaymentStatus.PENDING
