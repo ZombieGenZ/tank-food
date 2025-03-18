@@ -3,7 +3,7 @@ import { JSX } from "react";
 
 const CategoryManagement = (): JSX.Element => {
     return(
-        <div>   
+        <div className="flex">   
             
         </div>
     )
