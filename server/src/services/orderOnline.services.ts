@@ -1,11 +1,12 @@
-import { OrderOnlineRequestsBody } from '~/models/requests/orderOnline.requests'
+import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/orderOnline.requests'
 import User from '~/models/schemas/users.schemas'
 import { CalculateShippingCosts } from '~/utils/ai.utils'
 import axios from 'axios'
 import { extractLocationData } from '~/utils/string.utils'
 import databaseService from './database.services'
 import Order from '~/models/schemas/orders.schemas'
-import { PaymentType, ProductList } from '~/constants/order.constants'
+import { PaymentStatus, PaymentType, ProductList } from '~/constants/order.constants'
+import { ObjectId } from 'mongodb'
 
 class OrderOnlineService {
   async order(
@@ -85,6 +86,30 @@ class OrderOnlineService {
       total_bill: total_bill,
       distance: location.distance
     }
+  }
+  async checkout(payload: CheckoutOrderRequestBody) {
+    if (payload.code == null) {
+      return
+    }
+
+    const order_id = payload.code.substring(2)
+
+    const order = await databaseService.order.findOne({ _id: new ObjectId(order_id) })
+
+    if (!order || order.payment_type == PaymentType.CASH) {
+      return
+    }
+
+    await databaseService.order.updateOne(
+      {
+        _id: order._id
+      },
+      {
+        $set: {
+          payment_status: PaymentStatus.PAID
+        }
+      }
+    )
   }
 }
 

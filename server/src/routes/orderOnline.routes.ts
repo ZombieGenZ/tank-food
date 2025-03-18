@@ -1,7 +1,7 @@
 import express from 'express'
 import { orderOnlineController } from '~/controllers/orderOnline.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
-import { orderOnlineValidator } from '~/middlewares/orderOnline.middlewares'
+import { orderOnlineValidator, sepayApiKeyValidator } from '~/middlewares/orderOnline.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -30,5 +30,29 @@ const router = express.Router()
  * }
  */
 router.post('/order', authenticateValidator, orderOnlineValidator, wrapRequestHandler(orderOnlineController))
+
+/*
+ * Description: Endpoint để Sepay phản hồi kết quả thanh toán cho hệ thống
+ * Path: /api/order-online/checkout
+ * Method: POST
+ * headers: {
+ *    authorization: Apikey <API Key>
+ * },
+ * Body: {
+ *    id: number,
+ *    gateway: string,
+ *    transactionDate: string,
+ *    accountNumber: string,
+ *    code: string | null,
+ *    content: string,
+ *    transferType: string,
+ *    transferAmount: number,
+ *    accumulated: number,
+ *    subAccount: number | null,
+ *    referenceCode: string,
+ *    description: string
+ * }
+ */
+router.post('/checkout', sepayApiKeyValidator)
 
 export default router
