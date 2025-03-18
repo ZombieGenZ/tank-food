@@ -22,3 +22,5 @@ db.voucher_public.createIndex({ "code": 1 }, { name: "code_1", unique: true })
 db.voucher_public.createIndex({
   code: "text"
 }, { name: "code_text" })
+// orders collections
+db.orders.createIndex({ "user": 1 }, { name: "user_1" })

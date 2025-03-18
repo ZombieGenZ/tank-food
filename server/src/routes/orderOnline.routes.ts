@@ -1,5 +1,5 @@
 import express from 'express'
-import { orderOnlineController } from '~/controllers/orderOnline.controllers'
+import { checkoutOrderController, orderOnlineController } from '~/controllers/orderOnline.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import { orderOnlineValidator, sepayApiKeyValidator } from '~/middlewares/orderOnline.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
@@ -53,6 +53,6 @@ router.post('/order', authenticateValidator, orderOnlineValidator, wrapRequestHa
  *    description: string
  * }
  */
-router.post('/checkout', sepayApiKeyValidator)
+router.post('/checkout', sepayApiKeyValidator, wrapRequestHandler(checkoutOrderController))
 
 export default router
