@@ -147,6 +147,31 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
       'Mã voucher chỉ được chứa chữ hoa, chữ thường, số và dấu gạch dưới (_)'
   } as const
+
+  static ORDER_MESSAGE = {
+    ORDER_PRODUCT_IS_REQUIRED: 'Không được bỏ trống sản phẩm đặt hàng',
+    ORDER_PRODUCT_MUST_BE_AN_ARRAY: 'Sản phẩm đặt hàng phải là một mảng',
+    ORDER_PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0: 'Số lượng sản phẩm đặt hàng phải là một số lớn hơn 0',
+    ORDER_PRODUCT_IS_NOT_FOUND: 'Sản phẩm đặt hàng không tồn tại',
+    ORDER_PRODUCT_IS_NOT_AVAILABLE: 'Sản phẩm đặt hàng không còn hàng',
+    ORDER_NAME_IS_REQUIRED: 'Không được bỏ trống tên khách hàng',
+    ORDER_NAME_MUST_BE_A_STRING: 'Tên khách hàng phải là một chuỗi ký tự',
+    ORDER_NAME_MUST_BE_BETWEEN_5_AND_100_CHARACTERS: 'Tên khách hàng phải có độ dài từ 5 đến 100 ký tự',
+    ORDER_EMAIL_IS_REQUIRED: 'Không được bỏ trống email khách hàng',
+    ORDER_EMAIL_MUST_BE_A_STRING: 'Email khách hàng phải là một chuỗi ký tự',
+    ORDER_EMAIL_MUST_BE_BETWEEN_5_AND_100_CHARACTERS: 'Email khách hàng phải có độ dài từ 5 đến 100 ký tự',
+    ORDER_EMAIL_IS_NOT_VALID: 'Email khách hàng không hợp lệ',
+    ORDER_PHONE_IS_REQUIRED: 'Không được bỏ trống số điện thoại khách hàng',
+    ORDER_PHONE_MUST_BE_A_STRING: 'Số điện thoại khách hàng phải là một chuỗi ký tự',
+    ORDER_PHONE_MUST_BE_BETWEEN_10_AND_11_CHARACTERS: 'Số điện thoại khách hàng phải có độ dài từ 10 đến 11 ký tự',
+    ORDER_PHONE_IS_NOT_VALID: 'Số điện thoại khách hàng không hợp lệ',
+    ORDER_LATITUDE_MUST_BE_A_NUMBER_BETWEEN_MINUS_90_AND_90: 'Vĩ độ phải là một số từ -90 đến 90',
+    ORDER_LATITUDE_IS_REQUIRED: 'Không được bỏ trống vĩ độ',
+    ORDER_LONGITUDE_MUST_BE_A_NUMBER_BETWEEN_MINUS_180_AND_180: 'Kinh độ phải là một số từ -180 đến 180',
+    ORDER_LONGITUDE_IS_REQUIRED: 'Không được bỏ trống kinh độ',
+    CREATE_ORDER_SUCCESS: 'Tạo đơn hàng thành công',
+    CREATE_ORDER_FAILURE: 'Tạo đơn hàng thất bại',
+  } as const
 }
 
 export class ENGLISH_STATIC_MESSAGE {
@@ -299,6 +324,31 @@ export class ENGLISH_STATIC_MESSAGE {
     FIND_VOUCHER_FAILURE: 'Voucher information search failed',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
       'Voucher code can only contain uppercase, lowercase, numbers, and underscores (_)'
+  } as const
+
+  static ORDER_MESSAGE = {
+    ORDER_PRODUCT_IS_REQUIRED: 'Ordered product is required',
+    ORDER_PRODUCT_MUST_BE_AN_ARRAY: 'Ordered product must be an array',
+    ORDER_PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0: 'Ordered product quantity must be a number greater than 0',
+    ORDER_PRODUCT_IS_NOT_FOUND: 'Ordered product not found',
+    ORDER_PRODUCT_IS_NOT_AVAILABLE: 'Ordered product is out of stock',
+    ORDER_NAME_IS_REQUIRED: 'Customer name is required',
+    ORDER_NAME_MUST_BE_A_STRING: 'Customer name must be a string',
+    ORDER_NAME_MUST_BE_BETWEEN_5_AND_100_CHARACTERS: 'Customer name must be between 5 and 100 characters',
+    ORDER_EMAIL_IS_REQUIRED: 'Customer email is required',
+    ORDER_EMAIL_MUST_BE_A_STRING: 'Customer email must be a string',
+    ORDER_EMAIL_MUST_BE_BETWEEN_5_AND_100_CHARACTERS: 'Customer email must be between 5 and 100 characters',
+    ORDER_EMAIL_IS_NOT_VALID: 'Customer email is not valid',
+    ORDER_PHONE_IS_REQUIRED: 'Customer phone number is required',
+    ORDER_PHONE_MUST_BE_A_STRING: 'Customer phone number must be a string',
+    ORDER_PHONE_MUST_BE_BETWEEN_10_AND_11_CHARACTERS: 'Customer phone number must be between 10 and 11 digits',
+    ORDER_PHONE_IS_NOT_VALID: 'Customer phone number is not valid',
+    ORDER_LATITUDE_MUST_BE_A_NUMBER_BETWEEN_MINUS_90_AND_90: 'Latitude must be a number between -90 and 90',
+    ORDER_LATITUDE_IS_REQUIRED: 'Latitude is required',
+    ORDER_LONGITUDE_MUST_BE_A_NUMBER_BETWEEN_MINUS_180_AND_180: 'Longitude must be a number between -180 and 180',
+    ORDER_LONGITUDE_IS_REQUIRED: 'Longitude is required',
+    CREATE_ORDER_SUCCESS: 'Order created successfully',
+    CREATE_ORDER_FAILURE: 'Order creation failed',
   } as const
 }
 

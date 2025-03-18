@@ -21,10 +21,10 @@ const router = express.Router()
  *    name: string,
  *    email: string,
  *    phone: string,
- *    receiving_longitude: string,
- *    receiving_latitude: string
+ *    receiving_longitude: number,
+ *    receiving_latitude: number
  * }
  */
-router.post('/order')
+router.post('/order', orderOnlineValidator)
 
 export default router
