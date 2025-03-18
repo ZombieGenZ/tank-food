@@ -106,33 +106,55 @@ function NavigationButtons(): JSX.Element {
     setOpen(false)
   }
 
-  const refresh_token = localStorage.getItem('refresh_token')
-  const access_token = localStorage.getItem('access_token')
-  const [user, setUser] = useState<UserInfo[]>([])
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+  const [user, setUser] = useState<UserInfo | null>(null)
 
-  useEffect(()=> {
-    if(refresh_token === "") {
-      console.log("Hãy đăng nhập để chúng tôi xác minh vai trò !")
-    } else if(refresh_token !== null) {
-      console.log("Đăng nhập thành công !")
-      const body = {
-        language: null,
-        refresh_token: refresh_token
-      }
-      fetch('http://localhost:3000/api/users/get-user-infomation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`
-        },
-        body: JSON.stringify(body)
-      }).then(response => {
-        return response.json()
-      }).then((data) => {
-        setUser(data.infomation)
-      })
+  useEffect(() => {
+    if (!refresh_token) {
+      console.log("Hãy đăng nhập để chúng tôi xác minh vai trò !");
+      return;
     }
-  }, [refresh_token, access_token])
+  
+    console.log("Đăng nhập thành công !");
+  
+    const body = {
+      language: null,
+      refresh_token: refresh_token,
+    };
+  
+    fetch("http://localhost:3000/api/users/get-user-infomation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUser(data.infomation);
+      })
+      .catch((error) => console.error("Lỗi khi lấy thông tin người dùng:", error));
+  }, [refresh_token, access_token]); // Theo dõi thay đổi của refreshToken và accessToken
+  
+  // Lắng nghe thay đổi từ localStorage (ví dụ: khi user đăng nhập)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log(user)
+  }, [user])
 
   const Logout = () => {
     const body = {
@@ -193,12 +215,33 @@ function NavigationButtons(): JSX.Element {
         <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
             {/* { user.role == 3 */}
-            {  NavbarUser.map((item: NavbarItem) => {
-                return <li key={item.id}>
-                        <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
-                                onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
-                      </li>
-              })
+            { user !== null && user.role == 3 ? NavbarAdmin.map((item: NavbarItem) => {
+                  return <li key={item.id}>
+                          <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
+                                  onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
+                        </li>
+              }) : (user !== null && user.role == 1 ? NavbarUser.map((item: NavbarItem) => {
+                  return <li key={item.id} className="text-xl">
+                            <button onClick={() => navigate(item.path)}
+                                    className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                                    {language == "Tiếng Việt" ? item.title : item.english}</button> 
+                          </li>
+              }) : (user !== null && user.role == 2 ? NavbarUser.map((item: NavbarItem) => {
+                  return <li key={item.id} className="text-xl">
+                            <button onClick={() => navigate(item.path)}
+                                    className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                                    {language == "Tiếng Việt" ? item.title : item.english}</button> 
+                            <Divider my="md" />
+                          </li>}) : NavbarUser.map((item: NavbarItem) => {
+                  return <li key={item.id} className="text-xl">
+                            <button onClick={() => navigate(item.path)}
+                                    className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                                    {language == "Tiếng Việt" ? item.title : item.english}</button> 
+                            <Divider my="md" />
+                          </li>
+                      })
+                  )
+                )
             }
           </ul>
         </div>
