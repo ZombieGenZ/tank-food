@@ -1,7 +1,7 @@
 import express from 'express'
 import { checkoutOrderController, orderOnlineController } from '~/controllers/orderOnline.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
-import { orderOnlineValidator, sepayApiKeyValidator } from '~/middlewares/orderOnline.middlewares'
+import { orderOnlineValidator, voucherValidator, sepayApiKeyValidator } from '~/middlewares/orderOnline.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -29,7 +29,13 @@ const router = express.Router()
  *    receiving_latitude: number
  * }
  */
-router.post('/order', authenticateValidator, orderOnlineValidator, wrapRequestHandler(orderOnlineController))
+router.post(
+  '/order',
+  authenticateValidator,
+  orderOnlineValidator,
+  voucherValidator,
+  wrapRequestHandler(orderOnlineController)
+)
 
 /*
  * Description: Endpoint để Sepay phản hồi kết quả thanh toán cho hệ thống
@@ -50,7 +56,8 @@ router.post('/order', authenticateValidator, orderOnlineValidator, wrapRequestHa
  *    accumulated: number,
  *    subAccount: number | null,
  *    referenceCode: string,
- *    description: string
+ *    description: string,
+ *    voucher?: string
  * }
  */
 router.post('/checkout', sepayApiKeyValidator, wrapRequestHandler(checkoutOrderController))

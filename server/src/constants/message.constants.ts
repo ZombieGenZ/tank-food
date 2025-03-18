@@ -174,7 +174,9 @@ export class VIETNAMESE_STATIC_MESSAGE {
     API_KEY_REQUIRED: 'Không được bỏ trống API Key',
     API_KEY_INVALID: 'API Key không hợp lệ',
     CHECKOUT_ORDER_SUCCESS: 'Xác thực thanh toán đơn hàng thành công',
-    CHECKOUT_ORDER_FAILURE: 'Xác thực thanh toán đơn hàng thất bại'
+    CHECKOUT_ORDER_FAILURE: 'Xác thực thanh toán đơn hàng thất bại',
+    VOUCHER_IS_NOT_FOUND: 'Mã giảm giá không tồn tại',
+    VOUCHER_REQUIREMENT_IS_NOT_MET: 'Mã giảm giá không đáp ứng yêu cầu'
   } as const
 }
 
@@ -356,7 +358,9 @@ export class ENGLISH_STATIC_MESSAGE {
     API_KEY_REQUIRED: 'API Key is required',
     API_KEY_INVALID: 'Invalid API Key',
     CHECKOUT_ORDER_SUCCESS: 'Order checkout successful',
-    CHECKOUT_ORDER_FAILURE: 'Order checkout failed'
+    CHECKOUT_ORDER_FAILURE: 'Order checkout failed',
+    VOUCHER_IS_NOT_FOUND: 'Voucher not found',
+    VOUCHER_REQUIREMENT_IS_NOT_MET: 'Voucher requirement not met'
   } as const
 }
 

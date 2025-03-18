@@ -8,6 +8,8 @@ import { ObjectId } from 'mongodb'
 import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { writeWarnLog } from '~/utils/log.utils'
+import voucherPrivateService from '~/services/voucherPrivate.services'
+import voucherPublicService from '~/services/voucherPublic.services'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -258,6 +260,84 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
       })
       return
     })
+}
+
+export const voucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  const voucher = req.body.voucher
+
+  if (!voucher) {
+    next()
+    return
+  }
+
+  if (typeof voucher != 'string') {
+    next()
+    return
+  }
+
+  const voucherPrivate = await databaseService.voucherPrivate.findOne({ code: voucher })
+  const voucherPublic = await databaseService.voucherPublic.findOne({ code: voucher })
+
+  if (!voucherPublic && !voucherPrivate) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.VOUCHER_INVALID,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+    })
+    return
+  }
+
+  if (voucherPrivate) {
+    const total_price = req.total_price as number
+
+    if (voucherPrivate.requirement > total_price) {
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.VOUCHER_INVALID,
+        message:
+          language == LANGUAGE.VIETNAMESE
+            ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_REQUIREMENT_IS_NOT_MET
+            : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_REQUIREMENT_IS_NOT_MET
+      })
+      return
+    }
+
+    const new_bill = total_price - voucherPrivate.discount
+
+    req.total_price = new_bill > 0 ? new_bill : 0
+
+    await voucherPrivateService.useVoucher(voucherPrivate)
+
+    next()
+    return
+  }
+
+  if (voucherPublic) {
+    const total_price = req.total_price as number
+
+    if (voucherPublic.requirement > total_price) {
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.VOUCHER_INVALID,
+        message:
+          language == LANGUAGE.VIETNAMESE
+            ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_REQUIREMENT_IS_NOT_MET
+            : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_REQUIREMENT_IS_NOT_MET
+      })
+      return
+    }
+
+    const new_bill = total_price - voucherPublic.discount
+
+    req.total_price = new_bill > 0 ? new_bill : 0
+
+    await voucherPublicService.useVoucher(voucherPublic)
+
+    next()
+    return
+  }
 }
 
 export const sepayApiKeyValidator = async (req: Request, res: Response, next: NextFunction) => {

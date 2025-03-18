@@ -82,6 +82,26 @@ class VoucherPublicService {
     const voucher = await databaseService.voucherPublic.find({ $text: { $search: payload.keywords } }).toArray()
     return voucher
   }
+  async useVoucher(voucher: VoucherPublic) {
+    const used = voucher.quantity - 1
+    if (used <= 0) {
+      await databaseService.voucherPublic.deleteOne({
+        _id: voucher._id
+      })
+    } else {
+      await databaseService.voucherPublic.updateOne(
+        {
+          _id: voucher._id
+        },
+        {
+          $set: {
+            quantity: used,
+            used: voucher.used + 1
+          }
+        }
+      )
+    }
+  }
 }
 
 const voucherPublicService = new VoucherPublicService()
