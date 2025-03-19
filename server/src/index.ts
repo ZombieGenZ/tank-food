@@ -60,16 +60,14 @@ import api_categories from '~/routes/categories.routes'
 import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
-import api_order_online from '~/routes/orderOnline.routes'
-import api_order_offline from '~/routes/orderOffline.routes'
+import api_order_online from '~/routes/order.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
 app.use('/api/products', api_products)
 app.use('/api/voucher-public', api_voucher_public)
 app.use('/api/voucher-private', api_voucher_private)
-app.use('/api/order-online', api_order_online)
-app.use('/api/order-offline', api_order_offline)
+app.use('/api/order', api_order_online)
 
 app.use(defaultErrorHandler)
 

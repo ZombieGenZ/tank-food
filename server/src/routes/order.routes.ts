@@ -1,13 +1,13 @@
 import express from 'express'
-import { checkoutOrderController, orderOnlineController } from '~/controllers/orderOnline.controllers'
+import { checkoutOrderController, orderOnlineController } from '~/controllers/order.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
-import { orderOnlineValidator, voucherValidator, sepayApiKeyValidator } from '~/middlewares/orderOnline.middlewares'
+import { orderOnlineValidator, voucherValidator, sepayApiKeyValidator } from '~/middlewares/order.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
 /*
  * Description: Tạo đơn đặt hàng trực tuyến mới
- * Path: /api/order-online/order
+ * Path: /api/order-online/order-online
  * Method: POST
  * headers: {
  *    authorization: Bearer <token>
@@ -30,7 +30,7 @@ const router = express.Router()
  * }
  */
 router.post(
-  '/order',
+  '/order-online',
   authenticateValidator,
   orderOnlineValidator,
   voucherValidator,

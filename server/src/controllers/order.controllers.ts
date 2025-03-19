@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import User from '~/models/schemas/users.schemas'
-import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/orderOnline.requests'
+import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/order.requests'
 import { serverLanguage } from '~/index'
 import {
   VIETNAMESE_STATIC_MESSAGE,
@@ -12,7 +12,7 @@ import {
 import { writeErrorLog, writeInfoLog } from '~/utils/log.utils'
 import { LANGUAGE } from '~/constants/language.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
-import orderOnlineService from '~/services/orderOnline.services'
+import orderOnlineService from '~/services/order.services'
 import { ProductList } from '~/constants/order.constants'
 
 export const orderOnlineController = async (

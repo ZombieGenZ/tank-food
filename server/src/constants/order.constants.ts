@@ -25,18 +25,3 @@ export enum OrderStatus {
   COMPLETED,
   CANCELED
 }
-
-// export enum OrderOnlineStatus {
-//   PENDING,
-//   CONFIRMED,
-//   DELIVERING,
-//   DELIVERED,
-//   CANCELED
-// }
-
-// export enum OrderOfflineStatus {
-//   PENDING,
-//   CONFIRMED,
-//   COMPLETED,
-//   CANCELED
-// }

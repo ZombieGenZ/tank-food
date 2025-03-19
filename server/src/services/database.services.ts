@@ -63,12 +63,6 @@ class DatabaseService {
   get voucherPrivate(): Collection<VoucherPrivate> {
     return this.db.collection(process.env.DATABASE_VOUCHER_PRIVATE_COLLECTION as string)
   }
-  // get orderOnline(): Collection<OrderOnline> {
-  //   return this.db.collection(process.env.DATABASE_ORDER_ONLINE_COLLECTION as string)
-  // }
-  // get orderOffline(): Collection<OrderOffline> {
-  //   return this.db.collection(process.env.DATABASE_ORDER_OFFLINE_COLLECTION as string)
-  // }
   get order(): Collection<Order> {
     return this.db.collection(process.env.DATABASE_ORDER_COLLECTION as string)
   }

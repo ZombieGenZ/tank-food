@@ -1,4 +1,4 @@
-import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/orderOnline.requests'
+import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/order.requests'
 import User from '~/models/schemas/users.schemas'
 import { CalculateShippingCosts } from '~/utils/ai.utils'
 import axios from 'axios'
