@@ -1,7 +1,17 @@
+import { ObjectId } from 'mongodb'
 import databaseService from './database.services'
 import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
 
 class VoucherPrivateService {
+  async insertVoucher(code: string, discount: number, user: ObjectId) {
+    await databaseService.voucherPrivate.insertOne(
+      new VoucherPrivate({
+        code,
+        discount,
+        user
+      })
+    )
+  }
   async useVoucher(voucher: VoucherPrivate) {
     databaseService.voucherPrivate.deleteOne({
       _id: voucher._id

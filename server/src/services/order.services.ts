@@ -1,16 +1,24 @@
-import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/order.requests'
+import {
+  OrderOnlineRequestsBody,
+  CheckoutOrderRequestBody,
+  OrderApprovalRequestsBody
+} from '~/models/requests/order.requests'
 import User from '~/models/schemas/users.schemas'
 import { CalculateShippingCosts } from '~/utils/ai.utils'
 import axios from 'axios'
 import { extractLocationData } from '~/utils/string.utils'
 import databaseService from './database.services'
 import Order from '~/models/schemas/orders.schemas'
-import { PaymentStatus, PaymentType, ProductList } from '~/constants/order.constants'
+import { OrderStatus, PaymentStatus, PaymentType, ProductList } from '~/constants/order.constants'
 import { ObjectId } from 'mongodb'
 import paymentHistoryService from './paymentHistory.services'
+import { LANGUAGE } from '~/constants/language.constants'
+import { VIETNAMESE_DYNAMIC_MAIL, ENGLIS_DYNAMIC_MAIL } from '~/constants/mail.constants'
+import { randomVoucherCode } from '~/utils/random.utils'
+import { sendMail } from '~/utils/mail.utils'
 
-class OrderOnlineService {
-  async order(
+class OrderService {
+  async orderOnline(
     payload: OrderOnlineRequestsBody,
     user: User,
     total_quantity: number,
@@ -50,6 +58,7 @@ class OrderOnlineService {
         product: product_list,
         total_quantity: total_quantity,
         total_price: total_price,
+        discount_code: payload.voucher,
         fee: fee,
         vat: vat,
         total_bill: total_bill,
@@ -119,7 +128,76 @@ class OrderOnlineService {
       }
     )
   }
+  async getNewOrderEmployee() {
+    return await databaseService.order
+      .find({
+        payment_status: PaymentStatus.PAID,
+        order_status: OrderStatus.PENDING
+      })
+      .toArray()
+  }
+  async getOldOrderEmployee() {
+    return await databaseService.order
+      .find({
+        payment_status: PaymentStatus.PAID,
+        order_status: { $ne: OrderStatus.PENDING }
+      })
+      .toArray()
+  }
+  async OrderApproval(payload: OrderApprovalRequestsBody, order: Order, user: User, language: string) {
+    if (order.payment_type === PaymentType.BANK && order.user !== null && order.payment_status === PaymentStatus.PAID) {
+      const buyer = (await databaseService.users.findOne({ _id: order.user })) as User
+      const code = randomVoucherCode()
+
+      const email_subject =
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_DYNAMIC_MAIL.voucher(code, order.total_bill).subject
+          : ENGLIS_DYNAMIC_MAIL.voucher(code, order.total_bill).subject
+      const email_html =
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_DYNAMIC_MAIL.voucher(code, order.total_bill).html
+          : ENGLIS_DYNAMIC_MAIL.voucher(code, order.total_bill).html
+
+      await sendMail(buyer.email, email_subject, email_html)
+    }
+
+    if (payload.decision) {
+      await databaseService.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            order_status: OrderStatus.CONFIRMED,
+            moderated_by: user._id
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      )
+      return
+    } else {
+      await databaseService.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            order_status: OrderStatus.CANCELED,
+            cancellation_reason: payload.reason,
+            moderated_by: user._id
+          },
+          $currentDate: {
+            canceled_at: true,
+            updated_at: true
+          }
+        }
+      )
+      return
+    }
+  }
 }
 
-const orderOnlineService = new OrderOnlineService()
-export default orderOnlineService
+const orderService = new OrderService()
+export default orderService

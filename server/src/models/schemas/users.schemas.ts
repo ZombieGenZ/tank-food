@@ -37,6 +37,7 @@ export default class User {
   } | null
   created_at: Date
   updated_at: Date
+
   constructor(user: UserType) {
     const date = new Date()
 

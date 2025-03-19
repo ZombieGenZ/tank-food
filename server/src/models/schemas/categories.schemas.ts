@@ -24,6 +24,7 @@ export default class Category {
   updated_by: ObjectId
   created_at: Date
   updated_at: Date
+
   constructor(category: CategoryType) {
     const date = new Date()
 

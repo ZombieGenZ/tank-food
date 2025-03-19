@@ -67,7 +67,7 @@ app.use('/api/categories', api_categories)
 app.use('/api/products', api_products)
 app.use('/api/voucher-public', api_voucher_public)
 app.use('/api/voucher-private', api_voucher_private)
-app.use('/api/order', api_order_online)
+app.use('/api/orders', api_order_online)
 
 app.use(defaultErrorHandler)
 
@@ -93,247 +93,6 @@ io.on('connection', (socket: Socket) => {
     // update-product: Cập nhật thông tin sản phẩm vừa được cập nhật vào CSDL
     // delete-product: Cập nhật thông tin sản phẩm vừa được xóa khỏi CSDL
     //
-    // mô tả chi tiết sự kiện:
-    // sự kiện: create-category
-    // mô tả: Cập nhật thông tin danh mục vừa được thêm vào CSDL
-    // dữ liệu:
-    // _id: ObjectId,
-    // category_name_translate_1: string,
-    // translate_1_language: string,
-    // category_name_translate_2: string,
-    // translate_2_language: string,
-    // index: number,
-    // created_by: string,
-    // updated_by: string
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID Danh mục
-    // category_name_translate_1:
-    // Tên danh mục ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // category_name_translate_2:
-    // Tên danh mục ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // index: độ ưu tiên của danh mục
-    // created_by:
-    // ID người tạo danh mục
-    // updated_by:
-    // ID người cập nhật danh mục
-    //
-    // sự kiện: update-category
-    // mô tả: Cập nhật thông tin danh mục vừa được cập nhật vào CSDL
-    // dữ liệu:
-    // _id: ObjectId,
-    // category_name_translate_1: string,
-    // translate_1_language: string,
-    // category_name_translate_2: string,
-    // translate_2_language: string,
-    // index: number,
-    // updated_by: string
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID Danh mục
-    // category_name_translate_1:
-    // Tên danh mục ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // category_name_translate_2:
-    // Tên danh mục ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // index: độ ưu tiên của danh mục
-    // updated_by:
-    // ID người cập nhật danh mục
-    //
-    // sự kiện: delete-category
-    // mô tả: Cập nhật thông tin danh mục vừa được xóa khỏi CSDL
-    // dữ liệu: _id: ObjectId
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID Danh mục
-    //
-    // sự kiện: create-product
-    // mô tả: Cập nhật thông tin sản phẩm vừa được thêm vào CSDL
-    // dữ liệu:
-    // _id: ObjectId,
-    // title_translate_1: string,
-    // title_translate_1_language: string,
-    // title_translate_2: string,
-    // title_translate_2_language: string,
-    // description_translate_1: string,
-    // description_translate_1_language: string,
-    // description_translate_2: string,
-    // description_translate_2_language: string,
-    // price: number,
-    // availability: boolean,
-    // category: ObjectId,
-    // tag_translate_1: string,
-    // tag_translate_1_language: string,
-    // tag_translate_2: string,
-    // tag_translate_2_language: string,
-    // preview: ImageType
-    // ImageType: {
-    //    type: string
-    //    path: string
-    //    url: string
-    //    size: number
-    //}
-    // created_by: string
-    // updated_by: string
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID Sản phẩm,
-    // title_translate_1:
-    // Tên Sản phẩm ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // title_translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // title_translate_2:
-    // Tên Sản phẩm ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // title_translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // description_translate_1:
-    // Mô tả Sản phẩm ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // description_translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // description_translate_2:
-    // Mô tả Sản phẩm ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // description_translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // price: Giá sản phẩm
-    // availability: Tình trạng còn hàng hay hết hàng
-    // category: ID Danh mục
-    // tag_translate_1:
-    // Tag Sản phẩm ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // tag_translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // tag_translate_2:
-    // Tag Sản phẩm ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // tag_translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // preview:
-    // Thông tin ảnh đại diện của sản phẩm
-    // ImageType: {
-    //    type: string
-    //    path: string
-    //    url: string
-    //    size: number
-    // }
-    // type: Loại ảnh
-    // path: Đường dẫn ảnh (serve only)
-    // url: URL ảnh (web url)
-    // size: Kích thước ảnh
-    // created_by:
-    // ID người tạo sản phẩm
-    // updated_by:
-    // ID người cập nhật sản phẩm
-    //
-    // sự kiện: update-product
-    // mô tả: Cập nhật thông tin sản phẩm vừa được cập nhật vào CSDL
-    // dữ liệu:
-    // _id: ObjectId,
-    // title_translate_1: string,
-    // title_translate_1_language: string,
-    // title_translate_2: string,
-    // title_translate_2_language: string,
-    // description_translate_1: string,
-    // description_translate_1_language: string,
-    // description_translate_2: string,
-    // description_translate_2_language: string,
-    // price: number,
-    // availability: boolean,
-    // category: ObjectId,
-    // tag_translate_1: string,
-    // tag_translate_1_language: string,
-    // tag_translate_2: string,
-    // tag_translate_2_language: string,
-    // preview: ImageType
-    // ImageType: {
-    //    type: string
-    //    path: string
-    //    url: string
-    //    size: number
-    // }
-    // updated_by: string
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID Sản phẩm,
-    // title_translate_1:
-    // Tên Sản phẩm ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // title_translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // title_translate_2:
-    // Tên Sản phẩm ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // title_translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // description_translate_1:
-    // Mô tả Sản phẩm ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // description_translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // description_translate_2:
-    // Mô tả Sản phẩm ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // description_translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // price: Giá sản phẩm
-    // availability: Tình trạng còn hàng hay hết hàng
-    // category: ID Danh mục
-    // tag_translate_1:
-    // Tag Sản phẩm ở bản dịch số 1
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // tag_translate_1_language:
-    // Mã ngôn ngữ của bản dịch số 1
-    // (có 2 loại vi-VN và en-US)
-    // tag_translate_2:
-    // Tag Sản phẩm ở bản dịch số 2
-    // (có thể là tiếng việt hoặc tiếng anh)
-    // tag_translate_2_language:
-    // Mã ngôn ngữ của bản dịch số 2
-    // (có 2 loại vi-VN và en-US)
-    // preview:
-    // Thông tin ảnh đại diện của sản phẩm
-    // ImageType: {
-    //    type: string
-    //    path: string
-    //    url: string
-    //    size: number
-    // }
-    // type: Loại ảnh
-    // path: Đường dẫn ảnh (serve only)
-    // url: URL ảnh (web url)
-    // size: Kích thước ảnh
-    // updated_by:
-    // ID người cập nhật sản phẩm
-    //
-    // sự kiện: delete-product
-    // mô tả: Cập nhật thông tin sản phẩm vừa được xóa khỏi CSDL
-    // dữ liệu: _id: ObjectId
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID Sản phẩm
-    //
 
     socket.join(`freshSync`)
     if (serverLanguage == LANGUAGE.VIETNAMESE) {
@@ -343,59 +102,52 @@ io.on('connection', (socket: Socket) => {
     }
   })
 
+  socket.on('connect-user-realtime', async (refresh_token: string) => {
+    // Phòng: freshSync-admin
+    // sự kiện:
+    // new-order: Cập nhật thông tin order vừa được thêm vào CSDL
+    //
+
+    if (!refresh_token) {
+      return
+    }
+
+    try {
+      const decoded_refresh_token = (await verifyToken({
+        token: refresh_token,
+        publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_refresh_token) {
+        return
+      }
+
+      const user = await databaseService.users.findOne({ _id: new ObjectId(decoded_refresh_token.user_id) })
+
+      if (!user) {
+        return
+      }
+
+      if (serverLanguage == LANGUAGE.VIETNAMESE) {
+        console.log(
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
+        )
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-admin`)
+      } else {
+        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-admin\x1b[0m`)
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-admin`)
+      }
+    } catch {
+      return
+    }
+  })
+
   socket.on('connect-admin-realtime', async (refresh_token: string) => {
     // Phòng: freshSync-admin
     // sự kiện:
     // create-public-voucher: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
     // update-public-voucer: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
     // delete-public-voucher: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
-    //
-    // mô tả chi tiết sự kiện:
-    // sự kiện: create-public-voucher
-    // mô tả: Thêm thông tin voucher (công khai) vừa được thêm vào CSDL
-    // dữ liệu:
-    // _id: ObjectId,
-    // code: string,
-    // discount: number,
-    // quantity: number,
-    // expiration_date: Date,
-    // requirement: number
-    // create_by: string
-    // update_by: string
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID voucher (Công khai)
-    // code: mã giảm giá
-    // discount: số tiền giảm
-    // quantity: số lượng voucher
-    // expiration_date: thời gian hết hạn
-    // requirement: yêu cầu tối thiểu để xử dụng voucher
-    // create_by: ID người tạo voucher
-    // update_by: ID người cập nhật voucher
-    //
-    // sự kiện: update-public-voucher
-    // mô tả: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
-    // dữ liệu:
-    // _id: ObjectId,
-    // code: string,
-    // discount: number,
-    // quantity: number,
-    // expiration_date: Date,
-    // requirement: number
-    // update_by: string
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID voucher (Công khai)
-    // code: mã giảm giá
-    // discount: số tiền giảm
-    // quantity: số lượng voucher
-    // expiration_date: thời gian hết hạn
-    // requirement: yêu cầu tối thiểu để xử dụng voucher
-    // update_by: ID người cập nhật voucher
-    //
-    // sự kiện: delete-public-voucher
-    // mô tả: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
-    // dữ liệu: _id: ObjectId
-    // Mô tả chi tiết công dụng của dữ liệu:
-    // _id: ID voucher (Công khai)
     //
 
     if (!refresh_token) {

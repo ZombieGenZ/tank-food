@@ -6,6 +6,7 @@ interface OrderType {
   product: ProductList[]
   total_quantity: number
   total_price: number
+  discount_code?: string
   fee?: number
   vat: number
   total_bill: number
@@ -30,6 +31,7 @@ interface OrderType {
   payment_status?: PaymentStatus
   order_status?: OrderStatus
   cancellation_reason?: string
+  moderated_by?: ObjectId
   created_at?: Date
   confirmmed_at?: Date
   delivering_at?: Date
@@ -43,6 +45,7 @@ export default class Order {
   product: ProductList[]
   total_quantity: number
   total_price: number
+  discount_code: string
   fee: number
   vat: number
   total_bill: number
@@ -67,6 +70,7 @@ export default class Order {
   payment_status: PaymentStatus
   order_status: OrderStatus
   cancellation_reason: string
+  moderated_by: ObjectId | null
   created_at: Date
   confirmmed_at: Date
   delivering_at: Date
@@ -81,6 +85,7 @@ export default class Order {
     this.product = order.product
     this.total_quantity = order.total_quantity
     this.total_price = order.total_price
+    this.discount_code = order.discount_code || ''
     this.fee = order.fee || 0
     this.vat = order.vat
     this.total_bill = order.total_bill
@@ -105,6 +110,7 @@ export default class Order {
     this.payment_status = order.payment_status || PaymentStatus.PENDING
     this.order_status = order.order_status || OrderStatus.PENDING
     this.cancellation_reason = order.cancellation_reason || ''
+    this.moderated_by = order.moderated_by || null
     this.created_at = order.created_at || date
     this.confirmmed_at = order.confirmmed_at || date
     this.delivering_at = order.delivering_at || date

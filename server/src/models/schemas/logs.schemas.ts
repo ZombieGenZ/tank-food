@@ -13,6 +13,7 @@ export default class Log {
   log_type: LogTypeEnum
   content: string
   time: Date
+  
   constructor(log: LogType) {
     this._id = log._id || new ObjectId()
     this.log_type = log.log_type || LogTypeEnum.INFO

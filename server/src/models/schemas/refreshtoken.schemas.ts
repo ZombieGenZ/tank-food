@@ -14,6 +14,7 @@ export default class RefreshToken {
   user_id: ObjectId
   created_at: Date
   updated_at: Date
+  
   constructor(token: RefreshTokenType) {
     const date = new Date()
 

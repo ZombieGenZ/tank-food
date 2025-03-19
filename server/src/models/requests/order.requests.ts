@@ -8,6 +8,7 @@ export interface OrderOnlineRequestsBody {
   phone: string
   receiving_longitude: number
   receiving_latitude: number
+  voucher?: string
 }
 
 export interface CheckoutOrderRequestBody {
@@ -24,4 +25,14 @@ export interface CheckoutOrderRequestBody {
   subAccount: number | null
   referenceCode: string
   description: string
+}
+
+export interface GetOrderRequestsBody {
+  language: string
+}
+
+export interface OrderApprovalRequestsBody {
+  language: string
+  decision: boolean
+  reason: string
 }

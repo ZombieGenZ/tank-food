@@ -12,6 +12,7 @@ export default class Prompt {
   prompt_content: string
   response_content: string
   created_at: Date
+  
   constructor(prompt: PromptType) {
     this._id = prompt._id || new ObjectId()
     this.prompt_content = prompt.prompt_content

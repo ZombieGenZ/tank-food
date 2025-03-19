@@ -176,7 +176,19 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CHECKOUT_ORDER_SUCCESS: 'Xác thực thanh toán đơn hàng thành công',
     CHECKOUT_ORDER_FAILURE: 'Xác thực thanh toán đơn hàng thất bại',
     VOUCHER_IS_NOT_FOUND: 'Mã giảm giá không tồn tại',
-    VOUCHER_REQUIREMENT_IS_NOT_MET: 'Mã giảm giá không đáp ứng yêu cầu'
+    VOUCHER_REQUIREMENT_IS_NOT_MET: 'Mã giảm giá không đáp ứng yêu cầu',
+    GET_ORDER_EMPLOYEE_SUCCESS: 'Lấy danh sách đơn hàng thành công',
+    GET_ORDER_EMPLOYEE_FAILURE: 'Lấy danh sách đơn hàng thất bại',
+    ORDER_ID_IS_REQUIRED: 'Không được bỏ trống id đơn hàng',
+    ORDER_ID_MUST_BE_A_STRING: 'Id đơn hàng phải là 1 chuỗi kí tự',
+    ORDER_ID_MUST_BE_A_ID: 'Id đơn hàng không đúng định dạng',
+    ORDER_ID_DOES_NOT_EXIST: 'Id đơn hàng không tồn tại',
+    DECISION_MUST_BE_A_BOOLEAN: 'Quyết định phải là một boolean',
+    REASON_IS_REQUIRED: 'Không được bỏ trống lý do',
+    REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS: 'Lý do phải có độ dài từ 5 đến 200 kí tự',
+    ORDER_APPROVED: 'Đơn hàng đã được duyệt',
+    ORDER_APPROVAL_SUCCESS: 'Kiểm duyệt đơn hàng thành công',
+    ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại'
   } as const
 }
 
@@ -360,7 +372,19 @@ export class ENGLISH_STATIC_MESSAGE {
     CHECKOUT_ORDER_SUCCESS: 'Order checkout successful',
     CHECKOUT_ORDER_FAILURE: 'Order checkout failed',
     VOUCHER_IS_NOT_FOUND: 'Voucher not found',
-    VOUCHER_REQUIREMENT_IS_NOT_MET: 'Voucher requirement not met'
+    VOUCHER_REQUIREMENT_IS_NOT_MET: 'Voucher requirement not met',
+    GET_ORDER_EMPLOYEE_SUCCESS: 'Successfully retrieved order list',
+    GET_ORDER_EMPLOYEE_FAILURE: 'Failed to retrieve order list',
+    ORDER_ID_IS_REQUIRED: 'Order ID cannot be empty',
+    ORDER_ID_MUST_BE_A_STRING: 'Order ID must be a string',
+    ORDER_ID_MUST_BE_A_ID: 'Order ID is not in the correct format',
+    ORDER_ID_DOES_NOT_EXIST: 'Order ID does not exist',
+    DECISION_MUST_BE_A_BOOLEAN: 'Decision must be a boolean',
+    REASON_IS_REQUIRED: 'Reason cannot be empty',
+    REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS: 'Reason must be between 5 and 200 characters long',
+    ORDER_APPROVED: 'Order approved',
+    ORDER_APPROVAL_SUCCESS: 'Order approval successful',
+    ORDER_APPROVAL_FAILURE: 'Order approval failed'
   } as const
 }
 
@@ -497,6 +521,18 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CheckoutOrderFailed(ip: string, err: unknown) {
     return `Thực hiện xác nhận đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static GetOrderEmployeeSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin đơn hàng mới thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetOrderEmployeeFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin đơn hàng mới thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static OrderApprovalSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện kiểm duyệt đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static OrderApprovalFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện kiểm duyệt đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -631,5 +667,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static CheckoutOrderFailed(ip: string, err: unknown) {
     return `Order checkout failed (IP: ${ip}) | Error: ${err}`
+  }
+  static GetOrderEmployeeSuccessfully(user_id: string, ip: string) {
+    return `New order information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetOrderEmployeeFailed(user_id: string, ip: string, err: unknown) {
+    return `New order information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static OrderApprovalSuccessfully(user_id: string, ip: string) {
+    return `Order approval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static OrderApprovalFailed(user_id: string, ip: string, err: unknown) {
+    return `Order approval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -1,7 +1,12 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import User from '~/models/schemas/users.schemas'
-import { OrderOnlineRequestsBody, CheckoutOrderRequestBody } from '~/models/requests/order.requests'
+import {
+  OrderOnlineRequestsBody,
+  CheckoutOrderRequestBody,
+  GetOrderRequestsBody,
+  OrderApprovalRequestsBody
+} from '~/models/requests/order.requests'
 import { serverLanguage } from '~/index'
 import {
   VIETNAMESE_STATIC_MESSAGE,
@@ -14,6 +19,7 @@ import { LANGUAGE } from '~/constants/language.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import orderOnlineService from '~/services/order.services'
 import { ProductList } from '~/constants/order.constants'
+import Order from '~/models/schemas/orders.schemas'
 
 export const orderOnlineController = async (
   req: Request<ParamsDictionary, any, OrderOnlineRequestsBody>,
@@ -28,7 +34,7 @@ export const orderOnlineController = async (
   const total_price = req.total_price as number
 
   try {
-    const infomation = await orderOnlineService.order(req.body, user, total_quantity, total_price, product_list)
+    const infomation = await orderOnlineService.orderOnline(req.body, user, total_quantity, total_price, product_list)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -98,6 +104,132 @@ export const checkoutOrderController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_FAILURE
+    })
+  }
+}
+
+export const getNewOrderEmployeeController = async (
+  req: Request<ParamsDictionary, any, GetOrderRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const order = await orderOnlineService.getNewOrderEmployee()
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS,
+      order
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
+    })
+  }
+}
+
+export const getOldOrderEmployeeController = async (
+  req: Request<ParamsDictionary, any, GetOrderRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const order = await orderOnlineService.getOldOrderEmployee()
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS,
+      order
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
+    })
+  }
+}
+
+export const orderApprovalEmployeeController = async (
+  req: Request<ParamsDictionary, any, OrderApprovalRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.OrderApproval(req.body, order, user, language)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.OrderApprovalSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.OrderApprovalSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.OrderApprovalFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.OrderApprovalFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.ORDER_APPROVAL_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_FAILURE
     })
   }
 }

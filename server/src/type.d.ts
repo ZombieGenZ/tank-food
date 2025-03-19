@@ -6,6 +6,7 @@ import RefreshToken from './models/schemas/refreshtoken.schemas'
 import Category from './models/schemas/categories.schemas'
 import { ImageType } from './constants/images.constants'
 import Product from './models/schemas/product.schemas'
+import Order from './models/schemas/orders.schemas'
 
 declare module 'express' {
   interface Request {
@@ -20,5 +21,6 @@ declare module 'express' {
     total_quantity?: number
     total_price?: number
     product_list?: ProductList
+    order?: Order
   }
 }

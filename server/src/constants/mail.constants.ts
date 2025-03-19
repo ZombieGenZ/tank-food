@@ -10,7 +10,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                         <div style="position: relative;">
                             <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
                             <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
-                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Fast Food. Fast Delivery.</p>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
                         </div>
                     </td>
                 </tr>
@@ -88,7 +88,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                         <div style="position: relative;">
                             <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
                             <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
-                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Fast Food. Fast Delivery.</p>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
                         </div>
                     </td>
                 </tr>
@@ -138,6 +138,74 @@ export class VIETNAMESE_DYNAMIC_MAIL {
       `
     }
   }
+  static voucher(code: string, discount: number) {
+    return {
+      subject: `Mã giảm giá - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #F2F2F2;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-collapse: collapse;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 20px; text-align: center;">
+                        <h1 style="color: #FFFFFF; margin: 0; font-size: 28px;">${process.env.TRADEMARK_NAME}</h1>
+                        <p style="color: #FFFFFF; margin: 5px 0 0 0; font-size: 16px;">${process.env.SLOGAN}</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="background-color: #D62300; padding: 30px 20px; text-align: center;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 24px;">Chúng Tôi Xin Lỗi Về Đơn Hàng Của Bạn</h2>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 16px;">Chúng tôi đã gửi cho bạn một voucher đặc biệt như lời xin lỗi</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 30px 20px; background-color: #FFFFFF;">
+                        <p style="color: #333333; margin: 0; font-size: 16px; line-height: 1.5;">Kính gửi Quý khách,</p>
+                        <p style="color: #333333; margin: 15px 0; font-size: 16px; line-height: 1.5;">Chúng tôi xin lỗi vì đơn hàng gần đây của bạn đã bị hủy. Tại ${process.env.TRADEMARK_NAME}, chúng tôi luôn cố gắng cung cấp dịch vụ tốt nhất có thể, và rất tiếc khi không thể hoàn thành đơn hàng của bạn lần này.</p>
+                        <p style="color: #333333; margin: 15px 0; font-size: 16px; line-height: 1.5;">Như một lời cảm ơn cho sự kiên nhẫn và thông cảm của bạn, chúng tôi rất vui được tặng bạn một ưu đãi đặc biệt cho đơn hàng tiếp theo.</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 0 20px 30px; text-align: center; background-color: #FFFFFF;">
+                        <div style="border: 2px dashed #FF9A3D; padding: 20px; background-color: #F2F2F2; border-radius: 8px;">
+                            <h3 style="color: #D62300; margin: 0; font-size: 20px;">VOUCHER ĐẶC BIỆT CỦA BẠN</h3>
+                            <div style="background-color: #B01C00; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                                <p style="color: #FFFFFF; margin: 0; font-size: 24px; font-weight: bold;">GIẢM ${discount.toLocaleString('vi-VN')}₫</p>
+                                <p style="color: #FFFFFF; margin: 5px 0 0 0; font-size: 14px;">Cho Đơn Hàng Tiếp Theo</p>
+                            </div>
+                            <p style="color: #333333; margin: 0; font-size: 16px;">Mã Voucher:</p>
+                            <p style="color: #D62300; margin: 5px 0 15px 0; font-size: 22px; font-weight: bold; letter-spacing: 2px;">${code}</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 0 20px 30px; text-align: center; background-color: #FFFFFF;">
+                        <a href="${process.env.APP_URL}" style="display: inline-block; background-color: #FF8000; color: #FFFFFF; text-decoration: none; padding: 15px 30px; border-radius: 5px; font-size: 16px; font-weight: bold;">Đặt Hàng Ngay</a>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 20px; background-color: #F2F2F2; text-align: center;">
+                        <p style="color: #333333; margin: 0; font-size: 14px; line-height: 1.5;">Voucher này có thể được sử dụng cho bất kỳ đơn hàng nào từ thực đơn của chúng tôi. Không thể kết hợp với các ưu đãi khác.</p>
+                        <p style="color: #333333; margin: 15px 0 0 0; font-size: 14px;">Có câu hỏi? Liên hệ với dịch vụ khách hàng của chúng tôi tại <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #D62300; text-decoration: none;">${process.env.SUPPORT_EMAIL}</a></p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="background-color: #D62300; padding: 20px; text-align: center;">
+                        <p style="color: #FFFFFF; margin: 0; font-size: 14px;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Tất cả các quyền được bảo lưu.</p>
+                        <div style="margin-top: 15px;">
+                            <a href="${process.env.APP_URL}" style="display: inline-block; background-color: transparent; color: #FFFFFF; text-decoration: none; border: 1px solid #FFFFFF; border-radius: 999px; padding: 8px 30px; font-size: 16px;">Website</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+      `
+    }
+  }
 }
 
 export class ENGLIS_DYNAMIC_MAIL {
@@ -152,7 +220,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                         <div style="position: relative;">
                             <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
                             <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
-                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Fast Food. Fast Delivery.</p>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
                         </div>
                     </td>
                 </tr>
@@ -229,7 +297,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                         <div style="position: relative;">
                             <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
                             <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
-                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">Fast Food. Fast Delivery.</p>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
                         </div>
                     </td>
                 </tr>
@@ -273,6 +341,74 @@ export class ENGLIS_DYNAMIC_MAIL {
                 </tr>
             </table>
         </body>
+      `
+    }
+  }
+  static voucher(code: string, discount: number) {
+    return {
+      subject: `Discount Voucher - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #F2F2F2;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border-collapse: collapse;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 20px; text-align: center;">
+                        <h1 style="color: #FFFFFF; margin: 0; font-size: 28px;">${process.env.TRADEMARK_NAME}</h1>
+                        <p style="color: #FFFFFF; margin: 5px 0 0 0; font-size: 16px;">${process.env.SLOGAN}</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="background-color: #D62300; padding: 30px 20px; text-align: center;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 24px;">We Apologize For Your Order</h2>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 16px;">We've sent you a special voucher as an apology</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 30px 20px; background-color: #FFFFFF;">
+                        <p style="color: #333333; margin: 0; font-size: 16px; line-height: 1.5;">Dear Valued Customer,</p>
+                        <p style="color: #333333; margin: 15px 0; font-size: 16px; line-height: 1.5;">We apologize for the cancellation of your recent order. At ${process.env.TRADEMARK_NAME}, we always strive to provide the best possible service, and we regret that we were unable to fulfill your order this time.</p>
+                        <p style="color: #333333; margin: 15px 0; font-size: 16px; line-height: 1.5;">As a token of our appreciation for your patience and understanding, we are pleased to offer you a special discount for your next order.</p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 0 20px 30px; text-align: center; background-color: #FFFFFF;">
+                        <div style="border: 2px dashed #FF9A3D; padding: 20px; background-color: #F2F2F2; border-radius: 8px;">
+                            <h3 style="color: #D62300; margin: 0; font-size: 20px;">YOUR SPECIAL VOUCHER</h3>
+                            <div style="background-color: #B01C00; padding: 15px; margin: 15px 0; border-radius: 5px;">
+                                <p style="color: #FFFFFF; margin: 0; font-size: 24px; font-weight: bold;">DISCOUNT ${discount.toLocaleString('en-US')}₫</p>
+                                <p style="color: #FFFFFF; margin: 5px 0 0 0; font-size: 14px;">For Your Next Order</p>
+                            </div>
+                            <p style="color: #333333; margin: 0; font-size: 16px;">Voucher Code:</p>
+                            <p style="color: #D62300; margin: 5px 0 15px 0; font-size: 22px; font-weight: bold; letter-spacing: 2px;">${code}</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 0 20px 30px; text-align: center; background-color: #FFFFFF;">
+                        <a href="${process.env.APP_URL}" style="display: inline-block; background-color: #FF8000; color: #FFFFFF; text-decoration: none; padding: 15px 30px; border-radius: 5px; font-size: 16px; font-weight: bold;">Order Now</a>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding: 20px; background-color: #F2F2F2; text-align: center;">
+                        <p style="color: #333333; margin: 0; font-size: 14px; line-height: 1.5;">This voucher can be used for any order from our menu. Cannot be combined with other offers.</p>
+                        <p style="color: #333333; margin: 15px 0 0 0; font-size: 14px;">Have questions? Contact our customer service at <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #D62300; text-decoration: none;">${process.env.SUPPORT_EMAIL}</a></p>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="background-color: #D62300; padding: 20px; text-align: center;">
+                        <p style="color: #FFFFFF; margin: 0; font-size: 14px;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                        <div style="margin-top: 15px;">
+                            <a href="${process.env.APP_URL}" style="display: inline-block; background-color: transparent; color: #FFFFFF; text-decoration: none; border: 1px solid #FFFFFF; border-radius: 999px; padding: 8px 30px; font-size: 16px;">Website</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
       `
     }
   }
