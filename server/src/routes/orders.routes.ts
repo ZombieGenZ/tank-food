@@ -5,9 +5,14 @@ import {
   getNewOrderEmployeeController,
   getOldOrderEmployeeController,
   orderApprovalEmployeeController,
+  cancelOrderEmployeeController,
   getNewOrderShipperController,
-  getOldOrderShipperController
-} from '~/controllers/order.controllers'
+  getOldOrderShipperController,
+  receiveDeliveryShipperController,
+  cancelOrderShipperController,
+  orderOfflineController,
+  paymentConfirmationController
+} from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
   authenticateEmployeeValidator,
@@ -17,8 +22,13 @@ import {
   orderOnlineValidator,
   voucherValidator,
   sepayApiKeyValidator,
-  orderApprovalValidator
-} from '~/middlewares/order.middlewares'
+  cancelOrderEmployeeValidator,
+  orderApprovalValidator,
+  receiveDeliveryValidator,
+  cancelOrderShipperValidator,
+  orderOfflineValidator,
+  paymentConfirmationValidator
+} from '~/middlewares/orders.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -122,7 +132,7 @@ router.post(
 /*
  * Description: Xử lý đơn hàng đang chờ xử lý
  * Path: /api/orders/order-approval
- * Method: POST
+ * Method: PUT
  * headers: {
  *    authorization: Bearer <token>
  * },
@@ -134,12 +144,34 @@ router.post(
  *    reason: string
  * }
  */
-router.post(
+router.put(
   '/order-approval',
   authenticateValidator,
   authenticateEmployeeValidator,
   orderApprovalValidator,
   wrapRequestHandler(orderApprovalEmployeeController)
+)
+
+/*
+ * Description: Hủy đơn hàng đã nhận (cho nhân viên)
+ * Path: /api/orders/cancel-order-employee
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string,
+ *    reason: string
+ * }
+ */
+router.put(
+  '/cancel-order-employee',
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  cancelOrderEmployeeValidator,
+  wrapRequestHandler(cancelOrderEmployeeController)
 )
 
 /*
@@ -178,6 +210,87 @@ router.post(
   authenticateValidator,
   authenticateShipperValidator,
   wrapRequestHandler(getOldOrderShipperController)
+)
+
+/*
+ * Description: Nhận giao hàng (cho shipper)
+ * Path: /api/orders/receive-delivery
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/receive-delivery',
+  authenticateValidator,
+  authenticateShipperValidator,
+  receiveDeliveryValidator,
+  wrapRequestHandler(receiveDeliveryShipperController)
+)
+
+/*
+ * Description: Hủy đơn hàng đã nhận (cho shipper)
+ * Path: /api/orders/cancel-order-shipper
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/cancel-order-shipper',
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  cancelOrderShipperValidator,
+  wrapRequestHandler(cancelOrderShipperController)
+)
+
+/*
+ * Description: Tạo đơn đặt hàng tại quầy mới
+ * Path: /api/orders/order-offline
+ * Method: POST
+ * Body: {
+ *    language?: string,
+ *    product: [
+ *      ...
+ *      {
+ *        product_id: string,
+ *        quantity: number
+ *      }
+ *    ],
+ *    payment_type: number
+ * }
+ */
+router.post('/order-offline', orderOfflineValidator, wrapRequestHandler(orderOfflineController))
+
+/*
+ * Description: Xác nhận thanh toán (Dành cho order trả bằng tiền mặt)
+ * Path: /api/orders/payment-confirmation
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/payment-confirmation',
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  paymentConfirmationValidator,
+  wrapRequestHandler(paymentConfirmationController)
 )
 
 export default router

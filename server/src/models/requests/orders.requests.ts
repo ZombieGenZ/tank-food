@@ -1,4 +1,4 @@
-import { ProductList } from '~/constants/order.constants'
+import { ProductList } from '~/constants/orders.constants'
 
 export interface OrderOnlineRequestsBody {
   language?: string
@@ -36,4 +36,30 @@ export interface OrderApprovalRequestsBody {
   language: string
   decision: boolean
   reason: string
+}
+
+export interface CancelOrderEmployeeRequestsBody {
+  language: string
+  reason: string
+}
+
+export interface ReceiveDeliveryRequestsBody {
+  language: string
+  order_id: string
+}
+
+export interface CancelOrderShipperRequestsBody {
+  language: string
+  order_id: string
+}
+
+export interface OrderOfflineRequestsBody {
+  language?: string
+  product: ProductList[]
+  payment_type: number
+}
+
+export interface PaymentConfirmationRequestsBody {
+  language: string
+  order_id: string
 }

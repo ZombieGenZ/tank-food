@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { CheckoutOrderRequestBody } from '~/models/requests/order.requests'
+import { CheckoutOrderRequestBody } from '~/models/requests/orders.requests'
 import databaseService from './database.services'
 import PaymentHistory from '~/models/schemas/paymentHistory.schemas'
 

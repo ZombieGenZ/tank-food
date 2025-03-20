@@ -50,7 +50,7 @@ router.post('/login', loginUserValidator, wrapRequestHandler(loginUserController
  *    refresh_token: string
  * }
  */
-router.post('/logout', authenticateValidator, wrapRequestHandler(logoutUserController))
+router.delete('/logout', authenticateValidator, wrapRequestHandler(logoutUserController))
 
 /*
  * Description: Xác thực token và cấp token mới cho người dùng
