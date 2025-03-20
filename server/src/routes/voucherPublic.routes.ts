@@ -1,15 +1,15 @@
 import express from 'express'
 import {
-  createVoucherController,
-  updateVoucherController,
-  deleteVoucherController,
-  getVoucherController
+  createVoucherPublicController,
+  updateVoucherPublicController,
+  deleteVoucherPublicController,
+  getVoucherPublicController
 } from '~/controllers/voucherPublic.controllers'
 import { authenticateAdministratorValidator, authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import {
-  createVoucherValidator,
-  updateVoucherValidator,
-  deleteVoucherValidator
+  createVoucherPublicValidator,
+  updateVoucherPublicValidator,
+  deleteVoucherPublicValidator
 } from '~/middlewares/voucherPublic.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -35,8 +35,8 @@ router.post(
   '/create',
   authenticateValidator,
   authenticateAdministratorValidator,
-  createVoucherValidator,
-  wrapRequestHandler(createVoucherController)
+  createVoucherPublicValidator,
+  wrapRequestHandler(createVoucherPublicController)
 )
 
 /*
@@ -61,8 +61,8 @@ router.put(
   '/update',
   authenticateValidator,
   authenticateAdministratorValidator,
-  updateVoucherValidator,
-  wrapRequestHandler(updateVoucherController)
+  updateVoucherPublicValidator,
+  wrapRequestHandler(updateVoucherPublicController)
 )
 
 /*
@@ -82,8 +82,8 @@ router.delete(
   '/delete',
   authenticateValidator,
   authenticateAdministratorValidator,
-  deleteVoucherValidator,
-  wrapRequestHandler(deleteVoucherController)
+  deleteVoucherPublicValidator,
+  wrapRequestHandler(deleteVoucherPublicController)
 )
 
 /*
@@ -102,7 +102,7 @@ router.post(
   '/get-voucher',
   authenticateValidator,
   authenticateAdministratorValidator,
-  wrapRequestHandler(getVoucherController)
+  wrapRequestHandler(getVoucherPublicController)
 )
 
 export default router

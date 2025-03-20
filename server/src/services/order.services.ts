@@ -9,13 +9,20 @@ import axios from 'axios'
 import { extractLocationData } from '~/utils/string.utils'
 import databaseService from './database.services'
 import Order from '~/models/schemas/orders.schemas'
-import { OrderStatus, PaymentStatus, PaymentType, ProductList } from '~/constants/order.constants'
+import {
+  ProductList,
+  DeliveryTypeEnum,
+  PaymentTypeEnum,
+  PaymentStatusEnum,
+  OrderStatusEnum
+} from '~/constants/order.constants'
 import { ObjectId } from 'mongodb'
 import paymentHistoryService from './paymentHistory.services'
 import { LANGUAGE } from '~/constants/language.constants'
 import { VIETNAMESE_DYNAMIC_MAIL, ENGLIS_DYNAMIC_MAIL } from '~/constants/mail.constants'
 import { randomVoucherCode } from '~/utils/random.utils'
 import { sendMail } from '~/utils/mail.utils'
+import voucherPrivateService from './voucherPrivate.services'
 
 class OrderService {
   async orderOnline(
@@ -62,6 +69,7 @@ class OrderService {
         fee: fee,
         vat: vat,
         total_bill: total_bill,
+        delivery_type: DeliveryTypeEnum.DELIVERY,
         user: user._id,
         name: payload.name,
         email: payload.email,
@@ -77,8 +85,9 @@ class OrderService {
         distance: location.distance,
         suggested_route: location.suggestedRoute,
         estimated_time: location.estimatedTime,
+        node: payload.note,
         is_first_transaction: is_first_transaction,
-        payment_type: PaymentType.BANK
+        payment_type: PaymentTypeEnum.BANK
       })
     )
 
@@ -110,8 +119,8 @@ class OrderService {
 
     if (
       !order ||
-      order.payment_type == PaymentType.CASH ||
-      order.payment_status !== PaymentStatus.PENDING ||
+      order.payment_type == PaymentTypeEnum.CASH ||
+      order.payment_status !== PaymentStatusEnum.PENDING ||
       payload.transferAmount !== order.total_bill
     ) {
       return
@@ -123,31 +132,40 @@ class OrderService {
       },
       {
         $set: {
-          payment_status: PaymentStatus.PAID
+          payment_status: PaymentStatusEnum.PAID
         }
       }
     )
   }
-  async getNewOrderEmployee() {
+  async getNewOrderEmployee(user: User) {
     return await databaseService.order
       .find({
-        payment_status: PaymentStatus.PAID,
-        order_status: OrderStatus.PENDING
+        user: { $ne: user._id },
+        payment_status: PaymentStatusEnum.PAID,
+        order_status: OrderStatusEnum.PENDING
       })
       .toArray()
   }
-  async getOldOrderEmployee() {
+  async getOldOrderEmployee(user: User) {
     return await databaseService.order
       .find({
-        payment_status: PaymentStatus.PAID,
-        order_status: { $ne: OrderStatus.PENDING }
+        user: { $ne: user._id },
+        payment_status: PaymentStatusEnum.PAID,
+        order_status: { $ne: OrderStatusEnum.PENDING }
       })
       .toArray()
   }
   async OrderApproval(payload: OrderApprovalRequestsBody, order: Order, user: User, language: string) {
-    if (order.payment_type === PaymentType.BANK && order.user !== null && order.payment_status === PaymentStatus.PAID) {
+    if (
+      order.payment_type === PaymentTypeEnum.BANK &&
+      order.user !== null &&
+      order.payment_status === PaymentStatusEnum.PAID &&
+      !payload.decision
+    ) {
       const buyer = (await databaseService.users.findOne({ _id: order.user })) as User
       const code = randomVoucherCode()
+
+      await voucherPrivateService.insertVoucher(code, order.total_bill, buyer._id)
 
       const email_subject =
         language == LANGUAGE.VIETNAMESE
@@ -168,7 +186,7 @@ class OrderService {
         },
         {
           $set: {
-            order_status: OrderStatus.CONFIRMED,
+            order_status: OrderStatusEnum.CONFIRMED,
             moderated_by: user._id
           },
           $currentDate: {
@@ -184,9 +202,10 @@ class OrderService {
         },
         {
           $set: {
-            order_status: OrderStatus.CANCELED,
+            order_status: OrderStatusEnum.CANCELED,
             cancellation_reason: payload.reason,
-            moderated_by: user._id
+            moderated_by: user._id,
+            canceled_by: user._id
           },
           $currentDate: {
             canceled_at: true,
@@ -196,6 +215,26 @@ class OrderService {
       )
       return
     }
+  }
+  async getNewOrderShipper(user: User) {
+    return await databaseService.order
+      .find({
+        user: { $ne: user._id },
+        delivery_type: DeliveryTypeEnum.DELIVERY,
+        payment_status: PaymentStatusEnum.PAID,
+        order_status: OrderStatusEnum.CONFIRMED
+      })
+      .toArray()
+  }
+  async getOldOrderShipper(user: User) {
+    return await databaseService.order
+      .find({
+        user: { $ne: user._id },
+        shipper: user._id,
+        payment_status: PaymentStatusEnum.PAID,
+        order_status: { $ne: OrderStatusEnum.PENDING }
+      })
+      .toArray()
   }
 }
 

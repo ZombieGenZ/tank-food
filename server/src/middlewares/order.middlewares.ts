@@ -12,7 +12,7 @@ import voucherPrivateService from '~/services/voucherPrivate.services'
 import voucherPublicService from '~/services/voucherPublic.services'
 import User from '~/models/schemas/users.schemas'
 import { UserRoleEnum } from '~/constants/users.constants'
-import { OrderStatus, PaymentStatus } from '~/constants/order.constants'
+import { OrderStatusEnum, PaymentStatusEnum } from '~/constants/order.constants'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -440,8 +440,16 @@ export const orderApprovalValidator = async (req: Request, res: Response, next: 
 
             const user = (req as Request).user as User
 
+            if (order.user == user._id) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
-              if (order.order_status !== OrderStatus.PENDING) {
+              if (order.order_status !== OrderStatusEnum.PENDING) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVED

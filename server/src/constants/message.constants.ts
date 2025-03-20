@@ -171,8 +171,8 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CHECKOUT_ORDER_FAILURE: 'Xác thực thanh toán đơn hàng thất bại',
     VOUCHER_IS_NOT_FOUND: 'Mã giảm giá không tồn tại',
     VOUCHER_REQUIREMENT_IS_NOT_MET: 'Mã giảm giá không đáp ứng yêu cầu',
-    GET_ORDER_EMPLOYEE_SUCCESS: 'Lấy danh sách đơn hàng thành công',
-    GET_ORDER_EMPLOYEE_FAILURE: 'Lấy danh sách đơn hàng thất bại',
+    GET_ORDER_SUCCESS: 'Lấy danh sách đơn hàng thành công',
+    GET_ORDER_FAILURE: 'Lấy danh sách đơn hàng thất bại',
     ORDER_ID_IS_REQUIRED: 'Không được bỏ trống id đơn hàng',
     ORDER_ID_MUST_BE_A_STRING: 'Id đơn hàng phải là 1 chuỗi kí tự',
     ORDER_ID_MUST_BE_A_ID: 'Id đơn hàng không đúng định dạng',
@@ -361,8 +361,8 @@ export class ENGLISH_STATIC_MESSAGE {
     CHECKOUT_ORDER_FAILURE: 'Order checkout failed',
     VOUCHER_IS_NOT_FOUND: 'Voucher not found',
     VOUCHER_REQUIREMENT_IS_NOT_MET: 'Voucher requirement not met',
-    GET_ORDER_EMPLOYEE_SUCCESS: 'Successfully retrieved order list',
-    GET_ORDER_EMPLOYEE_FAILURE: 'Failed to retrieve order list',
+    GET_ORDER_SUCCESS: 'Successfully retrieved order list',
+    GET_ORDER_FAILURE: 'Failed to retrieve order list',
     ORDER_ID_IS_REQUIRED: 'Order ID cannot be empty',
     ORDER_ID_MUST_BE_A_STRING: 'Order ID must be a string',
     ORDER_ID_MUST_BE_A_ID: 'Order ID is not in the correct format',
@@ -491,10 +491,10 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CheckoutOrderFailed(ip: string, err: unknown) {
     return `Thực hiện xác nhận đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
-  static GetOrderEmployeeSuccessfully(user_id: string, ip: string) {
+  static GetOrderSuccessfully(user_id: string, ip: string) {
     return `Thực hiện lấy thông tin đơn hàng mới thành công (User: ${user_id}) (IP: ${ip})`
   }
-  static GetOrderEmployeeFailed(user_id: string, ip: string, err: unknown) {
+  static GetOrderFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện lấy thông tin đơn hàng mới thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static OrderApprovalSuccessfully(user_id: string, ip: string) {
@@ -620,10 +620,10 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static CheckoutOrderFailed(ip: string, err: unknown) {
     return `Order checkout failed (IP: ${ip}) | Error: ${err}`
   }
-  static GetOrderEmployeeSuccessfully(user_id: string, ip: string) {
+  static GetOrderSuccessfully(user_id: string, ip: string) {
     return `New order information retrieval successful (User: ${user_id}) (IP: ${ip})`
   }
-  static GetOrderEmployeeFailed(user_id: string, ip: string, err: unknown) {
+  static GetOrderFailed(user_id: string, ip: string, err: unknown) {
     return `New order information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static OrderApprovalSuccessfully(user_id: string, ip: string) {

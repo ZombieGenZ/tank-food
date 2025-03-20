@@ -19,7 +19,7 @@ import {
 } from '~/constants/message.constants'
 import { writeInfoLog, writeErrorLog } from '~/utils/log.utils'
 
-export const createVoucherController = async (
+export const createVoucherPublicController = async (
   req: Request<ParamsDictionary, any, CreateVoucherRequestsBody>,
   res: Response
 ) => {
@@ -60,7 +60,7 @@ export const createVoucherController = async (
   }
 }
 
-export const updateVoucherController = async (
+export const updateVoucherPublicController = async (
   req: Request<ParamsDictionary, any, UpdateVoucherRequestsBody>,
   res: Response
 ) => {
@@ -101,7 +101,7 @@ export const updateVoucherController = async (
   }
 }
 
-export const deleteVoucherController = async (
+export const deleteVoucherPublicController = async (
   req: Request<ParamsDictionary, any, DeleteVoucherRequestsBody>,
   res: Response
 ) => {
@@ -142,7 +142,7 @@ export const deleteVoucherController = async (
   }
 }
 
-export const getVoucherController = async (
+export const getVoucherPublicController = async (
   req: Request<ParamsDictionary, any, GetVoucherPublicRequestsBody>,
   res: Response
 ) => {
@@ -168,6 +168,12 @@ export const getVoucherController = async (
       voucher
     })
   } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
+    )
+
     res.json({
       code: RESPONSE_CODE.GET_VOUCHER_FAILED,
       message:

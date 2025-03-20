@@ -6,18 +6,23 @@ export interface ProductList {
   price?: number
 }
 
-export enum PaymentType {
+export enum DeliveryTypeEnum {
+  COUNTER,
+  DELIVERY
+}
+
+export enum PaymentTypeEnum {
   CASH,
   BANK
 }
 
-export enum PaymentStatus {
+export enum PaymentStatusEnum {
   PENDING,
   PAID,
   FAILED
 }
 
-export enum OrderStatus {
+export enum OrderStatusEnum {
   PENDING,
   CONFIRMED,
   DELIVERING,

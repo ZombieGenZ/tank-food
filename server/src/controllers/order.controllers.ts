@@ -117,35 +117,35 @@ export const getNewOrderEmployeeController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    const order = await orderOnlineService.getNewOrderEmployee()
+    const order = await orderOnlineService.getNewOrderEmployee(user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
     )
 
     res.json({
       code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS,
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS,
       order
     })
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
     )
 
     res.json({
       code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
-          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
     })
   }
 }
@@ -159,35 +159,35 @@ export const getOldOrderEmployeeController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    const order = await orderOnlineService.getOldOrderEmployee()
+    const order = await orderOnlineService.getOldOrderEmployee(user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeSuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
     )
 
     res.json({
       code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_SUCCESS,
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS,
       order
     })
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.GetOrderEmployeeFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
     )
 
     res.json({
       code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
-          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_EMPLOYEE_FAILURE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
     })
   }
 }
@@ -230,6 +230,90 @@ export const orderApprovalEmployeeController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_FAILURE
+    })
+  }
+}
+
+export const getNewOrderShipperController = async (
+  req: Request<ParamsDictionary, any, GetOrderRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const order = await orderOnlineService.getNewOrderShipper(user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS,
+      order
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+    })
+  }
+}
+
+export const getOldOrderShipperController = async (
+  req: Request<ParamsDictionary, any, GetOrderRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const order = await orderOnlineService.getOldOrderShipper(user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS,
+      order
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
     })
   }
 }

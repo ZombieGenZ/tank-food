@@ -9,6 +9,7 @@ export interface OrderOnlineRequestsBody {
   receiving_longitude: number
   receiving_latitude: number
   voucher?: string
+  note?: string
 }
 
 export interface CheckoutOrderRequestBody {

@@ -4,9 +4,15 @@ import {
   checkoutOrderController,
   getNewOrderEmployeeController,
   getOldOrderEmployeeController,
-  orderApprovalEmployeeController
+  orderApprovalEmployeeController,
+  getNewOrderShipperController,
+  getOldOrderShipperController
 } from '~/controllers/order.controllers'
-import { authenticateEmployeeUploadImageValidator, authenticateValidator } from '~/middlewares/authenticate.middlewares'
+import {
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  authenticateShipperValidator
+} from '~/middlewares/authenticate.middlewares'
 import {
   orderOnlineValidator,
   voucherValidator,
@@ -38,6 +44,7 @@ const router = express.Router()
  *    phone: string,
  *    receiving_longitude: number,
  *    receiving_latitude: number,
+ *    note?: string,
  *    voucher?: string
  * }
  */
@@ -89,7 +96,7 @@ router.post('/checkout', sepayApiKeyValidator, wrapRequestHandler(checkoutOrderC
 router.post(
   '/get-new-order-employee',
   authenticateValidator,
-  authenticateEmployeeUploadImageValidator,
+  authenticateEmployeeValidator,
   wrapRequestHandler(getNewOrderEmployeeController)
 )
 
@@ -108,7 +115,7 @@ router.post(
 router.post(
   '/get-old-order-employee',
   authenticateValidator,
-  authenticateEmployeeUploadImageValidator,
+  authenticateEmployeeValidator,
   wrapRequestHandler(getOldOrderEmployeeController)
 )
 
@@ -130,9 +137,47 @@ router.post(
 router.post(
   '/order-approval',
   authenticateValidator,
-  authenticateEmployeeUploadImageValidator,
+  authenticateEmployeeValidator,
   orderApprovalValidator,
   wrapRequestHandler(orderApprovalEmployeeController)
+)
+
+/*
+ * Description: Lấy danh sách order đang chờ nhận giao hàng (cho shipper)
+ * Path: /api/orders/get-new-order-shipper
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post(
+  '/get-new-order-shipper',
+  authenticateValidator,
+  authenticateShipperValidator,
+  wrapRequestHandler(getNewOrderShipperController)
+)
+
+/*
+ * Description: Lấy danh sách order đã nhận (cho shipper)
+ * Path: /api/orders/get-old-order-shipper
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post(
+  '/get-old-order-shipper',
+  authenticateValidator,
+  authenticateShipperValidator,
+  wrapRequestHandler(getOldOrderShipperController)
 )
 
 export default router

@@ -9,7 +9,7 @@ import { serverLanguage } from '~/index'
 import databaseService from '~/services/database.services'
 import { writeWarnLog } from '~/utils/log.utils'
 
-export const createVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const createVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
@@ -216,7 +216,7 @@ export const createVoucherValidator = async (req: Request, res: Response, next: 
     })
 }
 
-export const updateVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const updateVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
@@ -459,7 +459,7 @@ export const updateVoucherValidator = async (req: Request, res: Response, next: 
     })
 }
 
-export const deleteVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
