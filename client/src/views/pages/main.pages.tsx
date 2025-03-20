@@ -48,72 +48,6 @@ interface Slide {
 const FormMain = (): JSX.Element => {
   const location = useLocation();
   const pageRef = useRef(null);
-
-  useEffect(() => {
-    // Hiệu ứng khi chuyển trang
-    gsap.from(pageRef.current, {
-      scale: 0.8, // Bắt đầu với kích thước nhỏ hơn
-      duration: 0.3,
-      ease: 'back.out(1.7)', // Easing với hiệu ứng "bounce"
-    });
-
-    gsap.to(pageRef.current, {
-      scale: 1, // Trở về kích thước ban đầu
-      duration: 0.3,
-      ease: 'back.out(1.7)',
-    });
-  }, [location]);
-
-  return(
-        <div className='flex gap-5 flex-col' ref={pageRef}>
-          <NavigationButtons />
-          <Routes>
-            <Route path="/*" element={<Main />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path='/menu' element={<Category />}/>
-            <Route path='/contact' element={<ContactUs />}/>
-            <Route path='/category' element={<CategoryManagement />}/>
-          </Routes>
-        </div>
-  )   
-}
-
-function NavigationAdmin(): JSX.Element {
-  return (
-    <>
-      
-    </>
-  )
-}
-
-function NavigationButtons(): JSX.Element {
-  const navigate = useNavigate();
-  const [open, setOpen] = useState<boolean>(false);
-  const [messageApi, contextHolder] = message.useMessage();
-  const [language, setLanguage] = useState<string>(() => {
-    const SaveedLanguage = localStorage.getItem('language')
-    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
-  })
-
-  const handleChange = (value: string) => {
-    setLanguage(value)
-    localStorage.setItem('language', JSON.stringify(value))
-    if(value == "Tiếng Việt") {
-      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
-    } else {
-      localStorage.setItem('code_language', JSON.stringify("en-US"))
-    }
-    window.location.reload();
-  };
-
-  const openDrawer = (): void => {
-    setOpen(true)
-  }
-
-  const closeDrawer = (): void => {
-    setOpen(false)
-  }
-
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [user, setUser] = useState<UserInfo | null>(null)
@@ -164,6 +98,138 @@ function NavigationButtons(): JSX.Element {
     console.log(user)
   }, [user])
 
+  useEffect(() => {
+    // Hiệu ứng khi chuyển trang
+    gsap.from(pageRef.current, {
+      scale: 0.8, // Bắt đầu với kích thước nhỏ hơn
+      duration: 0.3,
+      ease: 'back.out(1.7)', // Easing với hiệu ứng "bounce"
+    });
+
+    gsap.to(pageRef.current, {
+      scale: 1, // Trở về kích thước ban đầu
+      duration: 0.3,
+      ease: 'back.out(1.7)',
+    });
+  }, [location]);
+
+  return(
+    <>
+      {user && user.role !== 3 ? 
+        <div className='flex gap-5 flex-col' ref={pageRef}>
+          <NavigationButtons role={user?.role ?? 0}/>
+          <Routes>
+            <Route path="/*" element={<Main />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path='/menu' element={<Category />}/>
+            <Route path='/contact' element={<ContactUs />}/>
+            <Route path='/category' element={<CategoryManagement />}/>
+          </Routes>
+        </div> : 
+        <div className='flex gap-5 flex-col' ref={pageRef}>
+          <NavigationAdmin />
+          <Routes>
+            <Route path="/*" element={<Main />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path='/menu' element={<Category />}/>
+            <Route path='/contact' element={<ContactUs />}/>
+            <Route path='/category' element={<CategoryManagement />}/>
+          </Routes>
+        </div>}
+    </>
+  )   
+}
+
+function NavigationAdmin(): JSX.Element {
+  const navigate = useNavigate();
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
+
+  const handleChange = (value: string) => {
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+    window.location.reload();
+  };
+  return (
+    <div>
+        <ul>
+          {
+            NavbarAdmin.map((item: NavbarItem) => {
+              return <li key={item.id} className="text-xl">
+                        <button onClick={() => navigate(item.path)}
+                                className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                                {language == "Tiếng Việt" ? item.title : item.english}</button> 
+                      </li>
+            })
+          }
+        </ul>
+        <div className='flex items-center'>
+            <Select
+              defaultValue={language}
+              size='large'
+              style={{ color: '#FF9A3D' }}
+              options={[
+                { value: 'Tiếng Việt', label: 'Tiếng Việt' },
+                { value: 'English', label: 'English' },
+              ]}
+              onChange={handleChange}
+            />
+          </div>
+    </div>
+  )
+}
+
+function NavigationButtons({ role }: { role: number }): JSX.Element {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
+
+  const handleChange = (value: string) => {
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+    window.location.reload();
+  };
+
+  const openDrawer = (): void => {
+    setOpen(true)
+  }
+
+  const closeDrawer = (): void => {
+    setOpen(false)
+  }
+
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const Logout = () => {
     const body = {
       language: null,
@@ -211,7 +277,6 @@ function NavigationButtons(): JSX.Element {
   ];
   return (
     <>
-      {user?.role === 3}
       <div className='sticky top-0 z-50 navbarName'>
       {contextHolder}
       <div className="p-2 lg:text-xl flex xl:justify-around justify-between">
@@ -224,23 +289,14 @@ function NavigationButtons(): JSX.Element {
         </div>
         <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
-            {/* { user.role == 3 */}
-            { user !== null &&
-                    // Thanh nav cho Admin
-                    user.role == 3 ? NavbarAdmin.map((item: NavbarItem) => {
-                  return <li key={item.id}>
-                          <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
-                                  onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
-                        </li>
-                    // Thanh nav cho nhân viên
-              }) : (user !== null && user.role == 1 ? NavbarUser.map((item: NavbarItem) => {
+            {( role == 1 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
                           </li>
                     // Thanh nav cho shipper
-              }) : (user !== null && user.role == 2 ? NavbarUser.map((item: NavbarItem) => {
+              }) : (role == 2 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
