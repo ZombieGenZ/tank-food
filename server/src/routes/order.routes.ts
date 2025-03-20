@@ -5,8 +5,10 @@ import {
   getNewOrderEmployeeController,
   getOldOrderEmployeeController,
   orderApprovalEmployeeController,
+  cancelOrderEmployeeController,
   getNewOrderShipperController,
-  getOldOrderShipperController
+  getOldOrderShipperController,
+  receiveDeliveryShipperController
 } from '~/controllers/order.controllers'
 import {
   authenticateValidator,
@@ -17,7 +19,9 @@ import {
   orderOnlineValidator,
   voucherValidator,
   sepayApiKeyValidator,
-  orderApprovalValidator
+  cancelOrderEmployeeValidator,
+  orderApprovalValidator,
+  receiveDeliveryValidator
 } from '~/middlewares/order.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -122,7 +126,7 @@ router.post(
 /*
  * Description: Xử lý đơn hàng đang chờ xử lý
  * Path: /api/orders/order-approval
- * Method: POST
+ * Method: PUT
  * headers: {
  *    authorization: Bearer <token>
  * },
@@ -134,12 +138,34 @@ router.post(
  *    reason: string
  * }
  */
-router.post(
+router.put(
   '/order-approval',
   authenticateValidator,
   authenticateEmployeeValidator,
   orderApprovalValidator,
   wrapRequestHandler(orderApprovalEmployeeController)
+)
+
+/*
+ * Description: Hủy đơn hàng đã nhận (cho nhân viên)
+ * Path: /api/orders/cancel-order-employee
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string,
+ *    reason: string
+ * }
+ */
+router.put(
+  '/cancel-order-employee',
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  cancelOrderEmployeeValidator,
+  wrapRequestHandler(cancelOrderEmployeeController)
 )
 
 /*
@@ -178,6 +204,27 @@ router.post(
   authenticateValidator,
   authenticateShipperValidator,
   wrapRequestHandler(getOldOrderShipperController)
+)
+
+/*
+ * Description: Nhận giao hàng (cho shipper)
+ * Path: /api/orders/receive-delivery
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/receive-delivery',
+  authenticateValidator,
+  authenticateShipperValidator,
+  receiveDeliveryValidator,
+  wrapRequestHandler(receiveDeliveryShipperController)
 )
 
 export default router

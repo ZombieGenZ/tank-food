@@ -5,7 +5,9 @@ import {
   OrderOnlineRequestsBody,
   CheckoutOrderRequestBody,
   GetOrderRequestsBody,
-  OrderApprovalRequestsBody
+  OrderApprovalRequestsBody,
+  cancelOrderEmployeeRequestsBody,
+  ReceiveDeliveryRequestsBody
 } from '~/models/requests/order.requests'
 import { serverLanguage } from '~/index'
 import {
@@ -202,7 +204,7 @@ export const orderApprovalEmployeeController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await orderOnlineService.OrderApproval(req.body, order, user, language)
+    await orderOnlineService.orderApproval(req.body, order, user, language)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -230,6 +232,48 @@ export const orderApprovalEmployeeController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_APPROVAL_FAILURE
+    })
+  }
+}
+
+export const cancelOrderEmployeeController = async (
+  req: Request<ParamsDictionary, any, cancelOrderEmployeeRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.cancelOrderEmployee(req.body, order, user, language)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CancelOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.CancelOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CancelOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.CancelOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CANCEL_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
     })
   }
 }
@@ -314,6 +358,47 @@ export const getOldOrderShipperController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+    })
+  }
+}
+
+export const receiveDeliveryShipperController = async (
+  req: Request<ParamsDictionary, any, ReceiveDeliveryRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.receiveDeliveryShipper(req.body, user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ReceiveDeliverySuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ReceiveDeliverySuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.RECEIVE_DELIVERY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.RECEIVE_DELIVERY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.RECEIVE_DELIVERY_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ReceiveDeliveryFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ReceiveDeliveryFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.RECEIVE_DELIVERY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.RECEIVE_DELIVERY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.RECEIVE_DELIVERY_FAILURE
     })
   }
 }

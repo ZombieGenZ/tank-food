@@ -37,3 +37,13 @@ export interface OrderApprovalRequestsBody {
   decision: boolean
   reason: string
 }
+
+export interface cancelOrderEmployeeRequestsBody {
+  language: string
+  reason: string
+}
+
+export interface ReceiveDeliveryRequestsBody {
+  language: string
+  order_id: string
+}

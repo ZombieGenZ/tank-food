@@ -180,9 +180,16 @@ export class VIETNAMESE_STATIC_MESSAGE {
     DECISION_MUST_BE_A_BOOLEAN: 'Quyết định phải là một boolean',
     REASON_IS_REQUIRED: 'Không được bỏ trống lý do',
     REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS: 'Lý do phải có độ dài từ 5 đến 200 kí tự',
+    REASON_MUST_BE_A_STRING: 'lý do phải là một chuỗi kí tự',
     ORDER_APPROVED: 'Đơn hàng đã được duyệt',
+    ORDER_NOT_APPROVED: 'Đơn hàng chưa được duyệt',
+    ORDER_CANCELED: 'Đơn hàng đã bị hủy',
     ORDER_APPROVAL_SUCCESS: 'Kiểm duyệt đơn hàng thành công',
-    ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại'
+    ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại',
+    CANCEL_ORDER_SUCCESS: 'Hủy đơn hàng thành công',
+    CANCEL_ORDER_FAILURE: 'Hủy đơn hàng thất bại',
+    RECEIVE_DELIVERY_SUCCESS: 'Giao hàng thành công',
+    RECEIVE_DELIVERY_FAILURE: 'Giao hàng thất bại'
   } as const
 }
 
@@ -370,9 +377,16 @@ export class ENGLISH_STATIC_MESSAGE {
     DECISION_MUST_BE_A_BOOLEAN: 'Decision must be a boolean',
     REASON_IS_REQUIRED: 'Reason cannot be empty',
     REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS: 'Reason must be between 5 and 200 characters long',
+    REASON_MUST_BE_A_STRING: 'The reason must be a string',
     ORDER_APPROVED: 'Order approved',
+    ORDER_NOT_APPROVED: 'Order not approved',
+    ORDER_CANCELED: 'Order canceled',
     ORDER_APPROVAL_SUCCESS: 'Order approval successful',
-    ORDER_APPROVAL_FAILURE: 'Order approval failed'
+    ORDER_APPROVAL_FAILURE: 'Order approval failed',
+    CANCEL_ORDER_SUCCESS: 'Order cancellation successful',
+    CANCEL_ORDER_FAILURE: 'Order cancellation failed',
+    RECEIVE_DELIVERY_SUCCESS: 'Delivery successful',
+    RECEIVE_DELIVERY_FAILURE: 'Delivery failed'
   } as const
 }
 
@@ -503,6 +517,18 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static OrderApprovalFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện kiểm duyệt đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static CancelOrderSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện hủy đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CancelOrderFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện hủy đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ReceiveDeliverySuccessfully(user_id: string, ip: string) {
+    return `Thực hiện giao đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -631,5 +657,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static OrderApprovalFailed(user_id: string, ip: string, err: unknown) {
     return `Order approval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CancelOrderSuccessfully(user_id: string, ip: string) {
+    return `Order cancellation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CancelOrderFailed(user_id: string, ip: string, err: unknown) {
+    return `Order cancellation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ReceiveDeliverySuccessfully(user_id: string, ip: string) {
+    return `Order delivery successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
+    return `Order delivery failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

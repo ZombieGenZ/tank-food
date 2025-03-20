@@ -388,7 +388,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                 
                 <tr>
                     <td style="padding: 0 20px 30px; text-align: center; background-color: #FFFFFF;">
-                        <a href="${process.env.APP_URL}" style="display: inline-block; background-color: #FF8000; color: #FFFFFF; text-decoration: none; padding: 15px 30px; border-radius: 5px; font-size: 16px; font-weight: bold;">Order Now</a>
+                        <a href="${process.env.APP_URL}/menu" style="display: inline-block; background-color: #FF8000; color: #FFFFFF; text-decoration: none; padding: 15px 30px; border-radius: 5px; font-size: 16px; font-weight: bold;">Order Now</a>
                     </td>
                 </tr>
                 

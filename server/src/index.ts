@@ -61,6 +61,7 @@ import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
 import api_order_online from '~/routes/order.routes'
+import { UserRoleEnum } from './constants/users.constants'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -103,9 +104,9 @@ io.on('connection', (socket: Socket) => {
   })
 
   socket.on('connect-user-realtime', async (refresh_token: string) => {
-    // Phòng: freshSync-admin
+    // Phòng: freshSync-user-<user_id>
     // sự kiện:
-    // new-order: Cập nhật thông tin order vừa được thêm vào CSDL
+    // create-order: Cập nhật thông tin đặt hàng vừa được đặt
     //
 
     if (!refresh_token) {
@@ -128,14 +129,62 @@ io.on('connection', (socket: Socket) => {
         return
       }
 
+      socket.join(`freshSync-user-${user._id}`)
       if (serverLanguage == LANGUAGE.VIETNAMESE) {
         console.log(
-          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-user-${user._id}\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-admin`)
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-user-${user._id}`)
       } else {
-        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-admin\x1b[0m`)
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-admin`)
+        console.log(
+          `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-user-${user._id}\x1b[0m`
+        )
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-user-${user._id}`)
+      }
+    } catch {
+      return
+    }
+  })
+
+  socket.on('connect-employee-realtime', async (refresh_token: string) => {
+    // Phòng: freshSync-employee
+    // sự kiện:
+    // create-order: Cập nhật thông tin đặt hàng vừa được đặt
+    //
+
+    if (!refresh_token) {
+      return
+    }
+
+    try {
+      const decoded_refresh_token = (await verifyToken({
+        token: refresh_token,
+        publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_refresh_token) {
+        return
+      }
+
+      const user = await databaseService.users.findOne({ _id: new ObjectId(decoded_refresh_token.user_id) })
+
+      if (!user) {
+        return
+      }
+
+      if (user.role !== UserRoleEnum.ADMINISTRATOR && user.role !== UserRoleEnum.EMPLOYEE) {
+        return
+      }
+
+      socket.join('freshSync-employee')
+      if (serverLanguage == LANGUAGE.VIETNAMESE) {
+        console.log(
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-employee\x1b[0m`
+        )
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-employee`)
+      } else {
+        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-employee\x1b[0m`)
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-employee`)
       }
     } catch {
       return
@@ -170,6 +219,11 @@ io.on('connection', (socket: Socket) => {
         return
       }
 
+      if (user.role != UserRoleEnum.ADMINISTRATOR) {
+        return
+      }
+
+      socket.join('freshSync-admin')
       if (serverLanguage == LANGUAGE.VIETNAMESE) {
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
