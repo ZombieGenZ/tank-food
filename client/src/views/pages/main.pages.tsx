@@ -201,7 +201,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   return (
     <div className='w-1/5 relative flex flex-col justify-center items-center gap-10 bg-[#ffffff] h-screen'>
       {/* {contextHolder} */}
-        <div className='absolute flex items-center top-[5%]'>
+        <div className='absolute flex items-center top-[7%]'>
             <Select
               defaultValue={language}
               size='large'
@@ -217,7 +217,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
         <ul className='flex flex-col justify-center w-full'>
           {
             NavbarAdmin.map((item: NavbarItem) => {
-              return <li key={item.id} className="text-[15px]text-[#666666] hover:border-l-4 hover:border-l-[#FF7846] hover:text-[#FF7846] hover:bg-[#FFFAF7] transition duration-300 w-full">
+              return <li key={item.id} className="text-[15px] text-[#333333] hover:border-l-4 hover:border-l-[#FF7846] hover:text-[#FF7846] hover:bg-[#FFFAF7] transition duration-300 w-full">
                         <button onClick={() => navigate(item.path)}
                                 className="cursor-pointer font-semibold p-2 pl-5">
                                 {language == "Tiếng Việt" ? item.title : item.english}</button> 
