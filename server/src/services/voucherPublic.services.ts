@@ -1,8 +1,7 @@
 import {
   CreateVoucherRequestsBody,
   UpdateVoucherRequestsBody,
-  DeleteVoucherRequestsBody,
-  FindVoucherRequestsBody
+  DeleteVoucherRequestsBody
 } from '~/models/requests/voucherPublic.requests'
 import databaseService from './database.services'
 import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
@@ -76,10 +75,6 @@ class VoucherPublicService {
   }
   async getVoucher() {
     const voucher = await databaseService.voucherPublic.find({}).toArray()
-    return voucher
-  }
-  async findVoucher(payload: FindVoucherRequestsBody) {
-    const voucher = await databaseService.voucherPublic.find({ $text: { $search: payload.keywords } }).toArray()
     return voucher
   }
   async useVoucher(voucher: VoucherPublic) {

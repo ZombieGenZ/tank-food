@@ -4,8 +4,7 @@ import {
   CreateCategoryRequestsBody,
   UpdateCategoryRequestsBody,
   DeleteCategoryRequestsBody,
-  GetCategoryRequestsBody,
-  FindCategoryRequestsBody
+  GetCategoryRequestsBody
 } from '~/models/requests/categories.requests'
 import User from '~/models/schemas/users.schemas'
 import { serverLanguage } from '~/index'
@@ -180,47 +179,6 @@ export const getCategoryController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
           : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.GET_CATEGORY_FAILURE
-    })
-  }
-}
-
-export const findCategoryController = async (
-  req: Request<ParamsDictionary, any, FindCategoryRequestsBody>,
-  res: Response
-) => {
-  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const language = req.body.language || serverLanguage
-
-  try {
-    const categories = await categoryService.findCategory(req.body)
-
-    await writeInfoLog(
-      serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategorySuccessfully(ip)
-        : ENGLIS_DYNAMIC_MESSAGE.FindCategorySuccessfully(ip)
-    )
-
-    res.json({
-      code: RESPONSE_CODE.FIND_CATEGORY_SUCCESSFUL,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_SUCCESS,
-      categories
-    })
-  } catch (err) {
-    await writeErrorLog(
-      serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindCategoryFailed(ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.FindCategoryFailed(ip, err)
-    )
-
-    res.json({
-      code: RESPONSE_CODE.FIND_CATEGORY_FAILED,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_FAILURE
-          : ENGLISH_STATIC_MESSAGE.CATEGORY_MESSAGE.FIND_CATEGORY_FAILURE
     })
   }
 }

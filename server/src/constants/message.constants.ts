@@ -71,9 +71,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_CATEGORY_SUCCESS: 'Lấy thông tin danh mục thành công',
     GET_CATEGORY_FAILURE: 'Lấy thông tin danh mục thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
-    FIND_CATEGORY_SUCCESS: 'Tìm kiếm thông tin danh mục thành công',
-    FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -106,9 +104,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Lấy thông tin sản phẩm thành công',
     GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
-    FIND_PRODUCT_SUCCESS: 'Tìm kiếm thông tin sản phẩm thành công',
-    FIND_PRODUCT_FAILURE: 'Tìm kiếm thông tin sản phẩm thất bại'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -142,8 +138,6 @@ export class VIETNAMESE_STATIC_MESSAGE {
     KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
     GET_VOUCHER_SUCCESS: 'Lấy thông tin mã giảm giá thành công',
     GET_VOUCHER_FAILURE: 'Lấy thông tin mã giảm giá thất bại',
-    FIND_VOUCHER_SUCCESS: 'Tìm kiếm thông tin mã giảm giá thành công',
-    FIND_VOUCHER_FAILURE: 'Tìm kiếm thông tin mã giảm giá thất bại',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
       'Mã voucher chỉ được chứa chữ hoa, chữ thường, số và dấu gạch dưới (_)'
   } as const
@@ -266,9 +260,7 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_CATEGORY_SUCCESS: 'Category information retrieved successfully',
     GET_CATEGORY_FAILURE: 'Category information retrieval failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
-    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
-    FIND_CATEGORY_SUCCESS: 'Category information search successful',
-    FIND_CATEGORY_FAILURE: 'Category information search failed'
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -301,9 +293,7 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Product information retrieved successfully',
     GET_PRODUCT_FAILURE: 'Product information retrieval failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
-    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
-    FIND_PRODUCT_SUCCESS: 'Product information search successful',
-    FIND_PRODUCT_FAILURE: 'Product information search failed'
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -338,8 +328,6 @@ export class ENGLISH_STATIC_MESSAGE {
     KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
     GET_VOUCHER_SUCCESS: 'Voucher information retrieved successfully',
     GET_VOUCHER_FAILURE: 'Voucher information retrieval failed',
-    FIND_VOUCHER_SUCCESS: 'Voucher information search successful',
-    FIND_VOUCHER_FAILURE: 'Voucher information search failed',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
       'Voucher code can only contain uppercase, lowercase, numbers, and underscores (_)'
   } as const
@@ -443,12 +431,6 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static GetCategoryFailed(ip: string, err: unknown) {
     return `Thực hiện lấy thông tin danh mục thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
-  static FindCategorySuccessfully(ip: string) {
-    return `Thực hiện tìm kiếm thông tin danh mục thành công (IP: ${ip})`
-  }
-  static FindCategoryFailed(ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin danh mục thất bại (IP: ${ip}) | Lỗi: ${err}`
-  }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
   }
@@ -473,12 +455,6 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static GetProductFailed(ip: string, err: unknown) {
     return `Thực hiện lấy thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
-  static FindProductSuccessfully(ip: string) {
-    return `Thực hiện tìm kiếm thông tin sản phẩm thành công (IP: ${ip})`
-  }
-  static FindProductFailed(ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
-  }
   static VoucherCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
   }
@@ -502,12 +478,6 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện lấy thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
-  }
-  static FindVoucherSuccessfully(user_id: string, ip: string) {
-    return `Thực hiện tìm kiếm thông tin mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
-  }
-  static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static OrderOnlineSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
@@ -590,12 +560,6 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static GetCategoryFailed(ip: string, err: unknown) {
     return `Category information retrieval failed (IP: ${ip}) | Error: ${err}`
   }
-  static FindCategorySuccessfully(ip: string) {
-    return `Category information search successful (IP: ${ip})`
-  }
-  static FindCategoryFailed(ip: string, err: unknown) {
-    return `Category information search failed (IP: ${ip}) | Error: ${err}`
-  }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Product creation successful (User: ${user_id}) (IP: ${ip})`
   }
@@ -620,12 +584,6 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static GetProductFailed(ip: string, err: unknown) {
     return `Product information retrieval failed (IP: ${ip}) | Error: ${err}`
   }
-  static FindProductSuccessfully(ip: string) {
-    return `Product information search successful (IP: ${ip})`
-  }
-  static FindProductFailed(ip: string, err: unknown) {
-    return `Product information search failed (IP: ${ip}) | Error: ${err}`
-  }
   static VoucherCreateSuccessfully(user_id: string, ip: string) {
     return `Voucher creation successful (User: ${user_id}) (IP: ${ip})`
   }
@@ -649,12 +607,6 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Voucher information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
-  }
-  static FindVoucherSuccessfully(user_id: string, ip: string) {
-    return `Voucher information search successful (User: ${user_id}) (IP: ${ip})`
-  }
-  static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
-    return `Voucher information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static OrderOnlineSuccessfully(user_id: string, ip: string) {
     return `Order creation successful (User: ${user_id}) (IP: ${ip})`

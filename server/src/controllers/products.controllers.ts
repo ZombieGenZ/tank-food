@@ -4,8 +4,7 @@ import {
   CreateProductRequestsBody,
   UpdateProductRequestsBody,
   DeleteProductRequestsBody,
-  GetProductRequestsBody,
-  FindProductRequestsBody
+  GetProductRequestsBody
 } from '~/models/requests/products.requests'
 import User from '~/models/schemas/users.schemas'
 import { serverLanguage } from '~/index'
@@ -228,47 +227,6 @@ export const getProductController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.GET_PRODUCT_FAILURE
           : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.GET_PRODUCT_FAILURE
-    })
-  }
-}
-
-export const findProductController = async (
-  req: Request<ParamsDictionary, any, FindProductRequestsBody>,
-  res: Response
-) => {
-  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const language = req.body.language || serverLanguage
-
-  try {
-    const products = await productService.findProduct(req.body)
-
-    await writeInfoLog(
-      serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindProductSuccessfully(ip)
-        : ENGLIS_DYNAMIC_MESSAGE.FindProductSuccessfully(ip)
-    )
-
-    res.json({
-      code: RESPONSE_CODE.FIND_PRODUCT_SUCCESSFUL,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.FIND_PRODUCT_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.FIND_PRODUCT_SUCCESS,
-      products
-    })
-  } catch (err) {
-    await writeErrorLog(
-      serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindProductFailed(ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.FindProductFailed(ip, err)
-    )
-
-    res.json({
-      code: RESPONSE_CODE.FIND_PRODUCT_FAILED,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.FIND_PRODUCT_FAILURE
-          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.FIND_PRODUCT_FAILURE
     })
   }
 }

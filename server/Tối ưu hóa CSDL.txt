@@ -3,24 +3,7 @@ db.users.createIndex({ "email": 1 }, { name: "email_1", unique: true })
 db.users.createIndex({ "phone": 1 }, { name: "phone_1", unique: true })
 // refresh_token collections
 db.refresh_token.createIndex({ "token": 1 }, { name: "token_1", unique: true })
-// categories collections
-db.categories.createIndex({
-  category_name_translate_1: "text",
-  category_name_translate_2: "text"
-}, { name: "category_name_translate_1_text_category_name_translate_2_text" })
-// products collections
-db.products.createIndex({
-  title_translate_1: "text",
-  title_translate_2: "text",
-  description_translate_1: "text",
-  description_translate_2: "text",
-  tag_translate_1: "text",
-  tag_translate_2: "text"
-}, { name: "title_translate_1_text_title_translate_2_text_description_translate_1_text_description_translate_2_text_tag_translate_1_text_tag_translate_2_text" })
 // voucher_public collections
 db.voucher_public.createIndex({ "code": 1 }, { name: "code_1", unique: true })
-db.voucher_public.createIndex({
-  code: "text"
-}, { name: "code_text" })
 // orders collections
 db.orders.createIndex({ "user": 1 }, { name: "user_1" })

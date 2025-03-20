@@ -4,8 +4,7 @@ import {
   updateProductController,
   updateProductChangeImageController,
   deleteProductController,
-  getProductController,
-  findProductController
+  getProductController
 } from '~/controllers/products.controllers'
 import {
   authenticateAdministratorUploadImageValidator,
@@ -16,8 +15,7 @@ import {
   createProductValidator,
   updateProductValidator,
   updateProductChangeImageValidator,
-  deleteProductValidator,
-  findProductValidator
+  deleteProductValidator
 } from '~/middlewares/products.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 import { uploadProduct } from '~/utils/image.utils'
@@ -159,16 +157,5 @@ router.delete(
  * }
  */
 router.post('/get-product', wrapRequestHandler(getProductController))
-
-/*
- * Description: Tìm kiếm danh sách sản phẩm đang có trên CSDL
- * Path: /api/products/find-product
- * Method: POST
- * Body: {
- *    language?: string,
- *    keywords: string
- * }
- */
-router.post('/find-product', findProductValidator, wrapRequestHandler(findProductController))
 
 export default router

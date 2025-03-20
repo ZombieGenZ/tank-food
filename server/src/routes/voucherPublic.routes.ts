@@ -3,15 +3,13 @@ import {
   createVoucherController,
   updateVoucherController,
   deleteVoucherController,
-  getVoucherController,
-  findVoucherController
+  getVoucherController
 } from '~/controllers/voucherPublic.controllers'
 import { authenticateAdministratorValidator, authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import {
   createVoucherValidator,
   updateVoucherValidator,
-  deleteVoucherValidator,
-  findVoucherValidator
+  deleteVoucherValidator
 } from '~/middlewares/voucherPublic.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -105,27 +103,6 @@ router.post(
   authenticateValidator,
   authenticateAdministratorValidator,
   wrapRequestHandler(getVoucherController)
-)
-
-/*
- * Description: Tìm kiếm mã giảm giá (Công khai) đã có trong CSDL
- * Path: /api/voucher-public/find-voucher
- * Method: POST
- * headers: {
- *    authorization: Bearer <token>
- * },
- * Body: {
- *    language?: string,
- *    refresh_token: string,
- *    keywords: string
- * }
- */
-router.post(
-  '/find-voucher',
-  authenticateValidator,
-  authenticateAdministratorValidator,
-  findVoucherValidator,
-  wrapRequestHandler(findVoucherController)
 )
 
 export default router

@@ -27,8 +27,3 @@ export interface DeleteProductRequestsBody {
 export interface GetProductRequestsBody {
   language?: string
 }
-
-export interface FindProductRequestsBody {
-  language?: string
-  keywords: string
-}

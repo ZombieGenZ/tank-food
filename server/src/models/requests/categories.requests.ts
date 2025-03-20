@@ -19,8 +19,3 @@ export interface DeleteCategoryRequestsBody {
 export interface GetCategoryRequestsBody {
   language?: string
 }
-
-export interface FindCategoryRequestsBody {
-  language?: string
-  keywords: string
-}

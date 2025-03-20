@@ -1,8 +1,7 @@
 import {
   CreateCategoryRequestsBody,
   UpdateCategoryRequestsBody,
-  DeleteCategoryRequestsBody,
-  FindCategoryRequestsBody
+  DeleteCategoryRequestsBody
 } from '~/models/requests/categories.requests'
 import databaseService from './database.services'
 import Category from '~/models/schemas/categories.schemas'
@@ -104,14 +103,6 @@ class CategoryService {
 
   async getCategory() {
     const categories = await databaseService.categories.find({}).sort({ index: 1 }).toArray()
-    return categories
-  }
-
-  async findCategory(payload: FindCategoryRequestsBody) {
-    const categories = await databaseService.categories
-      .find({ $text: { $search: payload.keywords } })
-      .sort({ index: -1 })
-      .toArray()
     return categories
   }
 }
