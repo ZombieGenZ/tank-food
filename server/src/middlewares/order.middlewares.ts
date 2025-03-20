@@ -441,8 +441,8 @@ export const orderApprovalValidator = async (req: Request, res: Response, next: 
             if (order.payment_status !== PaymentStatusEnum.PAID) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
-                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
-                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
               )
             }
 
@@ -727,6 +727,120 @@ export const receiveDeliveryValidator = async (req: Request, res: Response, next
 
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
               if (order.user == user._id) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                )
+              }
+            }
+
+            ;(req as Request).order = order
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const cancelOrderShipperValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      order_id: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+        },
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+        },
+        isMongoId: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const order = await databaseService.order.findOne({ _id: new ObjectId(value) })
+
+            if (!order) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
+            const user = (req as Request).user as User
+
+            if (order.payment_status !== PaymentStatusEnum.PAID) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+              )
+            }
+
+            if (order.shipper === user._id) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
+            if (user.role !== UserRoleEnum.ADMINISTRATOR) {
+              if (order.user == user._id) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                )
+              }
+
+              if (order.order_status !== OrderStatusEnum.DELIVERING) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST

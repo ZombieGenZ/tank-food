@@ -8,7 +8,8 @@ import {
   cancelOrderEmployeeController,
   getNewOrderShipperController,
   getOldOrderShipperController,
-  receiveDeliveryShipperController
+  receiveDeliveryShipperController,
+  cancelOrderShipperController
 } from '~/controllers/order.controllers'
 import {
   authenticateValidator,
@@ -21,7 +22,8 @@ import {
   sepayApiKeyValidator,
   cancelOrderEmployeeValidator,
   orderApprovalValidator,
-  receiveDeliveryValidator
+  receiveDeliveryValidator,
+  cancelOrderShipperValidator
 } from '~/middlewares/order.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -225,6 +227,27 @@ router.put(
   authenticateShipperValidator,
   receiveDeliveryValidator,
   wrapRequestHandler(receiveDeliveryShipperController)
+)
+
+/*
+ * Description: Hủy đơn hàng đã nhận (cho shipper)
+ * Path: /api/orders/cancel-order-shipper
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/cancel-order-shipper',
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  cancelOrderShipperValidator,
+  wrapRequestHandler(cancelOrderShipperController)
 )
 
 export default router

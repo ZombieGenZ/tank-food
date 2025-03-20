@@ -38,12 +38,17 @@ export interface OrderApprovalRequestsBody {
   reason: string
 }
 
-export interface cancelOrderEmployeeRequestsBody {
+export interface CancelOrderEmployeeRequestsBody {
   language: string
   reason: string
 }
 
 export interface ReceiveDeliveryRequestsBody {
+  language: string
+  order_id: string
+}
+
+export interface CancelOrderShipperRequestsBody {
   language: string
   order_id: string
 }

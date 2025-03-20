@@ -183,6 +183,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     REASON_MUST_BE_A_STRING: 'lý do phải là một chuỗi kí tự',
     ORDER_APPROVED: 'Đơn hàng đã được duyệt',
     ORDER_NOT_APPROVED: 'Đơn hàng chưa được duyệt',
+    ORDER_UNPAID: 'Đơn hàng chưa được thanh toán',
     ORDER_CANCELED: 'Đơn hàng đã bị hủy',
     ORDER_APPROVAL_SUCCESS: 'Kiểm duyệt đơn hàng thành công',
     ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại',
@@ -386,7 +387,8 @@ export class ENGLISH_STATIC_MESSAGE {
     CANCEL_ORDER_SUCCESS: 'Order cancellation successful',
     CANCEL_ORDER_FAILURE: 'Order cancellation failed',
     RECEIVE_DELIVERY_SUCCESS: 'Delivery successful',
-    RECEIVE_DELIVERY_FAILURE: 'Delivery failed'
+    RECEIVE_DELIVERY_FAILURE: 'Delivery failed',
+    ORDER_UNPAID: 'unpaid order'
   } as const
 }
 

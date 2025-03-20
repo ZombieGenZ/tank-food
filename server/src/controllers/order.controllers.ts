@@ -6,8 +6,9 @@ import {
   CheckoutOrderRequestBody,
   GetOrderRequestsBody,
   OrderApprovalRequestsBody,
-  cancelOrderEmployeeRequestsBody,
-  ReceiveDeliveryRequestsBody
+  CancelOrderEmployeeRequestsBody,
+  ReceiveDeliveryRequestsBody,
+  CancelOrderShipperRequestsBody
 } from '~/models/requests/order.requests'
 import { serverLanguage } from '~/index'
 import {
@@ -237,7 +238,7 @@ export const orderApprovalEmployeeController = async (
 }
 
 export const cancelOrderEmployeeController = async (
-  req: Request<ParamsDictionary, any, cancelOrderEmployeeRequestsBody>,
+  req: Request<ParamsDictionary, any, CancelOrderEmployeeRequestsBody>,
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
@@ -399,6 +400,48 @@ export const receiveDeliveryShipperController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.RECEIVE_DELIVERY_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.RECEIVE_DELIVERY_FAILURE
+    })
+  }
+}
+
+export const cancelOrderShipperController = async (
+  req: Request<ParamsDictionary, any, CancelOrderShipperRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.cancelOrderShipper(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CancelOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.CancelOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CancelOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.CancelOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CANCEL_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
     })
   }
 }

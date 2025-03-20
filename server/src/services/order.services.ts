@@ -2,8 +2,9 @@ import {
   OrderOnlineRequestsBody,
   CheckoutOrderRequestBody,
   OrderApprovalRequestsBody,
-  cancelOrderEmployeeRequestsBody,
-  ReceiveDeliveryRequestsBody
+  CancelOrderEmployeeRequestsBody,
+  ReceiveDeliveryRequestsBody,
+  CancelOrderShipperRequestsBody
 } from '~/models/requests/order.requests'
 import User from '~/models/schemas/users.schemas'
 import { CalculateShippingCosts } from '~/utils/ai.utils'
@@ -26,6 +27,7 @@ import { randomVoucherCode } from '~/utils/random.utils'
 import { sendMail } from '~/utils/mail.utils'
 import voucherPrivateService from './voucherPrivate.services'
 import { notificationRealtime } from '~/utils/realtime.utils'
+import { UserRoleEnum } from '~/constants/users.constants'
 
 class OrderService {
   async orderOnline(
@@ -225,7 +227,7 @@ class OrderService {
       return
     }
   }
-  async cancelOrderEmployee(payload: cancelOrderEmployeeRequestsBody, order: Order, user: User, language: string) {
+  async cancelOrderEmployee(payload: CancelOrderEmployeeRequestsBody, order: Order, user: User, language: string) {
     if (
       order.payment_type === PaymentTypeEnum.BANK &&
       order.user !== null &&
@@ -299,6 +301,22 @@ class OrderService {
         $currentDate: {
           updated_at: true,
           delivering_at: true
+        }
+      }
+    )
+  }
+  async cancelOrderShipper(payload: CancelOrderShipperRequestsBody) {
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          order_status: OrderStatusEnum.COMPLETED,
+          shipper: null
+        },
+        $currentDate: {
+          updated_at: true
         }
       }
     )
