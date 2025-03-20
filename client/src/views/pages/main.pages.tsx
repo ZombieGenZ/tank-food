@@ -9,9 +9,9 @@ import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
 import CategoryManagement from './CategoryManagement.pages.tsx';
 import ContactUs from './contact.pages.tsx';
+import MainManage from './Main.management.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message } from 'antd';
-import '/public/css/main.css'
 import { gsap } from 'gsap';
 import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
@@ -46,6 +46,9 @@ interface Slide {
 }
 
 const FormMain = (): JSX.Element => {
+
+  // window.location.reload()
+
   const location = useLocation();
   const pageRef = useRef(null);
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
@@ -115,19 +118,15 @@ const FormMain = (): JSX.Element => {
 
   return(
     <>
-      {user && user.role !== 3 ? 
-        <div className='flex gap-5 flex-col' ref={pageRef}>
-          <NavigationButtons role={user?.role ?? 0}/>
+      {user && user.role == 3 ? 
+        <div className='flex' ref={pageRef}>
+          <NavigationAdmin displayname={user.display_name}/>
           <Routes>
-            <Route path="/*" element={<Main />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path='/menu' element={<Category />}/>
-            <Route path='/contact' element={<ContactUs />}/>
-            <Route path='/category' element={<CategoryManagement />}/>
+            <Route path="/*" element={<MainManage />} />
           </Routes>
         </div> : 
         <div className='flex gap-5 flex-col' ref={pageRef}>
-          <NavigationAdmin />
+          <NavigationButtons role={user?.role ?? 0}/>
           <Routes>
             <Route path="/*" element={<Main />} />
             <Route path="/signup" element={<Signup />} />
@@ -140,12 +139,29 @@ const FormMain = (): JSX.Element => {
   )   
 }
 
-function NavigationAdmin(): JSX.Element {
+function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
   const navigate = useNavigate();
+  // const [messageApi, contextHolder] = message.useMessage();
   const [language, setLanguage] = useState<string>(() => {
     const SaveedLanguage = localStorage.getItem('language')
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
   })
+
+  // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+  // useEffect(() => {
+  //   const handleStorageChange = () => {
+  //     setRefreshToken(localStorage.getItem("refresh_token"));
+  //     setAccessToken(localStorage.getItem("access_token"));
+  //   };
+  
+  //   window.addEventListener("storage", handleStorageChange);
+  
+  //   return () => {
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, []);
 
   const handleChange = (value: string) => {
     setLanguage(value)
@@ -155,22 +171,37 @@ function NavigationAdmin(): JSX.Element {
     } else {
       localStorage.setItem('code_language', JSON.stringify("en-US"))
     }
-    window.location.reload();
   };
+
+  // const Logout = () => {
+  //   const body = {
+  //     language: null,
+  //     refresh_token: refresh_token
+  //   }
+  //   fetch('http://localhost:3000/api/users/logout', {
+  //     method: 'DELETE',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${access_token}`
+  //     },
+  //     body: JSON.stringify(body)
+  //   }).then(response => {
+  //     return response.json()
+  //   }).then((data) => {
+  //     console.log(data)
+  //     messageApi.open({
+  //       type: 'success',
+  //       content: 'Đăng nhập thành công',
+  //       style: {
+  //         marginTop: '10vh',
+  //       },
+  //     })
+  //   })
+  // }
   return (
-    <div>
-        <ul>
-          {
-            NavbarAdmin.map((item: NavbarItem) => {
-              return <li key={item.id} className="text-xl">
-                        <button onClick={() => navigate(item.path)}
-                                className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
-                                {language == "Tiếng Việt" ? item.title : item.english}</button> 
-                      </li>
-            })
-          }
-        </ul>
-        <div className='flex items-center'>
+    <div className='w-1/5 relative flex flex-col justify-center items-center gap-10 bg-[#ffffff] h-screen'>
+      {/* {contextHolder} */}
+        <div className='absolute flex items-center top-[5%]'>
             <Select
               defaultValue={language}
               size='large'
@@ -181,7 +212,19 @@ function NavigationAdmin(): JSX.Element {
               ]}
               onChange={handleChange}
             />
-          </div>
+        </div>
+        <h2 className='font-bold text-2xl'>{language == "Tiếng Việt" ? displayname : "Administrator"}</h2>
+        <ul className='flex flex-col justify-center w-full'>
+          {
+            NavbarAdmin.map((item: NavbarItem) => {
+              return <li key={item.id} className="text-[15px]text-[#666666] hover:border-l-4 hover:border-l-[#FF7846] hover:text-[#FF7846] hover:bg-[#FFFAF7] transition duration-300 w-full">
+                        <button onClick={() => navigate(item.path)}
+                                className="cursor-pointer font-semibold p-2 pl-5">
+                                {language == "Tiếng Việt" ? item.title : item.english}</button> 
+                      </li>
+            })
+          }
+        </ul>
     </div>
   )
 }
@@ -289,7 +332,9 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
         </div>
         <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
-            {( role == 1 ? NavbarUser.map((item: NavbarItem) => {
+            {(
+              // Thanh nav cho nhân viên 
+              role == 1 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
@@ -377,10 +422,10 @@ function Main(): JSX.Element {
     const slideTimerRef = useRef<NodeJS.Timeout | null>(null);
     
     const slides: Slide[] = [
-      { src: "/public/images/system/1.png", alt: "Slide 1", effect: "fade-zoom" },
-      { src: "/public/images/system/2.png", alt: "Slide 2", effect: "fade" },
-      { src: "/public/images/system/3.png", alt: "Slide 3", effect: "slide" },
-      { src: "/public/images/system/4.png", alt: "Slide 4", effect: "fade" }
+      { src: "/images/system/1.png", alt: "Slide 1", effect: "fade-zoom" },
+      { src: "/images/system/2.png", alt: "Slide 2", effect: "fade" },
+      { src: "/images/system/3.png", alt: "Slide 3", effect: "slide" },
+      { src: "/images/system/4.png", alt: "Slide 4", effect: "fade" }
     ];
   
     // Hiển thị slideshow tự động

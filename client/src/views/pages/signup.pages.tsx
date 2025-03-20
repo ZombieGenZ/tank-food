@@ -205,8 +205,8 @@ const Signup: React.FC = () => {
                 },
               }).then(() => {
                 setTimeout(() => {
-                  navigate("/*");
-                }, 1500);
+                  navigate("/");
+                }, 1000);
               });
             }
           })
