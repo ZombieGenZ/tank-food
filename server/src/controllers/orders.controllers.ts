@@ -8,8 +8,10 @@ import {
   OrderApprovalRequestsBody,
   CancelOrderEmployeeRequestsBody,
   ReceiveDeliveryRequestsBody,
-  CancelOrderShipperRequestsBody
-} from '~/models/requests/order.requests'
+  CancelOrderShipperRequestsBody,
+  OrderOfflineRequestsBody,
+  PaymentConfirmationRequestsBody
+} from '~/models/requests/orders.requests'
 import { serverLanguage } from '~/index'
 import {
   VIETNAMESE_STATIC_MESSAGE,
@@ -21,7 +23,7 @@ import { writeErrorLog, writeInfoLog } from '~/utils/log.utils'
 import { LANGUAGE } from '~/constants/language.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import orderOnlineService from '~/services/order.services'
-import { ProductList } from '~/constants/order.constants'
+import { ProductList } from '~/constants/orders.constants'
 import Order from '~/models/schemas/orders.schemas'
 
 export const orderOnlineController = async (
@@ -442,6 +444,93 @@ export const cancelOrderShipperController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
+    })
+  }
+}
+
+export const orderOfflineController = async (
+  req: Request<ParamsDictionary, any, OrderOfflineRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const product_list = req.product_list as ProductList[]
+  const language = req.body.language || serverLanguage
+
+  const total_quantity = req.total_quantity as number
+  const total_price = req.total_price as number
+
+  try {
+    const infomation = await orderOnlineService.orderOffline(req.body, total_quantity, total_price, product_list)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.OrderOfflineSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.OrderOfflineSuccessfully(ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_SUCCESS,
+      infomation
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.OrderOfflineFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.OrderOfflineFailed(ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CREATE_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CREATE_ORDER_FAILURE
+    })
+  }
+}
+
+export const paymentConfirmationController = async (
+  req: Request<ParamsDictionary, any, PaymentConfirmationRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const infomation = await orderOnlineService.paymentConfirmation(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.PaymentConfirmationSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.PaymentConfirmationSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_SUCCESS,
+      infomation
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.PaymentConfirmationFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.PaymentConfirmationFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.PAYMENT_CONFIRMATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_FAILURE
     })
   }
 }

@@ -5,7 +5,7 @@ import {
   PaymentTypeEnum,
   PaymentStatusEnum,
   OrderStatusEnum
-} from '~/constants/order.constants'
+} from '~/constants/orders.constants'
 
 interface OrderType {
   _id?: ObjectId

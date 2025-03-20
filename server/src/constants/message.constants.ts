@@ -190,7 +190,12 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CANCEL_ORDER_SUCCESS: 'Hủy đơn hàng thành công',
     CANCEL_ORDER_FAILURE: 'Hủy đơn hàng thất bại',
     RECEIVE_DELIVERY_SUCCESS: 'Giao hàng thành công',
-    RECEIVE_DELIVERY_FAILURE: 'Giao hàng thất bại'
+    RECEIVE_DELIVERY_FAILURE: 'Giao hàng thất bại',
+    PAYMENT_TYPE_IS_REQUIRED: 'Không được bỏ trống loại thanh toán',
+    PAYMENT_TYPE_MUST_BE_A_NUMBER: 'Loại thanh toán phải là một số',
+    PAYMENT_TYPE_IS_NOT_VALID: 'Loại thanh toán không đúng định dạng',
+    PAYMENT_CONFIRMATION_SUCCESS: 'Xác nhận thanh toán thành công',
+    PAYMENT_CONFIRMATION_FAILURE: 'Xác nhận thanh toán thất bại'
   } as const
 }
 
@@ -388,7 +393,12 @@ export class ENGLISH_STATIC_MESSAGE {
     CANCEL_ORDER_FAILURE: 'Order cancellation failed',
     RECEIVE_DELIVERY_SUCCESS: 'Delivery successful',
     RECEIVE_DELIVERY_FAILURE: 'Delivery failed',
-    ORDER_UNPAID: 'unpaid order'
+    ORDER_UNPAID: 'unpaid order',
+    PAYMENT_TYPE_IS_REQUIRED: 'Payment type cannot be empty',
+    PAYMENT_TYPE_MUST_BE_A_NUMBER: 'Payment type must be a number',
+    PAYMENT_TYPE_IS_NOT_VALID: 'Payment type is not in the correct format',
+    PAYMENT_CONFIRMATION_SUCCESS: 'Payment confirmation successful',
+    PAYMENT_CONFIRMATION_FAILURE: 'Payment confirmation failed'
   } as const
 }
 
@@ -531,6 +541,18 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static OrderOfflineSuccessfully(ip: string) {
+    return `Thực hiện giao đơn hàng thành công (IP: ${ip})`
+  }
+  static OrderOfflineFailed(ip: string, err: unknown) {
+    return `Thực hiện giao đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static PaymentConfirmationSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xác nhận thanh toán thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static PaymentConfirmationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xác nhận thanh toán thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -671,5 +693,17 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
     return `Order delivery failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static OrderOfflineSuccessfully(ip: string) {
+    return `Successfully processed offline order (IP: ${ip})`
+  }
+  static OrderOfflineFailed(ip: string, err: unknown) {
+    return `Failed to process offline order (IP: ${ip}) | Error: ${err}`
+  }
+  static PaymentConfirmationSuccessfully(user_id: string, ip: string) {
+    return `Successfully confirmed payment (User: ${user_id}) (IP: ${ip})`
+  }
+  static PaymentConfirmationFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to confirm payment (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

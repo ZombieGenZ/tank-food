@@ -60,7 +60,7 @@ import api_categories from '~/routes/categories.routes'
 import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
-import api_order_online from '~/routes/order.routes'
+import api_order_online from '~/routes/orders.routes'
 import { UserRoleEnum } from './constants/users.constants'
 
 app.use('/api/users', api_users)
@@ -150,6 +150,11 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-employee
     // sự kiện:
     // create-order: Cập nhật thông tin đặt hàng vừa được đặt
+    // approval-order: Cập nhật thông tin đặt hàng vừa được kiểm duyệt
+    // cancel-order: Cập nhật thông tin đặt hàng vừa bị hủy
+    // receive-delivery: Cập nhật thông tin đơn đặt hàng đã được nhận giao hàng
+    // cancel-delivery: Cập nhật thông tin đơn đặt hàng đã bị hủy giao hàng
+    // payment-confirmation: Cập nhật thông tin đơn đặt hàng đã được xác nhận thanh toán
     //
 
     if (!refresh_token) {
@@ -235,6 +240,26 @@ io.on('connection', (socket: Socket) => {
       }
     } catch {
       return
+    }
+  })
+
+  socket.on('connect-payment-realtime', async (order_id: string) => {
+    // Phòng: freshSync-payment-<order_id>
+    // sự kiện:
+    // payment_notification: Cập nhật thông tin thanh toán
+    //
+
+    socket.join(`freshSync-payment-${order_id}`)
+    if (serverLanguage == LANGUAGE.VIETNAMESE) {
+      console.log(
+        `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-payment-${order_id}\x1b[0m`
+      )
+      writeInfoLog(`Người dùng ${socket.id} đã kết nối đến phòng freshSync-user-${order_id}`)
+    } else {
+      console.log(
+        `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-payment-${order_id}\x1b[0m`
+      )
+      writeInfoLog(`User ${socket.id} connected to room freshSync-user-${order_id}`)
     }
   })
 

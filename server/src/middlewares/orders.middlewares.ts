@@ -12,7 +12,7 @@ import voucherPrivateService from '~/services/voucherPrivate.services'
 import voucherPublicService from '~/services/voucherPublic.services'
 import User from '~/models/schemas/users.schemas'
 import { UserRoleEnum } from '~/constants/users.constants'
-import { OrderStatusEnum, PaymentStatusEnum } from '~/constants/order.constants'
+import { OrderStatusEnum, PaymentStatusEnum, PaymentTypeEnum } from '~/constants/orders.constants'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -35,7 +35,6 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
         custom: {
           options: async (value: any) => {
             if (!Array.isArray(value) || value.length < 1) {
-              console.log('here')
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_MUST_BE_AN_ARRAY
@@ -841,6 +840,260 @@ export const cancelOrderShipperValidator = async (req: Request, res: Response, n
               }
 
               if (order.order_status !== OrderStatusEnum.DELIVERING) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                )
+              }
+            }
+
+            ;(req as Request).order = order
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const orderOfflineValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      products: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_REQUIRED
+        },
+        isArray: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_MUST_BE_AN_ARRAY
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_MUST_BE_AN_ARRAY
+        },
+        custom: {
+          options: async (value: any) => {
+            if (!Array.isArray(value) || value.length < 1) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_MUST_BE_AN_ARRAY
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_MUST_BE_AN_ARRAY
+              )
+            }
+
+            const newProductList = []
+            let total_quantity = 0
+            let total_price = 0
+
+            for (const item of value) {
+              if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_REQUIRED
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_REQUIRED
+                )
+              }
+
+              if (!item.product_id || !item.quantity) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_REQUIRED
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_REQUIRED
+                )
+              }
+
+              if (typeof item.quantity !== 'number' || item.quantity <= 0) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0
+                )
+              }
+
+              const product = await databaseService.products.findOne({
+                _id: new ObjectId(item.product_id)
+              })
+
+              if (!product) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_NOT_FOUND
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_NOT_FOUND
+                )
+              }
+
+              if (!product.availability) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_NOT_AVAILABLE
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_PRODUCT_IS_NOT_AVAILABLE
+                )
+              }
+
+              total_quantity += Number(item.quantity)
+              total_price += Number(item.quantity) * product.price
+              newProductList.push({
+                product_id: product._id,
+                quantity: item.quantity,
+                price: Number(item.quantity) * product.price
+              })
+            }
+
+            ;(req as Request).total_price = total_price
+            ;(req as Request).total_quantity = total_quantity
+            ;(req as Request).product_list = newProductList
+
+            return true
+          }
+        }
+      },
+      payment_type: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_TYPE_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_TYPE_IS_REQUIRED
+        },
+        isInt: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_TYPE_MUST_BE_A_NUMBER
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_TYPE_MUST_BE_A_NUMBER
+        },
+        custom: {
+          options: (value) => {
+            if (value in PaymentTypeEnum) {
+              return true
+            }
+            throw new Error(
+              language == LANGUAGE.VIETNAMESE
+                ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_TYPE_IS_NOT_VALID
+                : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_TYPE_IS_NOT_VALID
+            )
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const paymentConfirmationValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      order_id: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+        },
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+        },
+        isMongoId: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const order = await databaseService.order.findOne({ _id: new ObjectId(value) })
+
+            if (!order) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
+            if (order.payment_type === PaymentTypeEnum.BANK) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
+            const user = (req as Request).user as User
+
+            if (user.role !== UserRoleEnum.ADMINISTRATOR) {
+              if (order.user == user._id) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
