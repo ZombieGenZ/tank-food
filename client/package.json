@@ -24,6 +24,7 @@
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
     "@tailwindcss/vite": "^4.0.11",
+    "@vitalets/google-translate-api": "^9.2.1",
     "antd": "^5.24.3",
     "aos": "^2.3.4",
     "client": "file:",

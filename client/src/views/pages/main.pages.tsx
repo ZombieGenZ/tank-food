@@ -9,14 +9,15 @@ import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
 import CategoryManagement from './CategoryManagement.pages.tsx';
 import ContactUs from './contact.pages.tsx';
+import MainManage from './Main.management.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message } from 'antd';
-import '/public/css/main.css'
 import { gsap } from 'gsap';
 import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdAccountBox } from "react-icons/md";
+
 
 interface UserInfo {
   created_at: string;
@@ -46,77 +47,28 @@ interface Slide {
 }
 
 const FormMain = (): JSX.Element => {
+
+  // window.location.reload()
+
   const location = useLocation();
   const pageRef = useRef(null);
-
-  useEffect(() => {
-    // Hiệu ứng khi chuyển trang
-    gsap.from(pageRef.current, {
-      scale: 0.8, // Bắt đầu với kích thước nhỏ hơn
-      duration: 0.3,
-      ease: 'back.out(1.7)', // Easing với hiệu ứng "bounce"
-    });
-
-    gsap.to(pageRef.current, {
-      scale: 1, // Trở về kích thước ban đầu
-      duration: 0.3,
-      ease: 'back.out(1.7)',
-    });
-  }, [location]);
-
-  return(
-        <div className='flex gap-5 flex-col' ref={pageRef}>
-          <NavigationButtons />
-          <Routes>
-            <Route path="/*" element={<Main />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path='/menu' element={<Category />}/>
-            <Route path='/contact' element={<ContactUs />}/>
-            <Route path='/category' element={<CategoryManagement />}/>
-          </Routes>
-        </div>
-  )   
-}
-
-function NavigationAdmin(): JSX.Element {
-  return (
-    <>
-      
-    </>
-  )
-}
-
-function NavigationButtons(): JSX.Element {
-  const navigate = useNavigate();
-  const [open, setOpen] = useState<boolean>(false);
-  const [messageApi, contextHolder] = message.useMessage();
-  const [language, setLanguage] = useState<string>(() => {
-    const SaveedLanguage = localStorage.getItem('language')
-    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
-  })
-
-  const handleChange = (value: string) => {
-    setLanguage(value)
-    localStorage.setItem('language', JSON.stringify(value))
-    if(value == "Tiếng Việt") {
-      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
-    } else {
-      localStorage.setItem('code_language', JSON.stringify("en-US"))
-    }
-    window.location.reload();
-  };
-
-  const openDrawer = (): void => {
-    setOpen(true)
-  }
-
-  const closeDrawer = (): void => {
-    setOpen(false)
-  }
-
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [user, setUser] = useState<UserInfo | null>(null)
+  // const body1 = {
+  //   language: null,
+  //   refresh_token: refresh_token
+  // }
+  // fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-token`, {
+  //   method: 'POST',
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${access_token}`,
+  //   },
+  //   body: JSON.stringify(body1)
+  // }).then(response => { return response.text() }).then((data) => {
+  //   console.log(data)
+  // })
 
   useEffect(() => {
     if (!refresh_token) {
@@ -131,7 +83,7 @@ function NavigationButtons(): JSX.Element {
       refresh_token: refresh_token,
     };
   
-    fetch("http://localhost:3000/api/users/get-user-infomation", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/get-user-infomation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,6 +115,179 @@ function NavigationButtons(): JSX.Element {
   useEffect(() => {
     console.log(user)
   }, [user])
+
+  useEffect(() => {
+    // Hiệu ứng khi chuyển trang
+    gsap.from(pageRef.current, {
+      scale: 0.8, // Bắt đầu với kích thước nhỏ hơn
+      duration: 0.3,
+      ease: 'back.out(1.7)', // Easing với hiệu ứng "bounce"
+    });
+
+    gsap.to(pageRef.current, {
+      scale: 1, // Trở về kích thước ban đầu
+      duration: 0.3,
+      ease: 'back.out(1.7)',
+    });
+  }, [location]);
+
+  return(
+    <>
+      {user && user.role == 3 ? 
+        <div className='flex' ref={pageRef}>
+          <NavigationAdmin displayname={user.display_name}/>
+          <Routes>
+            <Route path="/*" element={<MainManage />} />
+          </Routes>
+        </div> : 
+        <div className='flex gap-5 flex-col' ref={pageRef}>
+          <NavigationButtons role={user?.role ?? 0}/>
+          <Routes>
+            <Route path="/*" element={<Main />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path='/menu' element={<Category />}/>
+            <Route path='/contact' element={<ContactUs />}/>
+            <Route path='/category' element={<CategoryManagement />}/>
+          </Routes>
+        </div>}
+    </>
+  )   
+}
+
+function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
+  const navigate = useNavigate();
+  // const [messageApi, contextHolder] = message.useMessage();
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
+
+  // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+  // useEffect(() => {
+  //   const handleStorageChange = () => {
+  //     setRefreshToken(localStorage.getItem("refresh_token"));
+  //     setAccessToken(localStorage.getItem("access_token"));
+  //   };
+  
+  //   window.addEventListener("storage", handleStorageChange);
+  
+  //   return () => {
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, []);
+
+  const handleChange = (value: string) => {
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+    window.location.reload()
+  };
+
+  // const Logout = () => {
+  //   const body = {
+  //     language: null,
+  //     refresh_token: refresh_token
+  //   }
+  //   fetch('http://localhost:3000/api/users/logout', {
+  //     method: 'DELETE',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${access_token}`
+  //     },
+  //     body: JSON.stringify(body)
+  //   }).then(response => {
+  //     return response.json()
+  //   }).then((data) => {
+  //     console.log(data)
+  //     messageApi.open({
+  //       type: 'success',
+  //       content: 'Đăng nhập thành công',
+  //       style: {
+  //         marginTop: '10vh',
+  //       },
+  //     })
+  //   })
+  // }
+  return (
+    <div className='w-1/5 relative flex flex-col justify-center items-center gap-10 bg-[#ffffff] h-screen'>
+      {/* {contextHolder} */}
+        <div className='absolute flex items-center top-[7%]'>
+            <Select
+              defaultValue={language}
+              size='large'
+              style={{ color: '#FF9A3D' }}
+              options={[
+                { value: 'Tiếng Việt', label: 'Tiếng Việt' },
+                { value: 'English', label: 'English' },
+              ]}
+              onChange={handleChange}
+            />
+        </div>
+        <h2 className='font-bold text-2xl'>{language == "Tiếng Việt" ? displayname : "Administrator"}</h2>
+        <ul className='flex flex-col justify-center w-full'>
+          {
+            NavbarAdmin.map((item: NavbarItem) => {
+              return <li key={item.id} className="text-[15px] text-[#333333] hover:border-l-4 hover:border-l-[#FF7846] hover:text-[#FF7846] hover:bg-[#FFFAF7] transition duration-300 w-full">
+                        <button onClick={() => navigate(item.path)}
+                                className="cursor-pointer font-semibold p-2 pl-5">
+                                {language == "Tiếng Việt" ? item.title : item.english}</button> 
+                      </li>
+            })
+          }
+        </ul>
+    </div>
+  )
+}
+
+function NavigationButtons({ role }: { role: number }): JSX.Element {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
+
+  const handleChange = (value: string) => {
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+    window.location.reload();
+  };
+
+  const openDrawer = (): void => {
+    setOpen(true)
+  }
+
+  const closeDrawer = (): void => {
+    setOpen(false)
+  }
+
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const Logout = () => {
     const body = {
@@ -209,10 +334,19 @@ function NavigationButtons(): JSX.Element {
       ),
     },
   ];
+
+  const style = {
+    background: 'rgba(245, 245, 245, 0.2)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)', // React yêu cầu `-webkit-` đổi thành `Webkit`
+    border: '1px solid rgba(245, 245, 245, 0.3)',
+  };
+
   return (
     <>
-      {user?.role === 3}
-      <div className='sticky top-0 z-50 navbarName'>
+      <div className='sticky top-0 z-50 navbarName' style={style}>
       {contextHolder}
       <div className="p-2 lg:text-xl flex xl:justify-around justify-between">
         {/* logo */}
@@ -224,23 +358,16 @@ function NavigationButtons(): JSX.Element {
         </div>
         <div className='hidden xl:block px-6 py-2'>
           <ul className='flex items-center gap-5'>
-            {/* { user.role == 3 */}
-            { user !== null &&
-                    // Thanh nav cho Admin
-                    user.role == 3 ? NavbarAdmin.map((item: NavbarItem) => {
-                  return <li key={item.id}>
-                          <button className="links cursor-pointer font-semibold text-[#FF6B35] px-4 py-2 rounded-md transition duration-300"
-                                  onClick={() => navigate(item.path)}>{language == "Tiếng Việt" ? item.title : item.english}</button> 
-                        </li>
-                    // Thanh nav cho nhân viên
-              }) : (user !== null && user.role == 1 ? NavbarUser.map((item: NavbarItem) => {
+            {(
+              // Thanh nav cho nhân viên 
+              role == 1 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
                           </li>
                     // Thanh nav cho shipper
-              }) : (user !== null && user.role == 2 ? NavbarUser.map((item: NavbarItem) => {
+              }) : (role == 2 ? NavbarUser.map((item: NavbarItem) => {
                   return <li key={item.id} className="text-xl">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
@@ -321,10 +448,10 @@ function Main(): JSX.Element {
     const slideTimerRef = useRef<NodeJS.Timeout | null>(null);
     
     const slides: Slide[] = [
-      { src: "/public/images/system/1.png", alt: "Slide 1", effect: "fade-zoom" },
-      { src: "/public/images/system/2.png", alt: "Slide 2", effect: "fade" },
-      { src: "/public/images/system/3.png", alt: "Slide 3", effect: "slide" },
-      { src: "/public/images/system/4.png", alt: "Slide 4", effect: "fade" }
+      { src: "/images/system/1.png", alt: "Slide 1", effect: "fade-zoom" },
+      { src: "/images/system/2.png", alt: "Slide 2", effect: "fade" },
+      { src: "/images/system/3.png", alt: "Slide 3", effect: "slide" },
+      { src: "/images/system/4.png", alt: "Slide 4", effect: "fade" }
     ];
   
     // Hiển thị slideshow tự động

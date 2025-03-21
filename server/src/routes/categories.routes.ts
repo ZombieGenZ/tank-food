@@ -3,15 +3,13 @@ import {
   createCategoryController,
   updateCategoryController,
   deleteCategoryController,
-  getCategoryController,
-  findCategoryController
+  getCategoryController
 } from '~/controllers/categories.controllers'
 import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
 import {
   createCategoryValidator,
   updateCategoryValidator,
-  deleteCategoryValidator,
-  findCategoryValidator
+  deleteCategoryValidator
 } from '~/middlewares/categories.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -91,16 +89,5 @@ router.delete(
  * }
  */
 router.post('/get-category', wrapRequestHandler(getCategoryController))
-
-/*
- * Description: Tìm kiếm danh sách danh mục đang có trên CSDL
- * Path: /api/categories/find-category
- * Method: POST
- * Body: {
- *    language?: string,
- *    keywords: string
- * }
- */
-router.post('/find-category', findCategoryValidator, wrapRequestHandler(findCategoryController))
 
 export default router

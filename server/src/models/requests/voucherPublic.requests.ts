@@ -25,11 +25,6 @@ export interface DeleteVoucherRequestsBody {
   voucher_id: string
 }
 
-export interface GetVoucherRequestsBody {
+export interface GetVoucherPublicRequestsBody {
   language?: string
-}
-
-export interface FindVoucherRequestsBody {
-  language?: string
-  keywords: string
 }

@@ -78,7 +78,7 @@ export const loginUserController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    const authenticate = await userService.login(user, req.body, language)
+    const authenticate = await userService.login(user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE

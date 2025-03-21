@@ -4,8 +4,7 @@ import {
   CreateVoucherRequestsBody,
   UpdateVoucherRequestsBody,
   DeleteVoucherRequestsBody,
-  GetVoucherRequestsBody,
-  FindVoucherRequestsBody
+  GetVoucherPublicRequestsBody
 } from '~/models/requests/voucherPublic.requests'
 import { serverLanguage } from '~/index'
 import User from '~/models/schemas/users.schemas'
@@ -20,7 +19,7 @@ import {
 } from '~/constants/message.constants'
 import { writeInfoLog, writeErrorLog } from '~/utils/log.utils'
 
-export const createVoucherController = async (
+export const createVoucherPublicController = async (
   req: Request<ParamsDictionary, any, CreateVoucherRequestsBody>,
   res: Response
 ) => {
@@ -61,7 +60,7 @@ export const createVoucherController = async (
   }
 }
 
-export const updateVoucherController = async (
+export const updateVoucherPublicController = async (
   req: Request<ParamsDictionary, any, UpdateVoucherRequestsBody>,
   res: Response
 ) => {
@@ -102,7 +101,7 @@ export const updateVoucherController = async (
   }
 }
 
-export const deleteVoucherController = async (
+export const deleteVoucherPublicController = async (
   req: Request<ParamsDictionary, any, DeleteVoucherRequestsBody>,
   res: Response
 ) => {
@@ -143,8 +142,8 @@ export const deleteVoucherController = async (
   }
 }
 
-export const getVoucherController = async (
-  req: Request<ParamsDictionary, any, GetVoucherRequestsBody>,
+export const getVoucherPublicController = async (
+  req: Request<ParamsDictionary, any, GetVoucherPublicRequestsBody>,
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
@@ -169,41 +168,12 @@ export const getVoucherController = async (
       voucher
     })
   } catch (err) {
-    res.json({
-      code: RESPONSE_CODE.GET_VOUCHER_FAILED,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
-          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
-    })
-  }
-}
-
-export const findVoucherController = async (
-  req: Request<ParamsDictionary, any, FindVoucherRequestsBody>,
-  res: Response
-) => {
-  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const user = req.user as User
-  const language = req.body.language || serverLanguage
-
-  try {
-    const voucher = await voucherPublicService.findVoucher(req.body)
-
-    await writeInfoLog(
+    await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.FindVoucherSuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.FindVoucherSuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
     )
-    res.json({
-      code: RESPONSE_CODE.GET_CATEGORY_SUCCESSFUL,
-      message:
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.FIND_VOUCHER_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.FIND_VOUCHER_SUCCESS,
-      voucher
-    })
-  } catch (err) {
+
     res.json({
       code: RESPONSE_CODE.GET_VOUCHER_FAILED,
       message:

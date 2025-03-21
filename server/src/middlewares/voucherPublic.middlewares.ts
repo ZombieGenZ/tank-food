@@ -9,7 +9,7 @@ import { serverLanguage } from '~/index'
 import databaseService from '~/services/database.services'
 import { writeWarnLog } from '~/utils/log.utils'
 
-export const createVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const createVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
@@ -216,7 +216,7 @@ export const createVoucherValidator = async (req: Request, res: Response, next: 
     })
 }
 
-export const updateVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const updateVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
@@ -459,7 +459,7 @@ export const updateVoucherValidator = async (req: Request, res: Response, next: 
     })
 }
 
-export const deleteVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   checkSchema(
@@ -530,62 +530,6 @@ export const deleteVoucherValidator = async (req: Request, res: Response, next: 
       await Promise.all([
         writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
       ])
-      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
-        message: err
-      })
-      return
-    })
-}
-
-export const findVoucherValidator = async (req: Request, res: Response, next: NextFunction) => {
-  const language = req.body.language || serverLanguage
-
-  checkSchema(
-    {
-      keywords: {
-        notEmpty: {
-          errorMessage:
-            language == LANGUAGE.VIETNAMESE
-              ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.KEYWORD_IS_REQUIRED
-              : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.KEYWORD_IS_REQUIRED
-        },
-        trim: true,
-        isString: {
-          errorMessage:
-            language == LANGUAGE.VIETNAMESE
-              ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.KEYWORD_MUST_BE_A_STRING
-              : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.KEYWORD_MUST_BE_A_STRING
-        }
-      }
-    },
-    ['body']
-  )
-    .run(req)
-    .then(() => {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        if (language == LANGUAGE.VIETNAMESE) {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
-            errors: errors.mapped()
-          })
-          return
-        } else {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
-            errors: errors.mapped()
-          })
-          return
-        }
-      }
-      next()
-      return
-    })
-    .catch((err) => {
-      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
       res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
         code: RESPONSE_CODE.FATAL_INPUT_ERROR,
         message: err

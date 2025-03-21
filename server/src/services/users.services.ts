@@ -138,7 +138,7 @@ class UserService {
       }
     )
   }
-  async login(user: User, payload: LoginUserRequestsBody, language: string) {
+  async login(user: User) {
     const authenticate = await this.signAccessTokenAndRefreshToken(user._id.toString())
     await this.insertRefreshToken(user._id.toString(), authenticate[1])
 

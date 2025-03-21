@@ -1,5 +1,11 @@
 import { ObjectId } from 'mongodb'
-import { ProductList, PaymentType, PaymentStatus, OrderStatus } from '~/constants/order.constants'
+import {
+  ProductList,
+  DeliveryTypeEnum,
+  PaymentTypeEnum,
+  PaymentStatusEnum,
+  OrderStatusEnum
+} from '~/constants/orders.constants'
 
 interface OrderType {
   _id?: ObjectId
@@ -10,6 +16,7 @@ interface OrderType {
   fee?: number
   vat: number
   total_bill: number
+  delivery_type: DeliveryTypeEnum
   shipper?: ObjectId | null
   user?: ObjectId | null
   name?: string
@@ -26,16 +33,19 @@ interface OrderType {
   distance?: number // khoản cách
   suggested_route?: string // tuyến đường đề xuất
   estimated_time?: string // thời gian ước tính
+  node?: string
   is_first_transaction?: boolean
-  payment_type: PaymentType
-  payment_status?: PaymentStatus
-  order_status?: OrderStatus
+  payment_type: PaymentTypeEnum
+  payment_status?: PaymentStatusEnum
+  order_status?: OrderStatusEnum
   cancellation_reason?: string
   moderated_by?: ObjectId
+  canceled_by?: ObjectId
   created_at?: Date
   confirmmed_at?: Date
   delivering_at?: Date
   delivered_at?: Date
+  completed_at?: Date
   updated_at?: Date
   canceled_at?: Date
 }
@@ -49,6 +59,7 @@ export default class Order {
   fee: number
   vat: number
   total_bill: number
+  delivery_type: DeliveryTypeEnum
   shipper: ObjectId | null
   user: ObjectId | null
   name: string | null
@@ -65,16 +76,19 @@ export default class Order {
   distance: number | null
   suggested_route: string | null
   estimated_time: string | null
+  node: string
   is_first_transaction: boolean | null
-  payment_type: PaymentType
-  payment_status: PaymentStatus
-  order_status: OrderStatus
+  payment_type: PaymentTypeEnum
+  payment_status: PaymentStatusEnum
+  order_status: OrderStatusEnum
   cancellation_reason: string
   moderated_by: ObjectId | null
+  canceled_by: ObjectId | null
   created_at: Date
   confirmmed_at: Date
   delivering_at: Date
   delivered_at: Date
+  completed_at: Date
   updated_at: Date
   canceled_at: Date
 
@@ -89,6 +103,7 @@ export default class Order {
     this.fee = order.fee || 0
     this.vat = order.vat
     this.total_bill = order.total_bill
+    this.delivery_type = order.delivery_type
     this.shipper = order.shipper || null
     this.user = order.user || null
     this.name = order.name || null
@@ -105,16 +120,19 @@ export default class Order {
     this.distance = order.distance || null
     this.suggested_route = order.suggested_route || null
     this.estimated_time = order.estimated_time || null
+    this.node = order.node || ''
     this.is_first_transaction = order.is_first_transaction || false
     this.payment_type = order.payment_type
-    this.payment_status = order.payment_status || PaymentStatus.PENDING
-    this.order_status = order.order_status || OrderStatus.PENDING
+    this.payment_status = order.payment_status || PaymentStatusEnum.PENDING
+    this.order_status = order.order_status || OrderStatusEnum.PENDING
     this.cancellation_reason = order.cancellation_reason || ''
     this.moderated_by = order.moderated_by || null
+    this.canceled_by = order.canceled_by || null
     this.created_at = order.created_at || date
     this.confirmmed_at = order.confirmmed_at || date
     this.delivering_at = order.delivering_at || date
     this.delivered_at = order.delivered_at || date
+    this.completed_at = order.completed_at || date
     this.updated_at = order.updated_at || date
     this.canceled_at = order.canceled_at || date
   }

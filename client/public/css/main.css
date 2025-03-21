@@ -1,28 +1,9 @@
-.links::after{
-    content: '';
-    height: 5px;
-    width: 0;
-    position: absolute;
-    background-color: #FF6B35;
-    left: 0;
-    bottom: 0;
-    border-radius: 10px;
-    transition: .3s ease-in-out;
-}
-
-.links{
-    position: relative;
-}
-
-.links:hover::after {
-    width: 100%;
-}
-
-.navbarName {
-    background: rgba(255, 255, 255, 0.22);
-    border-radius: 0px 0px 16px 16px;
+#navbarName {
+    /* From https://css.glass */
+    background: rgba(245, 245, 245, 0.2);
+    border-radius: 16px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(8.3px);
-    border: 1px solid rgba(212, 206, 23, 0.43);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(245, 245, 245, 0.3);
 }

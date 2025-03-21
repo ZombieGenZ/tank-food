@@ -71,9 +71,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_CATEGORY_SUCCESS: 'Lấy thông tin danh mục thành công',
     GET_CATEGORY_FAILURE: 'Lấy thông tin danh mục thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
-    FIND_CATEGORY_SUCCESS: 'Tìm kiếm thông tin danh mục thành công',
-    FIND_CATEGORY_FAILURE: 'Tìm kiếm thông tin danh mục thất bại'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -106,9 +104,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Lấy thông tin sản phẩm thành công',
     GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
-    FIND_PRODUCT_SUCCESS: 'Tìm kiếm thông tin sản phẩm thành công',
-    FIND_PRODUCT_FAILURE: 'Tìm kiếm thông tin sản phẩm thất bại'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -142,8 +138,6 @@ export class VIETNAMESE_STATIC_MESSAGE {
     KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký',
     GET_VOUCHER_SUCCESS: 'Lấy thông tin mã giảm giá thành công',
     GET_VOUCHER_FAILURE: 'Lấy thông tin mã giảm giá thất bại',
-    FIND_VOUCHER_SUCCESS: 'Tìm kiếm thông tin mã giảm giá thành công',
-    FIND_VOUCHER_FAILURE: 'Tìm kiếm thông tin mã giảm giá thất bại',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
       'Mã voucher chỉ được chứa chữ hoa, chữ thường, số và dấu gạch dưới (_)'
   } as const
@@ -177,8 +171,8 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CHECKOUT_ORDER_FAILURE: 'Xác thực thanh toán đơn hàng thất bại',
     VOUCHER_IS_NOT_FOUND: 'Mã giảm giá không tồn tại',
     VOUCHER_REQUIREMENT_IS_NOT_MET: 'Mã giảm giá không đáp ứng yêu cầu',
-    GET_ORDER_EMPLOYEE_SUCCESS: 'Lấy danh sách đơn hàng thành công',
-    GET_ORDER_EMPLOYEE_FAILURE: 'Lấy danh sách đơn hàng thất bại',
+    GET_ORDER_SUCCESS: 'Lấy danh sách đơn hàng thành công',
+    GET_ORDER_FAILURE: 'Lấy danh sách đơn hàng thất bại',
     ORDER_ID_IS_REQUIRED: 'Không được bỏ trống id đơn hàng',
     ORDER_ID_MUST_BE_A_STRING: 'Id đơn hàng phải là 1 chuỗi kí tự',
     ORDER_ID_MUST_BE_A_ID: 'Id đơn hàng không đúng định dạng',
@@ -186,9 +180,39 @@ export class VIETNAMESE_STATIC_MESSAGE {
     DECISION_MUST_BE_A_BOOLEAN: 'Quyết định phải là một boolean',
     REASON_IS_REQUIRED: 'Không được bỏ trống lý do',
     REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS: 'Lý do phải có độ dài từ 5 đến 200 kí tự',
+    REASON_MUST_BE_A_STRING: 'lý do phải là một chuỗi kí tự',
     ORDER_APPROVED: 'Đơn hàng đã được duyệt',
+    ORDER_NOT_APPROVED: 'Đơn hàng chưa được duyệt',
+    ORDER_UNPAID: 'Đơn hàng chưa được thanh toán',
+    ORDER_CANCELED: 'Đơn hàng đã bị hủy',
     ORDER_APPROVAL_SUCCESS: 'Kiểm duyệt đơn hàng thành công',
-    ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại'
+    ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại',
+    CANCEL_ORDER_SUCCESS: 'Hủy đơn hàng thành công',
+    CANCEL_ORDER_FAILURE: 'Hủy đơn hàng thất bại',
+    RECEIVE_DELIVERY_SUCCESS: 'Giao hàng thành công',
+    RECEIVE_DELIVERY_FAILURE: 'Giao hàng thất bại',
+    PAYMENT_TYPE_IS_REQUIRED: 'Không được bỏ trống loại thanh toán',
+    PAYMENT_TYPE_MUST_BE_A_NUMBER: 'Loại thanh toán phải là một số',
+    PAYMENT_TYPE_IS_NOT_VALID: 'Loại thanh toán không đúng định dạng',
+    PAYMENT_CONFIRMATION_SUCCESS: 'Xác nhận thanh toán thành công',
+    PAYMENT_CONFIRMATION_FAILURE: 'Xác nhận thanh toán thất bại',
+    ORDER_IS_NOT_OFFLINE_ORDER: 'Đơn hàng này không phải là đơn hàng tại quầy',
+    ORDER_IS_NOT_ONLINE_ORDER: 'Đơn hàng này không phải là đơn hàng online',
+    ORDER_COMPLETION_CONFIRMATION_SUCCESS: 'Xác nhận đơn hàng thành công',
+    ORDER_COMPLETION_CONFIRMATION_FAILURE: 'Xác nhận đơn hàng thất bại',
+    ORDER_NOT_DELIVERED: 'Đơn hàng chưa được giao',
+    ORDER_DELIVERY_PERSON_MISMATCH: 'Bạn không phải là người giao đơn hàng này',
+    CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Xác nhận giao đơn hàng thành công',
+    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Xác nhận giao đơn hàng thất bại',
+    ORDER_CAN_NOT_CANCEL: 'Không thể hủy đơn hàng'
+  } as const
+
+  static STATISTICAL_MESSAGE = {
+    STATISTICAL_TIME_IS_REQUIRED: 'Không được bỏ trống thời gian thống kê',
+    STATISTICAL_TIME_MUST_BE_A_NUMBER: 'Thời gian thống kê phải là một số',
+    STATISTICAL_TIME_IS_NOT_VALID: 'Thời gian không đúng định dạng',
+    STATISTICAL_SUCCESS: 'Lấy thông tin thống kê thành công',
+    STATISTICAL_FAILURE: 'Lấy thông tin thống kê thất bại'
   } as const
 }
 
@@ -266,9 +290,7 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_CATEGORY_SUCCESS: 'Category information retrieved successfully',
     GET_CATEGORY_FAILURE: 'Category information retrieval failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
-    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
-    FIND_CATEGORY_SUCCESS: 'Category information search successful',
-    FIND_CATEGORY_FAILURE: 'Category information search failed'
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -301,9 +323,7 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Product information retrieved successfully',
     GET_PRODUCT_FAILURE: 'Product information retrieval failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
-    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
-    FIND_PRODUCT_SUCCESS: 'Product information search successful',
-    FIND_PRODUCT_FAILURE: 'Product information search failed'
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -338,8 +358,6 @@ export class ENGLISH_STATIC_MESSAGE {
     KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
     GET_VOUCHER_SUCCESS: 'Voucher information retrieved successfully',
     GET_VOUCHER_FAILURE: 'Voucher information retrieval failed',
-    FIND_VOUCHER_SUCCESS: 'Voucher information search successful',
-    FIND_VOUCHER_FAILURE: 'Voucher information search failed',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
       'Voucher code can only contain uppercase, lowercase, numbers, and underscores (_)'
   } as const
@@ -373,8 +391,8 @@ export class ENGLISH_STATIC_MESSAGE {
     CHECKOUT_ORDER_FAILURE: 'Order checkout failed',
     VOUCHER_IS_NOT_FOUND: 'Voucher not found',
     VOUCHER_REQUIREMENT_IS_NOT_MET: 'Voucher requirement not met',
-    GET_ORDER_EMPLOYEE_SUCCESS: 'Successfully retrieved order list',
-    GET_ORDER_EMPLOYEE_FAILURE: 'Failed to retrieve order list',
+    GET_ORDER_SUCCESS: 'Successfully retrieved order list',
+    GET_ORDER_FAILURE: 'Failed to retrieve order list',
     ORDER_ID_IS_REQUIRED: 'Order ID cannot be empty',
     ORDER_ID_MUST_BE_A_STRING: 'Order ID must be a string',
     ORDER_ID_MUST_BE_A_ID: 'Order ID is not in the correct format',
@@ -382,9 +400,39 @@ export class ENGLISH_STATIC_MESSAGE {
     DECISION_MUST_BE_A_BOOLEAN: 'Decision must be a boolean',
     REASON_IS_REQUIRED: 'Reason cannot be empty',
     REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS: 'Reason must be between 5 and 200 characters long',
+    REASON_MUST_BE_A_STRING: 'The reason must be a string',
     ORDER_APPROVED: 'Order approved',
+    ORDER_NOT_APPROVED: 'Order not approved',
+    ORDER_CANCELED: 'Order canceled',
     ORDER_APPROVAL_SUCCESS: 'Order approval successful',
-    ORDER_APPROVAL_FAILURE: 'Order approval failed'
+    ORDER_APPROVAL_FAILURE: 'Order approval failed',
+    CANCEL_ORDER_SUCCESS: 'Order cancellation successful',
+    CANCEL_ORDER_FAILURE: 'Order cancellation failed',
+    RECEIVE_DELIVERY_SUCCESS: 'Delivery successful',
+    RECEIVE_DELIVERY_FAILURE: 'Delivery failed',
+    ORDER_UNPAID: 'unpaid order',
+    PAYMENT_TYPE_IS_REQUIRED: 'Payment type cannot be empty',
+    PAYMENT_TYPE_MUST_BE_A_NUMBER: 'Payment type must be a number',
+    PAYMENT_TYPE_IS_NOT_VALID: 'Payment type is not in the correct format',
+    PAYMENT_CONFIRMATION_SUCCESS: 'Payment confirmation successful',
+    PAYMENT_CONFIRMATION_FAILURE: 'Payment confirmation failed',
+    ORDER_IS_NOT_OFFLINE_ORDER: 'This order is not an offline order',
+    ORDER_IS_NOT_ONLINE_ORDER: 'This order is not an online order',
+    ORDER_COMPLETION_CONFIRMATION_SUCCESS: 'Order confirmation successful',
+    ORDER_COMPLETION_CONFIRMATION_FAILURE: 'Order confirmation failed',
+    ORDER_NOT_DELIVERED: 'Order delivered',
+    ORDER_DELIVERY_PERSON_MISMATCH: 'You are not the delivery person for this order',
+    CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Delivery completion confirmation successful',
+    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed',
+    ORDER_CAN_NOT_CANCEL: 'Cannot cancel the order'
+  } as const
+
+  static STATISTICAL_MESSAGE = {
+    STATISTICAL_TIME_IS_REQUIRED: 'Time cannot be empty',
+    STATISTICAL_TIME_MUST_BE_A_NUMBER: 'Statistical time must be a number',
+    STATISTICAL_TIME_IS_NOT_VALID: 'Invalid time format',
+    STATISTICAL_SUCCESS: 'Statistical data retrieval successful',
+    STATISTICAL_FAILURE: 'Statistical data retrieval failed'
   } as const
 }
 
@@ -443,12 +491,6 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static GetCategoryFailed(ip: string, err: unknown) {
     return `Thực hiện lấy thông tin danh mục thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
-  static FindCategorySuccessfully(ip: string) {
-    return `Thực hiện tìm kiếm thông tin danh mục thành công (IP: ${ip})`
-  }
-  static FindCategoryFailed(ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin danh mục thất bại (IP: ${ip}) | Lỗi: ${err}`
-  }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo sản phẩm thành công (User: ${user_id}) (IP: ${ip})`
   }
@@ -472,12 +514,6 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static GetProductFailed(ip: string, err: unknown) {
     return `Thực hiện lấy thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
-  }
-  static FindProductSuccessfully(ip: string) {
-    return `Thực hiện tìm kiếm thông tin sản phẩm thành công (IP: ${ip})`
-  }
-  static FindProductFailed(ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin sản phẩm thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
   static VoucherCreateSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
@@ -503,12 +539,6 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện lấy thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
-  static FindVoucherSuccessfully(user_id: string, ip: string) {
-    return `Thực hiện tìm kiếm thông tin mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
-  }
-  static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện tìm kiếm thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
-  }
   static OrderOnlineSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
   }
@@ -521,17 +551,59 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CheckoutOrderFailed(ip: string, err: unknown) {
     return `Thực hiện xác nhận đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
-  static GetOrderEmployeeSuccessfully(user_id: string, ip: string) {
-    return `Thực hiện lấy thông tin đơn hàng mới thành công (User: ${user_id}) (IP: ${ip})`
+  static GetOrderSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
   }
-  static GetOrderEmployeeFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện lấy thông tin đơn hàng mới thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  static GetOrderFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static OrderApprovalSuccessfully(user_id: string, ip: string) {
     return `Thực hiện kiểm duyệt đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
   }
   static OrderApprovalFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện kiểm duyệt đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static CancelOrderSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện hủy đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static CancelOrderFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện hủy đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ReceiveDeliverySuccessfully(user_id: string, ip: string) {
+    return `Thực hiện nhận giao đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện nhận giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static OrderOfflineSuccessfully(ip: string) {
+    return `Thực hiện giao đơn hàng thành công (IP: ${ip})`
+  }
+  static OrderOfflineFailed(ip: string, err: unknown) {
+    return `Thực hiện giao đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static PaymentConfirmationSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xác nhận thanh toán thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static PaymentConfirmationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xác nhận thanh toán thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static OrderCompletionConfirmationSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xác nhận đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static OrderCompletionConfirmationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xác nhận đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ConfirmDeliveryCompletionSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xác nhận đã giao đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ConfirmDeliveryCompletionFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xác nhận đã giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static StatisticalOverviewSuccessful(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin thống kê thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static StatisticalOverviewFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin thống kê thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
 }
 
@@ -590,12 +662,6 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static GetCategoryFailed(ip: string, err: unknown) {
     return `Category information retrieval failed (IP: ${ip}) | Error: ${err}`
   }
-  static FindCategorySuccessfully(ip: string) {
-    return `Category information search successful (IP: ${ip})`
-  }
-  static FindCategoryFailed(ip: string, err: unknown) {
-    return `Category information search failed (IP: ${ip}) | Error: ${err}`
-  }
   static ProductCreateSuccessfully(user_id: string, ip: string) {
     return `Product creation successful (User: ${user_id}) (IP: ${ip})`
   }
@@ -619,12 +685,6 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static GetProductFailed(ip: string, err: unknown) {
     return `Product information retrieval failed (IP: ${ip}) | Error: ${err}`
-  }
-  static FindProductSuccessfully(ip: string) {
-    return `Product information search successful (IP: ${ip})`
-  }
-  static FindProductFailed(ip: string, err: unknown) {
-    return `Product information search failed (IP: ${ip}) | Error: ${err}`
   }
   static VoucherCreateSuccessfully(user_id: string, ip: string) {
     return `Voucher creation successful (User: ${user_id}) (IP: ${ip})`
@@ -650,12 +710,6 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Voucher information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
-  static FindVoucherSuccessfully(user_id: string, ip: string) {
-    return `Voucher information search successful (User: ${user_id}) (IP: ${ip})`
-  }
-  static FindVoucherFailed(user_id: string, ip: string, err: unknown) {
-    return `Voucher information search failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
-  }
   static OrderOnlineSuccessfully(user_id: string, ip: string) {
     return `Order creation successful (User: ${user_id}) (IP: ${ip})`
   }
@@ -668,16 +722,58 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static CheckoutOrderFailed(ip: string, err: unknown) {
     return `Order checkout failed (IP: ${ip}) | Error: ${err}`
   }
-  static GetOrderEmployeeSuccessfully(user_id: string, ip: string) {
-    return `New order information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  static GetOrderSuccessfully(user_id: string, ip: string) {
+    return `Order information retrieval successful (User: ${user_id}) (IP: ${ip})`
   }
-  static GetOrderEmployeeFailed(user_id: string, ip: string, err: unknown) {
-    return `New order information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  static GetOrderFailed(user_id: string, ip: string, err: unknown) {
+    return `Order information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static OrderApprovalSuccessfully(user_id: string, ip: string) {
     return `Order approval successful (User: ${user_id}) (IP: ${ip})`
   }
   static OrderApprovalFailed(user_id: string, ip: string, err: unknown) {
     return `Order approval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CancelOrderSuccessfully(user_id: string, ip: string) {
+    return `Order cancellation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static CancelOrderFailed(user_id: string, ip: string, err: unknown) {
+    return `Order cancellation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ReceiveDeliverySuccessfully(user_id: string, ip: string) {
+    return `Order delivery successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
+    return `Order delivery failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static OrderOfflineSuccessfully(ip: string) {
+    return `Successfully processed offline order (IP: ${ip})`
+  }
+  static OrderOfflineFailed(ip: string, err: unknown) {
+    return `Failed to process offline order (IP: ${ip}) | Error: ${err}`
+  }
+  static PaymentConfirmationSuccessfully(user_id: string, ip: string) {
+    return `Successfully confirmed payment (User: ${user_id}) (IP: ${ip})`
+  }
+  static PaymentConfirmationFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to confirm payment (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static OrderCompletionConfirmationSuccessfully(user_id: string, ip: string) {
+    return `Order confirmation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static OrderCompletionConfirmationFailed(user_id: string, ip: string, err: unknown) {
+    return `Order confirmation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ConfirmDeliveryCompletionSuccessfully(user_id: string, ip: string) {
+    return `Delivery completion confirmation successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static ConfirmDeliveryCompletionFailed(user_id: string, ip: string, err: unknown) {
+    return `Delivery completion confirmation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static StatisticalOverviewSuccessful(user_id: string, ip: string) {
+    return `Statistical data retrieval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static StatisticalOverviewFailed(user_id: string, ip: string, err: unknown) {
+    return `Statistical data retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }
