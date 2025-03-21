@@ -18,6 +18,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdAccountBox } from "react-icons/md";
 
+
 interface UserInfo {
   created_at: string;
   display_name: string;
