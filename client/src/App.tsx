@@ -33,7 +33,7 @@ const App = () => {
           <Route path="/*" element={<FormMain />} />
         </Routes>
       </BrowserRouter>
-      <Transition transition="slide-up" mounted={scroll.y > 100}>
+      <Transition transition="slide-up" mounted={scroll.y > 0}>
           {(transitionStyles) => (
             <button 
             onClick={() => scrollTo({ y: 0 })}

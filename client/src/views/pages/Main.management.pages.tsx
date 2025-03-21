@@ -1,7 +1,14 @@
 import { JSX } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Card } from 'antd';
+
+const { Meta } = Card;
 
 function MainManage (): JSX.Element {
+    const language = (): string => {
+      const Language = localStorage.getItem('language')
+      return Language ? JSON.parse(Language) : "Tiếng Việt"
+    }
     const data = [
         {
           "name": "Page A",
@@ -52,11 +59,74 @@ function MainManage (): JSX.Element {
                 <div className="w-full flex items-start">
                     <h1 className="font-bold text-2xl">Bảng điều khiển</h1>
                 </div>
-                <div className="grid grid-cols-4">
-                    
+                <div className="w-full grid grid-cols-4 place-items-start">
+                  <Card
+                  hoverable
+                  style={{
+                      width: 250,
+                      height: 100,
+                      borderLeft: '5px solid #FF6B35', // Đổi màu viền
+                      borderRadius: '10px', // Bo góc
+                      backgroundColor: '#FFFFFF', // Màu nền
+                      font: 'message-box',
+                  }}
+                  >
+                    <div className="flex flex-col gap-5">
+                      <Meta title={language() == "Tiếng Việt" ? "Tổng đơn hàng" : "Total bill"}/>
+                      <p className="text-2xl">250 đơn</p>
+                    </div>
+                  </Card>
+                  <Card
+                  hoverable
+                  style={{
+                      width: 250,
+                      height: 100,
+                      borderLeft: '5px solid #FF6B35', // Đổi màu viền
+                      borderRadius: '10px', // Bo góc
+                      backgroundColor: '#FFFFFF', // Màu nền
+                      font: 'message-box'
+                  }}
+                  >
+                    <div className="flex flex-col gap-5">
+                      <Meta title={language() == "Tiếng Việt" ? "Doanh thu trong tháng" : "Total bill"}/>
+                      <p className="text-2xl">250</p>
+                    </div>
+                  </Card>
+                  <Card
+                  hoverable
+                  style={{
+                      width: 250,
+                      height: 100,
+                      borderLeft: '5px solid #FF6B35', // Đổi màu viền
+                      borderRadius: '10px', // Bo góc
+                      backgroundColor: '#FFFFFF', // Màu nền
+                      font: 'message-box'
+                  }}
+                  >
+                    <div className="flex flex-col gap-5">
+                      <Meta title={language() == "Tiếng Việt" ? "Sản phẩm đang bán" : "Total bill"}/>
+                      <p className="text-2xl">250</p>
+                    </div>
+                  </Card>
+                  <Card
+                  hoverable
+                  style={{
+                      width: 250,
+                      height: 100,
+                      borderLeft: '5px solid #FF6B35', // Đổi màu viền
+                      borderRadius: '10px', // Bo góc
+                      backgroundColor: '#FFFFFF', // Màu nền
+                      font: 'message-box'
+                  }}
+                  >
+                    <div className="flex flex-col gap-5">
+                      <Meta title={language() == "Tiếng Việt" ? "Khách hàng mới" : "Total bill"}/>
+                      <p className="text-2xl">250</p>
+                    </div>
+                  </Card>
                 </div>
                 <div className="w-full grid grid-cols-2">
-                    <LineChart width={500} height={250} data={data}
+                    <LineChart width={500} height={500} data={data}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />

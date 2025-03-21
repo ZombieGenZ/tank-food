@@ -171,6 +171,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
     } else {
       localStorage.setItem('code_language', JSON.stringify("en-US"))
     }
+    window.location.reload()
   };
 
   // const Logout = () => {
