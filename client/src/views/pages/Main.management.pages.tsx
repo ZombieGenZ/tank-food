@@ -9,6 +9,42 @@ function MainManage (): JSX.Element {
       const Language = localStorage.getItem('language')
       return Language ? JSON.parse(Language) : "Tiếng Việt"
     }
+    const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+    const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+    useEffect(() => {
+      const body = {
+        language: null,
+        refresh_token: refresh_token,
+        time: 0,
+      }
+      fetch(`${import.meta.env.VITE_API_URL}/api/statistical/overview`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(body),
+      }).then(response => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+      })
+    }, [refresh_token, access_token])
+
+    useEffect(() => {
+      const handleStorageChange = () => {
+        setRefreshToken(localStorage.getItem("refresh_token"));
+        setAccessToken(localStorage.getItem("access_token"));
+      };
+    
+      window.addEventListener("storage", handleStorageChange);
+    
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }, []);
+
     const data = [
         {
           "name": "Page A",

@@ -20,6 +20,7 @@ interface Login {
 }
 
 const Signup: React.FC = () => {
+    console.log(import.meta.env.VITE_API_URL);
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
@@ -206,6 +207,7 @@ const Signup: React.FC = () => {
               }).then(() => {
                 setTimeout(() => {
                   navigate("/");
+                  window.location.reload();
                 }, 1000);
               });
             }

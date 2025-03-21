@@ -17,7 +17,7 @@ import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdAccountBox } from "react-icons/md";
-
+import Loading from '../components/loading_page_components.tsx'
 
 interface UserInfo {
   created_at: string;
@@ -49,7 +49,7 @@ interface Slide {
 const FormMain = (): JSX.Element => {
 
   // window.location.reload()
-
+  const [loading, setLoading] = useState<boolean>(true)
   const location = useLocation();
   const pageRef = useRef(null);
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
@@ -69,6 +69,12 @@ const FormMain = (): JSX.Element => {
   // }).then(response => { return response.text() }).then((data) => {
   //   console.log(data)
   // })
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false)
+    }, 5000)
+  }, [])
 
   useEffect(() => {
     if (!refresh_token) {
@@ -133,7 +139,7 @@ const FormMain = (): JSX.Element => {
 
   return(
     <>
-      {user && user.role == 3 ? 
+      {/* {user && user.role == 3 ? 
         <div className='flex' ref={pageRef}>
           <NavigationAdmin displayname={user.display_name}/>
           <Routes>
@@ -149,7 +155,25 @@ const FormMain = (): JSX.Element => {
             <Route path='/contact' element={<ContactUs />}/>
             <Route path='/category' element={<CategoryManagement />}/>
           </Routes>
-        </div>}
+        </div>} */}
+
+        {loading ? <Loading /> : (user && user.role == 3 ? 
+          <div className='flex' ref={pageRef}>
+            <NavigationAdmin displayname={user.display_name}/>
+            <Routes>
+              <Route path="/*" element={<MainManage />} />
+            </Routes>
+          </div> : 
+          <div className='flex gap-5 flex-col' ref={pageRef}>
+            <NavigationButtons role={user?.role ?? 0}/>
+            <Routes>
+              <Route path="/*" element={<Main />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path='/menu' element={<Category />}/>
+              <Route path='/contact' element={<ContactUs />}/>
+              <Route path='/category' element={<CategoryManagement />}/>
+            </Routes>
+          </div>)}
     </>
   )   
 }

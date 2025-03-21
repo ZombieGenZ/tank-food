@@ -137,8 +137,8 @@ const Loading = () => {
         </div>
 
         <div className="loading-text-wrapper">
-            <span className="loading-text slide-out-fwd-center">TANK</span>
-            <span className="loading-text slide-out-fwd-center">FOOD</span>
+            <span className="loading-text animate-text">TANK</span>
+            <span className="loading-text animate-text">FOOD</span>
         </div> 
       </div>
 
@@ -152,32 +152,57 @@ const Loading = () => {
           flex-direction: column; 
         }
 
-        .slide-out-fwd-center {
-          -webkit-animation: slide-out-fwd-center 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
-                  animation: slide-out-fwd-center 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+        .loading-text {
+          letter-spacing: 0.1em;
+        }
+        .loading-text-wrapper {
+          font-family: bebas neue, arial, helvetica, sans-serif;
+          margin-top: 20px;
+          display: flex;
+          gap: 9px;
+          font-weight: bold;
+          font-size: 60px;
         }
 
-        @-webkit-keyframes slide-out-fwd-center {
+        /* Combined animation sequence */
+        .animate-text {
+          animation: tracking-in 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards,
+                    pause 2s linear forwards 1s,
+                    slide-out 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) forwards 3s;
+        }
+
+        /* First animation - tracking in */
+        @keyframes tracking-in {
           0% {
-            -webkit-transform: translateZ(1);
-                    transform: translateZ(1);
-            opacity: 1;
-          }
-          100% {
-            -webkit-transform: translateZ(600px);
-                    transform: translateZ(600px);
+            letter-spacing: 1em;
+            transform: translateZ(400px) translateY(300px);
             opacity: 0;
           }
+          40% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateZ(0) translateY(0);
+            opacity: 1;
+          }
         }
-        @keyframes slide-out-fwd-center {
+
+        /* Second animation - pause */
+        @keyframes pause {
+          0%, 100% {
+            transform: translateZ(0);
+            opacity: 1;
+          }
+        }
+
+        /* Third animation - slide out */
+        @keyframes slide-out {
           0% {
-            -webkit-transform: translateZ(1);
-                    transform: translateZ(1);
+            transform: translateZ(0);
             opacity: 1;
           }
           100% {
-            -webkit-transform: translateZ(600px);
-                    transform: translateZ(600px);
+            transform: translateZ(600px);
             opacity: 0;
           }
         }
