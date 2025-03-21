@@ -137,8 +137,8 @@ const Loading = () => {
         </div>
 
         <div className="loading-text-wrapper">
-            <span className="loading-text tracking-in-contract-bck-bottom">TANK</span>
-            <span className="loading-text tracking-in-contract-bck-bottom">FOOD</span>
+            <span className="loading-text slide-out-fwd-center">TANK</span>
+            <span className="loading-text slide-out-fwd-center">FOOD</span>
         </div> 
       </div>
 
@@ -152,37 +152,33 @@ const Loading = () => {
           flex-direction: column; 
         }
 
-        .loading-text-wrapper {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 15px;
+        .slide-out-fwd-center {
+          -webkit-animation: slide-out-fwd-center 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+                  animation: slide-out-fwd-center 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
         }
 
-        .loading-text {
-          font-weight: bold;
-          font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-          font-size: 50px;
-          margin-top: 10px; 
-          color: #282828; 
-        }
-
-        .tracking-in-contract-bck-bottom {
-          animation: tracking-in-contract-bck-bottom 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) both;
-        }
-
-        @keyframes tracking-in-contract-bck-bottom {
+        @-webkit-keyframes slide-out-fwd-center {
           0% {
-            letter-spacing: 1em;
-            transform: translateZ(400px) translateY(300px);
-            opacity: 0;
-          }
-          40% {
-            opacity: 0.6;
+            -webkit-transform: translateZ(1);
+                    transform: translateZ(1);
+            opacity: 1;
           }
           100% {
-            transform: translateZ(0) translateY(0);
+            -webkit-transform: translateZ(600px);
+                    transform: translateZ(600px);
+            opacity: 0;
+          }
+        }
+        @keyframes slide-out-fwd-center {
+          0% {
+            -webkit-transform: translateZ(1);
+                    transform: translateZ(1);
             opacity: 1;
+          }
+          100% {
+            -webkit-transform: translateZ(600px);
+                    transform: translateZ(600px);
+            opacity: 0;
           }
         }
 
