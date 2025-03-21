@@ -69,7 +69,7 @@ class CategoryService {
           }
         }
       ),
-      notificationRealtime('freshSync', 'delete-category', 'category/update', category)
+      notificationRealtime('freshSync', 'update-category', 'category/update', category)
     ])
   }
 

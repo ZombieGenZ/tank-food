@@ -13,7 +13,9 @@ import {
   cancelOrderShipperController,
   confirmDeliveryCompletionController,
   orderOfflineController,
-  paymentConfirmationController
+  paymentConfirmationController,
+  getOrderController,
+  cancelOrderController
 } from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
@@ -32,7 +34,8 @@ import {
   confirmDeliveryCompletionValidator,
   orderOfflineValidator,
   voucherPublicValidator,
-  paymentConfirmationValidator
+  paymentConfirmationValidator,
+  cancelOrderValidator
 } from '~/middlewares/orders.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -340,5 +343,34 @@ router.put(
   paymentConfirmationValidator,
   wrapRequestHandler(paymentConfirmationController)
 )
+
+/*
+ * Description: Lấy danh sách order (cho user)
+ * Path: /api/orders/get-order
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post('/get-order', authenticateValidator, wrapRequestHandler(getOrderController))
+
+/*
+ * Description: Hủy đơn hàng (cho user)
+ * Path: /api/orders/cancel-order
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put('/cancel-order', authenticateValidator, cancelOrderValidator, wrapRequestHandler(cancelOrderController))
 
 export default router

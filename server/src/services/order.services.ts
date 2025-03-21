@@ -8,7 +8,8 @@ import {
   CancelOrderShipperRequestsBody,
   ConfirmDeliveryCompletionRequestsBody,
   OrderOfflineRequestsBody,
-  PaymentConfirmationRequestsBody
+  PaymentConfirmationRequestsBody,
+  CancelOrderRequestsBody
 } from '~/models/requests/orders.requests'
 import User from '~/models/schemas/users.schemas'
 import { CalculateShippingCosts } from '~/utils/ai.utils'
@@ -99,10 +100,90 @@ class OrderService {
       payment_type: PaymentTypeEnum.BANK
     })
 
+    await databaseService.order.insertOne(order)
+
+    const orderWithDetails = await databaseService.order
+      .aggregate([
+        { $match: { _id: order_id } },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .next()
+
     await Promise.all([
-      databaseService.order.insertOne(order),
-      notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', order),
-      notificationRealtime(`freshSync-user-${user._id}`, 'create-order', `order/${user._id}/create`, order)
+      notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails),
+      notificationRealtime(`freshSync-user-${user._id}`, 'create-order', `order/${user._id}/create`, orderWithDetails)
     ])
 
     return {
@@ -126,14 +207,92 @@ class OrderService {
     }
 
     const order_id = payload.code.substring(2)
-
     const order = await databaseService.order.findOne({ _id: new ObjectId(order_id) })
 
     await paymentHistoryService.insertHistory(payload)
 
+    const orderWithDetails = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(order_id) } },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .next()
+
     const data = {
       ...payload,
-      ...order,
+      ...orderWithDetails,
       payment_status: PaymentStatusEnum.PAID
     }
 
@@ -166,22 +325,178 @@ class OrderService {
     }
   }
   async getNewOrderEmployee(user: User) {
-    return await databaseService.order
-      .find({
-        user: { $ne: user._id },
-        payment_status: PaymentStatusEnum.PAID,
-        order_status: OrderStatusEnum.PENDING
-      })
+    const orders = await databaseService.order
+      .aggregate([
+        {
+          $match: {
+            user: { $ne: user._id },
+            payment_status: PaymentStatusEnum.PAID,
+            order_status: OrderStatusEnum.PENDING
+          }
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
       .toArray()
+    return orders
   }
   async getOldOrderEmployee(user: User) {
-    return await databaseService.order
-      .find({
-        user: { $ne: user._id },
-        payment_status: PaymentStatusEnum.PAID,
-        order_status: { $ne: OrderStatusEnum.PENDING }
-      })
+    const orders = await databaseService.order
+      .aggregate([
+        {
+          $match: {
+            user: { $ne: user._id },
+            payment_status: PaymentStatusEnum.PAID,
+            order_status: { $ne: OrderStatusEnum.PENDING }
+          }
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
       .toArray()
+    return orders
   }
   async orderApproval(payload: OrderApprovalRequestsBody, order: Order, user: User, language: string) {
     if (
@@ -208,72 +523,215 @@ class OrderService {
     }
 
     if (payload.decision) {
-      const data = {
-        ...order,
-        _id: order._id,
-        order_status: OrderStatusEnum.CONFIRMED,
-        moderated_by: user._id
-      }
-      await Promise.all([
-        databaseService.order.updateOne(
+      await databaseService.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            order_status: OrderStatusEnum.CONFIRMED,
+            moderated_by: user._id
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      )
+
+      const data = await databaseService.order
+        .aggregate([
+          { $match: { _id: order._id } },
           {
-            _id: order._id
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
           },
           {
-            $set: {
-              order_status: OrderStatusEnum.CONFIRMED,
-              moderated_by: user._id
-            },
-            $currentDate: {
-              updated_at: true
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
             }
           }
-        ),
-        notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data)
+        ])
+        .next()
+
+      await Promise.all([
+        notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data),
+        order.user &&
+          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data),
+        order.delivery_type == DeliveryTypeEnum.DELIVERY &&
+          notificationRealtime(`freshSync-shipper`, 'create-delivery', `order/${user._id}/create-delivery`, data)
       ])
-      if (order.user) {
-        await notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data)
-      }
-      if (order.delivery_type == DeliveryTypeEnum.DELIVERY) {
-        await notificationRealtime(`freshSync-shipper`, 'create-delivery', `order/${user._id}/create-delivery`, data)
-      }
       return
     } else {
-      const data = {
-        ...order,
-        _id: order._id,
-        order_status: OrderStatusEnum.CANCELED,
-        cancellation_reason: payload.reason,
-        moderated_by: user._id,
-        canceled_by: user._id
-      }
-      await Promise.all([
-        databaseService.order.updateOne(
+      await databaseService.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            order_status: OrderStatusEnum.CANCELED,
+            cancellation_reason: payload.reason,
+            moderated_by: user._id,
+            canceled_by: user._id
+          },
+          $currentDate: {
+            canceled_at: true,
+            updated_at: true
+          }
+        }
+      )
+
+      const data = await databaseService.order
+        .aggregate([
+          { $match: { _id: order._id } },
           {
-            _id: order._id
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
           },
           {
-            $set: {
-              order_status: OrderStatusEnum.CANCELED,
-              cancellation_reason: payload.reason,
-              moderated_by: user._id,
-              canceled_by: user._id
-            },
-            $currentDate: {
-              canceled_at: true,
-              updated_at: true
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
             }
           }
-        ),
-        notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data)
-      ])
+        ])
+        .next()
 
-      if (order.user) {
-        await notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data)
-      }
+      await Promise.all([
+        notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data),
+        order.user &&
+          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data)
+      ])
       return
     }
   }
+
   async cancelOrderEmployee(payload: CancelOrderEmployeeRequestsBody, order: Order, user: User, language: string) {
     if (
       order.payment_type === PaymentTypeEnum.BANK &&
@@ -298,121 +756,494 @@ class OrderService {
       await sendMail(buyer.email, email_subject, email_html)
     }
 
-    const data = {
-      ...order,
-      _id: order._id,
-      order_status: OrderStatusEnum.CANCELED,
-      cancellation_reason: payload.reason,
-      canceled_by: user._id
-    }
+    await databaseService.order.updateOne(
+      {
+        _id: order._id
+      },
+      {
+        $set: {
+          order_status: OrderStatusEnum.CANCELED,
+          cancellation_reason: payload.reason,
+          canceled_by: user._id
+        },
+        $currentDate: {
+          canceled_at: true,
+          updated_at: true
+        }
+      }
+    )
 
-    await Promise.all([
-      databaseService.order.updateOne(
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: order._id } },
         {
-          _id: order._id
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
         },
         {
-          $set: {
-            order_status: OrderStatusEnum.CANCELED,
-            cancellation_reason: payload.reason,
-            canceled_by: user._id
-          },
-          $currentDate: {
-            canceled_at: true,
-            updated_at: true
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
           }
         }
-      ),
-      notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)
+      ])
+      .next()
+
+    await Promise.all([
+      notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data),
+      order.user &&
+        notificationRealtime(`freshSync-user-${order.user}`, 'cancel-order', `order/${order.user}/cancel`, data),
+      order.delivery_type === DeliveryTypeEnum.DELIVERY &&
+        notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data),
+      order.shipper &&
+        notificationRealtime(
+          `freshSync-shipper-${order.shipper}`,
+          'cancel-delivery',
+          `delivery/${order.shipper}/cancel`,
+          data
+        )
     ])
-
-    if (order.user) {
-      await notificationRealtime(`freshSync-user-${order.user}`, 'cancel-order', `order/${order.user}/cancel`, data)
-    }
-
-    if (order.delivery_type == DeliveryTypeEnum.DELIVERY) {
-      await notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data)
-    }
-
-    if (order.shipper) {
-      await notificationRealtime(
-        `freshSync-shipper-${order.shipper}`,
-        'cancel-delivery',
-        `delivery/${order.shipper}/cancel`,
-        data
-      )
-    }
   }
+
   async orderCompletionConfirmation(payload: OrderCompletionConfirmationRequestsBody, order: Order) {
-    const data = {
-      _id: new ObjectId(payload.order_id),
-      order_status: OrderStatusEnum.COMPLETED
-    }
-    await Promise.all([
-      databaseService.order.updateOne(
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          order_status: OrderStatusEnum.COMPLETED
+        },
+        $currentDate: {
+          completed_at: true,
+          updated_at: true
+        }
+      }
+    )
+
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(payload.order_id) } },
         {
-          _id: new ObjectId(payload.order_id)
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
         },
         {
-          $set: {
-            order_status: OrderStatusEnum.COMPLETED
-          },
-          $currentDate: {
-            completed_at: true,
-            updated_at: true
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
           }
         }
-      ),
-      notificationRealtime('freshSync-employee', 'complete-order', 'order/complete', data)
-    ])
+      ])
+      .next()
 
-    if (order.user) {
-      await notificationRealtime(`freshSync-user-${order.user}`, 'complete-order', `order/${order.user}/complete`, data)
-    }
+    await Promise.all([
+      notificationRealtime('freshSync-employee', 'complete-order', 'order/complete', data),
+      order.user &&
+        notificationRealtime(`freshSync-user-${order.user}`, 'complete-order', `order/${order.user}/complete`, data)
+    ])
   }
   async getNewOrderShipper(user: User) {
-    return await databaseService.order
-      .find({
-        user: { $ne: user._id },
-        delivery_type: DeliveryTypeEnum.DELIVERY,
-        payment_status: PaymentStatusEnum.PAID,
-        order_status: OrderStatusEnum.CONFIRMED
-      })
-      .toArray()
-  }
-  async getOldOrderShipper(user: User) {
-    return await databaseService.order
-      .find({
-        user: { $ne: user._id },
-        shipper: user._id,
-        payment_status: PaymentStatusEnum.PAID,
-        order_status: { $ne: OrderStatusEnum.PENDING }
-      })
-      .toArray()
-  }
-  async receiveDeliveryShipper(payload: ReceiveDeliveryRequestsBody, user: User, order: Order) {
-    const data = {
-      ...order,
-      _id: new ObjectId(payload.order_id),
-      shipper: user._id,
-      order_status: OrderStatusEnum.DELIVERING
-    }
-    await Promise.all([
-      databaseService.order.updateOne(
+    const orders = await databaseService.order
+      .aggregate([
         {
-          _id: new ObjectId(payload.order_id)
+          $match: {
+            user: { $ne: user._id },
+            delivery_type: DeliveryTypeEnum.DELIVERY,
+            payment_status: PaymentStatusEnum.PAID,
+            order_status: OrderStatusEnum.CONFIRMED
+          }
         },
         {
-          $set: {
-            shipper: user._id,
-            order_status: OrderStatusEnum.DELIVERING
-          },
-          $currentDate: {
-            updated_at: true,
-            delivering_at: true
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
           }
         }
-      ),
+      ])
+      .toArray()
+    return orders
+  }
+
+  async getOldOrderShipper(user: User) {
+    const orders = await databaseService.order
+      .aggregate([
+        {
+          $match: {
+            user: { $ne: user._id },
+            shipper: user._id,
+            payment_status: PaymentStatusEnum.PAID,
+            order_status: { $ne: OrderStatusEnum.PENDING }
+          }
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .toArray()
+    return orders
+  }
+
+  async receiveDeliveryShipper(payload: ReceiveDeliveryRequestsBody, user: User, order: Order) {
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          shipper: user._id,
+          order_status: OrderStatusEnum.DELIVERING
+        },
+        $currentDate: {
+          updated_at: true,
+          delivering_at: true
+        }
+      }
+    )
+
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(payload.order_id) } },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .next()
+
+    await Promise.all([
       notificationRealtime(
         `freshSync-user-${order.user}`,
         'delivery-order',
@@ -422,29 +1253,103 @@ class OrderService {
       notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data)
     ])
   }
-  async cancelOrderShipper(payload: CancelOrderShipperRequestsBody, order: Order) {
-    const data = {
-      ...order,
-      _id: new ObjectId(payload.order_id),
-      order_status: OrderStatusEnum.COMPLETED,
-      shipper: null
-    }
 
-    await Promise.all([
-      databaseService.order.updateOne(
+  async cancelOrderShipper(payload: CancelOrderShipperRequestsBody, order: Order) {
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          order_status: OrderStatusEnum.COMPLETED,
+          shipper: null
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(payload.order_id) } },
         {
-          _id: new ObjectId(payload.order_id)
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
         },
         {
-          $set: {
-            order_status: OrderStatusEnum.COMPLETED,
-            shipper: null
-          },
-          $currentDate: {
-            updated_at: true
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
           }
         }
-      ),
+      ])
+      .next()
+
+    await Promise.all([
       notificationRealtime('freshSync-shipper', 'create-delivery', 'order/create-delivery', data),
       notificationRealtime(
         `freshSync-user-${order.user}`,
@@ -454,26 +1359,103 @@ class OrderService {
       )
     ])
   }
+
   async confirmDeliveryCompletion(payload: ConfirmDeliveryCompletionRequestsBody, order: Order) {
-    const data = {
-      ...order,
-      order_status: OrderStatusEnum.DELIVERED
-    }
-    await Promise.all([
-      databaseService.order.updateOne(
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          order_status: OrderStatusEnum.DELIVERED
+        },
+        $currentDate: {
+          delivered_at: true,
+          updated_at: true
+        }
+      }
+    )
+
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(payload.order_id) } },
         {
-          _id: new ObjectId(payload.order_id)
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
         },
         {
-          $set: {
-            order_status: OrderStatusEnum.DELIVERED
-          },
-          $currentDate: {
-            delivered_at: true,
-            updated_at: true
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
           }
         }
-      ),
+      ])
+      .next()
+
+    await Promise.all([
       notificationRealtime(
         `freshSync-user-${order.user}`,
         'complete-delivery',
@@ -503,10 +1485,88 @@ class OrderService {
       vat: vat
     })
 
-    Promise.all([
-      databaseService.order.insertOne(order),
-      notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', order)
-    ])
+    await databaseService.order.insertOne(order)
+
+    const orderWithDetails = await databaseService.order
+      .aggregate([
+        { $match: { _id: order_id } },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .next()
+
+    await Promise.all([notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)])
 
     if (payload.payment_type == PaymentTypeEnum.BANK) {
       return {
@@ -523,27 +1583,286 @@ class OrderService {
       }
     }
   }
+
   async paymentConfirmation(payload: PaymentConfirmationRequestsBody) {
-    const data = {
-      _id: new ObjectId(payload.order_id),
-      payment_status: PaymentStatusEnum.PAID
-    }
-    await Promise.all([
-      databaseService.order.updateOne(
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          payment_status: PaymentStatusEnum.PAID
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(payload.order_id) } },
         {
-          _id: new ObjectId(payload.order_id)
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
         },
         {
-          $set: {
-            payment_status: PaymentStatusEnum.PAID
-          },
-          $currentDate: {
-            updated_at: true
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
           }
         }
-      ),
+      ])
+      .next()
+
+    await Promise.all([
       notificationRealtime('freshSync-employee', 'payment-confirmation', 'order/payment-confirmation', data)
     ])
+  }
+  async getOrder(user: User) {
+    const orders = await databaseService.order
+      .aggregate([
+        {
+          $match: {
+            user: user._id
+          }
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .toArray()
+    return orders
+  }
+  async cancelOrder(payload: CancelOrderRequestsBody, user: User, order: Order) {
+    await databaseService.order.updateOne(
+      {
+        _id: new ObjectId(payload.order_id)
+      },
+      {
+        $set: {
+          order_status: OrderStatusEnum.CANCELED,
+          canceled_by: user._id
+        },
+        $currentDate: {
+          canceled_at: true,
+          updated_at: true
+        }
+      }
+    )
+    const data = await databaseService.order
+      .aggregate([
+        { $match: { _id: new ObjectId(payload.order_id) } },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product_details'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'product_details.category',
+            foreignField: '_id',
+            as: 'category_details'
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $unwind: '$product_details'
+        },
+        {
+          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+              }
+            },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ])
+      .next()
+
+    await Promise.all([notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)])
   }
 }
 

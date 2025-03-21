@@ -12,7 +12,8 @@ import {
   CancelOrderShipperRequestsBody,
   ConfirmDeliveryCompletionRequestsBody,
   OrderOfflineRequestsBody,
-  PaymentConfirmationRequestsBody
+  PaymentConfirmationRequestsBody,
+  CancelOrderRequestsBody
 } from '~/models/requests/orders.requests'
 import { serverLanguage } from '~/index'
 import {
@@ -82,7 +83,7 @@ export const checkoutOrderController = async (
   const language = serverLanguage
 
   try {
-    const infomation = await orderOnlineService.checkout(req.body)
+    await orderOnlineService.checkout(req.body)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -95,8 +96,7 @@ export const checkoutOrderController = async (
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_SUCCESS,
-      infomation
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CHECKOUT_ORDER_SUCCESS
     })
   } catch (err) {
     await writeErrorLog(
@@ -133,7 +133,7 @@ export const getNewOrderEmployeeController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      code: RESPONSE_CODE.GET_ORDER_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
@@ -148,7 +148,7 @@ export const getNewOrderEmployeeController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      code: RESPONSE_CODE.GET_ORDER_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
@@ -175,7 +175,7 @@ export const getOldOrderEmployeeController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      code: RESPONSE_CODE.GET_ORDER_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
@@ -190,7 +190,7 @@ export const getOldOrderEmployeeController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      code: RESPONSE_CODE.GET_ORDER_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
@@ -343,7 +343,7 @@ export const getNewOrderShipperController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      code: RESPONSE_CODE.GET_ORDER_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
@@ -358,7 +358,7 @@ export const getNewOrderShipperController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      code: RESPONSE_CODE.GET_ORDER_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
@@ -385,7 +385,7 @@ export const getOldOrderShipperController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_SUCCESSFUL,
+      code: RESPONSE_CODE.GET_ORDER_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
@@ -400,7 +400,7 @@ export const getOldOrderShipperController = async (
     )
 
     res.json({
-      code: RESPONSE_CODE.GET_ORDER_EMPLOYEE_FAILED,
+      code: RESPONSE_CODE.GET_ORDER_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
@@ -589,7 +589,7 @@ export const paymentConfirmationController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    const infomation = await orderOnlineService.paymentConfirmation(req.body)
+    await orderOnlineService.paymentConfirmation(req.body)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -602,8 +602,7 @@ export const paymentConfirmationController = async (
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_SUCCESS,
-      infomation
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_SUCCESS
     })
   } catch (err) {
     await writeErrorLog(
@@ -618,6 +617,87 @@ export const paymentConfirmationController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.PAYMENT_CONFIRMATION_FAILURE
+    })
+  }
+}
+
+export const getOrderController = async (req: Request<ParamsDictionary, any, GetOrderRequestsBody>, res: Response) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const order = await orderOnlineService.getOrder(user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS,
+      order
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+    })
+  }
+}
+
+export const cancelOrderController = async (
+  req: Request<ParamsDictionary, any, CancelOrderRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.cancelOrder(req.body, user, order)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CancelOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.CancelOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.CancelOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.CancelOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CANCEL_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
     })
   }
 }

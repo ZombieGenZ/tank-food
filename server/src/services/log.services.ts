@@ -4,10 +4,10 @@ import { io, serverRunningTime } from '~/index'
 import { db } from './firebase.services'
 import Log from '~/models/schemas/logs.schemas'
 import { formatDateFull2 } from '~/utils/date.utils'
+import { notificationRealtime } from '~/utils/realtime.utils'
 
 class LogService {
   async newLog(log_type: LogTypeEnum, log_message: string, created_at?: Date) {
-    const logFirebaseRealtime = db.ref(`log/${serverRunningTime}`).push()
     const date = new Date()
 
     if (log_type == LogTypeEnum.INFO) {
@@ -18,6 +18,12 @@ class LogService {
       console.log(`\x1b[31m[${formatDateFull2(created_at || date)} ERROR]\x1b[33m ${log_message}\x1b[0m`)
     }
 
+    const data = {
+      log_type,
+      content: log_message,
+      time: created_at || date
+    }
+
     await Promise.all([
       databaseService.logs.insertOne(
         new Log({
@@ -26,16 +32,7 @@ class LogService {
           time: created_at || date
         })
       ),
-      logFirebaseRealtime.set({
-        log_type,
-        content: log_message,
-        time: created_at || date
-      }),
-      io.to('system-log').emit('new-system-log', {
-        log_type,
-        content: log_message,
-        time: created_at || date
-      })
+      notificationRealtime('system-log', 'new-system-log', `log/${serverRunningTime}`, data)
     ])
   }
 }

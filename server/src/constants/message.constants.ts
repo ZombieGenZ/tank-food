@@ -203,7 +203,8 @@ export class VIETNAMESE_STATIC_MESSAGE {
     ORDER_NOT_DELIVERED: 'Đơn hàng chưa được giao',
     ORDER_DELIVERY_PERSON_MISMATCH: 'Bạn không phải là người giao đơn hàng này',
     CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Xác nhận giao đơn hàng thành công',
-    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Xác nhận giao đơn hàng thất bại'
+    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Xác nhận giao đơn hàng thất bại',
+    ORDER_CAN_NOT_CANCEL: 'Không thể hủy đơn hàng'
   } as const
 }
 
@@ -414,7 +415,8 @@ export class ENGLISH_STATIC_MESSAGE {
     ORDER_NOT_DELIVERED: 'Order delivered',
     ORDER_DELIVERY_PERSON_MISMATCH: 'You are not the delivery person for this order',
     CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Delivery completion confirmation successful',
-    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed'
+    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed',
+    ORDER_CAN_NOT_CANCEL: 'Cannot cancel the order'
   } as const
 }
 
@@ -534,10 +536,10 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
     return `Thực hiện xác nhận đơn hàng thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
   static GetOrderSuccessfully(user_id: string, ip: string) {
-    return `Thực hiện lấy thông tin đơn hàng mới thành công (User: ${user_id}) (IP: ${ip})`
+    return `Thực hiện lấy thông tin đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
   }
   static GetOrderFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện lấy thông tin đơn hàng mới thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+    return `Thực hiện lấy thông tin đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static OrderApprovalSuccessfully(user_id: string, ip: string) {
     return `Thực hiện kiểm duyệt đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
@@ -699,10 +701,10 @@ export class ENGLIS_DYNAMIC_MESSAGE {
     return `Order checkout failed (IP: ${ip}) | Error: ${err}`
   }
   static GetOrderSuccessfully(user_id: string, ip: string) {
-    return `New order information retrieval successful (User: ${user_id}) (IP: ${ip})`
+    return `Order information retrieval successful (User: ${user_id}) (IP: ${ip})`
   }
   static GetOrderFailed(user_id: string, ip: string, err: unknown) {
-    return `New order information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+    return `Order information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
   static OrderApprovalSuccessfully(user_id: string, ip: string) {
     return `Order approval successful (User: ${user_id}) (IP: ${ip})`

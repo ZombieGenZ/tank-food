@@ -73,3 +73,8 @@ export interface ConfirmDeliveryCompletionRequestsBody {
   language: string
   order_id: string
 }
+
+export interface CancelOrderRequestsBody {
+  language: string
+  order_id: string
+}
