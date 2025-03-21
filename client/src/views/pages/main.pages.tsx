@@ -55,20 +55,20 @@ const FormMain = (): JSX.Element => {
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [user, setUser] = useState<UserInfo | null>(null)
-  const body1 = {
-    language: null,
-    refresh_token: refresh_token
-  }
-  fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-token`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${access_token}`,
-    },
-    body: JSON.stringify(body1)
-  }).then(response => { return response.text() }).then((data) => {
-    console.log(data)
-  })
+  // const body1 = {
+  //   language: null,
+  //   refresh_token: refresh_token
+  // }
+  // fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-token`, {
+  //   method: 'POST',
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${access_token}`,
+  //   },
+  //   body: JSON.stringify(body1)
+  // }).then(response => { return response.text() }).then((data) => {
+  //   console.log(data)
+  // })
 
   useEffect(() => {
     if (!refresh_token) {
@@ -334,9 +334,19 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
       ),
     },
   ];
+
+  const style = {
+    background: 'rgba(245, 245, 245, 0.2)',
+    borderRadius: '16px',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+    backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)', // React yêu cầu `-webkit-` đổi thành `Webkit`
+    border: '1px solid rgba(245, 245, 245, 0.3)',
+  };
+
   return (
     <>
-      <div className='sticky top-0 z-50 navbarName'>
+      <div className='sticky top-0 z-50 navbarName' style={style}>
       {contextHolder}
       <div className="p-2 lg:text-xl flex xl:justify-around justify-between">
         {/* logo */}
