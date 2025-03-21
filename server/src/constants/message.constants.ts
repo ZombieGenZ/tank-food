@@ -414,7 +414,7 @@ export class ENGLISH_STATIC_MESSAGE {
     ORDER_NOT_DELIVERED: 'Order delivered',
     ORDER_DELIVERY_PERSON_MISMATCH: 'You are not the delivery person for this order',
     CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Delivery completion confirmation successful',
-    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed',
+    CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed'
   } as const
 }
 
@@ -552,10 +552,10 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
     return `Thực hiện hủy đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static ReceiveDeliverySuccessfully(user_id: string, ip: string) {
-    return `Thực hiện giao đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
+    return `Thực hiện nhận giao đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
   }
   static ReceiveDeliveryFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+    return `Thực hiện nhận giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
   static OrderOfflineSuccessfully(ip: string) {
     return `Thực hiện giao đơn hàng thành công (IP: ${ip})`
@@ -745,5 +745,5 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static ConfirmDeliveryCompletionFailed(user_id: string, ip: string, err: unknown) {
     return `Delivery completion confirmation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
-  }  
+  }
 }

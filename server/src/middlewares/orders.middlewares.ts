@@ -448,7 +448,7 @@ export const orderApprovalValidator = async (req: Request, res: Response, next: 
             const user = (req as Request).user as User
 
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
-              if (order.user == user._id) {
+              if (order.user && order.user.equals(user._id)) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -587,7 +587,7 @@ export const cancelOrderEmployeeValidator = async (req: Request, res: Response, 
             }
 
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
-              if (order.user == user._id) {
+              if (order.user && order.user.equals(user._id)) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -595,7 +595,7 @@ export const cancelOrderEmployeeValidator = async (req: Request, res: Response, 
                 )
               }
 
-              if (order.moderated_by !== user._id) {
+              if (order.moderated_by && !order.moderated_by.equals(user._id)) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -827,7 +827,7 @@ export const receiveDeliveryValidator = async (req: Request, res: Response, next
             const user = (req as Request).user as User
 
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
-              if (order.user == user._id) {
+              if (order.user && order.user.equals(user._id)) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -924,7 +924,7 @@ export const cancelOrderShipperValidator = async (req: Request, res: Response, n
               )
             }
 
-            if (order.shipper === user._id) {
+            if (order.shipper && order.shipper.equals(user._id)) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -933,7 +933,7 @@ export const cancelOrderShipperValidator = async (req: Request, res: Response, n
             }
 
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
-              if (order.user == user._id) {
+              if (order.user && order.user.equals(user._id)) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -1195,7 +1195,7 @@ export const paymentConfirmationValidator = async (req: Request, res: Response, 
             const user = (req as Request).user as User
 
             if (user.role !== UserRoleEnum.ADMINISTRATOR) {
-              if (order.user == user._id) {
+              if (order.user && order.user.equals(user._id)) {
                 throw new Error(
                   language == LANGUAGE.VIETNAMESE
                     ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
@@ -1340,7 +1340,7 @@ export const confirmDeliveryCompletionValidator = async (req: Request, res: Resp
               )
             }
 
-            if (order.order_status !== OrderStatusEnum.DELIVERING) {
+            if (order.order_status === OrderStatusEnum.CONFIRMED) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_NOT_DELIVERED
@@ -1348,9 +1348,17 @@ export const confirmDeliveryCompletionValidator = async (req: Request, res: Resp
               )
             }
 
+            if (order.order_status !== OrderStatusEnum.DELIVERING) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
             const user = (req as Request).user as User
 
-            if (order.shipper !== user._id) {
+            if (order.shipper && !order.shipper.equals(user._id)) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_DELIVERY_PERSON_MISMATCH
