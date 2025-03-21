@@ -15,12 +15,14 @@ import {
   orderOfflineController,
   paymentConfirmationController,
   getOrderController,
-  cancelOrderController
+  cancelOrderController,
+  getOrderOverviewController
 } from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
   authenticateEmployeeValidator,
-  authenticateShipperValidator
+  authenticateShipperValidator,
+  authenticateAdministratorValidator
 } from '~/middlewares/authenticate.middlewares'
 import {
   orderOnlineValidator,
@@ -372,5 +374,24 @@ router.post('/get-order', authenticateValidator, wrapRequestHandler(getOrderCont
  * }
  */
 router.put('/cancel-order', authenticateValidator, cancelOrderValidator, wrapRequestHandler(cancelOrderController))
+
+/*
+ * Description: Lấy danh sách order (cho admin)
+ * Path: /api/orders/get-order-overview
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post(
+  '/get-order-overview',
+  authenticateValidator,
+  authenticateAdministratorValidator,
+  wrapRequestHandler(getOrderOverviewController)
+)
 
 export default router

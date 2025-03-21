@@ -701,3 +701,45 @@ export const cancelOrderController = async (
     })
   }
 }
+
+export const getOrderOverviewController = async (
+  req: Request<ParamsDictionary, any, GetOrderRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const order = await orderOnlineService.getOrderOverview()
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_SUCCESS,
+      order
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetOrderFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_ORDER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+    })
+  }
+}

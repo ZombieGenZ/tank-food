@@ -406,6 +406,9 @@ class OrderService {
             updated_at: { $first: '$updated_at' },
             canceled_at: { $first: '$canceled_at' }
           }
+        },
+        {
+          $sort: { created_at: 1 }
         }
       ])
       .toArray()
@@ -493,6 +496,9 @@ class OrderService {
             updated_at: { $first: '$updated_at' },
             canceled_at: { $first: '$canceled_at' }
           }
+        },
+        {
+          $sort: { created_at: -1 }
         }
       ])
       .toArray()
@@ -731,7 +737,6 @@ class OrderService {
       return
     }
   }
-
   async cancelOrderEmployee(payload: CancelOrderEmployeeRequestsBody, order: Order, user: User, language: string) {
     if (
       order.payment_type === PaymentTypeEnum.BANK &&
@@ -867,7 +872,6 @@ class OrderService {
         )
     ])
   }
-
   async orderCompletionConfirmation(payload: OrderCompletionConfirmationRequestsBody, order: Order) {
     await databaseService.order.updateOne(
       {
@@ -1052,12 +1056,14 @@ class OrderService {
             updated_at: { $first: '$updated_at' },
             canceled_at: { $first: '$canceled_at' }
           }
+        },
+        {
+          $sort: { created_at: 1 }
         }
       ])
       .toArray()
     return orders
   }
-
   async getOldOrderShipper(user: User) {
     const orders = await databaseService.order
       .aggregate([
@@ -1141,12 +1147,14 @@ class OrderService {
             updated_at: { $first: '$updated_at' },
             canceled_at: { $first: '$canceled_at' }
           }
+        },
+        {
+          $sort: { created_at: -1 }
         }
       ])
       .toArray()
     return orders
   }
-
   async receiveDeliveryShipper(payload: ReceiveDeliveryRequestsBody, user: User, order: Order) {
     await databaseService.order.updateOne(
       {
@@ -1253,7 +1261,6 @@ class OrderService {
       notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data)
     ])
   }
-
   async cancelOrderShipper(payload: CancelOrderShipperRequestsBody, order: Order) {
     await databaseService.order.updateOne(
       {
@@ -1359,7 +1366,6 @@ class OrderService {
       )
     ])
   }
-
   async confirmDeliveryCompletion(payload: ConfirmDeliveryCompletionRequestsBody, order: Order) {
     await databaseService.order.updateOne(
       {
@@ -1583,7 +1589,6 @@ class OrderService {
       }
     }
   }
-
   async paymentConfirmation(payload: PaymentConfirmationRequestsBody) {
     await databaseService.order.updateOne(
       {
@@ -1863,6 +1868,9 @@ class OrderService {
       .next()
 
     await Promise.all([notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)])
+  }
+  async getOrderOverview() {
+    return await databaseService.order.find().toArray()
   }
 }
 

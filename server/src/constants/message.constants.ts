@@ -206,6 +206,14 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Xác nhận giao đơn hàng thất bại',
     ORDER_CAN_NOT_CANCEL: 'Không thể hủy đơn hàng'
   } as const
+
+  static STATISTICAL_MESSAGE = {
+    STATISTICAL_TIME_IS_REQUIRED: 'Không được bỏ trống thời gian thống kê',
+    STATISTICAL_TIME_MUST_BE_A_NUMBER: 'Thời gian thống kê phải là một số',
+    STATISTICAL_TIME_IS_NOT_VALID: 'Thời gian không đúng định dạng',
+    STATISTICAL_SUCCESS: 'Lấy thông tin thống kê thành công',
+    STATISTICAL_FAILURE: 'Lấy thông tin thống kê thất bại'
+  } as const
 }
 
 export class ENGLISH_STATIC_MESSAGE {
@@ -418,6 +426,14 @@ export class ENGLISH_STATIC_MESSAGE {
     CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed',
     ORDER_CAN_NOT_CANCEL: 'Cannot cancel the order'
   } as const
+
+  static STATISTICAL_MESSAGE = {
+    STATISTICAL_TIME_IS_REQUIRED: 'Time cannot be empty',
+    STATISTICAL_TIME_MUST_BE_A_NUMBER: 'Statistical time must be a number',
+    STATISTICAL_TIME_IS_NOT_VALID: 'Invalid time format',
+    STATISTICAL_SUCCESS: 'Statistical data retrieval successful',
+    STATISTICAL_FAILURE: 'Statistical data retrieval failed'
+  } as const
 }
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
@@ -583,6 +599,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static ConfirmDeliveryCompletionFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xác nhận đã giao đơn hàng thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static StatisticalOverviewSuccessful(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin thống kê thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static StatisticalOverviewFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin thống kê thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -747,5 +769,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static ConfirmDeliveryCompletionFailed(user_id: string, ip: string, err: unknown) {
     return `Delivery completion confirmation failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static StatisticalOverviewSuccessful(user_id: string, ip: string) {
+    return `Statistical data retrieval successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static StatisticalOverviewFailed(user_id: string, ip: string, err: unknown) {
+    return `Statistical data retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -13,6 +13,7 @@ import { ObjectId } from 'mongodb'
 import { verifyToken } from './utils/jwt.utils'
 import { TokenPayload } from './models/requests/authentication.requests'
 import { defaultErrorHandler } from './middlewares/errors.middlewares'
+import { UserRoleEnum } from './constants/users.constants'
 
 dotenv.config()
 const port = process.env.APP_PORT || 3000
@@ -61,7 +62,7 @@ import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
 import api_order_online from '~/routes/orders.routes'
-import { UserRoleEnum } from './constants/users.constants'
+import api_statistical from '~/routes/statistical.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -69,6 +70,7 @@ app.use('/api/products', api_products)
 app.use('/api/voucher-public', api_voucher_public)
 app.use('/api/voucher-private', api_voucher_private)
 app.use('/api/orders', api_order_online)
+app.use('/api/statistical', api_statistical)
 
 app.use(defaultErrorHandler)
 
