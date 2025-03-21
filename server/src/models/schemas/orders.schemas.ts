@@ -45,6 +45,7 @@ interface OrderType {
   confirmmed_at?: Date
   delivering_at?: Date
   delivered_at?: Date
+  completed_at?: Date
   updated_at?: Date
   canceled_at?: Date
 }
@@ -87,6 +88,7 @@ export default class Order {
   confirmmed_at: Date
   delivering_at: Date
   delivered_at: Date
+  completed_at: Date
   updated_at: Date
   canceled_at: Date
 
@@ -130,6 +132,7 @@ export default class Order {
     this.confirmmed_at = order.confirmmed_at || date
     this.delivering_at = order.delivering_at || date
     this.delivered_at = order.delivered_at || date
+    this.completed_at = order.completed_at || date
     this.updated_at = order.updated_at || date
     this.canceled_at = order.canceled_at || date
   }

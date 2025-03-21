@@ -7,8 +7,10 @@ import {
   GetOrderRequestsBody,
   OrderApprovalRequestsBody,
   CancelOrderEmployeeRequestsBody,
+  OrderCompletionConfirmationRequestsBody,
   ReceiveDeliveryRequestsBody,
   CancelOrderShipperRequestsBody,
+  ConfirmDeliveryCompletionRequestsBody,
   OrderOfflineRequestsBody,
   PaymentConfirmationRequestsBody
 } from '~/models/requests/orders.requests'
@@ -281,6 +283,48 @@ export const cancelOrderEmployeeController = async (
   }
 }
 
+export const orderCompletionConfirmationController = async (
+  req: Request<ParamsDictionary, any, OrderCompletionConfirmationRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.orderCompletionConfirmation(req.body, order)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.OrderCompletionConfirmationSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.OrderCompletionConfirmationSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.ORDER_COMPLETION_CONFIRMATION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_COMPLETION_CONFIRMATION_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_COMPLETION_CONFIRMATION_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.OrderCompletionConfirmationFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.OrderCompletionConfirmationFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.ORDER_COMPLETION_CONFIRMATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_COMPLETION_CONFIRMATION_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_COMPLETION_CONFIRMATION_FAILURE
+    })
+  }
+}
+
 export const getNewOrderShipperController = async (
   req: Request<ParamsDictionary, any, GetOrderRequestsBody>,
   res: Response
@@ -371,10 +415,11 @@ export const receiveDeliveryShipperController = async (
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
   const user = req.user as User
+  const order = req.order as Order
   const language = req.body.language || serverLanguage
 
   try {
-    await orderOnlineService.receiveDeliveryShipper(req.body, user)
+    await orderOnlineService.receiveDeliveryShipper(req.body, user, order)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -416,7 +461,7 @@ export const cancelOrderShipperController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await orderOnlineService.cancelOrderShipper(req.body)
+    await orderOnlineService.cancelOrderShipper(req.body, order)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -444,6 +489,48 @@ export const cancelOrderShipperController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CANCEL_ORDER_FAILURE
+    })
+  }
+}
+
+export const confirmDeliveryCompletionController = async (
+  req: Request<ParamsDictionary, any, ConfirmDeliveryCompletionRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    await orderOnlineService.confirmDeliveryCompletion(req.body, order)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ConfirmDeliveryCompletionSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ConfirmDeliveryCompletionSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CONFIRM_DELIVERY_COMPLETION_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CONFIRM_DELIVERY_COMPLETION_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ConfirmDeliveryCompletionFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ConfirmDeliveryCompletionFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.CONFIRM_DELIVERY_COMPLETION_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.CONFIRM_DELIVERY_COMPLETION_FAILURE
     })
   }
 }

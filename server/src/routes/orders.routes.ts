@@ -6,10 +6,12 @@ import {
   getOldOrderEmployeeController,
   orderApprovalEmployeeController,
   cancelOrderEmployeeController,
+  orderCompletionConfirmationController,
   getNewOrderShipperController,
   getOldOrderShipperController,
   receiveDeliveryShipperController,
   cancelOrderShipperController,
+  confirmDeliveryCompletionController,
   orderOfflineController,
   paymentConfirmationController
 } from '~/controllers/orders.controllers'
@@ -20,13 +22,16 @@ import {
 } from '~/middlewares/authenticate.middlewares'
 import {
   orderOnlineValidator,
-  voucherValidator,
+  voucherPublicAndPrivateValidator,
   sepayApiKeyValidator,
   cancelOrderEmployeeValidator,
+  orderCompletionConfirmationValidator,
   orderApprovalValidator,
   receiveDeliveryValidator,
   cancelOrderShipperValidator,
+  confirmDeliveryCompletionValidator,
   orderOfflineValidator,
+  voucherPublicValidator,
   paymentConfirmationValidator
 } from '~/middlewares/orders.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
@@ -62,7 +67,7 @@ router.post(
   '/order-online',
   authenticateValidator,
   orderOnlineValidator,
-  voucherValidator,
+  voucherPublicAndPrivateValidator,
   wrapRequestHandler(orderOnlineController)
 )
 
@@ -175,6 +180,27 @@ router.put(
 )
 
 /*
+ * Description: Xác nhận hoàn thành đơn hàng (cho nhân viên)
+ * Path: /api/orders/order-completion-confirmation
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/order-completion-confirmation',
+  authenticateValidator,
+  authenticateEmployeeValidator,
+  orderCompletionConfirmationValidator,
+  wrapRequestHandler(orderCompletionConfirmationController)
+)
+
+/*
  * Description: Lấy danh sách order đang chờ nhận giao hàng (cho shipper)
  * Path: /api/orders/get-new-order-shipper
  * Method: POST
@@ -255,6 +281,27 @@ router.put(
 )
 
 /*
+ * Description: Xác nhận hoàn thành đơn giao hàng (cho shipper)
+ * Path: /api/orders/confirm-delivery-completion
+ * Method: PUT
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.put(
+  '/confirm-delivery-completion',
+  authenticateValidator,
+  authenticateShipperValidator,
+  confirmDeliveryCompletionValidator,
+  wrapRequestHandler(confirmDeliveryCompletionController)
+)
+
+/*
  * Description: Tạo đơn đặt hàng tại quầy mới
  * Path: /api/orders/order-offline
  * Method: POST
@@ -267,10 +314,11 @@ router.put(
  *        quantity: number
  *      }
  *    ],
- *    payment_type: number
+ *    payment_type: number,
+ *    voucher?: string
  * }
  */
-router.post('/order-offline', orderOfflineValidator, wrapRequestHandler(orderOfflineController))
+router.post('/order-offline', orderOfflineValidator, voucherPublicValidator, wrapRequestHandler(orderOfflineController))
 
 /*
  * Description: Xác nhận thanh toán (Dành cho order trả bằng tiền mặt)

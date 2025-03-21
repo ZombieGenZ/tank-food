@@ -12,7 +12,7 @@ import voucherPrivateService from '~/services/voucherPrivate.services'
 import voucherPublicService from '~/services/voucherPublic.services'
 import User from '~/models/schemas/users.schemas'
 import { UserRoleEnum } from '~/constants/users.constants'
-import { OrderStatusEnum, PaymentStatusEnum, PaymentTypeEnum } from '~/constants/orders.constants'
+import { DeliveryTypeEnum, OrderStatusEnum, PaymentStatusEnum, PaymentTypeEnum } from '~/constants/orders.constants'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -264,7 +264,7 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
     })
 }
 
-export const voucherValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const voucherPublicAndPrivateValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
 
   const voucher = req.body.voucher
@@ -640,6 +640,108 @@ export const cancelOrderEmployeeValidator = async (req: Request, res: Response, 
             language == LANGUAGE.VIETNAMESE
               ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS
               : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.REASON_MUST_BE_BETWEEN_5_AND_200_CHARACTERS
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const orderCompletionConfirmationValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      order_id: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+        },
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+        },
+        isMongoId: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const order = await databaseService.order.findOne({ _id: new ObjectId(value) })
+
+            if (!order) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
+            if (order.delivery_type == DeliveryTypeEnum.DELIVERY) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_IS_NOT_OFFLINE_ORDER
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_IS_NOT_OFFLINE_ORDER
+              )
+            }
+
+            if (order.payment_status !== PaymentStatusEnum.PAID) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+              )
+            }
+
+            if (order.order_status !== OrderStatusEnum.CONFIRMED) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_NOT_APPROVED
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_NOT_APPROVED
+              )
+            }
+
+            ;(req as Request).order = order
+
+            return true
+          }
         }
       }
     },
@@ -1100,6 +1202,160 @@ export const paymentConfirmationValidator = async (req: Request, res: Response, 
                     : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
                 )
               }
+            }
+
+            ;(req as Request).order = order
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const voucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  const voucher = req.body.voucher
+
+  if (!voucher) {
+    next()
+    return
+  }
+
+  if (typeof voucher != 'string') {
+    next()
+    return
+  }
+
+  const voucherPublic = await databaseService.voucherPublic.findOne({ code: voucher })
+
+  if (!voucherPublic) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.VOUCHER_INVALID,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+    })
+    return
+  }
+
+  const total_price = req.total_price as number
+
+  if (voucherPublic.requirement > total_price) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.VOUCHER_INVALID,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_REQUIREMENT_IS_NOT_MET
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_REQUIREMENT_IS_NOT_MET
+    })
+    return
+  }
+
+  const new_bill = total_price - voucherPublic.discount
+
+  req.total_price = new_bill > 0 ? new_bill : 0
+
+  await voucherPublicService.useVoucher(voucherPublic)
+
+  next()
+}
+
+export const confirmDeliveryCompletionValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      order_id: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_IS_REQUIRED
+        },
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_STRING
+        },
+        isMongoId: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+              : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_MUST_BE_A_ID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const order = await databaseService.order.findOne({ _id: new ObjectId(value) })
+
+            if (!order) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_ID_DOES_NOT_EXIST
+              )
+            }
+
+            if (order.delivery_type == DeliveryTypeEnum.COUNTER) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_IS_NOT_ONLINE_ORDER
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_IS_NOT_ONLINE_ORDER
+              )
+            }
+
+            if (order.order_status !== OrderStatusEnum.DELIVERING) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_NOT_DELIVERED
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_NOT_DELIVERED
+              )
+            }
+
+            const user = (req as Request).user as User
+
+            if (order.shipper !== user._id) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_DELIVERY_PERSON_MISMATCH
+                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_DELIVERY_PERSON_MISMATCH
+              )
             }
 
             ;(req as Request).order = order

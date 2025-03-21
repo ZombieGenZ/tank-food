@@ -107,6 +107,13 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-user-<user_id>
     // sự kiện:
     // create-order: Cập nhật thông tin đặt hàng vừa được đặt
+    // checkout-order: Cập nhật thông tin đặt hàng vừa được thanh toán
+    // approval-order: Cập nhật thông tin đặt hàng vừa được xử lý
+    // cancel-order: Cập nhật thông tin đặt hàng vừa bị hủy
+    // complete-order: Cập nhật thông tin đặt hàng vừa được hoàn thành
+    // delivery-order: Cập nhật thông tin đặt hàng vừa được nhận giao hàng
+    // cancel-delivery: Cập nhật thông tin đặt hàng vừa bị hủy giao hàng
+    // complete-delivery: Cập nhật thông tin đặt hàng vừa được hoàn thành giao hàng
     //
 
     if (!refresh_token) {
@@ -150,10 +157,10 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-employee
     // sự kiện:
     // create-order: Cập nhật thông tin đặt hàng vừa được đặt
+    // checkout-order: Cập nhật thông tin đặt hàng vừa được thanh toán
     // approval-order: Cập nhật thông tin đặt hàng vừa được kiểm duyệt
     // cancel-order: Cập nhật thông tin đặt hàng vừa bị hủy
-    // receive-delivery: Cập nhật thông tin đơn đặt hàng đã được nhận giao hàng
-    // cancel-delivery: Cập nhật thông tin đơn đặt hàng đã bị hủy giao hàng
+    // complete-order: Cập nhật thông tin đặt hàng vừa được hoàn thành
     // payment-confirmation: Cập nhật thông tin đơn đặt hàng đã được xác nhận thanh toán
     //
 
@@ -190,6 +197,64 @@ io.on('connection', (socket: Socket) => {
       } else {
         console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-employee\x1b[0m`)
         writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-employee`)
+      }
+    } catch {
+      return
+    }
+  })
+
+  socket.on('connect-shipper-realtime', async (refresh_token: string) => {
+    // Phòng: freshSync-shipper
+    // sự kiện:
+    // create-delivery: Cập nhật thông tin đặt hàng vừa xác nhận
+    // remove-delivery: Cập nhật thông tin đặt hàng vừa xác nhận
+    //
+    // Phòng: freshSync-shipper-<user_id>
+    // cancel-delivery: Cập nhật thông tin đặt hàng vừa bị hủy
+    //
+
+    if (!refresh_token) {
+      return
+    }
+
+    try {
+      const decoded_refresh_token = (await verifyToken({
+        token: refresh_token,
+        publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_refresh_token) {
+        return
+      }
+
+      const user = await databaseService.users.findOne({ _id: new ObjectId(decoded_refresh_token.user_id) })
+
+      if (!user) {
+        return
+      }
+
+      if (user.role !== UserRoleEnum.ADMINISTRATOR && user.role !== UserRoleEnum.SHIPPER) {
+        return
+      }
+
+      socket.join('freshSync-shipper')
+      socket.join(`freshSync-shipper-${user._id}`)
+      if (serverLanguage == LANGUAGE.VIETNAMESE) {
+        console.log(
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-shipper\x1b[0m`
+        )
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-shipper`)
+        console.log(
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-shipper-${user._id}\x1b[0m`
+        )
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-shipper-${user._id}`)
+      } else {
+        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-shipper\x1b[0m`)
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-shipper`)
+        console.log(
+          `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-shipper-${user._id}\x1b[0m`
+        )
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-shipper-${user._id}`)
       }
     } catch {
       return

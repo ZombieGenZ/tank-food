@@ -3,8 +3,10 @@ import {
   CheckoutOrderRequestBody,
   OrderApprovalRequestsBody,
   CancelOrderEmployeeRequestsBody,
+  OrderCompletionConfirmationRequestsBody,
   ReceiveDeliveryRequestsBody,
   CancelOrderShipperRequestsBody,
+  ConfirmDeliveryCompletionRequestsBody,
   OrderOfflineRequestsBody,
   PaymentConfirmationRequestsBody
 } from '~/models/requests/orders.requests'
@@ -129,6 +131,12 @@ class OrderService {
 
     await paymentHistoryService.insertHistory(payload)
 
+    const data = {
+      ...payload,
+      ...order,
+      payment_status: PaymentStatusEnum.PAID
+    }
+
     if (
       !order ||
       order.payment_type == PaymentTypeEnum.CASH ||
@@ -149,8 +157,13 @@ class OrderService {
           }
         }
       ),
-      notificationRealtime(`freshSync-payment-DH${order._id}`, 'payment_notification', `payment/${order._id}`, order)
+      notificationRealtime(`freshSync-payment-DH${order._id}`, 'payment_notification', `payment/${order._id}`, data),
+      notificationRealtime(`freshSync-employee`, 'checkout-order', `order/checkout`, data)
     ])
+
+    if (order.user) {
+      await notificationRealtime(`freshSync-user-${order.user}`, 'checkout-order', `order/${order.user}/checkout`, data)
+    }
   }
   async getNewOrderEmployee(user: User) {
     return await databaseService.order
@@ -196,6 +209,7 @@ class OrderService {
 
     if (payload.decision) {
       const data = {
+        ...order,
         _id: order._id,
         order_status: OrderStatusEnum.CONFIRMED,
         moderated_by: user._id
@@ -217,9 +231,16 @@ class OrderService {
         ),
         notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data)
       ])
+      if (order.user) {
+        await notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data)
+      }
+      if (order.delivery_type == DeliveryTypeEnum.DELIVERY) {
+        await notificationRealtime(`freshSync-shipper`, 'create-delivery', `order/${user._id}/create-delivery`, data)
+      }
       return
     } else {
       const data = {
+        ...order,
         _id: order._id,
         order_status: OrderStatusEnum.CANCELED,
         cancellation_reason: payload.reason,
@@ -246,6 +267,10 @@ class OrderService {
         ),
         notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data)
       ])
+
+      if (order.user) {
+        await notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data)
+      }
       return
     }
   }
@@ -274,6 +299,7 @@ class OrderService {
     }
 
     const data = {
+      ...order,
       _id: order._id,
       order_status: OrderStatusEnum.CANCELED,
       cancellation_reason: payload.reason,
@@ -299,6 +325,50 @@ class OrderService {
       ),
       notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)
     ])
+
+    if (order.user) {
+      await notificationRealtime(`freshSync-user-${order.user}`, 'cancel-order', `order/${order.user}/cancel`, data)
+    }
+
+    if (order.delivery_type == DeliveryTypeEnum.DELIVERY) {
+      await notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data)
+    }
+
+    if (order.shipper) {
+      await notificationRealtime(
+        `freshSync-shipper-${order.shipper}`,
+        'cancel-delivery',
+        `delivery/${order.shipper}/cancel`,
+        data
+      )
+    }
+  }
+  async orderCompletionConfirmation(payload: OrderCompletionConfirmationRequestsBody, order: Order) {
+    const data = {
+      _id: new ObjectId(payload.order_id),
+      order_status: OrderStatusEnum.COMPLETED
+    }
+    await Promise.all([
+      databaseService.order.updateOne(
+        {
+          _id: new ObjectId(payload.order_id)
+        },
+        {
+          $set: {
+            order_status: OrderStatusEnum.COMPLETED
+          },
+          $currentDate: {
+            completed_at: true,
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime('freshSync-employee', 'complete-order', 'order/complete', data)
+    ])
+
+    if (order.user) {
+      await notificationRealtime(`freshSync-user-${order.user}`, 'complete-order', `order/${order.user}/complete`, data)
+    }
   }
   async getNewOrderShipper(user: User) {
     return await databaseService.order
@@ -320,8 +390,9 @@ class OrderService {
       })
       .toArray()
   }
-  async receiveDeliveryShipper(payload: ReceiveDeliveryRequestsBody, user: User) {
+  async receiveDeliveryShipper(payload: ReceiveDeliveryRequestsBody, user: User, order: Order) {
     const data = {
+      ...order,
       _id: new ObjectId(payload.order_id),
       shipper: user._id,
       order_status: OrderStatusEnum.DELIVERING
@@ -342,11 +413,18 @@ class OrderService {
           }
         }
       ),
-      notificationRealtime('freshSync-employee', 'receive-delivery', 'order/receive-delivery', data)
+      notificationRealtime(
+        `freshSync-user-${order.user}`,
+        'delivery-order',
+        `delivery/${order.user}/delivery-order`,
+        data
+      ),
+      notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data)
     ])
   }
-  async cancelOrderShipper(payload: CancelOrderShipperRequestsBody) {
+  async cancelOrderShipper(payload: CancelOrderShipperRequestsBody, order: Order) {
     const data = {
+      ...order,
       _id: new ObjectId(payload.order_id),
       order_status: OrderStatusEnum.COMPLETED,
       shipper: null
@@ -367,7 +445,41 @@ class OrderService {
           }
         }
       ),
-      notificationRealtime('freshSync-employee', 'cancel-delivery', 'order/cancel-delivery', data)
+      notificationRealtime('freshSync-shipper', 'create-delivery', 'order/create-delivery', data),
+      notificationRealtime(
+        `freshSync-user-${order.user}`,
+        'cancel-delivery',
+        `order/${order.user}/cancel-delivery`,
+        data
+      )
+    ])
+  }
+  async confirmDeliveryCompletion(payload: ConfirmDeliveryCompletionRequestsBody, order: Order) {
+    const data = {
+      ...order,
+      order_status: OrderStatusEnum.DELIVERED
+    }
+    await Promise.all([
+      databaseService.order.updateOne(
+        {
+          _id: new ObjectId(payload.order_id)
+        },
+        {
+          $set: {
+            order_status: OrderStatusEnum.DELIVERED
+          },
+          $currentDate: {
+            delivered_at: true,
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime(
+        `freshSync-user-${order.user}`,
+        'complete-delivery',
+        `order/${order.user}/complete-delivery`,
+        data
+      )
     ])
   }
   async orderOffline(

@@ -63,3 +63,13 @@ export interface PaymentConfirmationRequestsBody {
   language: string
   order_id: string
 }
+
+export interface OrderCompletionConfirmationRequestsBody {
+  language: string
+  order_id: string
+}
+
+export interface ConfirmDeliveryCompletionRequestsBody {
+  language: string
+  order_id: string
+}
