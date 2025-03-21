@@ -180,10 +180,10 @@ const Signup: React.FC = () => {
         if(valiteLoginform()) {
           const body = {
             language: null,
-            email: loginData.email,
-            password: loginData.password
+            email: loginData.email.trim(),
+            password: loginData.password.trim()
           }
-          fetch('http://localhost:3000/api/users/login' , {
+          fetch(`${import.meta.env.VITE_API_URL}/api/users/login` , {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

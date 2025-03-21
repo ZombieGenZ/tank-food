@@ -54,6 +54,20 @@ const FormMain = (): JSX.Element => {
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [user, setUser] = useState<UserInfo | null>(null)
+  const body1 = {
+    language: null,
+    refresh_token: refresh_token
+  }
+  fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-token`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${access_token}`,
+    },
+    body: JSON.stringify(body1)
+  }).then(response => { return response.text() }).then((data) => {
+    console.log(data)
+  })
 
   useEffect(() => {
     if (!refresh_token) {
@@ -68,7 +82,7 @@ const FormMain = (): JSX.Element => {
       refresh_token: refresh_token,
     };
   
-    fetch("http://localhost:3000/api/users/get-user-infomation", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/get-user-infomation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
