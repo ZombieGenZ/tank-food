@@ -19,6 +19,7 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { MdAccountBox } from "react-icons/md";
 import Loading from '../components/loading_page_components.tsx'
 import Aboutus from './aboutus.pages.tsx';
+import Account from './Account.management.pages.tsx';
 
 interface UserInfo {
   created_at: string;
@@ -152,6 +153,25 @@ const FormMain = (): JSX.Element => {
     }
     window.location.reload()
   };
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <button
+          className='flex gap-2 items-center'
+        ><FaRegUserCircle /> Thông tin tài khoản</button>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <button
+          className='flex gap-2 items-center'
+        ><IoLogOutOutline /> Đăng xuất</button>
+      ),
+    },
+  ];
   return(
     <>
       {/* {user && user.role == 3 ? 
@@ -175,20 +195,26 @@ const FormMain = (): JSX.Element => {
         {loading ? <Loading /> : (user && user.role == 3 ? 
           <div className='flex relative' ref={pageRef}>
             <NavigationAdmin displayname={user.display_name}/>
-            <div>
+            <div className='fixed gap-5 flex items-center right-0 top-0 p-10 z-40'>
               <Select
                 defaultValue={language}
-                size='large'
-                style={{ color: '#FF9A3D' }}
+                size='small'
                 options={[
-                  { value: 'Tiếng Việt', label: 'Tiếng Việt' },
-                  { value: 'English', label: 'English' },
+                  { value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
+                  { value: 'English', label: 'English - EN' },
                 ]}
                 onChange={handleChange}
-              /> 
+              />
+              <Dropdown menu={{ items }} 
+                        placement="bottom">
+                <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
+                  <MdAccountBox />
+                </div>
+            </Dropdown>
             </div>
             <Routes>
               <Route path="/*" element={<MainManage />} />
+              <Route path="/Account" element={<Account />} />
             </Routes>
           </div> : 
           <div className='flex gap-5 flex-col' ref={pageRef}>
