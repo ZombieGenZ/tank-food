@@ -18,6 +18,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import { MdAccountBox } from "react-icons/md";
 import Loading from '../components/loading_page_components.tsx'
+import Aboutus from './aboutus.pages.tsx';
 
 interface UserInfo {
   created_at: string;
@@ -70,6 +71,10 @@ const FormMain = (): JSX.Element => {
   //   console.log(data)
   // })
 
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
   useEffect(() => {
     setTimeout(() => {
       setLoading(false)
@@ -137,6 +142,16 @@ const FormMain = (): JSX.Element => {
     });
   }, [location]);
 
+  const handleChange = (value: string) => {
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+    window.location.reload()
+  };
   return(
     <>
       {/* {user && user.role == 3 ? 
@@ -158,8 +173,20 @@ const FormMain = (): JSX.Element => {
         </div>} */}
 
         {loading ? <Loading /> : (user && user.role == 3 ? 
-          <div className='flex' ref={pageRef}>
+          <div className='flex relative' ref={pageRef}>
             <NavigationAdmin displayname={user.display_name}/>
+            <div>
+              <Select
+                defaultValue={language}
+                size='large'
+                style={{ color: '#FF9A3D' }}
+                options={[
+                  { value: 'Tiếng Việt', label: 'Tiếng Việt' },
+                  { value: 'English', label: 'English' },
+                ]}
+                onChange={handleChange}
+              /> 
+            </div>
             <Routes>
               <Route path="/*" element={<MainManage />} />
             </Routes>
@@ -168,6 +195,7 @@ const FormMain = (): JSX.Element => {
             <NavigationButtons role={user?.role ?? 0}/>
             <Routes>
               <Route path="/*" element={<Main />} />
+              <Route path="/aboutus" element={<Aboutus />} />
               <Route path="/signup" element={<Signup />} />
               <Route path='/menu' element={<Category />}/>
               <Route path='/contact' element={<ContactUs />}/>
@@ -186,73 +214,12 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
   })
 
-  // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
-  // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
-
-  // useEffect(() => {
-  //   const handleStorageChange = () => {
-  //     setRefreshToken(localStorage.getItem("refresh_token"));
-  //     setAccessToken(localStorage.getItem("access_token"));
-  //   };
-  
-  //   window.addEventListener("storage", handleStorageChange);
-  
-  //   return () => {
-  //     window.removeEventListener("storage", handleStorageChange);
-  //   };
-  // }, []);
-
-  const handleChange = (value: string) => {
-    setLanguage(value)
-    localStorage.setItem('language', JSON.stringify(value))
-    if(value == "Tiếng Việt") {
-      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
-    } else {
-      localStorage.setItem('code_language', JSON.stringify("en-US"))
-    }
-    window.location.reload()
-  };
-
-  // const Logout = () => {
-  //   const body = {
-  //     language: null,
-  //     refresh_token: refresh_token
-  //   }
-  //   fetch('http://localhost:3000/api/users/logout', {
-  //     method: 'DELETE',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${access_token}`
-  //     },
-  //     body: JSON.stringify(body)
-  //   }).then(response => {
-  //     return response.json()
-  //   }).then((data) => {
-  //     console.log(data)
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Đăng nhập thành công',
-  //       style: {
-  //         marginTop: '10vh',
-  //       },
-  //     })
-  //   })
-  // }
+  useEffect(() => {
+    setLanguage(language)
+  } ,[language])
   return (
     <div className='w-1/5 relative flex flex-col justify-center items-center gap-10 bg-[#ffffff] h-screen'>
       {/* {contextHolder} */}
-        <div className='absolute flex items-center top-[7%]'>
-            <Select
-              defaultValue={language}
-              size='large'
-              style={{ color: '#FF9A3D' }}
-              options={[
-                { value: 'Tiếng Việt', label: 'Tiếng Việt' },
-                { value: 'English', label: 'English' },
-              ]}
-              onChange={handleChange}
-            />
-        </div>
         <h2 className='font-bold text-2xl'>{language == "Tiếng Việt" ? displayname : "Administrator"}</h2>
         <ul className='flex flex-col justify-center w-full'>
           {

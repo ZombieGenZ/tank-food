@@ -1,14 +1,31 @@
-import { JSX } from "react";
+import { JSX, useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Card } from 'antd';
 
 const { Meta } = Card;
+
+interface StatisticalData {
+  dailyBreakdown: DailyBreakdown[];
+  totalNewCustomers: number;
+  totalOrders: number;
+  totalProducts: number;
+  totalRevenue: number;
+}
+
+interface DailyBreakdown {
+  date: string; // Ngày dạng "dd/MM/yyyy"
+  newCustomers: number;
+  ordersCount: number;
+  productsCount: number;
+  revenue: number;
+}
 
 function MainManage (): JSX.Element {
     const language = (): string => {
       const Language = localStorage.getItem('language')
       return Language ? JSON.parse(Language) : "Tiếng Việt"
     }
+    const [list, setList] = useState<StatisticalData[]>([])
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
 
@@ -28,7 +45,7 @@ function MainManage (): JSX.Element {
       }).then(response => {
         return response.json()
       }).then((data) => {
-        console.log(data)
+        setList(data.statistical)
       })
     }, [refresh_token, access_token])
 
@@ -44,6 +61,10 @@ function MainManage (): JSX.Element {
         window.removeEventListener("storage", handleStorageChange);
       };
     }, []);
+
+    useEffect(() => {
+      console.log(list)
+    }, [list])
 
     const data = [
         {
@@ -93,7 +114,7 @@ function MainManage (): JSX.Element {
         <div className="w-4/5 bg-[#FFF4E6] p-10">
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex items-start">
-                    <h1 className="font-bold text-2xl">Bảng điều khiển</h1>
+                    <h1 className="font-bold text-2xl">{language() == "Tiếng Việt" ? "Bảng điều khiển" : "Dash board"}</h1>
                 </div>
                 <div className="w-full grid grid-cols-4 place-items-start">
                   <Card
@@ -109,7 +130,7 @@ function MainManage (): JSX.Element {
                   >
                     <div className="flex flex-col gap-5">
                       <Meta title={language() == "Tiếng Việt" ? "Tổng đơn hàng" : "Total bill"}/>
-                      <p className="text-2xl">250 đơn</p>
+                      <p className="text-2xl">{list.length > 0 ? list[0].totalOrders : 0} đơn</p>
                     </div>
                   </Card>
                   <Card
@@ -125,7 +146,7 @@ function MainManage (): JSX.Element {
                   >
                     <div className="flex flex-col gap-5">
                       <Meta title={language() == "Tiếng Việt" ? "Doanh thu trong tháng" : "Total bill"}/>
-                      <p className="text-2xl">250</p>
+                      <p className="text-2xl">{list.length > 0 ? list[0].totalRevenue : 0}</p>
                     </div>
                   </Card>
                   <Card
@@ -140,8 +161,8 @@ function MainManage (): JSX.Element {
                   }}
                   >
                     <div className="flex flex-col gap-5">
-                      <Meta title={language() == "Tiếng Việt" ? "Sản phẩm đang bán" : "Total bill"}/>
-                      <p className="text-2xl">250</p>
+                      <Meta title={language() == "Tiếng Việt" ? "Sản phẩm đã bán" : "Total bill"}/>
+                      <p className="text-2xl">{list.length > 0 ? list[0].totalProducts : 0}</p>
                     </div>
                   </Card>
                   <Card
@@ -157,7 +178,7 @@ function MainManage (): JSX.Element {
                   >
                     <div className="flex flex-col gap-5">
                       <Meta title={language() == "Tiếng Việt" ? "Khách hàng mới" : "Total bill"}/>
-                      <p className="text-2xl">250</p>
+                      <p className="text-2xl">{list.length > 0 ? list[0].totalNewCustomers : 0}</p>
                     </div>
                   </Card>
                 </div>
