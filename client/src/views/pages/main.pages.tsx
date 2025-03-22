@@ -73,7 +73,7 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false)
-    }, 5000)
+    }, 3300)
   }, [])
 
   useEffect(() => {
