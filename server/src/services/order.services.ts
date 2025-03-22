@@ -967,8 +967,22 @@ class OrderService {
       ])
       .next()
 
+    const date = new Date()
+    const fee = (order.fee / 100) * 15
+    const revenue = order.total_price + fee
+
+    const dataStatistical = {
+      totalOrders: 1,
+      totalProducts: order.total_quantity,
+      totalNewCustomers: order.is_first_transaction ? 1 : 0,
+      totalRevenue: revenue,
+      date
+    }
+
     await Promise.all([
       notificationRealtime('freshSync-employee', 'complete-order', 'order/complete', data),
+      notificationRealtime('freshSync-statistical', 'update-chart', 'statistical/chart', dataStatistical),
+      notificationRealtime('freshSync-statistical', 'update-order-complete', 'statistical/complete', data),
       order.user &&
         notificationRealtime(`freshSync-user-${order.user}`, 'complete-order', `order/${order.user}/complete`, data)
     ])
@@ -1870,7 +1884,10 @@ class OrderService {
     await Promise.all([notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)])
   }
   async getOrderOverview() {
-    return await databaseService.order.find().toArray()
+    return await databaseService.order
+      .find({ order_status: OrderStatusEnum.COMPLETED })
+      .sort({ created_at: 1 })
+      .toArray()
   }
 }
 
