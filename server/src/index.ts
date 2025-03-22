@@ -332,6 +332,52 @@ io.on('connection', (socket: Socket) => {
     }
   })
 
+  socket.on('connect-statistical-realtime', async (refresh_token: string) => {
+    // Phòng: freshSync-statistical
+    // sự kiện:
+    // update-chart: Cập nhật thông tin thống kê chart
+    // update-order-complete: Cập nhật thông tin thống kê chart
+    //
+
+    if (!refresh_token) {
+      return
+    }
+
+    try {
+      const decoded_refresh_token = (await verifyToken({
+        token: refresh_token,
+        publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_refresh_token) {
+        return
+      }
+
+      const user = await databaseService.users.findOne({ _id: new ObjectId(decoded_refresh_token.user_id) })
+
+      if (!user) {
+        return
+      }
+
+      if (user.role != UserRoleEnum.ADMINISTRATOR) {
+        return
+      }
+
+      socket.join('freshSync-admin')
+      if (serverLanguage == LANGUAGE.VIETNAMESE) {
+        console.log(
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
+        )
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-admin`)
+      } else {
+        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-admin\x1b[0m`)
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-admin`)
+      }
+    } catch {
+      return
+    }
+  })
+
   socket.on('disconnect', () => {
     if (serverLanguage == LANGUAGE.VIETNAMESE) {
       console.log(
