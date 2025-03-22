@@ -1,23 +1,20 @@
 const Loading = () => {
-  return(
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-      flexDirection: 'column',
-      background: 'rgba(255, 255, 255, 0.3)',
-      backdropFilter: 'blur(5px)'
-    }}>
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        flexDirection: "column",
+        background: "rgba(255, 255, 255, 0.3)",
+        backdropFilter: "blur(5px)",
+      }}
+    >
       <div className="loader">
         <div className="truckWrapper">
           <div className="truckBody">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 198 93"
-              className="trucksvg"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 198 93" className="trucksvg">
               <path
                 strokeWidth="3"
                 stroke="#282828"
@@ -36,26 +33,8 @@ const Loading = () => {
                 fill="#282828"
                 d="M150 65C150 65.39 149.763 65.8656 149.127 66.2893C148.499 66.7083 147.573 67 146.5 67C145.427 67 144.501 66.7083 143.873 66.2893C143.237 65.8656 143 65.39 143 65C143 64.61 143.237 64.1344 143.873 63.7107C144.501 63.2917 145.427 63 146.5 63C147.573 63 148.499 63.2917 149.127 63.7107C149.763 64.1344 150 64.61 150 65Z"
               ></path>
-              <rect
-                strokeWidth="2"
-                stroke="#282828"
-                fill="#FFFCAB"
-                rx="1"
-                height="7"
-                width="5"
-                y="63"
-                x="187"
-              ></rect>
-              <rect
-                strokeWidth="2"
-                stroke="#282828"
-                fill="#282828"
-                rx="1"
-                height="11"
-                width="4"
-                y="81"
-                x="193"
-              ></rect>
+              <rect strokeWidth="2" stroke="#282828" fill="#FFFCAB" rx="1" height="7" width="5" y="63" x="187"></rect>
+              <rect strokeWidth="2" stroke="#282828" fill="#282828" rx="1" height="11" width="4" y="81" x="193"></rect>
               <rect
                 strokeWidth="3"
                 stroke="#282828"
@@ -66,54 +45,21 @@ const Loading = () => {
                 y="1.5"
                 x="6.5"
               ></rect>
-              <rect
-                strokeWidth="2"
-                stroke="#282828"
-                fill="#DFDFDF"
-                rx="2"
-                height="4"
-                width="6"
-                y="84"
-                x="1"
-              ></rect>
+              <rect strokeWidth="2" stroke="#282828" fill="#DFDFDF" rx="2" height="4" width="6" y="84" x="1"></rect>
             </svg>
           </div>
           <div className="truckTires">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 30 30"
-              className="tiresvg"
-            >
-              <circle
-                strokeWidth="3"
-                stroke="#282828"
-                fill="#282828"
-                r="13.5"
-                cy="15"
-                cx="15"
-              ></circle>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 30" className="tiresvg">
+              <circle strokeWidth="3" stroke="#282828" fill="#282828" r="13.5" cy="15" cx="15"></circle>
               <circle fill="#DFDFDF" r="7" cy="15" cx="15"></circle>
             </svg>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 30 30"
-              className="tiresvg"
-            >
-              <circle
-                strokeWidth="3"
-                stroke="#282828"
-                fill="#282828"
-                r="13.5"
-                cy="15"
-                cx="15"
-              ></circle>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 30 30" className="tiresvg">
+              <circle strokeWidth="3" stroke="#282828" fill="#282828" r="13.5" cy="15" cx="15"></circle>
               <circle fill="#DFDFDF" r="7" cy="15" cx="15"></circle>
             </svg>
           </div>
           <div className="road"></div>
-        
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 453.459 453.459"
@@ -137,9 +83,9 @@ const Loading = () => {
         </div>
 
         <div className="loading-text-wrapper">
-            <span className="loading-text animate-text">TANK</span>
-            <span className="loading-text animate-text">FOOD</span>
-        </div> 
+          <span className="loading-text tank-text">TANK</span>
+          <span className="loading-text food-text">FOOD</span>
+        </div>
       </div>
 
       <style>{`
@@ -155,6 +101,7 @@ const Loading = () => {
         .loading-text {
           letter-spacing: 0.1em;
         }
+
         .loading-text-wrapper {
           font-family: bebas neue, arial, helvetica, sans-serif;
           margin-top: 20px;
@@ -162,49 +109,42 @@ const Loading = () => {
           gap: 9px;
           font-weight: bold;
           font-size: 60px;
-        }
-
-        /* Combined animation sequence */
-        .animate-text {
-          animation: tracking-in 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards,
-                    pause 2s linear forwards 1s,
-                    slide-out 1.2s cubic-bezier(0.550, 0.085, 0.680, 0.530) forwards 3s;
+          perspective: 1000px; 
+          position: relative;
+          animation: zoom-wrapper 1.2s ease-in-out 2s forwards;
+          transform-origin: center;
         }
 
         /* First animation - tracking in */
         @keyframes tracking-in {
           0% {
             letter-spacing: 1em;
-            transform: translateZ(400px) translateY(300px);
             opacity: 0;
           }
           40% {
             opacity: 0.6;
           }
           100% {
-            transform: translateZ(0) translateY(0);
+            letter-spacing: 0.1em;
             opacity: 1;
           }
         }
 
-        /* Second animation - pause */
-        @keyframes pause {
-          0%, 100% {
-            transform: translateZ(0);
-            opacity: 1;
-          }
-        }
-
-        /* Third animation - slide out */
-        @keyframes slide-out {
+        /* Zoom animation for the entire text wrapper */
+        @keyframes zoom-wrapper {
           0% {
-            transform: translateZ(0);
+            transform: scale(1);
             opacity: 1;
           }
           100% {
-            transform: translateZ(600px);
+            transform: scale(30);
             opacity: 0;
           }
+        }
+
+        /* Apply tracking-in to both text elements */
+        .tank-text, .food-text {
+          animation: tracking-in 1s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
         }
 
         .truckWrapper {
@@ -216,15 +156,25 @@ const Loading = () => {
           align-items: center;
           justify-content: flex-end;
           overflow-x: hidden;
+          animation: fade-truck 0.35s ease-in-out 2.15s forwards;
         }
-        
+
+        @keyframes fade-truck {
+          0% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
         .truckBody {
           width: 130px;
           height: fit-content;
           margin-bottom: 6px;
           animation: motion 1s linear infinite;
         }
-        
+
         @keyframes motion {
           0% {
             transform: translateY(0px);
@@ -236,7 +186,7 @@ const Loading = () => {
             transform: translateY(0px);
           }
         }
-        
+
         .truckTires {
           width: 130px;
           height: fit-content;
@@ -247,7 +197,7 @@ const Loading = () => {
           position: absolute;
           bottom: 0;
         }
-        
+
         .truckTires svg {
           width: 24px;
         }
@@ -261,7 +211,7 @@ const Loading = () => {
           align-self: flex-end;
           border-radius: 3px;
         }
-        
+
         .road::before {
           content: "";
           position: absolute;
@@ -273,7 +223,7 @@ const Loading = () => {
           animation: roadAnimation 1.4s linear infinite;
           border-left: 10px solid white;
         }
-        
+
         .road::after {
           content: "";
           position: absolute;
@@ -302,9 +252,9 @@ const Loading = () => {
             transform: translateX(-350px);
           }
         }
-      `}</style>
+        `}</style>
     </div>
-  );
+  )
 }
 
-export default Loading;
+export default Loading
