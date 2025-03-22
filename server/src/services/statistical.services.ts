@@ -2,6 +2,7 @@ import { StatisticalOverviewRequestsBody } from '~/models/requests/statistical.r
 import databaseService from './database.services'
 import { OverviewResponse, DailyStats } from '~/constants/statistical.constants'
 import { formatDateOnlyDayAndMonthAndYear } from '~/utils/date.utils'
+import { OrderStatusEnum } from '~/constants/orders.constants'
 
 class StatisticalService {
   async overview(payload: StatisticalOverviewRequestsBody): Promise<OverviewResponse> {
@@ -16,7 +17,8 @@ class StatisticalService {
             created_at: {
               $gte: startDate,
               $lte: currentDate
-            }
+            },
+            order_status: OrderStatusEnum.COMPLETED
           }
         },
         {
