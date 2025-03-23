@@ -1381,20 +1381,35 @@ class OrderService {
     ])
   }
   async confirmDeliveryCompletion(payload: ConfirmDeliveryCompletionRequestsBody, order: Order) {
-    await databaseService.order.updateOne(
-      {
-        _id: new ObjectId(payload.order_id)
-      },
-      {
-        $set: {
-          order_status: OrderStatusEnum.DELIVERED
+    const salary = (order.fee / 100) * 85
+
+    await Promise.all([
+      databaseService.order.updateOne(
+        {
+          _id: new ObjectId(payload.order_id)
         },
-        $currentDate: {
-          delivered_at: true,
-          updated_at: true
+        {
+          $set: {
+            order_status: OrderStatusEnum.COMPLETED
+          },
+          $currentDate: {
+            delivered_at: true,
+            updated_at: true,
+            completed_at: true
+          }
         }
-      }
-    )
+      ),
+      databaseService.users.updateOne(
+        {
+          _id: order.shipper as ObjectId
+        },
+        {
+          $inc: {
+            salary: salary
+          }
+        }
+      )
+    ])
 
     const data = await databaseService.order
       .aggregate([
@@ -1475,13 +1490,27 @@ class OrderService {
       ])
       .next()
 
+    const date = new Date()
+    const fee = (order.fee / 100) * 15
+    const revenue = order.total_price + fee
+
+    const dataStatistical = {
+      totalOrders: 1,
+      totalProducts: order.total_quantity,
+      totalNewCustomers: order.is_first_transaction ? 1 : 0,
+      totalRevenue: revenue,
+      date
+    }
+
     await Promise.all([
       notificationRealtime(
         `freshSync-user-${order.user}`,
         'complete-delivery',
         `order/${order.user}/complete-delivery`,
         data
-      )
+      ),
+      notificationRealtime('freshSync-statistical', 'update-chart', 'statistical/chart', dataStatistical),
+      notificationRealtime('freshSync-statistical', 'update-order-complete', 'statistical/complete', data)
     ])
   }
   async orderOffline(
