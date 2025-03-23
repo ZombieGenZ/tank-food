@@ -110,7 +110,7 @@ const Account = (): JSX.Element => {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách tài khoản" : "Account list"}</p>
                         <div className="w-[25%]">
-                            <Search placeholder={language() ? "Tìm kiếm tài khoản theo tên" : "Search account by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm tài khoản theo tên" : "Search account by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">
