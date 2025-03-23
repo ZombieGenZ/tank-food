@@ -11,6 +11,7 @@ export interface UserType {
   role?: UserRoleEnum
   email_verify_token?: string
   forgot_password_token?: string
+  salary?: number
   penalty?: {
     created_by: ObjectId
     reason: string
@@ -30,6 +31,7 @@ export default class User {
   role: UserRoleEnum
   email_verify_token: string
   forgot_password_token: string
+  salary: number
   penalty: {
     created_by: ObjectId
     reason: string
@@ -50,6 +52,7 @@ export default class User {
     this.role = user.role || UserRoleEnum.CUSTOMER
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
+    this.salary = user.salary || 0
     this.penalty = user.penalty || null
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date

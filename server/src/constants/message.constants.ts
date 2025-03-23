@@ -214,6 +214,11 @@ export class VIETNAMESE_STATIC_MESSAGE {
     STATISTICAL_SUCCESS: 'Lấy thông tin thống kê thành công',
     STATISTICAL_FAILURE: 'Lấy thông tin thống kê thất bại'
   } as const
+
+  static ACCOUNT_MANAGEMENT_MESSAGE = {
+    GET_ACCOUNT_SUCCESS: 'Lấy danh sách tài khoản thành công',
+    GET_ACCOUNT_FAILURE: 'Lấy danh sách tài khoản thất bại'
+  } as const
 }
 
 export class ENGLISH_STATIC_MESSAGE {
@@ -434,6 +439,11 @@ export class ENGLISH_STATIC_MESSAGE {
     STATISTICAL_SUCCESS: 'Statistical data retrieval successful',
     STATISTICAL_FAILURE: 'Statistical data retrieval failed'
   } as const
+
+  static ACCOUNT_MANAGEMENT_MESSAGE = {
+    GET_ACCOUNT_SUCCESS: 'Successfully retrieved account list',
+    GET_ACCOUNT_FAILURE: 'Failed to retrieve account list'
+  } as const
 }
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
@@ -605,6 +615,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static StatisticalOverviewFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện lấy thông tin thống kê thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static AccountManagementSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy danh sách tài khoản thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static AccountManagementFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy danh sách tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -775,5 +791,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static StatisticalOverviewFailed(user_id: string, ip: string, err: unknown) {
     return `Statistical data retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static AccountManagementSuccessfully(user_id: string, ip: string) {
+    return `Successfully retrieved account list (User: ${user_id}) (IP: ${ip})`
+  }
+  static AccountManagementFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to retrieve account list (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }
