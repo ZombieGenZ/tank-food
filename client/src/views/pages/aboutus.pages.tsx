@@ -42,7 +42,7 @@ const Aboutus = (): JSX.Element => {
                 className="w-full h-auto relative z-10 transform transition-transform duration-700 ease-out group-hover:scale-110"
               />
             </div>
-            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-yellow-400 rounded-full opacity-50 z-0 animate-pulse" data-aos="zoom-in" data-aos-delay="600"></div>
+            <div className="absolute -right-10 -bottom-10 w-30 h-30 bg-yellow-400 rounded-full opacity-50 z-0 animate-pulse" data-aos="zoom-in" data-aos-delay="600"></div>
             <div className="absolute -left-5 -top-5 w-20 h-20 bg-red-500 rounded-full opacity-30 z-0 animate-pulse" data-aos="zoom-in" data-aos-delay="800"></div>
           </div>
         </div>
@@ -62,8 +62,8 @@ const Aboutus = (): JSX.Element => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div 
               className="group bg-white p-6 rounded-lg border border-gray-100 transform perspective-1000 transition-all duration-500"
-              data-aos="flip-left"
-              data-aos-delay="100"
+              data-aos="zoom-in-down"
+              data-aos-delay="500"
             >
               <div className="transform transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-xl rounded-lg p-4">
                 <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto transform transition-transform duration-500 ease-out group-hover:scale-110">
@@ -79,8 +79,8 @@ const Aboutus = (): JSX.Element => {
 
             <div 
               className="group bg-white p-6 rounded-lg border border-gray-100 transform perspective-1000 transition-all duration-500"
-              data-aos="flip-up"
-              data-aos-delay="300"
+              data-aos="zoom-in-down"
+              data-aos-delay="600"
             >
               <div className="transform transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-xl rounded-lg p-4">
                 <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto transform transition-transform duration-500 ease-out group-hover:scale-110">
@@ -96,8 +96,8 @@ const Aboutus = (): JSX.Element => {
 
             <div 
               className="group bg-white p-6 rounded-lg border border-gray-100 transform perspective-1000 transition-all duration-500"
-              data-aos="flip-right"
-              data-aos-delay="500"
+              data-aos="zoom-in-down"
+              data-aos-delay="700"
             >
               <div className="transform transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-xl rounded-lg p-4">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto transform transition-transform duration-500 ease-out group-hover:scale-110">
