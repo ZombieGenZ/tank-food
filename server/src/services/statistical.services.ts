@@ -1,21 +1,36 @@
 import { StatisticalOverviewRequestsBody } from '~/models/requests/statistical.requests'
 import databaseService from './database.services'
-import { OverviewResponse, DailyStats } from '~/constants/statistical.constants'
 import { formatDateOnlyDayAndMonthAndYear } from '~/utils/date.utils'
 import { OrderStatusEnum } from '~/constants/orders.constants'
+import {
+  AggregatedStats,
+  ComparisonStats,
+  DailyStats,
+  OverviewResponseWithComparison
+} from '~/constants/statistical.constants'
 
 class StatisticalService {
-  async overview(payload: StatisticalOverviewRequestsBody): Promise<OverviewResponse> {
+  async overview(payload: StatisticalOverviewRequestsBody): Promise<OverviewResponseWithComparison> {
     const currentDate = new Date()
-    const startDate = new Date(currentDate)
-    startDate.setDate(currentDate.getDate() - (payload.time || 0))
+    const timePeriod = payload.time || 0
+    const currentStartDate = new Date(currentDate)
+    currentStartDate.setDate(currentDate.getDate() - timePeriod)
+    const previousEndDate = new Date(currentStartDate)
+    previousEndDate.setDate(previousEndDate.getDate() - 1)
+    const previousStartDate = new Date(previousEndDate)
+    previousStartDate.setDate(previousEndDate.getDate() - timePeriod)
+
+    const [currentStats, previousStats] = await Promise.all([
+      this.getPeriodStats(currentStartDate, currentDate),
+      this.getPeriodStats(previousStartDate, previousEndDate)
+    ])
 
     const aggregationResult = await databaseService.order
       .aggregate([
         {
           $match: {
             created_at: {
-              $gte: startDate,
+              $gte: currentStartDate,
               $lte: currentDate
             },
             order_status: OrderStatusEnum.COMPLETED
@@ -23,23 +38,6 @@ class StatisticalService {
         },
         {
           $facet: {
-            totals: [
-              {
-                $group: {
-                  _id: null,
-                  totalOrders: { $sum: 1 },
-                  totalProducts: { $sum: '$total_quantity' },
-                  totalNewCustomers: {
-                    $sum: { $cond: ['$is_first_transaction', 1, 0] }
-                  },
-                  totalRevenue: {
-                    $sum: {
-                      $add: ['$total_price', { $multiply: ['$fee', 0.15] }]
-                    }
-                  }
-                }
-              }
-            ],
             daily: [
               {
                 $group: {
@@ -73,15 +71,8 @@ class StatisticalService {
       .toArray()
 
     const result = aggregationResult[0]
-    const totals = result.totals[0] || {
-      totalOrders: 0,
-      totalProducts: 0,
-      totalNewCustomers: 0,
-      totalRevenue: 0
-    }
-
     const allDays: DailyStats[] = []
-    const tempDate = new Date(startDate)
+    const tempDate = new Date(currentStartDate)
     while (tempDate <= currentDate) {
       allDays.push({
         date: formatDateOnlyDayAndMonthAndYear(new Date(tempDate)),
@@ -107,13 +98,72 @@ class StatisticalService {
     )
 
     const dailyBreakdown: DailyStats[] = allDays.map((day) => dailyBreakdownMap.get(day.date) || day)
-    return {
-      totalOrders: totals.totalOrders,
-      totalProducts: totals.totalProducts,
-      totalNewCustomers: totals.totalNewCustomers,
-      totalRevenue: totals.totalRevenue,
-      dailyBreakdown
+
+    const comparison = {
+      totalOrdersChange: this.calculatePercentageChange(currentStats.totalOrders, previousStats.totalOrders),
+      totalProductsChange: this.calculatePercentageChange(currentStats.totalProducts, previousStats.totalProducts),
+      totalNewCustomersChange: this.calculatePercentageChange(
+        currentStats.totalNewCustomers,
+        previousStats.totalNewCustomers
+      ),
+      totalRevenueChange: this.calculatePercentageChange(currentStats.totalRevenue, previousStats.totalRevenue)
     }
+
+    return {
+      totalOrders: currentStats.totalOrders,
+      totalProducts: currentStats.totalProducts,
+      totalNewCustomers: currentStats.totalNewCustomers,
+      totalRevenue: currentStats.totalRevenue,
+      dailyBreakdown,
+      comparison
+    }
+  }
+  private async getPeriodStats(startDate: Date, endDate: Date): Promise<ComparisonStats> {
+    const result = await databaseService.order
+      .aggregate<AggregatedStats>([
+        {
+          $match: {
+            created_at: {
+              $gte: startDate,
+              $lte: endDate
+            },
+            order_status: OrderStatusEnum.COMPLETED
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalOrders: { $sum: 1 },
+            totalProducts: { $sum: '$total_quantity' },
+            totalNewCustomers: {
+              $sum: { $cond: ['$is_first_transaction', 1, 0] }
+            },
+            totalRevenue: {
+              $sum: {
+                $add: ['$total_price', { $multiply: ['$fee', 0.15] }]
+              }
+            }
+          }
+        }
+      ])
+      .toArray()
+
+    return (
+      result[0] || {
+        totalOrders: 0,
+        totalProducts: 0,
+        totalNewCustomers: 0,
+        totalRevenue: 0
+      }
+    )
+  }
+  private calculatePercentageChange(current: number, previous: number): number {
+    if (previous === 0) {
+      return current === 0 ? 0 : current > 0 ? 100 : -100
+    }
+    const change = ((current - previous) / previous) * 100
+    const rounded = Math.round(change * 10) / 10
+    return Number(rounded.toFixed(1))
   }
 }
 
