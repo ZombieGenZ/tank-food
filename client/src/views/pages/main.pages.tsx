@@ -8,10 +8,15 @@ import Signup from './signup.pages.tsx';
 import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
 import CategoryManagement from './CategoryManagement.pages.tsx';
+import ProductManagement from './Product.pages.tsx';
+import ShipManagement from './ShipManagement.pages.tsx';
 import ContactUs from './contact.pages.tsx';
+import DiscountCodeManagement from './Discount.pages.tsx';
+import OrderManagement from './Order.psges.tsx';
 import MainManage from './Main.management.pages.tsx';
 import { Dropdown, Button } from "antd";
-import { message } from 'antd';
+import { message,Avatar } from 'antd';
+import { AntDesignOutlined } from '@ant-design/icons';
 import { gsap } from 'gsap';
 import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
@@ -193,9 +198,9 @@ const FormMain = (): JSX.Element => {
         </div>} */}
 
         {loading ? <Loading /> : (user && user.role == 3 ? 
-          <div className='flex relative' ref={pageRef}>
+          <div className='flex relative'>
             <NavigationAdmin displayname={user.display_name}/>
-            <div className='fixed gap-5 flex items-center right-0 top-0 p-10 z-40'>
+            <div className='absolute right-0 top-0 gap-5 flex items-center p-10 z-40'>
               <Select
                 defaultValue={language}
                 size='small'
@@ -210,11 +215,16 @@ const FormMain = (): JSX.Element => {
                 <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
                   <MdAccountBox />
                 </div>
-            </Dropdown>
+              </Dropdown>
             </div>
             <Routes>
               <Route path="/*" element={<MainManage />} />
               <Route path="/Account" element={<Account />} />
+              <Route path='/category' element={<CategoryManagement />}/>
+              <Route path='/order' element={<OrderManagement />}/>
+              <Route path='/product' element={<ProductManagement />}/>
+              <Route path='/ship' element={<ShipManagement />}/>
+              <Route path='/discount' element={<DiscountCodeManagement />}/>
             </Routes>
           </div> : 
           <div className='flex gap-5 flex-col' ref={pageRef}>
@@ -225,7 +235,6 @@ const FormMain = (): JSX.Element => {
               <Route path="/signup" element={<Signup />} />
               <Route path='/menu' element={<Category />}/>
               <Route path='/contact' element={<ContactUs />}/>
-              <Route path='/category' element={<CategoryManagement />}/>
             </Routes>
           </div>)}
     </>
@@ -244,9 +253,15 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
     setLanguage(language)
   } ,[language])
   return (
-    <div className='w-1/5 relative flex flex-col justify-center items-center gap-10 bg-[#ffffff] h-screen'>
+    <div className='w-1/5 sticky left-0 top-0 flex flex-col justify-center items-center gap-15 bg-[#ffffff] h-screen'>
       {/* {contextHolder} */}
+      <div className='flex justify-center items-center flex-col gap-5'>
+        <Avatar
+          size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+          icon={<AntDesignOutlined />}
+        />
         <h2 className='font-bold text-2xl'>{language == "Tiếng Việt" ? displayname : "Administrator"}</h2>
+      </div>
         <ul className='flex flex-col justify-center w-full'>
           {
             NavbarAdmin.map((item: NavbarItem) => {

@@ -1,0 +1,149 @@
+import { JSX, useEffect, useState } from "react";
+import { Table, Input, Button } from 'antd';
+import type { TableProps, GetProps } from 'antd';
+
+interface DataType {
+  key: string;
+  name: string;
+  age: number;
+  address: string;
+  tags: string[];
+}
+
+interface Product {
+  _id: string;
+  availability: boolean;
+  categories: {
+      _id: string;
+      category_name_translate_1: string;
+      category_name_translate_2: string;
+      created_at: string;
+      updated_at: string;
+      index: number;
+      translate_1_language: string;
+      translate_2_language: string;
+  };
+  created_at: string;
+  created_by: string;
+  description_translate_1: string;
+  description_translate_1_language: string;
+  description_translate_2: string;
+  description_translate_2_language: string;
+  preview: {
+      path: string;
+      size: number;
+      type: string;
+      url: string;
+  };
+  price: number;
+  tag_translate_1: string;
+  tag_translate_1_language: string;
+  tag_translate_2: string;
+  tag_translate_2_language: string;
+  title_translate_1: string;
+  title_translate_1_language: string;
+  title_translate_2: string;
+  title_translate_2_language: string;
+  updated_at: string;
+  updated_by: string;
+}
+
+function ProductManagement(): JSX.Element {
+  const [product, setProduct] = useState<Product[]>([]);
+  useEffect(() => {
+      const body = {
+        language: null,
+      } 
+      fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+        setProduct(data.products)
+      })
+    }, [])
+
+    useEffect(() => {
+      console.log(product)
+    }, [product])
+      
+    const columns: TableProps<DataType>['columns'] = [
+        {
+          title: 'Tên sản phẩm',
+          dataIndex: 'name',
+          key: 'name',
+          width: 350,
+          render: (text) => <a>{text}</a>,
+        },
+        {
+          title: 'Danh mục',
+          dataIndex: 'age',
+          width: 350,
+          key: 'age',
+        },
+        {
+          title: 'Mô tả',
+          dataIndex: 'address',
+          width: 450,
+          key: 'address',
+        },
+        {
+          title: 'Giá tiền (VNĐ)',
+          key: 'tags',
+          dataIndex: 'tags',
+          width: 350,
+        },
+        {
+          title: 'Tags',
+          key: 'tags',
+          dataIndex: 'tags',
+          width: 350,
+        },
+        {
+          title: 'Ghi chú',
+          key: 'action',
+          width: 350,
+        },
+      ];
+      
+    const data: DataType[] = [];
+
+    const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
+    type SearchProps = GetProps<typeof Input.Search>;
+    
+    const { Search } = Input;
+    
+    const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
+    const language = (): string => {
+        const Language = localStorage.getItem('language')
+        return Language ? JSON.parse(Language) : "Tiếng Việt"
+    }
+    return(
+        <div className="w-4/5 bg-[#FFF4E6] p-10">
+            <div className="w-full flex justify-center flex-col gap-10 items-center">
+                <div className="w-full flex items-start">
+                    <h1 className="font-bold text-2xl">{language() == "Tiếng Việt" ? "Quản lý sản phẩm" : "Product management"}</h1>
+                </div>
+                <div className="w-full flex justify-center flex-col items-cente gap-5">
+                    <div className="w-full flex justify-between items-end">
+                        <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
+                        <div className="w-[30%] flex gap-2">
+                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
+                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
+                        </div>
+                    </div>
+                    <div className="w-full overflow-x-auto">
+                        <App />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default ProductManagement

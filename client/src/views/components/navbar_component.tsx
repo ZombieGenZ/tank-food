@@ -48,36 +48,30 @@ export const NavbarAdmin = [
         id: 3,
         title: "Quản lý danh mục",
         english: "Category Management",
-        path: "/"
+        path: "/category"
     },
     {
         id: 4,
-        title: "Quản lý sản phầm",
+        title: "Quản lý sản phẩm",
         english: "Product Management",
-        path: "/"
+        path: "/product"
     },
     {
         id: 5,
         title: "Quản lý đơn đặt hàng",
         english: "Order Management",
-        path: "/"
+        path: "/order"
     },
     {
         id: 6,
         title: "Quản lý giao hàng",
         english: "Delivery Management",
-        path: "/"
+        path: "/ship"
     },
     {
         id: 7,
-        title: "Quản lý thông báo",
-        english: "Notification Management",
-        path: "/"
-    },
-    {
-        id: 8,
         title: "Quản lý mã giảm giá",
         english: "Discount Code Management",
-        path: "/"
+        path: "/discount"
     },
 ]
