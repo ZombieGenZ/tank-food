@@ -103,6 +103,8 @@ export const banAccountValidator = async (req: Request, res: Response, next: Nex
             const time = calculateFutureTime(value)
             const date = new Date()
 
+            console.log(time)
+
             if (!time) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE

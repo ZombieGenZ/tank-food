@@ -30,7 +30,7 @@ router.post(
 
 /*
  * Description: Khóa tài khoản
- * Path: /api/account-management/ban
+ * Path: /api/account-management/ban-account
  * Method: PUT
  * headers: {
  *    authorization: Bearer <token>
