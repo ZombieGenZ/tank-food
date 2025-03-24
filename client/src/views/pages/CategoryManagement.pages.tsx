@@ -1,5 +1,5 @@
 import { JSX, useEffect } from "react";
-import { Space, Table, Tag, Input, Button } from 'antd';
+import { Space, Table, Input, Button } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -29,47 +29,20 @@ const CategoryManagement = (): JSX.Element => {
   }, [])
   const columns: TableProps<DataType>['columns'] = [
     {
-      title: 'Name',
+      title: 'Danh mục',
       dataIndex: 'name',
       key: 'name',
       width: 350,
       render: (text) => <a>{text}</a>,
     },
     {
-      title: 'Age',
+      title: 'Độ ưu tiên',
       dataIndex: 'age',
       width: 350,
       key: 'age',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      width: 450,
-      key: 'address',
-    },
-    {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
-      width: 250,
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
-      title: 'Action',
+      title: 'Ghi chú',
       key: 'action',
       width: 350,
       render: (_, record) => (
@@ -82,27 +55,7 @@ const CategoryManagement = (): JSX.Element => {
   ];
   
   const data: DataType[] = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
+
   ];
 
   const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />; 

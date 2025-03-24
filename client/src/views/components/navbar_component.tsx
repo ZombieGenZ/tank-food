@@ -52,7 +52,7 @@ export const NavbarAdmin = [
     },
     {
         id: 4,
-        title: "Quản lý sản phầm",
+        title: "Quản lý sản phẩm",
         english: "Product Management",
         path: "/product"
     },

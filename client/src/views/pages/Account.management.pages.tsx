@@ -73,26 +73,26 @@ const Account = (): JSX.Element => {
 
   const columns: TableProps<DataType>['columns'] = [
     {
-      title: 'Name',
+      title: 'Tên hiển thị',
       dataIndex: 'name',
       key: 'name',
       width: 350,
       render: (text) => <a>{text}</a>,
     },
     {
-      title: 'Age',
+      title: 'Email',
       dataIndex: 'age',
       width: 350,
       key: 'age',
     },
     {
-      title: 'Address',
+      title: 'Số điện thoại',
       dataIndex: 'address',
       width: 450,
       key: 'address',
     },
     {
-      title: 'Tags',
+      title: 'Quyền hạn',
       key: 'tags',
       dataIndex: 'tags',
       width: 250,
@@ -113,7 +113,7 @@ const Account = (): JSX.Element => {
       ),
     },
     {
-      title: 'Action',
+      title: 'Ghi chú',
       key: 'action',
       width: 350,
       render: (_, record) => (
@@ -126,27 +126,7 @@ const Account = (): JSX.Element => {
   ];
   
   const data: DataType[] = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sydney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
+    
   ];
   
   const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
