@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { Space, Table, Tag, Input, Button } from 'antd';
+import { Table, Input, Button } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -8,66 +8,37 @@ interface DataType {
     age: number;
     address: string;
     tags: string[];
-  }
+}
 
 const OrderManagement = (): JSX.Element => {
     const columns: TableProps<DataType>['columns'] = [
         {
-          title: 'Tên hiển thị',
+          title: 'Mã đơn hàng',
           dataIndex: 'name',
           key: 'name',
           width: 350,
-          render: (text) => <a>{text}</a>,
         },
         {
-          title: 'Email',
+          title: 'Tổng tiền đơn hàng',
           dataIndex: 'age',
           width: 350,
           key: 'age',
         },
         {
-          title: 'Số điện thoại',
+          title: 'Thời gian đặt hàng',
           dataIndex: 'address',
-          width: 450,
+          width: 350,
           key: 'address',
         },
         {
-          title: 'Quyền hạn',
+          title: 'Trạng thái đơn hàng',
           key: 'tags',
           dataIndex: 'tags',
-          width: 250,
-          render: (_, { tags }) => (
-            <>
-              {tags.map((tag) => {
-                let color = tag.length > 5 ? 'geekblue' : 'green';
-                if (tag === 'loser') {
-                  color = 'volcano';
-                }
-                return (
-                  <Tag color={color} key={tag}>
-                    {tag.toUpperCase()}
-                  </Tag>
-                );
-              })}
-            </>
-          ),
-        },
-        {
-          title: 'Ghi chú',
-          key: 'action',
           width: 350,
-          render: (_, record) => (
-            <Space size="middle">
-              <a>Invite {record.name}</a>
-              <a>Delete</a>
-            </Space>
-          ),
-        },
+        }
       ];
       
-      const data: DataType[] = [
-        
-      ];
+      const data: DataType[] = [];
 
       const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
       type SearchProps = GetProps<typeof Input.Search>;
@@ -86,42 +57,42 @@ const OrderManagement = (): JSX.Element => {
                 <div className="w-full flex items-start">
                     <h1 className="font-bold text-2xl">{language() == "Tiếng Việt" ? "Quản lý đơn đặt hàng" : "Order management"}</h1>
                 </div>
-                <div className="w-full flex justify-center flex-col items-cente gap-5">
+                <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng online đang chờ duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
                             <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng online đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />
                     </div>
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng online đã duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
                             <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng online đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />
                     </div>
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng offline đang chờ duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
                             <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng offline đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />
                     </div>
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng offline đã duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
                             <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng offline đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">

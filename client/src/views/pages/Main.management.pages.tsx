@@ -116,7 +116,7 @@ function MainManage (): JSX.Element {
                 <div className="w-full flex items-start">
                     <h1 className="font-bold text-2xl">{language() == "Tiếng Việt" ? "Bảng điều khiển" : "Dash board"}</h1>
                 </div>
-                <div className="w-full grid grid-cols-4 place-items-start">
+                <div className="w-full grid grid-cols-4 place-items-center">
                   <Card
                   hoverable
                   style={{
@@ -182,8 +182,8 @@ function MainManage (): JSX.Element {
                     </div>
                   </Card>
                 </div>
-                <div className="w-full grid grid-cols-2">
-                    <LineChart width={500} height={500} data={data}
+                <div className="w-full flex justify-between">
+                    <LineChart width={700} height={500} data={data}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" />
@@ -193,7 +193,7 @@ function MainManage (): JSX.Element {
                         <Line type="monotone" dataKey="pv" stroke="#8884d8" />
                         <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
                     </LineChart>
-                    <div className="bg-white rounded-2xl shadow-xl p-4 font-bold flex flex-col gap-4">
+                    <div className="bg-white rounded-2xl w-[35%] shadow-xl p-4 font-bold flex flex-col gap-4">
                         <h2 className="text-[#FF7846]">Đơn hàng gần đây</h2>
                         <hr className="text-gray-300"/>
                     </div>

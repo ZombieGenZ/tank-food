@@ -1,4 +1,4 @@
-import { NavbarUser, NavbarAdmin } from '../components/navbar_component.tsx';
+import { NavbarUser } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { Drawer , Select } from "antd";
@@ -25,6 +25,8 @@ import { MdAccountBox } from "react-icons/md";
 import Loading from '../components/loading_page_components.tsx'
 import Aboutus from './aboutus.pages.tsx';
 import Account from './Account.management.pages.tsx';
+import { RiUser3Line, RiHome5Line, RiShoppingCart2Line, RiTruckLine, RiPriceTag3Line, RiShoppingBag3Line } from "react-icons/ri";
+import { FaHome } from "react-icons/fa";
 
 interface UserInfo {
   created_at: string;
@@ -243,38 +245,70 @@ const FormMain = (): JSX.Element => {
 
 function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
   const navigate = useNavigate();
-  // const [messageApi, contextHolder] = message.useMessage();
   const [language, setLanguage] = useState<string>(() => {
     const SaveedLanguage = localStorage.getItem('language')
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
-  })
-
+  });
+  
   useEffect(() => {
     setLanguage(language)
-  } ,[language])
+  }, [language]);
+  
+  // Define menu items similar to the admin dashboard example
+  const NavbarAdmin = [
+    { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: <FaHome size={20}/>, active: false },
+    { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: <RiUser3Line size={20} />, active: false },
+    { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: <RiHome5Line size={20} />, active: false },
+    { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: <RiShoppingBag3Line size={20} />, active: true },
+    { id: 5, title: 'Quản lý đơn đặt hàng', english: 'Order Management', path: '/order', icon: <RiShoppingCart2Line size={20} />, active: false },
+    { id: 6, title: 'Quản lý giao hàng', english: 'Shipping Management', path: '/ship', icon: <RiTruckLine size={20} />, active: false },
+    { id: 7, title: 'Quản lý mã giảm giá', english: 'Discount Management', path: '/discount', icon: <RiPriceTag3Line size={20} />, active: false }
+  ];
+  
   return (
-    <div className='w-1/5 sticky left-0 top-0 flex flex-col justify-center items-center gap-15 bg-[#ffffff] h-screen'>
-      {/* {contextHolder} */}
-      <div className='flex justify-center items-center flex-col gap-5'>
-        <Avatar
-          size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
-          icon={<AntDesignOutlined />}
-        />
-        <h2 className='font-bold text-2xl'>{language == "Tiếng Việt" ? displayname : "Administrator"}</h2>
+    <div className='w-1/5 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
+      <div className='p-4 flex items-center space-x-3'>
+        <div className='w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold'>B</div>
+        <span className='text-lg font-bold'>BUI DANG KHOA</span>
       </div>
-        <ul className='flex flex-col justify-center w-full'>
-          {
-            NavbarAdmin.map((item: NavbarItem) => {
-              return <li key={item.id} className="text-[15px] text-[#333333] hover:border-l-4 hover:border-l-[#FF7846] hover:text-[#FF7846] hover:bg-[#FFFAF7] transition duration-300 w-full">
-                        <button onClick={() => navigate(item.path)}
-                                className="cursor-pointer font-semibold p-2 pl-5">
-                                {language == "Tiếng Việt" ? item.title : item.english}</button> 
-                      </li>
-            })
-          }
-        </ul>
+      <div className='mt-8'>
+        {NavbarAdmin.map((item) => {
+          const isActive = item.active;
+          return (
+            <div 
+              key={item.id} 
+              onClick={() => navigate(item.path)}
+              className={`flex items-center px-4 py-3 cursor-pointer ${isActive ? 'bg-slate-700 border-l-4 border-orange-500' : 'hover:bg-slate-700'}`}
+            >
+              <div className={`mr-3 ${isActive ? 'text-orange-500' : 'text-gray-300'}`}>
+                {item.icon}
+              </div>
+              <span className={isActive ? 'text-orange-500 font-medium' : 'text-gray-300'}>
+                {language === "Tiếng Việt" ? item.title : item.english}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      
+      <div className='absolute bottom-0 left-0 w-64 p-4 border-t border-slate-700'>
+        <div className='flex items-center space-x-3 gap-2'>
+          <Avatar
+            size={32}
+            icon={<AntDesignOutlined />}
+            style={{
+              backgroundColor: "#1890ff",
+              color: "#fff",
+            }}
+          />
+          <div>
+            <p className='text-sm font-medium text-white'>{displayname}</p>
+            <p className='text-xs text-gray-400'>admin@example.com</p>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
 
 function NavigationButtons({ role }: { role: number }): JSX.Element {
