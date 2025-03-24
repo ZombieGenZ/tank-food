@@ -1,5 +1,5 @@
-import { JSX, useEffect } from "react";
-import { Space, Table, Tag, Input, Button } from 'antd';
+import { JSX, useEffect, useState } from "react";
+import { Table, Input, Button } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -10,7 +10,46 @@ interface DataType {
   tags: string[];
 }
 
+interface Product {
+  _id: string;
+  availability: boolean;
+  categories: {
+      _id: string;
+      category_name_translate_1: string;
+      category_name_translate_2: string;
+      created_at: string;
+      updated_at: string;
+      index: number;
+      translate_1_language: string;
+      translate_2_language: string;
+  };
+  created_at: string;
+  created_by: string;
+  description_translate_1: string;
+  description_translate_1_language: string;
+  description_translate_2: string;
+  description_translate_2_language: string;
+  preview: {
+      path: string;
+      size: number;
+      type: string;
+      url: string;
+  };
+  price: number;
+  tag_translate_1: string;
+  tag_translate_1_language: string;
+  tag_translate_2: string;
+  tag_translate_2_language: string;
+  title_translate_1: string;
+  title_translate_1_language: string;
+  title_translate_2: string;
+  title_translate_2_language: string;
+  updated_at: string;
+  updated_by: string;
+}
+
 function ProductManagement(): JSX.Element {
+  const [product, setProduct] = useState<Product[]>([]);
   useEffect(() => {
       const body = {
         language: null,
@@ -25,86 +64,54 @@ function ProductManagement(): JSX.Element {
         return response.json()
       }).then((data) => {
         console.log(data)
+        setProduct(data.products)
       })
     }, [])
+
+    useEffect(() => {
+      console.log(product)
+    }, [product])
       
     const columns: TableProps<DataType>['columns'] = [
         {
-          title: 'Name',
+          title: 'Tên sản phẩm',
           dataIndex: 'name',
           key: 'name',
           width: 350,
           render: (text) => <a>{text}</a>,
         },
         {
-          title: 'Age',
+          title: 'Danh mục',
           dataIndex: 'age',
           width: 350,
           key: 'age',
         },
         {
-          title: 'Address',
+          title: 'Mô tả',
           dataIndex: 'address',
           width: 450,
           key: 'address',
         },
         {
+          title: 'Giá tiền (VNĐ)',
+          key: 'tags',
+          dataIndex: 'tags',
+          width: 350,
+        },
+        {
           title: 'Tags',
           key: 'tags',
           dataIndex: 'tags',
-          width: 250,
-          render: (_, { tags }) => (
-            <>
-              {tags.map((tag) => {
-                let color = tag.length > 5 ? 'geekblue' : 'green';
-                if (tag === 'loser') {
-                  color = 'volcano';
-                }
-                return (
-                  <Tag color={color} key={tag}>
-                    {tag.toUpperCase()}
-                  </Tag>
-                );
-              })}
-            </>
-          ),
+          width: 350,
         },
         {
-          title: 'Action',
+          title: 'Ghi chú',
           key: 'action',
           width: 350,
-          render: (_, record) => (
-            <Space size="middle">
-              <a>Invite {record.name}</a>
-              <a>Delete</a>
-            </Space>
-          ),
         },
       ];
       
-      const data: DataType[] = [
-        {
-          key: '1',
-          name: 'John Brown',
-          age: 32,
-          address: 'New York No. 1 Lake Park',
-          tags: ['nice', 'developer'],
-        },
-        {
-          key: '2',
-          name: 'Jim Green',
-          age: 42,
-          address: 'London No. 1 Lake Park',
-          tags: ['loser'],
-        },
-        {
-          key: '3',
-          name: 'Joe Black',
-          age: 32,
-          address: 'Sydney No. 1 Lake Park',
-          tags: ['cool', 'teacher'],
-        },
-      ];
+    const data: DataType[] = [];
 
     const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
     type SearchProps = GetProps<typeof Input.Search>;
