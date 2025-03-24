@@ -14,7 +14,6 @@ import fs from 'fs'
 import sharp from 'sharp'
 import { ImageType } from '~/constants/images.constants'
 import { deleteCurrentFile, deleteTemporaryFile } from '~/utils/image.utils'
-import { ParamsDictionary } from 'express-serve-static-core'
 
 export const setupProductImage = async (req: Request, res: Response, next: NextFunction) => {
   try {

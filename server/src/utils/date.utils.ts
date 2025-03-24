@@ -1,3 +1,5 @@
+import { TimeUnit } from '~/constants/date.constants'
+
 export const formatDateFull = (date: Date) => {
   const pad = (num: number) => num.toString().padStart(2, '0')
 
@@ -50,4 +52,29 @@ export const isLastDayOfMonth = (): boolean => {
   tomorrow.setDate(today.getDate() + 1)
 
   return tomorrow.getDate() === 1
+}
+
+export const isValidTimeFormat = (str: string): boolean => /^\d+[smdwmo|ySMDWMO|Y]$/.test(str)
+
+export const calculateFutureTime = (str: string): Date | null => {
+  if (!isValidTimeFormat(str)) return null
+  const [_, value, unit] = str.match(/^(\d+)([smdwmo|ySMDWMO|Y])$/)!
+  const n = +value,
+    u = unit.toLowerCase() as Lowercase<TimeUnit>
+  const t = new Date()
+  return new Date(
+    t.setTime(
+      t.getTime() + u === 's'
+        ? n * 1000
+        : u === 'm'
+          ? n * 60000
+          : u === 'd'
+            ? n * 86400000
+            : u === 'w'
+              ? n * 604800000
+              : u === 'mo'
+                ? n * 2592000000
+                : n * 31536000000
+    )
+  )
 }

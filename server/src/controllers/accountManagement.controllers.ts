@@ -1,6 +1,10 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { GetAccountRequestsBody } from '~/models/requests/accountManagement.requests'
+import {
+  GetAccountRequestsBody,
+  BanAccountRequestsBody,
+  UnBanAccountRequestsBody
+} from '~/models/requests/accountManagement.requests'
 import { serverLanguage } from '~/index'
 import User from '~/models/schemas/users.schemas'
 import { writeErrorLog, writeInfoLog } from '~/utils/log.utils'
@@ -52,6 +56,91 @@ export const getAccountManagementController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.GET_ACCOUNT_FAILURE
           : ENGLISH_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.GET_ACCOUNT_FAILURE
+    })
+  }
+}
+
+export const banAccountManagementController = async (
+  req: Request<ParamsDictionary, any, BanAccountRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+  const banned_time = req.banned_time as Date
+
+  try {
+    const account = await accountManagementService.ban(req.body, banned_time, user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.BanAccountManagementSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.BanAccountManagementSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.BAN_ACCOUNT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.BAN_ACCOUNT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.BAN_ACCOUNT_SUCCESS,
+      account
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.BanAccountManagementFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.BanAccountManagementFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.BAN_ACCOUNT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.BAN_ACCOUNT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.BAN_ACCOUNT_FAILURE
+    })
+  }
+}
+
+export const unBanAccountManagementController = async (
+  req: Request<ParamsDictionary, any, UnBanAccountRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const account = await accountManagementService.unBan(req.body.user_id)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.UnBanAccountManagementSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.UnBanAccountManagementSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UNBAN_ACCOUNT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.UNBAN_ACCOUNT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.UNBAN_ACCOUNT_SUCCESS,
+      account
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.UnBanAccountManagementFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.UnBanAccountManagementFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.UNBAN_ACCOUNT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.UNBAN_ACCOUNT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ACCOUNT_MANAGEMENT_MESSAGE.UNBAN_ACCOUNT_FAILURE
     })
   }
 }

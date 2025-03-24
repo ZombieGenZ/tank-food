@@ -1,3 +1,5 @@
+import { formatDateFull2 } from '~/utils/date.utils'
+
 export class VIETNAMESE_STATIC_MESSAGE {
   static SYSTEM_MESSAGE = {
     VALIDATION_ERROR: 'Lỗi dữ liệu đầu vào'
@@ -217,7 +219,23 @@ export class VIETNAMESE_STATIC_MESSAGE {
 
   static ACCOUNT_MANAGEMENT_MESSAGE = {
     GET_ACCOUNT_SUCCESS: 'Lấy danh sách tài khoản thành công',
-    GET_ACCOUNT_FAILURE: 'Lấy danh sách tài khoản thất bại'
+    GET_ACCOUNT_FAILURE: 'Lấy danh sách tài khoản thất bại',
+    USER_ID_IS_REQUIRED: 'Không được bỏ trống id người dùng',
+    USER_ID_MUST_BE_A_STRING: 'id người dùng phải là một chuỗi kí tự',
+    USER_ID_IS_MUST_BE_A_ID: 'Id người dùng không đúng định dạng',
+    USER_ID_DOES_NOT_EXIST: 'Id người dùng không tồn tại',
+    BAN_USER_REASON_IS_REQUIRED: 'Không được bỏ trống lí do',
+    BAN_USER_REASON_MUST_BE_A_STRING: 'Lí do phải là một chuỗi kí tự',
+    BAN_USER_REASON_MUST_BE_FROM_1_TO_100: 'Lí do phải có độ dài từ 1 đến 100 ký tự',
+    TIME_IS_REQUIRED: 'Không được bỏ trống thời gian ban',
+    BAN_USER_TIME_MUST_BE_A_STRING: 'Thời gian ban người dùng phải là một chuỗi kí tự',
+    TIME_DOES_NOT_EXIST: 'Thời gian không hợp lệ',
+    BAN_ACCOUNT_SUCCESS: 'Khóa tài khoản thành công',
+    BAN_ACCOUNT_FAILURE: 'Khóa tài khoản thất bại',
+    UNBAN_ACCOUNT_SUCCESS: 'Mở khóa tài khoản thành công',
+    UNBAN_ACCOUNT_FAILURE: 'Mở khóa tài khoản thất bại',
+    ACCOUNT_HAS_BEEN_LOOKED: 'Tài khoản đã bị khóa',
+    ACCOUNT_IS_NOT_LOOKED: 'Tài khoản này không bị khóa'
   } as const
 }
 
@@ -442,7 +460,23 @@ export class ENGLISH_STATIC_MESSAGE {
 
   static ACCOUNT_MANAGEMENT_MESSAGE = {
     GET_ACCOUNT_SUCCESS: 'Successfully retrieved account list',
-    GET_ACCOUNT_FAILURE: 'Failed to retrieve account list'
+    GET_ACCOUNT_FAILURE: 'Failed to retrieve account list',
+    USER_ID_IS_REQUIRED: 'User ID cannot be empty',
+    USER_ID_MUST_BE_A_STRING: 'User ID must be a string',
+    USER_ID_IS_MUST_BE_A_ID: 'User ID is not in the correct format',
+    USER_ID_DOES_NOT_EXIST: 'User ID does not exist',
+    BAN_USER_REASON_IS_REQUIRED: 'Reason cannot be empty',
+    BAN_USER_REASON_MUST_BE_A_STRING: 'Reason must be a string',
+    BAN_USER_REASON_MUST_BE_FROM_1_TO_100: 'Reason must be between 1 and 100 characters long',
+    TIME_IS_REQUIRED: 'Ban duration cannot be empty',
+    BAN_USER_TIME_MUST_BE_A_STRING: 'Ban duration must be a string',
+    TIME_DOES_NOT_EXIST: 'Invalid time',
+    BAN_ACCOUNT_SUCCESS: 'Account successfully banned',
+    BAN_ACCOUNT_FAILURE: 'Account ban failed',
+    UNBAN_ACCOUNT_SUCCESS: 'Account successfully unbanned',
+    UNBAN_ACCOUNT_FAILURE: 'Account unban failed',
+    ACCOUNT_HAS_BEEN_LOCKED: 'The account has been locked',
+    ACCOUNT_IS_NOT_LOCKED: 'This account is not locked'
   } as const
 }
 
@@ -621,6 +655,21 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static AccountManagementFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện lấy danh sách tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static BanAccountManagementSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện khóa khoản thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static BanAccountManagementFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện khóa tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static UnBanAccountManagementSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện mở khóa khoản thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static UnBanAccountManagementFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện mở khóa tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static BanAccount(display_name: string, reason: string, expires: Date) {
+    return `Tài khoản ${display_name} đã bị khóa vì ${reason}, và sẽ hết hạn vào ${formatDateFull2(expires)}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -797,5 +846,20 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static AccountManagementFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to retrieve account list (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static BanAccountManagementSuccessfully(user_id: string, ip: string) {
+    return `Account ban successfully executed (User: ${user_id}) (IP: ${ip})`
+  }
+  static BanAccountManagementFailed(user_id: string, ip: string, err: unknown) {
+    return `Account ban execution failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static UnBanAccountManagementSuccessfully(user_id: string, ip: string) {
+    return `Account unban successfully executed (User: ${user_id}) (IP: ${ip})`
+  }
+  static UnBanAccountManagementFailed(user_id: string, ip: string, err: unknown) {
+    return `Account unban execution failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static BanAccount(display_name: string, reason: string, expires: Date) {
+    return `The account ${display_name} has been banned for ${reason} and will expire on ${formatDateFull2(expires)}`
   }
 }

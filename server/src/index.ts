@@ -120,6 +120,8 @@ io.on('connection', (socket: Socket) => {
     // delivery-order: Cập nhật thông tin đặt hàng vừa được nhận giao hàng
     // cancel-delivery: Cập nhật thông tin đặt hàng vừa bị hủy giao hàng
     // complete-delivery: Cập nhật thông tin đặt hàng vừa được hoàn thành giao hàng
+    // ban: Cập nhật thông tin khóa tài khoản
+    // unBan: Cập nhật thông tin mở tài khoản
     //
 
     if (!refresh_token) {

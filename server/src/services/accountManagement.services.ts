@@ -1,4 +1,8 @@
+import { BanAccountRequestsBody } from '~/models/requests/accountManagement.requests'
 import databaseService from './database.services'
+import { ObjectId } from 'mongodb'
+import User from '~/models/schemas/users.schemas'
+import { notificationRealtime } from '~/utils/realtime.utils'
 
 class AccountManagementService {
   async getAccount() {
@@ -7,6 +11,47 @@ class AccountManagementService {
       .project({ password: 0, email_verify_token: 0, forgot_password_token: 0 })
       .sort({ created_at: 1 })
       .toArray()
+  }
+  async ban(payload: BanAccountRequestsBody, banned_time: Date, user: User) {
+    const penalty = {
+      created_by: user._id,
+      reason: payload.reason,
+      expired_at: banned_time
+    }
+    await Promise.all([
+      databaseService.users.updateOne(
+        {
+          _id: new ObjectId(payload.user_id)
+        },
+        {
+          $set: {
+            penalty: penalty
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime(`freshSync-user-${payload.user_id}`, 'ban', `user/${payload.user_id}/ban`, penalty)
+    ])
+  }
+  async unBan(user_id: string) {
+    await Promise.all([
+      databaseService.users.updateOne(
+        {
+          _id: new ObjectId(user_id)
+        },
+        {
+          $set: {
+            penalty: null
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime(`freshSync-user-${user_id}`, 'unBan', `user/${user_id}/unBan`, null)
+    ])
   }
 }
 
