@@ -535,7 +535,7 @@ function Main(): JSX.Element {
 
     useEffect(() => {
       AOS.init({
-        duration: 1000, // Thời gian hiệu ứng (ms)
+        duration: 1000, 
         offset: 100, // Khoảng cách kích hoạt hiệu ứng (px)
         once: false,
         mirror: true
@@ -696,7 +696,7 @@ function Main(): JSX.Element {
                 <div className="w-72 h-72 rounded-full border-4 border-[#FFB800] p-2 shadow-lg bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:border-[#FF7846]">
                   <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#FF7846]/30 transition-all duration-300 hover:border-[#FFB800]">
                     <img 
-                      src="/public/images/system/logo tank food.png" 
+                      src="/public/images/system/Hamburger_trangchu.jpg" 
                       alt="Burger đặc biệt" 
                       className="w-full h-full object-cover rounded-full transition-transform duration-700 hover:scale-110"
                     />
@@ -717,7 +717,7 @@ function Main(): JSX.Element {
                 <span className="text-[#654321]">bữa ăn</span>
               </h2>
               <p className="text-[#654321] mb-6 max-w-xl font-serif">
-                Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo.
+                Bạn sẽ tìm được thông tin cách nâng cao trải nghiệm ẩm thực của bạn. Có vô số cách để làm một bữa ăn tuyệt vời tại TankFood. Những gì bạn phải có là nguyên liệu phù hợp và một chút sáng tạo.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                 <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
@@ -741,7 +741,7 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="100">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/Hamburger_trangchu2.jpg" 
                     alt="Bánh mì kẹp thịt" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -753,19 +753,19 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="200">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/Khoaitaychien_trangchu.jpg" 
                     alt="Khoai tây chiên" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
                 <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Khoai tây chiên</h3>
-                <p className="text-sm text-gray-500 text-center font-serif">Giòn tan hấp dẫn</p>
+                <p className="text-sm text-gray-500 text-center font-serif">Giòn tan đỉnh nóc</p>
               </div>
               
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="300">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/garan_trangchu.jpg" 
                     alt="Gà rán" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -777,12 +777,12 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="400">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/nuocuong_trangchu.jpg" 
                     alt="Thức uống" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Thức uống</h3>
+                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Nước</h3>
                 <p className="text-sm text-gray-500 text-center font-serif">Giải khát sảng khoái</p>
               </div>
             </div>
@@ -802,7 +802,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-right" data-aos-delay="100">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/burgerdacbiet.jpg" 
                     alt="Burger Đặc Biệt" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -821,7 +821,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-up" data-aos-delay="200">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/khoaiphomai.jpg" 
                     alt="Khoai Phô Mai" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -840,7 +840,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-left" data-aos-delay="300">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/logo tank food.png" 
+                    src="/public/images/system/garansotthai.jpg" 
                     alt="Gà Rán Giòn" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -864,16 +864,16 @@ function Main(): JSX.Element {
             
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif" data-aos="fade-right" data-aos-delay="200">Combo Gia Đình</h2>
             <p className="mb-6 max-w-2xl font-serif" data-aos="fade-right" data-aos-delay="300">
-              Đặt combo gia đình cho 4 người chỉ với 299.000₫. Gồm 4 burger, 2 phần khoai tây, 4 món tráng miệng và 4 nước uống.
+              Đặt combo gia đình cho 4 người chỉ với 299.000₫. Có 4 bánh burger, 2 hộp khoai tây, 4 món tráng miệng và 4 ly nước.
             </p>
             
-            <button className="bg-white text-[#FF6B35] hover:bg-gray-100 font-bold py-2 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8" data-aos="fade-up" data-aos-delay="400">
+            <button className="bg-white text-[#FF6B35] hover:bg-gray-100 font-bold py-2 px-6 rounded-full transition-all duration-400 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8" data-aos="fade-up" data-aos-delay="400">
               Đặt Ngay
             </button>
             
             <div className="absolute right-0 top-0 opacity-20">
               <img 
-                src="/public/images/system/logo tank food.png" 
+                src="/public/images/system/combogiadinh.jpg" 
                 alt="Family combo meal with burgers" 
                 className="h-full object-cover transition-transform duration-700 hover:scale-110"
               />
