@@ -438,7 +438,14 @@ export const forgotPasswordController = async (
     const locationData = await axios.get(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
     )
+    const userAgent = req.useragent
+    const deviceInfo = {
+      isMobile: userAgent?.isMobile,
+      browser: userAgent?.browser,
+      os: userAgent?.os
+    }
     console.log(locationData.data.display_name)
+    console.log(deviceInfo)
 
     // await userService.verifyAccount(user)
 

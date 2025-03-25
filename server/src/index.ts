@@ -14,6 +14,7 @@ import { verifyToken } from './utils/jwt.utils'
 import { TokenPayload } from './models/requests/authentication.requests'
 import { defaultErrorHandler } from './middlewares/errors.middlewares'
 import { UserRoleEnum } from './constants/users.constants'
+import expressUserAgent from 'express-useragent'
 
 dotenv.config()
 const port = process.env.APP_PORT || 3000
@@ -47,6 +48,7 @@ app.use((req, res, next) => {
 })
 
 app.use(express.json())
+app.use(expressUserAgent.express())
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('trust proxy', true)
