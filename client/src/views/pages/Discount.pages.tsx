@@ -4,16 +4,29 @@ import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
     key: string;
-    name: string;
-    age: number;
-    address: string;
-    tags: string[];
+    
+}
+
+interface Voucher {
+    code: string;
+    created_at: string; // Hoặc Date nếu bạn muốn chuyển đổi khi sử dụng
+    discount: number;
+    expiration_date: string; // Hoặc Date nếu bạn muốn chuyển đổi khi sử dụng
+    quantity: number;
+    requirement: number;
+    updated_at: string; // Hoặc Date nếu bạn muốn chuyển đổi khi sử dụng
+    used: number | null; // Giả sử used là số lượng voucher đã sử dụng, nếu null có thể chưa có dữ liệu
+    _id: string;
 }
 
 const DiscountCodeManagement = (): JSX.Element => {
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
-
+    const [voucher, setVoucher] = useState<Voucher[]>([])
+    const language = (): string => {
+        const Language = localStorage.getItem('language')
+        return Language ? JSON.parse(Language) : "Tiếng Việt"
+    }
     useEffect(() => {
         const body = {
             language: null,
@@ -29,9 +42,18 @@ const DiscountCodeManagement = (): JSX.Element => {
         }).then((response) => {
             return response.json()
         }).then((data) => {
+            setVoucher(data.voucher)
             console.log(data)
         })
     }, [refresh_token, access_token])
+
+    useEffect(() => {
+        const newData: DataType[] = voucher.map((voucherV, index) => ({
+            
+        }))
+
+        setVoucher(newData)
+    }, [voucher])
 
     useEffect(() => {
         const handleStorageChange = () => {
@@ -80,11 +102,6 @@ const DiscountCodeManagement = (): JSX.Element => {
           const { Search } = Input;
               
           const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
-          
-        const language = (): string => {
-            const Language = localStorage.getItem('language')
-            return Language ? JSON.parse(Language) : "Tiếng Việt"
-        }
     return(
         <div className=" p-10">
             <div className="w-full flex justify-center flex-col gap-10 items-center">

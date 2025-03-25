@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from "react";
-import { Table, Input, Modal, InputNumber, Select } from 'antd';
+import { Table, Input, Modal, InputNumber, Select, Button } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -103,6 +103,7 @@ const Account = (): JSX.Element => {
       dataIndex: 'displayname',
       key: 'displayname',
       width: 350,
+      render: (text) => <p className="font-bold">{text}</p>,
     },
     {
       title: 'Email',
@@ -130,16 +131,12 @@ const Account = (): JSX.Element => {
       render: (_, { note }) => (
         <>
           {note.map((noteitem) => {
-            let color = noteitem.length > 5 ? 'geekblue' : 'green';
-            if (noteitem === 'loser') {
-              color = 'volcano';
-            }
             return (
-              <a color={color} 
+              <Button style={{ color:"red" }}
                  key={noteitem}
                  onClick={showModal}>
                 {noteitem}
-              </a>
+              </Button>
             );
           })}
         </>
@@ -148,7 +145,7 @@ const Account = (): JSX.Element => {
   ];
   
   
-  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
+  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 5 }} />;
     type SearchProps = GetProps<typeof Input.Search>;
 
     const { Search } = Input;

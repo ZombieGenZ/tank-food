@@ -68,7 +68,71 @@ interface Slide {
 }
 
 const FormMain = (): JSX.Element => {
-
+  const language = () => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  }
+  function NavAdmin({ display_name }: {display_name: string}) {
+    const [language, setLanguage] = useState<string>(() => {
+      const SaveedLanguage = localStorage.getItem('language')
+      return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+    })
+  
+    const handleChange = (value: string) => {
+      setLanguage(value)
+      localStorage.setItem('language', JSON.stringify(value))
+      if(value == "Tiếng Việt") {
+        localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+      } else {
+        localStorage.setItem('code_language', JSON.stringify("en-US"))
+      }
+      window.location.reload()
+    };
+  
+    const items: MenuProps['items'] = [
+      {
+        key: '1',
+        label: (
+          <button
+            className='flex gap-2 items-center'
+          ><FaRegUserCircle /> Thông tin tài khoản</button>
+        ),
+      },
+      {
+        key: '2',
+        label: (
+          <button
+            className='flex gap-2 items-center'
+          ><IoLogOutOutline /> Đăng xuất</button>
+        ),
+      },
+    ];
+    return(
+      <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold text-slate-900">{display_name}</h1>
+          <div className="flex items-center gap-5">
+            <div className="flex items-center space-x-2">
+              <Calendar size={20} className="text-gray-500" />
+              <span className="text-sm text-gray-500">24/03/2025</span>
+            </div>
+            <Select
+              defaultValue={language}
+              size='small'
+              options={[{ value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
+                        { value: 'English', label: 'English - EN' },
+                      ]}
+              onChange={handleChange}
+            />
+            <Dropdown menu={{ items }} 
+                      placement="bottom">
+              <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
+                <MdAccountBox />
+              </div>
+            </Dropdown>
+            </div>
+        </div>
+    )
+  }
   // window.location.reload()
   const [loading, setLoading] = useState<boolean>(true)
   const location = useLocation();
@@ -76,25 +140,6 @@ const FormMain = (): JSX.Element => {
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [user, setUser] = useState<UserInfo | null>(null)
-  // const body1 = {
-  //   language: null,
-  //   refresh_token: refresh_token
-  // }
-  // fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-token`, {
-  //   method: 'POST',
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Authorization: `Bearer ${access_token}`,
-  //   },
-  //   body: JSON.stringify(body1)
-  // }).then(response => { return response.text() }).then((data) => {
-  //   console.log(data)
-  // })
-
-  const [language, setLanguage] = useState<string>(() => {
-    const SaveedLanguage = localStorage.getItem('language')
-    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
-  })
   useEffect(() => {
     setTimeout(() => {
       setLoading(false)
@@ -162,35 +207,6 @@ const FormMain = (): JSX.Element => {
     });
   }, [location]);
 
-  const handleChange = (value: string) => {
-    setLanguage(value)
-    localStorage.setItem('language', JSON.stringify(value))
-    if(value == "Tiếng Việt") {
-      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
-    } else {
-      localStorage.setItem('code_language', JSON.stringify("en-US"))
-    }
-    window.location.reload()
-  };
-
-  const items: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <button
-          className='flex gap-2 items-center'
-        ><FaRegUserCircle /> Thông tin tài khoản</button>
-      ),
-    },
-    {
-      key: '2',
-      label: (
-        <button
-          className='flex gap-2 items-center'
-        ><IoLogOutOutline /> Đăng xuất</button>
-      ),
-    },
-  ];
   return(
     <>
       {/* {user && user.role == 3 ? 
@@ -215,29 +231,7 @@ const FormMain = (): JSX.Element => {
           <div className='flex relative'>
             <NavigationAdmin displayname={user.display_name}/>
             <div className='w-full flex flex-col'>
-              <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
-                <h1 className="text-xl font-bold text-slate-900">Bảng điều khiển</h1>
-                <div className="flex items-center gap-5">
-                  <div className="flex items-center space-x-2">
-                    <Calendar size={20} className="text-gray-500" />
-                    <span className="text-sm text-gray-500">24/03/2025</span>
-                  </div>
-                  <Select
-                    defaultValue={language}
-                    size='small'
-                    options={[{ value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
-                              { value: 'English', label: 'English - EN' },
-                            ]}
-                    onChange={handleChange}
-                  />
-                  <Dropdown menu={{ items }} 
-                            placement="bottom">
-                    <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
-                      <MdAccountBox />
-                    </div>
-                  </Dropdown>
-                </div>
-              </div>
+              <NavAdmin display_name={`${language() == "Tiếng Việt" ? "Bảng thống kê" : "Dash board"}`}/>
               <Routes>
                 <Route path="/*" element={<MainManage />} />
                 <Route path="/Account" element={<Account />} />
@@ -293,7 +287,6 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
     );
   };
   
-  
   return (
     <div className='w-1/5 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
       <div className='p-4 flex items-center space-x-3'>
@@ -336,9 +329,12 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
           </div>
         </div>
       </div>
+      
     </div>
   );
 }
+
+
 
 function NavigationButtons({ role }: { role: number }): JSX.Element {
   const navigate = useNavigate();
@@ -595,7 +591,7 @@ function Main(): JSX.Element {
       return () => {
         if (slideTimerRef.current) clearTimeout(slideTimerRef.current);
       };
-    }, [slideIndex]);
+    }, [slideIndex, showSlides]);
   
     // Tạo hiệu ứng dựa trên loại - Enhanced with new effects
     const getEffectClasses = (index: number, effect: string): string => {

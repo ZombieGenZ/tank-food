@@ -4,10 +4,12 @@ import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
   key: string;
-  name: string;
-  age: number;
-  address: string;
-  tags: string[];
+  title: string;
+  category: string;
+  description: string;
+  price: number;
+  tags?: string;
+  note: string[];
 }
 
 interface Product {
@@ -50,6 +52,11 @@ interface Product {
 
 function ProductManagement(): JSX.Element {
   const [product, setProduct] = useState<Product[]>([]);
+  const [data, setData] = useState<DataType[]>([]);
+  const language = (): string => {
+    const Language = localStorage.getItem('language')
+    return Language ? JSON.parse(Language) : "Tiếng Việt"
+  }
   useEffect(() => {
       const body = {
         language: null,
@@ -69,33 +76,45 @@ function ProductManagement(): JSX.Element {
     }, [])
 
     useEffect(() => {
-      console.log(product)
+      const newData: DataType[] = product.map((product, index) => ({
+        key: String(index + 1),
+        title: language() == "Tiếng Việt" ? product.title_translate_1 : product.title_translate_2,
+        category: language() == "Tiếng Việt" ? product.categories.category_name_translate_1 : product.categories.category_name_translate_2,
+        description: language() == "Tiếng Việt" ? product.description_translate_1 : product.description_translate_2,
+        price: product.price, // Đảm bảo kiểu number
+        tags: product.tag_translate_1 && product.tag_translate_1.trim() !== "" 
+            ? (language() == "Tiếng Việt" ? product.tag_translate_1 : product.tag_translate_2) 
+            : "Không có tags",
+        note: ["Chỉnh sửa"]
+      }))
+
+      setData(newData)
     }, [product])
       
     const columns: TableProps<DataType>['columns'] = [
         {
           title: 'Tên sản phẩm',
-          dataIndex: 'name',
-          key: 'name',
+          dataIndex: 'title',
+          key: 'title',
           width: 350,
           render: (text) => <a>{text}</a>,
         },
         {
           title: 'Danh mục',
-          dataIndex: 'age',
+          dataIndex: 'category',
           width: 350,
-          key: 'age',
+          key: 'category',
         },
         {
           title: 'Mô tả',
-          dataIndex: 'address',
+          dataIndex: 'description',
           width: 450,
-          key: 'address',
+          key: 'description',
         },
         {
           title: 'Giá tiền (VNĐ)',
-          key: 'tags',
-          dataIndex: 'tags',
+          key: 'price',
+          dataIndex: 'price',
           width: 350,
         },
         {
@@ -106,23 +125,29 @@ function ProductManagement(): JSX.Element {
         },
         {
           title: 'Ghi chú',
-          key: 'action',
+          key: 'note',
           width: 350,
+          render: (_, { note }) => (
+                  <>
+                    {note.map((noteitem) => {
+                      return (
+                        <Button 
+                                key={noteitem}>
+                          {noteitem}
+                        </Button>
+                      );
+                    })}
+                  </>
+          ),
         },
       ];
-      
-    const data: DataType[] = [];
 
-    const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
+    const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 5 }} />;
     type SearchProps = GetProps<typeof Input.Search>;
     
     const { Search } = Input;
     
     const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
-    const language = (): string => {
-        const Language = localStorage.getItem('language')
-        return Language ? JSON.parse(Language) : "Tiếng Việt"
-    }
     return(
         <div className="p-10">
             <div className="w-full flex justify-center flex-col gap-10 items-center">
