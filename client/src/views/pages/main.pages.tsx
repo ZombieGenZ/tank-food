@@ -29,8 +29,8 @@ import { RiUser3Line, RiHome5Line, RiShoppingCart2Line, RiTruckLine, RiPriceTag3
 import { FaHome } from "react-icons/fa";
 import { IconType } from "react-icons";
 import AOS from "aos";
+import { Calendar } from 'lucide-react';
 import "aos/dist/aos.css"; 
-
 interface MenuItem {
   id: number;
   title: string;
@@ -91,6 +91,10 @@ const FormMain = (): JSX.Element => {
   //   console.log(data)
   // })
 
+  const [language, setLanguage] = useState<string>(() => {
+    const SaveedLanguage = localStorage.getItem('language')
+    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+  })
   useEffect(() => {
     setTimeout(() => {
       setLoading(false)
@@ -157,6 +161,36 @@ const FormMain = (): JSX.Element => {
       ease: 'back.out(1.7)',
     });
   }, [location]);
+
+  const handleChange = (value: string) => {
+    setLanguage(value)
+    localStorage.setItem('language', JSON.stringify(value))
+    if(value == "Tiếng Việt") {
+      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
+    } else {
+      localStorage.setItem('code_language', JSON.stringify("en-US"))
+    }
+    window.location.reload()
+  };
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <button
+          className='flex gap-2 items-center'
+        ><FaRegUserCircle /> Thông tin tài khoản</button>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <button
+          className='flex gap-2 items-center'
+        ><IoLogOutOutline /> Đăng xuất</button>
+      ),
+    },
+  ];
   return(
     <>
       {/* {user && user.role == 3 ? 
@@ -180,15 +214,40 @@ const FormMain = (): JSX.Element => {
         {loading ? <Loading /> : (user && user.role == 3 ? 
           <div className='flex relative'>
             <NavigationAdmin displayname={user.display_name}/>
-            <Routes>
-              <Route path="/*" element={<MainManage />} />
-              <Route path="/Account" element={<Account />} />
-              <Route path='/category' element={<CategoryManagement />}/>
-              <Route path='/order' element={<OrderManagement />}/>
-              <Route path='/product' element={<ProductManagement />}/>
-              <Route path='/ship' element={<ShipManagement />}/>
-              <Route path='/discount' element={<DiscountCodeManagement />}/>
-            </Routes>
+            <div className='w-full flex flex-col'>
+              <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
+                <h1 className="text-xl font-bold text-slate-900">Bảng điều khiển</h1>
+                <div className="flex items-center gap-5">
+                  <div className="flex items-center space-x-2">
+                    <Calendar size={20} className="text-gray-500" />
+                    <span className="text-sm text-gray-500">24/03/2025</span>
+                  </div>
+                  <Select
+                    defaultValue={language}
+                    size='small'
+                    options={[{ value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
+                              { value: 'English', label: 'English - EN' },
+                            ]}
+                    onChange={handleChange}
+                  />
+                  <Dropdown menu={{ items }} 
+                            placement="bottom">
+                    <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
+                      <MdAccountBox />
+                    </div>
+                  </Dropdown>
+                </div>
+              </div>
+              <Routes>
+                <Route path="/*" element={<MainManage />} />
+                <Route path="/Account" element={<Account />} />
+                <Route path='/category' element={<CategoryManagement />}/>
+                <Route path='/order' element={<OrderManagement />}/>
+                <Route path='/product' element={<ProductManagement />}/>
+                <Route path='/ship' element={<ShipManagement />}/>
+                <Route path='/discount' element={<DiscountCodeManagement />}/>
+              </Routes>
+            </div>
           </div> : 
           <div className='flex gap-5 flex-col' ref={pageRef}>
             <NavigationButtons role={user?.role ?? 0}/>
@@ -485,10 +544,10 @@ function Main(): JSX.Element {
 
     useEffect(() => {
       AOS.init({
-        duration: 1000, 
+        duration: 1000, // Thời gian hiệu ứng (ms)
         offset: 100, // Khoảng cách kích hoạt hiệu ứng (px)
         once: false,
-        mirror: true
+        mirror: true,
       });
     }, []);
     
@@ -646,7 +705,7 @@ function Main(): JSX.Element {
                 <div className="w-72 h-72 rounded-full border-4 border-[#FFB800] p-2 shadow-lg bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:border-[#FF7846]">
                   <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#FF7846]/30 transition-all duration-300 hover:border-[#FFB800]">
                     <img 
-                      src="/public/images/system/Hamburger_trangchu.jpg" 
+                      src="/public/images/system/logo tank food.png" 
                       alt="Burger đặc biệt" 
                       className="w-full h-full object-cover rounded-full transition-transform duration-700 hover:scale-110"
                     />
@@ -667,7 +726,7 @@ function Main(): JSX.Element {
                 <span className="text-[#654321]">bữa ăn</span>
               </h2>
               <p className="text-[#654321] mb-6 max-w-xl font-serif">
-                Bạn sẽ tìm được thông tin cách nâng cao trải nghiệm ẩm thực của bạn. Có vô số cách để làm một bữa ăn tuyệt vời tại TankFood. Những gì bạn phải có là nguyên liệu phù hợp và một chút sáng tạo.
+                Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                 <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
@@ -691,7 +750,7 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="100">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/Hamburger_trangchu2.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Bánh mì kẹp thịt" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -703,19 +762,19 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="200">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/Khoaitaychien_trangchu.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Khoai tây chiên" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
                 <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Khoai tây chiên</h3>
-                <p className="text-sm text-gray-500 text-center font-serif">Giòn tan đỉnh nóc</p>
+                <p className="text-sm text-gray-500 text-center font-serif">Giòn tan hấp dẫn</p>
               </div>
               
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="300">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/garan_trangchu.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Gà rán" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -727,12 +786,12 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="400">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/nuocuong_trangchu.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Thức uống" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Nước</h3>
+                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Thức uống</h3>
                 <p className="text-sm text-gray-500 text-center font-serif">Giải khát sảng khoái</p>
               </div>
             </div>
@@ -752,7 +811,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-right" data-aos-delay="100">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/burgerdacbiet.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Burger Đặc Biệt" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -771,7 +830,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-up" data-aos-delay="200">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/khoaiphomai.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Khoai Phô Mai" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -790,7 +849,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-left" data-aos-delay="300">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/garansotthai.jpg" 
+                    src="/public/images/system/logo tank food.png" 
                     alt="Gà Rán Giòn" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -814,16 +873,16 @@ function Main(): JSX.Element {
             
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif" data-aos="fade-right" data-aos-delay="200">Combo Gia Đình</h2>
             <p className="mb-6 max-w-2xl font-serif" data-aos="fade-right" data-aos-delay="300">
-              Đặt combo gia đình cho 4 người chỉ với 299.000₫. Có 4 bánh burger, 2 hộp khoai tây, 4 món tráng miệng và 4 ly nước.
+              Đặt combo gia đình cho 4 người chỉ với 299.000₫. Gồm 4 burger, 2 phần khoai tây, 4 món tráng miệng và 4 nước uống.
             </p>
             
-            <button className="bg-white text-[#FF6B35] hover:bg-gray-100 font-bold py-2 px-6 rounded-full transition-all duration-400 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8" data-aos="fade-up" data-aos-delay="400">
+            <button className="bg-white text-[#FF6B35] hover:bg-gray-100 font-bold py-2 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8" data-aos="fade-up" data-aos-delay="400">
               Đặt Ngay
             </button>
             
             <div className="absolute right-0 top-0 opacity-20">
               <img 
-                src="/public/images/system/combogiadinh.jpg" 
+                src="/public/images/system/logo tank food.png" 
                 alt="Family combo meal with burgers" 
                 className="h-full object-cover transition-transform duration-700 hover:scale-110"
               />

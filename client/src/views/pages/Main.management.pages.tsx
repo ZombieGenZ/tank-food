@@ -1,11 +1,5 @@
 import { JSX, useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { Calendar } from 'lucide-react';
-import { Select, Dropdown } from "antd";
-import type { MenuProps } from 'antd';
-import { FaRegUserCircle } from "react-icons/fa";
-import { IoLogOutOutline } from "react-icons/io5";
-import { MdAccountBox } from "react-icons/md";
 
 interface StatisticalData {
   dailyBreakdown: DailyBreakdown[];
@@ -24,11 +18,6 @@ interface DailyBreakdown {
 }
 
 function MainManage (): JSX.Element {
-
-    const [language, setLanguage] = useState<string>(() => {
-      const SaveedLanguage = localStorage.getItem('language')
-      return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
-    })
     const [list, setList] = useState<StatisticalData[]>([])
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
@@ -102,62 +91,9 @@ function MainManage (): JSX.Element {
       console.log(list)
     }, [list])
 
-    const handleChange = (value: string) => {
-        setLanguage(value)
-        localStorage.setItem('language', JSON.stringify(value))
-        if(value == "Tiếng Việt") {
-          localStorage.setItem('code_language', JSON.stringify("vi-VN"))
-        } else {
-          localStorage.setItem('code_language', JSON.stringify("en-US"))
-        }
-        window.location.reload()
-      };
-    
-      const items: MenuProps['items'] = [
-        {
-          key: '1',
-          label: (
-            <button
-              className='flex gap-2 items-center'
-            ><FaRegUserCircle /> Thông tin tài khoản</button>
-          ),
-        },
-        {
-          key: '2',
-          label: (
-            <button
-              className='flex gap-2 items-center'
-            ><IoLogOutOutline /> Đăng xuất</button>
-          ),
-        },
-      ];
-
     return(
       <div className="flex-1 overflow-auto">
       {/* Dashboard Header */}
-      <div className="bg-white shadow-sm p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-slate-900">Bảng điều khiển</h1>
-        <div className="flex items-center gap-5">
-          <div className="flex items-center space-x-2">
-            <Calendar size={20} className="text-gray-500" />
-            <span className="text-sm text-gray-500">24/03/2025</span>
-          </div>
-          <Select
-            defaultValue={language}
-            size='small'
-            options={[{ value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
-                      { value: 'English', label: 'English - EN' },
-                    ]}
-            onChange={handleChange}
-          />
-          <Dropdown menu={{ items }} 
-                    placement="bottom">
-            <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
-              <MdAccountBox />
-            </div>
-          </Dropdown>
-        </div>
-      </div>
       
       {/* Stats Overview */}
       <div className="grid grid-cols-4 gap-4 p-6">
@@ -184,9 +120,9 @@ function MainManage (): JSX.Element {
       </div>
       
       {/* Charts and Orders Section */}
-      <div className="grid grid-cols-2 gap-6 p-6">
+      <div className="flex gap-6 p-6">
         {/* Revenue Chart */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg w-[125%] shadow-sm p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="text-lg font-bold text-slate-900">Biểu đồ doanh thu</h2>
@@ -217,7 +153,7 @@ function MainManage (): JSX.Element {
         </div>
         
         {/* Recent Orders */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg w-[75%] shadow-sm p-6">
           <h2 className="text-lg font-bold text-slate-900 mb-1">Đơn hàng gần đây</h2>
           <p className="text-sm text-gray-500 mb-6">Cập nhật mới nhất</p>
           

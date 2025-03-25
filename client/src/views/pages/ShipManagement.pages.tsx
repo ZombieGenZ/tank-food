@@ -26,11 +26,8 @@ const ShipManagement = (): JSX.Element => {
         return Language ? JSON.parse(Language) : "Tiếng Việt"
     }
     return(
-        <div className="w-4/5 bg-[#FFF4E6] p-10">
+        <div className=" p-10">
             <div className="w-full flex justify-center flex-col gap-10 items-center">
-                <div className="w-full flex items-start">
-                    <h1 className="font-bold text-2xl">{language() == "Tiếng Việt" ? "Quản lý giao hàng" : "Delivery management"}</h1>
-                </div>
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex items-center justify-between">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách đơn hàng đang giao" : "List of orders being delivered"}</p>

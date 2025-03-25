@@ -114,7 +114,7 @@ const Category = (): JSX.Element => {
     }, [product]);
     
     return(
-        <div className="flex flex-col gap-5 justify-between items-center">
+        <div className=" flex flex-col gap-5 justify-between items-center">
             <div className="flex gap-2 justify-center items-center">
                 <Anchor
                     direction="horizontal"
