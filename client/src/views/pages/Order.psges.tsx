@@ -1,5 +1,5 @@
 import { JSX } from "react";
-import { Table, Input, Button } from 'antd';
+import { Table, Input } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -61,7 +61,6 @@ const OrderManagement = (): JSX.Element => {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng online đang chờ duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng online đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
@@ -71,7 +70,6 @@ const OrderManagement = (): JSX.Element => {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng online đã duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng online đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
@@ -81,7 +79,6 @@ const OrderManagement = (): JSX.Element => {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng offline đang chờ duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng offline đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
@@ -91,7 +88,6 @@ const OrderManagement = (): JSX.Element => {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng offline đã duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng offline đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>

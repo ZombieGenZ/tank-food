@@ -210,6 +210,15 @@ const Signup: React.FC = () => {
                 }, 1000);
               });
             }
+            else {
+              messageApi.open({
+                type: 'error',
+                content: 'Đăng nhập thất bại | Vui lòng kiểm tra lại thông tin',
+                style: {
+                  marginTop: '10vh',
+                },
+              })
+            }
           })
         } else {
           messageApi.open({

@@ -27,6 +27,16 @@ import Aboutus from './aboutus.pages.tsx';
 import Account from './Account.management.pages.tsx';
 import { RiUser3Line, RiHome5Line, RiShoppingCart2Line, RiTruckLine, RiPriceTag3Line, RiShoppingBag3Line } from "react-icons/ri";
 import { FaHome } from "react-icons/fa";
+import { IconType } from "react-icons";
+
+interface MenuItem {
+  id: number;
+  title: string;
+  english: string;
+  path: string;
+  icon: IconType;
+  active: boolean;
+}
 
 interface UserInfo {
   created_at: string;
@@ -245,6 +255,15 @@ const FormMain = (): JSX.Element => {
 
 function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
   const navigate = useNavigate();
+  const [navbar, setNavbar] = useState<MenuItem[]>([
+    { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: FaHome , active: true },
+    { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: RiUser3Line , active: false },
+    { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: RiHome5Line , active: false },
+    { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: RiShoppingBag3Line , active: false },
+    { id: 5, title: 'Quản lý đơn đặt hàng', english: 'Order Management', path: '/order', icon: RiShoppingCart2Line , active: false },
+    { id: 6, title: 'Quản lý giao hàng', english: 'Shipping Management', path: '/ship', icon: RiTruckLine, active: false },
+    { id: 7, title: 'Quản lý mã giảm giá', english: 'Discount Management', path: '/discount', icon: RiPriceTag3Line , active: false }
+  ])
   const [language, setLanguage] = useState<string>(() => {
     const SaveedLanguage = localStorage.getItem('language')
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
@@ -255,15 +274,15 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   }, [language]);
   
   // Define menu items similar to the admin dashboard example
-  const NavbarAdmin = [
-    { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: <FaHome size={20}/>, active: false },
-    { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: <RiUser3Line size={20} />, active: false },
-    { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: <RiHome5Line size={20} />, active: false },
-    { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: <RiShoppingBag3Line size={20} />, active: true },
-    { id: 5, title: 'Quản lý đơn đặt hàng', english: 'Order Management', path: '/order', icon: <RiShoppingCart2Line size={20} />, active: false },
-    { id: 6, title: 'Quản lý giao hàng', english: 'Shipping Management', path: '/ship', icon: <RiTruckLine size={20} />, active: false },
-    { id: 7, title: 'Quản lý mã giảm giá', english: 'Discount Management', path: '/discount', icon: <RiPriceTag3Line size={20} />, active: false }
-  ];
+
+  const handleClick = (id: number) => {
+    setNavbar((prevItems) => 
+      prevItems.map(item => 
+        item.id === id ? { ...item, active: true } : { ...item, active: false }
+      )
+    );
+  };
+  
   
   return (
     <div className='w-1/5 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
@@ -272,16 +291,16 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
         <span className='text-lg font-bold'>BUI DANG KHOA</span>
       </div>
       <div className='mt-8'>
-        {NavbarAdmin.map((item) => {
+        {navbar.map((item) => {
           const isActive = item.active;
           return (
             <div 
               key={item.id} 
-              onClick={() => navigate(item.path)}
+              onClick={() => {navigate(item.path); handleClick(item.id)}}
               className={`flex items-center px-4 py-3 cursor-pointer ${isActive ? 'bg-slate-700 border-l-4 border-orange-500' : 'hover:bg-slate-700'}`}
             >
               <div className={`mr-3 ${isActive ? 'text-orange-500' : 'text-gray-300'}`}>
-                {item.icon}
+                <item.icon size={20} />
               </div>
               <span className={isActive ? 'text-orange-500 font-medium' : 'text-gray-300'}>
                 {language === "Tiếng Việt" ? item.title : item.english}
