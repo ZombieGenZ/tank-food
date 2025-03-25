@@ -788,7 +788,7 @@ export const forgotPasswordValidator = async (req: Request, res: Response, next:
         },
         custom: {
           options: async (value, { req }) => {
-            if (value !== req.body.password) {
+            if (value !== req.body.new_password) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD

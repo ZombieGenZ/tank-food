@@ -207,7 +207,7 @@ class UserService {
   }
   async sendForgotPassword(user: User, language: string) {
     const forgotPasswordToken = await this.signForgotPassword(user._id.toString())
-    const forgotPasswordUrl = `${process.env.APP_URL}/forgot-password?token=${forgotPasswordToken}`
+    const forgotPasswordUrl = `${process.env.APP_URL}/forgot-password?token=${forgotPasswordToken}&language=${language}`
 
     let forgot_password_subject
     let forgot_password_html
