@@ -20,6 +20,9 @@ import { AuthenticateRequestsBody } from '~/models/requests/authenticate.request
 import { verifyToken } from '~/utils/jwt.utils'
 import { TokenPayload } from '~/models/requests/authentication.requests'
 import accountManagementService from '~/services/accountManagement.services'
+import User from '~/models/schemas/users.schemas'
+import { UserTypeEnum } from '~/constants/users.constants'
+import { ObjectId } from 'mongodb'
 
 export const registerUserValidator = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -460,6 +463,279 @@ export const verifyTokenValidator = async (
       if (!errors.isEmpty()) {
         if (language == LANGUAGE.VIETNAMESE) {
           res.status(HTTPSTATUS.UNAUTHORIZED).json({
+            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNAUTHORIZED).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNAUTHORIZED).json({
+        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
+        message: err
+      })
+      return
+    })
+}
+
+export const sendEmailVerifyValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+  const user = req.user as User
+
+  if (user.user_type === UserTypeEnum.VERIFIED) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.ACCOUNT_IS_VERIFIED
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.ACCOUNT_IS_VERIFIED
+    })
+    return
+  }
+
+  next()
+}
+
+export const verifyAccountValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.query.language || serverLanguage
+
+  checkSchema(
+    {
+      token: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_MUST_BE_A_STRING
+        },
+        custom: {
+          options: async (value, { req }) => {
+            try {
+              const decoded_email_verify_token = (await verifyToken({
+                token: value,
+                publicKey: process.env.SECURITY_JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+              })) as TokenPayload
+
+              const user = await databaseService.users.findOne({
+                _id: new ObjectId(decoded_email_verify_token.user_id),
+                email_verify_token: value
+              })
+
+              if (!user) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                )
+              }
+
+              ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+              ;(req as Request).user = user
+            } catch {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                  : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+              )
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['query']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
+        message: err
+      })
+      return
+    })
+}
+
+export const forgotPasswordValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.query.language || serverLanguage
+
+  checkSchema(
+    {
+      token: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_MUST_BE_A_STRING
+        },
+        custom: {
+          options: async (value, { req }) => {
+            try {
+              const decoded_forgot_password_token = (await verifyToken({
+                token: value,
+                publicKey: process.env.SECURITY_JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+              })) as TokenPayload
+
+              const user = await databaseService.users.findOne({
+                _id: new ObjectId(decoded_forgot_password_token.user_id),
+                forgot_password_token: value
+              })
+
+              if (!user) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                )
+              }
+
+              ;(req as Request).decoded_forgot_password_token = decoded_forgot_password_token
+              ;(req as Request).user = user
+            } catch {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                  : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+              )
+            }
+
+            return true
+          }
+        }
+      },
+      new_password: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 10,
+            max: 11
+          },
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PHONE_LENGTH_MUST_BE_FROM_10_TO_11
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PHONE_LENGTH_MUST_BE_FROM_10_TO_11
+        },
+        isStrongPassword: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_MUST_BE_STRONG
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_MUST_BE_STRONG
+        }
+      },
+      confirm_new_password: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 8,
+            max: 100
+          },
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_100
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_8_TO_100
+        },
+        isStrongPassword: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_MUST_BE_STRONG
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_MUST_BE_STRONG
+        },
+        custom: {
+          options: async (value, { req }) => {
+            if (value !== req.body.password) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD
+                  : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CONFIRM_PASSWORD_DOES_NOT_MATCH_PASSWORD
+              )
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
             code: RESPONSE_CODE.AUTHENTICATION_FAILED,
             message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
             errors: errors.mapped()

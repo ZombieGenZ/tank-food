@@ -4,10 +4,21 @@ import {
   loginUserController,
   logoutUserController,
   verifyTokenUserController,
-  getUserInfomationController
+  getUserInfomationController,
+  sendEmailVerifyController,
+  verifyAccountController,
+  sendEmailForgotPasswordController,
+  forgotPasswordController
 } from '~/controllers/users.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
-import { registerUserValidator, loginUserValidator, verifyTokenValidator } from '~/middlewares/users.middlewares'
+import {
+  registerUserValidator,
+  loginUserValidator,
+  verifyTokenValidator,
+  sendEmailVerifyValidator,
+  verifyAccountValidator,
+  forgotPasswordValidator
+} from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -79,5 +90,58 @@ router.post('/verify-token', verifyTokenValidator, wrapRequestHandler(verifyToke
  * }
  */
 router.post('/get-user-infomation', authenticateValidator, wrapRequestHandler(getUserInfomationController))
+
+/*
+ * Description: Gửi lại mã xác thực tài khoản
+ * Path: /api/users/send-email-verify
+ * Method: PUT
+ * headers: {
+ *    authorization?: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.put(
+  '/send-email-verify',
+  authenticateValidator,
+  sendEmailVerifyValidator,
+  wrapRequestHandler(sendEmailVerifyController)
+)
+
+/*
+ * Description: Xác thực tài khoản
+ * Path: /api/users/verify-account
+ * Method: GET
+ * query: {
+ *    token: string,
+ *    language?: string
+ * }
+ */
+router.get('/verify-account', verifyAccountValidator, wrapRequestHandler(verifyAccountController))
+
+/*
+ * Description: Gửi email quên mật khẩu
+ * Path: /api/users/send-email-forgot-password
+ * Method: PUT
+ * body: {
+ *    language?: string
+ * }
+ */
+router.put('/send-email-forgot-password', wrapRequestHandler(sendEmailForgotPasswordController))
+
+/*
+ * Description: Cập nhật mật khẩu bằng token
+ * Path: /api/users/forgot-password
+ * Method: PUT
+ * body: {
+ *    language?: string,
+ *    token: string,
+ *    new_password: string,
+ *    confirm_new_password: string
+ * }
+ */
+router.put('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
 
 export default router

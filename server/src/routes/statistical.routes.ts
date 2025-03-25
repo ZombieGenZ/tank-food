@@ -1,6 +1,10 @@
 import express from 'express'
 import { statisticalOverviewController } from '~/controllers/statistical.controllers'
-import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
+import {
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  authenticateAdministratorValidator
+} from '~/middlewares/authenticate.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -20,6 +24,7 @@ const router = express.Router()
 router.post(
   '/overview',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   wrapRequestHandler(statisticalOverviewController)
 )

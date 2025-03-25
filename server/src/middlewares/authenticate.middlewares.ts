@@ -11,7 +11,7 @@ import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { writeWarnLog } from '~/utils/log.utils'
 import User from '~/models/schemas/users.schemas'
-import { UserRoleEnum } from '~/constants/users.constants'
+import { UserRoleEnum, UserTypeEnum } from '~/constants/users.constants'
 import { deleteTemporaryFile } from '~/utils/image.utils'
 
 export const authenticateValidator = async (req: Request, res: Response, next: NextFunction) => {
@@ -181,6 +181,24 @@ export const authenticateValidator = async (req: Request, res: Response, next: N
       })
       return
     })
+}
+
+export const authenticateVerifyAccountValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+  const user = req.user as User
+
+  if (user.user_type !== UserTypeEnum.VERIFIED) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.ACCOUNT_IS_NOT_VERIFIED
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.ACCOUNT_IS_NOT_VERIFIED
+    })
+    return
+  }
+
+  next()
 }
 
 export const authenticateEmployeeValidator = async (req: Request, res: Response, next: NextFunction) => {
@@ -406,6 +424,29 @@ export const authenticateUploadImageValidator = async (req: Request, res: Respon
       })
       return
     })
+}
+
+export const authenticateVerifyAccountUploadImageValidator = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const language = req.body.language || serverLanguage
+  const user = req.user as User
+
+  if (user.user_type !== UserTypeEnum.VERIFIED) {
+    await deleteTemporaryFile(req.file)
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.ACCOUNT_IS_NOT_VERIFIED
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.ACCOUNT_IS_NOT_VERIFIED
+    })
+    return
+  }
+
+  next()
 }
 
 export const authenticateEmployeeUploadImageValidator = async (req: Request, res: Response, next: NextFunction) => {

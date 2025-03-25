@@ -158,6 +158,7 @@ const Account = (): JSX.Element => {
         const Language = localStorage.getItem('language')
         return Language ? JSON.parse(Language) : "Tiếng Việt"
     }
+    
     return(
         <div className="p-10">
             <div className="w-full flex justify-center flex-col gap-10 items-center">

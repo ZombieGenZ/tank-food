@@ -5,7 +5,11 @@ import {
   deleteCategoryController,
   getCategoryController
 } from '~/controllers/categories.controllers'
-import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
+import {
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  authenticateAdministratorValidator
+} from '~/middlewares/authenticate.middlewares'
 import {
   createCategoryValidator,
   updateCategoryValidator,
@@ -31,6 +35,7 @@ const router = express.Router()
 router.post(
   '/create',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   createCategoryValidator,
   wrapRequestHandler(createCategoryController)
@@ -54,6 +59,7 @@ router.post(
 router.put(
   '/update',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   updateCategoryValidator,
   wrapRequestHandler(updateCategoryController)
@@ -75,6 +81,7 @@ router.put(
 router.delete(
   '/delete',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   deleteCategoryValidator,
   wrapRequestHandler(deleteCategoryController)

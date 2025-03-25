@@ -7,8 +7,10 @@ import {
   getProductController
 } from '~/controllers/products.controllers'
 import {
-  authenticateAdministratorUploadImageValidator,
-  authenticateUploadImageValidator
+  authenticateUploadImageValidator,
+  authenticateVerifyAccountUploadImageValidator,
+  authenticateVerifyAccountValidator,
+  authenticateAdministratorUploadImageValidator
 } from '~/middlewares/authenticate.middlewares'
 import {
   setupProductImage,
@@ -44,6 +46,7 @@ router.post(
   '/create',
   uploadProduct.single('preview'),
   authenticateUploadImageValidator,
+  authenticateVerifyAccountUploadImageValidator,
   authenticateAdministratorUploadImageValidator,
   setupProductImage,
   createProductValidator,
@@ -72,6 +75,7 @@ router.post(
 router.put(
   '/update',
   authenticateUploadImageValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorUploadImageValidator,
   updateProductValidator,
   wrapRequestHandler(updateProductController)
@@ -100,6 +104,7 @@ router.put(
   '/update-change-image',
   uploadProduct.single('preview'),
   authenticateUploadImageValidator,
+  authenticateVerifyAccountUploadImageValidator,
   authenticateAdministratorUploadImageValidator,
   setupProductImage,
   updateProductChangeImageValidator,
@@ -122,6 +127,7 @@ router.put(
 router.delete(
   '/delete',
   authenticateUploadImageValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorUploadImageValidator,
   deleteProductValidator,
   wrapRequestHandler(deleteProductController)

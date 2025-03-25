@@ -1,6 +1,6 @@
 import express from 'express'
 import { getVoucherPrivateController } from '~/controllers/voucherPrivate.controllers'
-import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
+import { authenticateValidator, authenticateVerifyAccountValidator } from '~/middlewares/authenticate.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -16,6 +16,11 @@ const router = express.Router()
  *    refresh_token: string
  * }
  */
-router.post('/get-voucher', authenticateValidator, wrapRequestHandler(getVoucherPrivateController))
+router.post(
+  '/get-voucher',
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  wrapRequestHandler(getVoucherPrivateController)
+)
 
 export default router

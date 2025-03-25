@@ -14,6 +14,8 @@ declare module 'express' {
     user?: User
     decoded_access_token?: TokenPayload
     decoded_refresh_token?: TokenPayload
+    decoded_email_verify_token?: TokenPayload
+    decoded_forgot_password_token?: TokenPayload
     refresh_token?: RefreshToken
     category?: Category
     product?: Product

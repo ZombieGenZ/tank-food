@@ -206,6 +206,117 @@ export class VIETNAMESE_DYNAMIC_MAIL {
       `
     }
   }
+  static forgotPassword(url: string) {
+    return {
+      subject: `Yêu cầu đặt lại mật khẩu - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Đặt lại Mật khẩu của Bạn</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Chỉ một bước để quay lại thưởng thức món ăn yêu thích!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Xin chào,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản ${process.env.TRADEMARK_NAME} của bạn. Để đặt lại mật khẩu, vui lòng nhấp vào nút bên dưới:</p>
+                        
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${url}" style="background-color: #FF9A3D; color: #FFFFFF; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 20px rgba(255,154,61,0.4); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                <span style="position: relative; z-index: 1;">ĐẶT LẠI MẬT KHẨU</span>
+                            </a>
+                        </div>
+                        
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Hoặc, bạn có thể sao chép và dán đường dẫn sau vào trình duyệt của mình:</p>
+                        
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 8px; height: 100%; background-color: #FF8000;"></div>
+                            <p style="padding-left: 15px; margin: 0; word-break: break-all; color: #333333; font-size: 15px; font-family: monospace;">${url}</p>
+                        </div>
+                        
+                        <p style="margin: 30px 0 0 0; font-size: 18px; color: #333333; line-height: 1.7;"><strong>Lưu ý:</strong> Liên kết này chỉ có hiệu lực trong <span style="color: #FF9A3D; font-weight: bold;">12 giờ</span>.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Tất cả các quyền được bảo lưu.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px; transition: all 0.3s ease;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+      `
+    }
+  }
+  static changePassword(date: string, location: string, ip: string, device: string) {
+    return {
+      subject: `Thông Báo Thay Đổi Mật Khẩu - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Thay Đổi Mật Khẩu</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Mật khẩu tài khoản của bạn đã được thay đổi!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Xin chào,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Chúng tôi ghi nhận một thay đổi mật khẩu trên tài khoản ${process.env.TRADEMARK_NAME} của bạn. Dưới đây là thông tin chi tiết:</p>
+                        
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 8px; height: 100%; background-color: #FF8000;"></div>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Thời gian:</strong> ${date}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Địa điểm:</strong> ${location}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Địa chỉ IP:</strong> ${ip}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Thiết bị:</strong> ${device}</p>
+                        </div>
+                        
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Nếu bạn <strong>không thực hiện thay đổi này</strong>, vui lòng liên hệ chúng tôi ngay tại <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #FF9A3D; text-decoration: none; font-weight: bold;">${process.env.SUPPORT_EMAIL}</a>.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Tất cả các quyền được bảo lưu.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px; transition: all 0.3s ease;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </body>
+      `
+    }
+  }
 }
 
 export class ENGLIS_DYNAMIC_MAIL {
@@ -409,6 +520,117 @@ export class ENGLIS_DYNAMIC_MAIL {
                 </tr>
             </table>
         </div>
+      `
+    }
+  }
+  static forgotPassword(url: string) {
+    return {
+      subject: `Password Reset Request - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Reset Your Password</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Just one step to get back to enjoying your favorite food!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Hello,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">We have received a request to reset the password for your ${process.env.TRADEMARK_NAME} account. To reset your password, please click the button below:</p>
+                        
+                        <div style="text-align: center; margin: 40px 0;">
+                            <a href="${url}" style="background-color: #FF9A3D; color: #FFFFFF; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block; font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 8px 20px rgba(255,154,61,0.4); transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                <span style="position: relative; z-index: 1;">RESET PASSWORD</span>
+                            </a>
+                        </div>
+                        
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Or, you can copy and paste the following link into your browser:</p>
+                        
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 8px; height: 100%; background-color: #FF8000;"></div>
+                            <p style="padding-left: 15px; margin: 0; word-break: break-all; color: #333333; font-size: 15px; font-family: monospace;">${url}</p>
+                        </div>
+                        
+                        <p style="margin: 30px 0 0 0; font-size: 18px; color: #333333; line-height: 1.7;"><strong>Note:</strong> This link is only valid for <span style="color: #FF9A3D; font-weight: bold;">12 hours</span>.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px; transition: all 0.3s ease;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+      `
+    }
+  }
+  static changePassword(date: string, location: string, ip: string, device: string) {
+    return {
+      subject: `Password Change Notification - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Password Changed</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Your account password has been changed!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Hello,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">We have recorded a password change on your ${process.env.TRADEMARK_NAME} account. Below are the details:</p>
+                        
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 8px; height: 100%; background-color: #FF8000;"></div>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Time:</strong> ${date}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Location:</strong> ${location}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>IP Address:</strong> ${ip}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Device:</strong> ${device}</p>
+                        </div>
+                        
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">If you <strong>did not make this change</strong>, please contact us immediately at <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #FF9A3D; text-decoration: none; font-weight: bold;">${process.env.SUPPORT_EMAIL}</a>.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px; transition: all 0.3s ease;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </body>
       `
     }
   }

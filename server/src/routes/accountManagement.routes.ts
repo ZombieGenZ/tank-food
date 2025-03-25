@@ -5,7 +5,11 @@ import {
   unBanAccountManagementController
 } from '~/controllers/accountManagement.controllers'
 import { banAccountValidator, unBanAccountValidator } from '~/middlewares/accountManagement.middlewares'
-import { authenticateValidator, authenticateAdministratorValidator } from '~/middlewares/authenticate.middlewares'
+import {
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  authenticateAdministratorValidator
+} from '~/middlewares/authenticate.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -24,6 +28,7 @@ const router = express.Router()
 router.post(
   '/get-account',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   wrapRequestHandler(getAccountManagementController)
 )
@@ -46,6 +51,7 @@ router.post(
 router.post(
   '/ban-account',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   banAccountValidator,
   wrapRequestHandler(banAccountManagementController)
@@ -67,6 +73,7 @@ router.post(
 router.post(
   '/unban-account',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   unBanAccountValidator,
   wrapRequestHandler(unBanAccountManagementController)

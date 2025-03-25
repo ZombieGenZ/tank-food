@@ -3,7 +3,8 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import {
   RegisterUserRequestsBody,
   LoginUserRequestsBody,
-  LogoutUserRequestsBody
+  LogoutUserRequestsBody,
+  VerifyAccountRequestsBody
 } from '~/models/requests/users.requests'
 import { serverLanguage } from '~/index'
 import { writeInfoLog, writeErrorLog } from '~/utils/log.utils'
@@ -18,12 +19,13 @@ import userService from '~/services/users.services'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import User from '~/models/schemas/users.schemas'
 import RefreshToken from '~/models/schemas/refreshtoken.schemas'
-import { AuthenticateRequestsBody } from '~/models/requests/authenticate.requests'
 import { TokenPayload } from '~/models/requests/authentication.requests'
 import { verifyToken } from '~/utils/jwt.utils'
 import databaseService from '~/services/database.services'
 import { ObjectId } from 'mongodb'
 import { omit } from 'lodash'
+import { AuthenticateRequestsBody } from '~/models/requests/authenticate.requests'
+import axios from 'axios'
 
 export const registerUserController = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -295,6 +297,174 @@ export const getUserInfomationController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_FAILURE
           : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.GET_USER_INFORMATION_FAILURE
+    })
+  }
+}
+
+export const sendEmailVerifyController = async (
+  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await userService.sendEmailVerify(user, language)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.SendEmailVerifySuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.SendEmailVerifySuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.SEND_EMAIL_VERIFY_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.SEND_EMAIL_VERIFY_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.SEND_EMAIL_VERIFY_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.SendEmailVerifyFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.SendEmailVerifyFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.SEND_EMAIL_VERIFY_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.SEND_EMAIL_VERIFY_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.SEND_EMAIL_VERIFY_FAILURE
+    })
+  }
+}
+
+export const verifyAccountController = async (
+  req: Request<ParamsDictionary, any, VerifyAccountRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await userService.verifyAccount(user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VerifyAccountSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.VerifyAccountSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.VERIFY_ACCOUNT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_ACCOUNT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_ACCOUNT_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VerifyAccountFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.VerifyAccountFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.VERIFY_ACCOUNT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_ACCOUNT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_ACCOUNT_FAILURE
+    })
+  }
+}
+
+export const sendEmailForgotPasswordController = async (
+  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await userService.sendEmailVerify(user, language)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.SendMailForgotPasswordSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.SendMailForgotPasswordSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.SEND_MAIL_FORGOT_PASSWORD_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.SEND_MAIL_FORGOT_PASSWORD_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.SEND_MAIL_FORGOT_PASSWORD_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.SendMailForgotPasswordFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.SendMailForgotPasswordFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.SEND_MAIL_FORGOT_PASSWORD_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.SEND_MAIL_FORGOT_PASSWORD_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.SEND_MAIL_FORGOT_PASSWORD_FAILURE
+    })
+  }
+}
+
+export const forgotPasswordController = async (
+  req: Request<ParamsDictionary, any, VerifyAccountRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const data = (await axios.get(`https://ipinfo.io/${ip}/?token=${process.env.IPINFO_TOKEN}`)).data
+
+    console.log(data)
+
+    // await userService.verifyAccount(user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ForgotPasswordSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ForgotPasswordSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.FORGOT_PASSWORD_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ForgotPasswordFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ForgotPasswordFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.FORGOT_PASSWORD_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_FAILURE
     })
   }
 }

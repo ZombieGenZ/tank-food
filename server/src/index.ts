@@ -122,6 +122,8 @@ io.on('connection', (socket: Socket) => {
     // complete-delivery: Cập nhật thông tin đặt hàng vừa được hoàn thành giao hàng
     // ban: Cập nhật thông tin khóa tài khoản
     // unBan: Cập nhật thông tin mở tài khoản
+    // verify-account: Cập nhật thông tin xác minh tài khoản
+    // logout: Cập nhật thông tin đang xuất tài khoản
     //
 
     if (!refresh_token) {

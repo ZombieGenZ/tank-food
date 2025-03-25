@@ -39,7 +39,21 @@ export class VIETNAMESE_STATIC_MESSAGE {
     VERIFY_TOKEN_SUCCESS: 'Xác thực token thành công',
     VERIFY_TOKEN_FAILURE: 'Xác thực token thất bại',
     GET_USER_INFORMATION_SUCCESS: 'Lấy thông tin người dùng thành công',
-    GET_USER_INFORMATION_FAILURE: 'Lấy thông tin người dùng thất bại'
+    GET_USER_INFORMATION_FAILURE: 'Lấy thông tin người dùng thất bại',
+    SEND_EMAIL_VERIFY_SUCCESS: 'Gửi thư xác nhận tài khoản thành công',
+    SEND_EMAIL_VERIFY_FAILURE: 'Gửi thư xác nhận tài khoản thất bại',
+    ACCOUNT_IS_VERIFIED: 'Tài khoản của bạn đã được xác thực',
+    ACCOUNT_IS_NOT_VERIFIED: 'Tài khoản của bạn chưa được xác thực',
+    TOKEN_IS_REQUIRED: 'Không được bỏ trống token',
+    TOKEN_MUST_BE_A_STRING: 'Token phải là một chuỗi kí tự',
+    TOKEN_INVALID: 'Token không hợp lệ',
+    PASSWORD_CONFIRM_NOT_MATCH: 'Mật khẩu xác nhận phải trùng với mật khẩu mới',
+    VERIFY_ACCOUNT_SUCCESS: 'Xác thực tài khoản thành công',
+    VERIFY_ACCOUNT_FAILURE: 'Xác thực tài khoản thất bại',
+    SEND_MAIL_FORGOT_PASSWORD_SUCCESS: 'Gửi yêu cầu đặt lại mật khẩu thành công',
+    SEND_MAIL_FORGOT_PASSWORD_FAILURE: 'Gửi yêu cầu đặt lại mật khẩu thất bại',
+    FORGOT_PASSWORD_SUCCESS: 'Cập nhật mật khẩu thành công',
+    FORGOT_PASSWORD_FAILURE: 'Cập nhật mật khẩu thất bại'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -73,7 +87,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_CATEGORY_SUCCESS: 'Lấy thông tin danh mục thành công',
     GET_CATEGORY_FAILURE: 'Lấy thông tin danh mục thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký tự'
   } as const
 
   static PRODUCT_MESSAGE = {
@@ -106,7 +120,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Lấy thông tin sản phẩm thành công',
     GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký tự'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -279,7 +293,21 @@ export class ENGLISH_STATIC_MESSAGE {
     VERIFY_TOKEN_SUCCESS: 'Token verification successful',
     VERIFY_TOKEN_FAILURE: 'Token verification failed',
     GET_USER_INFORMATION_SUCCESS: 'Get user information successful',
-    GET_USER_INFORMATION_FAILURE: 'Get user information failed'
+    GET_USER_INFORMATION_FAILURE: 'Get user information failed',
+    SEND_EMAIL_VERIFY_SUCCESS: 'Account verification email sent successfully',
+    SEND_EMAIL_VERIFY_FAILURE: 'Failed to send account verification email',
+    ACCOUNT_IS_VERIFIED: 'Your account is verified',
+    ACCOUNT_IS_NOT_VERIFIED: 'Your account is not verified',
+    TOKEN_IS_REQUIRED: 'Token cannot be empty',
+    TOKEN_MUST_BE_A_STRING: 'Token must be a string',
+    TOKEN_INVALID: 'Invalid token',
+    PASSWORD_CONFIRM_NOT_MATCH: 'Confirmation password must match the new password',
+    VERIFY_ACCOUNT_SUCCESS: 'Account verification successful',
+    VERIFY_ACCOUNT_FAILURE: 'Account verification failed',
+    SEND_MAIL_FORGOT_PASSWORD_SUCCESS: 'Password reset request sent successfully',
+    SEND_MAIL_FORGOT_PASSWORD_FAILURE: 'Failed to send password reset request',
+    FORGOT_PASSWORD_SUCCESS: 'Password updated successfully',
+    FORGOT_PASSWORD_FAILURE: 'Password update failed'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -670,6 +698,30 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static BanAccount(display_name: string, reason: string, expires: Date) {
     return `Tài khoản ${display_name} đã bị khóa vì ${reason}, và sẽ hết hạn vào ${formatDateFull2(expires)}`
   }
+  static SendEmailVerifySuccessfully(user_id: string, ip: string) {
+    return `Thực hiện gửi email xác nhận tài khoản thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static SendEmailVerifyFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện gửi email xác nhận tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static VerifyAccountSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện xác nhận tài khoản thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static VerifyAccountFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện xác nhận tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static SendMailForgotPasswordSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện gửi yêu cầu đặt lại mật khẩu thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static SendMailForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện gửi yêu cầu đặt mật khẩu thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ForgotPasswordSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện cập nhật mật khẩu thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập mật khẩu thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -861,5 +913,29 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static BanAccount(display_name: string, reason: string, expires: Date) {
     return `The account ${display_name} has been banned for ${reason} and will expire on ${formatDateFull2(expires)}`
+  }
+  static SendEmailVerifySuccessfully(user_id: string, ip: string) {
+    return `Account verification email successfully sent (User: ${user_id}) (IP: ${ip})`
+  }
+  static SendEmailVerifyFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to send account verification email (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static VerifyAccountSuccessfully(user_id: string, ip: string) {
+    return `Successfully verified account (User: ${user_id}) (IP: ${ip})`
+  }
+  static VerifyAccountFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to verify account (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static SendMailForgotPasswordSuccessfully(user_id: string, ip: string) {
+    return `Password reset request sent successfully (User: ${user_id}) (IP: ${ip})`
+  }
+  static SendMailForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to send password reset request (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ForgotPasswordSuccessfully(user_id: string, ip: string) {
+    return `Password update successful (User: ${user_id}) (IP: ${ip})`
+  }
+  static ForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
+    return `Password update failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

@@ -7,7 +7,7 @@ export const generateQRCodeAttachment = async (text: string) => {
       filename: `${process.env.TRADEMARK_NAME}-bill-qr.png`,
       content: qrBuffer,
       contentType: 'image/png',
-      cid: 'ticket-qr'
+      cid: 'bill-qr'
     }
   } catch (error) {
     console.error('Lỗi tạo mã QR:', error)

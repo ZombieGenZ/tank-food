@@ -20,6 +20,7 @@ import {
 } from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   authenticateShipperValidator,
   authenticateAdministratorValidator
@@ -71,6 +72,7 @@ const router = express.Router()
 router.post(
   '/order-online',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   orderOnlineValidator,
   voucherPublicAndPrivateValidator,
   wrapRequestHandler(orderOnlineController)
@@ -116,6 +118,7 @@ router.post('/checkout', sepayApiKeyValidator, wrapRequestHandler(checkoutOrderC
 router.post(
   '/get-new-order-employee',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   wrapRequestHandler(getNewOrderEmployeeController)
 )
@@ -135,6 +138,7 @@ router.post(
 router.post(
   '/get-old-order-employee',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   wrapRequestHandler(getOldOrderEmployeeController)
 )
@@ -157,6 +161,7 @@ router.post(
 router.put(
   '/order-approval',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   orderApprovalValidator,
   wrapRequestHandler(orderApprovalEmployeeController)
@@ -179,6 +184,7 @@ router.put(
 router.put(
   '/cancel-order-employee',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   cancelOrderEmployeeValidator,
   wrapRequestHandler(cancelOrderEmployeeController)
@@ -200,6 +206,7 @@ router.put(
 router.put(
   '/order-completion-confirmation',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   orderCompletionConfirmationValidator,
   wrapRequestHandler(orderCompletionConfirmationController)
@@ -220,6 +227,7 @@ router.put(
 router.post(
   '/get-new-order-shipper',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateShipperValidator,
   wrapRequestHandler(getNewOrderShipperController)
 )
@@ -239,6 +247,7 @@ router.post(
 router.post(
   '/get-old-order-shipper',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateShipperValidator,
   wrapRequestHandler(getOldOrderShipperController)
 )
@@ -259,6 +268,7 @@ router.post(
 router.put(
   '/receive-delivery',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateShipperValidator,
   receiveDeliveryValidator,
   wrapRequestHandler(receiveDeliveryShipperController)
@@ -280,6 +290,7 @@ router.put(
 router.put(
   '/cancel-order-shipper',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   cancelOrderShipperValidator,
   wrapRequestHandler(cancelOrderShipperController)
@@ -301,6 +312,7 @@ router.put(
 router.put(
   '/confirm-delivery-completion',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateShipperValidator,
   confirmDeliveryCompletionValidator,
   wrapRequestHandler(confirmDeliveryCompletionController)
@@ -341,6 +353,7 @@ router.post('/order-offline', orderOfflineValidator, voucherPublicValidator, wra
 router.put(
   '/payment-confirmation',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
   paymentConfirmationValidator,
   wrapRequestHandler(paymentConfirmationController)
@@ -373,7 +386,13 @@ router.post('/get-order', authenticateValidator, wrapRequestHandler(getOrderCont
  *    order_id: string
  * }
  */
-router.put('/cancel-order', authenticateValidator, cancelOrderValidator, wrapRequestHandler(cancelOrderController))
+router.put(
+  '/cancel-order',
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  cancelOrderValidator,
+  wrapRequestHandler(cancelOrderController)
+)
 
 /*
  * Description: Lấy danh sách order (cho admin)
@@ -390,6 +409,7 @@ router.put('/cancel-order', authenticateValidator, cancelOrderValidator, wrapReq
 router.post(
   '/get-order-overview',
   authenticateValidator,
+  authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   wrapRequestHandler(getOrderOverviewController)
 )

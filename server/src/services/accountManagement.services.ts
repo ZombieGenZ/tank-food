@@ -36,6 +36,10 @@ class AccountManagementService {
     ])
   }
   async unBan(user_id: string) {
+    const data = {
+      user_id
+    }
+
     await Promise.all([
       databaseService.users.updateOne(
         {
@@ -50,7 +54,7 @@ class AccountManagementService {
           }
         }
       ),
-      notificationRealtime(`freshSync-user-${user_id}`, 'unBan', `user/${user_id}/unBan`, null)
+      notificationRealtime(`freshSync-user-${user_id}`, 'unBan', `user/${user_id}/unBan`, data)
     ])
   }
 }
