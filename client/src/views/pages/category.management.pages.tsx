@@ -71,14 +71,14 @@ const Category = (): JSX.Element => {
         const fetchData = async () => {
             const body = { language: null };
 
-            const productRes = await fetch("http://localhost:3000/api/products/get-product", {
+            const productRes = await fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),
             });
             const productData = await productRes.json();
 
-            const categoryRes = await fetch("http://localhost:3000/api/categories/get-category", {
+            const categoryRes = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body),

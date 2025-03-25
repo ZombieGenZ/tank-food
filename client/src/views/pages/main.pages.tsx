@@ -30,6 +30,7 @@ import { FaHome } from "react-icons/fa";
 import { IconType } from "react-icons";
 import AOS from "aos";
 import "aos/dist/aos.css"; 
+
 interface MenuItem {
   id: number;
   title: string;
@@ -90,10 +91,6 @@ const FormMain = (): JSX.Element => {
   //   console.log(data)
   // })
 
-  const [language, setLanguage] = useState<string>(() => {
-    const SaveedLanguage = localStorage.getItem('language')
-    return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
-  })
   useEffect(() => {
     setTimeout(() => {
       setLoading(false)
@@ -160,36 +157,6 @@ const FormMain = (): JSX.Element => {
       ease: 'back.out(1.7)',
     });
   }, [location]);
-
-  const handleChange = (value: string) => {
-    setLanguage(value)
-    localStorage.setItem('language', JSON.stringify(value))
-    if(value == "Tiếng Việt") {
-      localStorage.setItem('code_language', JSON.stringify("vi-VN"))
-    } else {
-      localStorage.setItem('code_language', JSON.stringify("en-US"))
-    }
-    window.location.reload()
-  };
-
-  const items: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <button
-          className='flex gap-2 items-center'
-        ><FaRegUserCircle /> Thông tin tài khoản</button>
-      ),
-    },
-    {
-      key: '2',
-      label: (
-        <button
-          className='flex gap-2 items-center'
-        ><IoLogOutOutline /> Đăng xuất</button>
-      ),
-    },
-  ];
   return(
     <>
       {/* {user && user.role == 3 ? 
@@ -213,23 +180,6 @@ const FormMain = (): JSX.Element => {
         {loading ? <Loading /> : (user && user.role == 3 ? 
           <div className='flex relative'>
             <NavigationAdmin displayname={user.display_name}/>
-            <div className='absolute right-0 top-0 gap-5 flex items-center p-10 z-40'>
-              <Select
-                defaultValue={language}
-                size='small'
-                options={[
-                  { value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
-                  { value: 'English', label: 'English - EN' },
-                ]}
-                onChange={handleChange}
-              />
-              <Dropdown menu={{ items }} 
-                        placement="bottom">
-                <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
-                  <MdAccountBox />
-                </div>
-              </Dropdown>
-            </div>
             <Routes>
               <Route path="/*" element={<MainManage />} />
               <Route path="/Account" element={<Account />} />
