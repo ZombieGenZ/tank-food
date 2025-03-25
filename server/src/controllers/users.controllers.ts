@@ -392,7 +392,7 @@ export const sendEmailForgotPasswordController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    await userService.sendEmailVerify(user, language)
+    await userService.sendForgotPassword(user, language)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE

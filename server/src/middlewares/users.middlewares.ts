@@ -598,6 +598,79 @@ export const verifyAccountValidator = async (req: Request, res: Response, next: 
     })
 }
 
+export const sendEmailForgotPasswordValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      email: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_REQUIRED
+        },
+        trim: true,
+        isEmail: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_NOT_VALID
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.EMAIL_IS_NOT_VALID
+        },
+        custom: {
+          options: async (value, { req }) => {
+            const user = await databaseService.users.findOne({ email: value })
+
+            if (!user) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.EMAIL_NOT_FOUND
+                  : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.EMAIL_NOT_FOUND
+              )
+            }
+
+            ;(req as Request).user = user
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
+            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
+        message: err
+      })
+      return
+    })
+}
+
 export const forgotPasswordValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.query.language || serverLanguage
 

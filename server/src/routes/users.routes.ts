@@ -17,6 +17,7 @@ import {
   verifyTokenValidator,
   sendEmailVerifyValidator,
   verifyAccountValidator,
+  sendEmailForgotPasswordValidator,
   forgotPasswordValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
@@ -126,10 +127,15 @@ router.get('/verify-account', verifyAccountValidator, wrapRequestHandler(verifyA
  * Path: /api/users/send-email-forgot-password
  * Method: PUT
  * body: {
- *    language?: string
+ *    language?: string,
+ *    email: string
  * }
  */
-router.put('/send-email-forgot-password', wrapRequestHandler(sendEmailForgotPasswordController))
+router.put(
+  '/send-email-forgot-password',
+  sendEmailForgotPasswordValidator,
+  wrapRequestHandler(sendEmailForgotPasswordController)
+)
 
 /*
  * Description: Cập nhật mật khẩu bằng token
