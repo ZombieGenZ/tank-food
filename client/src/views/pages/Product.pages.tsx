@@ -7,7 +7,7 @@ interface DataType {
   title: string;
   category: string;
   description: string;
-  price: number;
+  price: string;
   tags?: string;
   note: string[];
 }
@@ -81,7 +81,7 @@ function ProductManagement(): JSX.Element {
         title: language() == "Tiếng Việt" ? product.title_translate_1 : product.title_translate_2,
         category: language() == "Tiếng Việt" ? product.categories.category_name_translate_1 : product.categories.category_name_translate_2,
         description: language() == "Tiếng Việt" ? product.description_translate_1 : product.description_translate_2,
-        price: product.price, // Đảm bảo kiểu number
+        price: product.price.toLocaleString('vi-VN') + " VNĐ", // Đảm bảo kiểu number
         tags: product.tag_translate_1 && product.tag_translate_1.trim() !== "" 
             ? (language() == "Tiếng Việt" ? product.tag_translate_1 : product.tag_translate_2) 
             : "Không có tags",
@@ -97,7 +97,7 @@ function ProductManagement(): JSX.Element {
           dataIndex: 'title',
           key: 'title',
           width: 350,
-          render: (text) => <a>{text}</a>,
+          render: (text) => <p className="font-bold">{text}</p>,
         },
         {
           title: 'Danh mục',
@@ -156,7 +156,7 @@ function ProductManagement(): JSX.Element {
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
                             <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm sản phẩm theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">

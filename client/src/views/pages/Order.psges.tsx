@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { JSX, useState, useEffect } from "react";
 import { Table, Input } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
@@ -11,6 +11,54 @@ interface DataType {
 }
 
 const OrderManagement = (): JSX.Element => {
+    const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+    const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+    useEffect(() => {
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+        }
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+        })
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+        })
+    }, [refresh_token, access_token])
+    
+     useEffect(() => {
+            const handleStorageChange = () => {
+              setRefreshToken(localStorage.getItem("refresh_token"));
+              setAccessToken(localStorage.getItem("access_token"));
+            };
+          
+            window.addEventListener("storage", handleStorageChange);
+          
+            return () => {
+              window.removeEventListener("storage", handleStorageChange);
+            };
+        }, []);
+
     const columns: TableProps<DataType>['columns'] = [
         {
           title: 'Mã đơn hàng',
@@ -56,36 +104,18 @@ const OrderManagement = (): JSX.Element => {
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng online đang chờ duyệt" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng đang chờ duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng online đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />
                     </div>
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng online đã duyệt" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng đã duyệt" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng online đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
-                        </div>
-                    </div>
-                    <div className="w-full overflow-x-auto">
-                        <App />
-                    </div>
-                    <div className="w-full flex justify-between items-end">
-                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng offline đang chờ duyệt" : "Product list"}</p>
-                        <div className="w-[30%] flex gap-2">
-                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng offline đang chờ duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
-                        </div>
-                    </div>
-                    <div className="w-full overflow-x-auto">
-                        <App />
-                    </div>
-                    <div className="w-full flex justify-between items-end">
-                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng offline đã duyệt" : "Product list"}</p>
-                        <div className="w-[30%] flex gap-2">
-                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng offline đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
+                            <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
                     <div className="w-full overflow-x-auto">

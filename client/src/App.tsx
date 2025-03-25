@@ -2,32 +2,11 @@ import FormMain from "./views/pages/main.pages";
 import { useWindowScroll } from '@mantine/hooks';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Transition } from '@mantine/core';
-import { motion, useSpring, useScroll } from 'framer-motion';
 
 const App = () => {
   const [scroll, scrollTo] = useWindowScroll();
-  const { scrollYProgress } = useScroll()
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-})
   return (
     <div>
-      <motion.div
-                className="z-50"
-                id="scroll-indicator"
-                style={{
-                    scaleX,
-                    position: "fixed",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 10,
-                    originX: 0,
-                    backgroundColor: "orange",
-                }}
-            />
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<FormMain />} />

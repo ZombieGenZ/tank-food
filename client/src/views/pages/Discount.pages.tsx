@@ -3,8 +3,12 @@ import { Table, Input, Button } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
-    key: string;
-    
+    key: string,
+    code: string,
+    quantity: number,
+    discount: string,
+    requirement: number,
+    expiration_date: string,
 }
 
 interface Voucher {
@@ -23,6 +27,7 @@ const DiscountCodeManagement = (): JSX.Element => {
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
     const [voucher, setVoucher] = useState<Voucher[]>([])
+    const [data, setData] = useState<DataType[]>([]);
     const language = (): string => {
         const Language = localStorage.getItem('language')
         return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -49,10 +54,15 @@ const DiscountCodeManagement = (): JSX.Element => {
 
     useEffect(() => {
         const newData: DataType[] = voucher.map((voucherV, index) => ({
-            
+            key: String(index + 1),
+            code: voucherV.code,
+            quantity: voucherV.quantity,
+            discount: voucherV.discount.toLocaleString('vi-VN') + " VNĐ",
+            requirement: voucherV.requirement,
+            expiration_date: voucherV.expiration_date
         }))
 
-        setVoucher(newData)
+        setData(newData)
     }, [voucher])
 
     useEffect(() => {
@@ -69,32 +79,37 @@ const DiscountCodeManagement = (): JSX.Element => {
       }, []);
     const columns: TableProps<DataType>['columns'] = [
             {
-              title: 'Mã đơn hàng',
-              dataIndex: 'name',
-              key: 'name',
+              title: 'Mã giảm giá',
+              dataIndex: 'code',
+              key: 'code',
               width: 350,
+              render: (text) => <p className="font-bold">{text}</p>,
             },
             {
-              title: 'Tổng tiền đơn hàng',
-              dataIndex: 'age',
-              width: 350,
-              key: 'age',
+                title: 'Số lượng mã giảm giá',
+                dataIndex: 'quantity',
+                width: 350,
+                key: 'quantity',
             },
             {
-              title: 'Thời gian đặt hàng',
-              dataIndex: 'address',
+              title: 'Số tiền được giảm',
+              dataIndex: 'discount',
               width: 350,
-              key: 'address',
+              key: 'discount',
             },
             {
-              title: 'Trạng thái đơn hàng',
-              key: 'tags',
-              dataIndex: 'tags',
+                title: 'Yêu cầu tối thiểu đơn hàng từ',
+                key: 'requirement',
+                dataIndex: 'requirement',
+                width: 350,
+            },
+            {
+              title: 'Thời gian hết hạn',
+              key: 'expiration_date',
+              dataIndex: 'expiration_date',
               width: 350,
             }
           ];
-          
-          const data: DataType[] = [];
     
           const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
           type SearchProps = GetProps<typeof Input.Search>;
