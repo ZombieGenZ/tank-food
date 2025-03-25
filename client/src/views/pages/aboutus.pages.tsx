@@ -144,7 +144,7 @@ const Aboutus = (): JSX.Element => {
             <div className="md:w-1/2 relative" data-aos="fade-left" data-aos-delay="300" data-aos-duration="1200">
               <div className="overflow-hidden rounded-lg shadow-xl transform transition duration-500 hover:shadow-2xl">
                 <img
-                  src="/images/system/logo tank food.png"
+                  src="/public/images/system/cua-hang-do-an-min.jpg"
                   alt="McDonald's History"
                   className="w-full h-auto transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:scale-110"
                 />
