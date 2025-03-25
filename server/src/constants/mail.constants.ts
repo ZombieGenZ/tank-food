@@ -264,7 +264,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
       `
     }
   }
-  static changePassword(date: string, location: string, ip: string, device: string) {
+  static changePassword(date: string, location: string, ip: string, browser: string, os: string) {
     return {
       subject: `Thông Báo Thay Đổi Mật Khẩu - ${process.env.TRADEMARK_NAME}`,
       html: `
@@ -299,7 +299,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                             <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Thời gian:</strong> ${date}</p>
                             <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Địa điểm:</strong> ${location}</p>
                             <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Địa chỉ IP:</strong> ${ip}</p>
-                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Thiết bị:</strong> ${device}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Thiết bị:</strong> ${os} (${browser})</p>
                         </div>
                         
                         <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Nếu bạn <strong>không thực hiện thay đổi này</strong>, vui lòng liên hệ chúng tôi ngay tại <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #FF9A3D; text-decoration: none; font-weight: bold;">${process.env.SUPPORT_EMAIL}</a>.</p>
@@ -581,7 +581,7 @@ export class ENGLIS_DYNAMIC_MAIL {
       `
     }
   }
-  static changePassword(date: string, location: string, ip: string, device: string) {
+  static changePassword(date: string, location: string, ip: string, browser: string, os: string) {
     return {
       subject: `Password Change Notification - ${process.env.TRADEMARK_NAME}`,
       html: `
@@ -616,7 +616,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                             <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Time:</strong> ${date}</p>
                             <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Location:</strong> ${location}</p>
                             <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>IP Address:</strong> ${ip}</p>
-                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Device:</strong> ${device}</p>
+                            <p style="padding-left: 15px; margin: 5px 0; color: #333333; font-size: 16px;"><strong>Device:</strong> ${os} (${browser})</p>
                         </div>
                         
                         <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">If you <strong>did not make this change</strong>, please contact us immediately at <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #FF9A3D; text-decoration: none; font-weight: bold;">${process.env.SUPPORT_EMAIL}</a>.</p>

@@ -242,7 +242,8 @@ class UserService {
     payload: ForgotPasswordRequestsBody,
     location: string,
     ip: string,
-    device: string,
+    browser: string,
+    os: string,
     language: string
   ) {
     const date = formatDateFull2(new Date())
@@ -250,11 +251,11 @@ class UserService {
     let change_password_html
 
     if (language == LANGUAGE.VIETNAMESE) {
-      change_password_subject = VIETNAMESE_DYNAMIC_MAIL.changePassword(date, location, ip, device).subject
-      change_password_html = VIETNAMESE_DYNAMIC_MAIL.changePassword(date, location, ip, device).html
+      change_password_subject = VIETNAMESE_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).subject
+      change_password_html = VIETNAMESE_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).html
     } else {
-      change_password_subject = ENGLIS_DYNAMIC_MAIL.changePassword(date, location, ip, device).subject
-      change_password_html = ENGLIS_DYNAMIC_MAIL.changePassword(date, location, ip, device).html
+      change_password_subject = ENGLIS_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).subject
+      change_password_html = ENGLIS_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).html
     }
 
     const data = {

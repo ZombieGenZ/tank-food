@@ -4,7 +4,8 @@ import {
   RegisterUserRequestsBody,
   LoginUserRequestsBody,
   LogoutUserRequestsBody,
-  VerifyAccountRequestsBody
+  VerifyAccountRequestsBody,
+  ForgotPasswordRequestsBody
 } from '~/models/requests/users.requests'
 import { serverLanguage } from '~/index'
 import { writeInfoLog, writeErrorLog } from '~/utils/log.utils'
@@ -425,7 +426,7 @@ export const sendEmailForgotPasswordController = async (
 }
 
 export const forgotPasswordController = async (
-  req: Request<ParamsDictionary, any, VerifyAccountRequestsBody>,
+  req: Request<ParamsDictionary, any, ForgotPasswordRequestsBody>,
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
@@ -444,10 +445,16 @@ export const forgotPasswordController = async (
       browser: userAgent?.browser,
       os: userAgent?.os
     }
-    console.log(locationData.data.display_name)
-    console.log(deviceInfo)
 
-    // await userService.verifyAccount(user)
+    await userService.forgotPassword(
+      user,
+      req.body,
+      locationData.data.display_name,
+      ip,
+      deviceInfo.browser as string,
+      deviceInfo.os as string,
+      language
+    )
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
