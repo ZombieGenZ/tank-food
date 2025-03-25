@@ -443,7 +443,7 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
           <div onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
-            <img src="/public/images/system/logo tank food.png" className='w-16' alt="logo" /> 
+            <img src="/images/system/logo tank food.png" className='w-16' alt="logo" /> 
             <p>Tank<span className='text-[#ffcc00]'>Food</span></p>
           </div>
         </div>
@@ -714,7 +714,7 @@ function Main(): JSX.Element {
                 <div className="w-72 h-72 rounded-full border-4 border-[#FFB800] p-2 shadow-lg bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:border-[#FF7846]">
                   <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#FF7846]/30 transition-all duration-300 hover:border-[#FFB800]">
                     <img 
-                      src="/public/images/system/Hamburger_trangchu.jpg" 
+                      src="/images/system/Hamburger_trangchu.jpg" 
                       alt="Burger đặc biệt" 
                       className="w-full h-full object-cover rounded-full transition-transform duration-700 hover:scale-110"
                     />
@@ -759,7 +759,7 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="100">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/Hamburger_trangchu2.jpg" 
+                    src="/images/system/Hamburger_trangchu2.jpg" 
                     alt="Bánh mì kẹp thịt" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -771,7 +771,7 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="200">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/Khoaitaychien_trangchu.jpg" 
+                    src="/images/system/Khoaitaychien_trangchu.jpg" 
                     alt="Khoai tây chiên" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -783,7 +783,7 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="300">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/garan_trangchu.jpg" 
+                    src="/images/system/garan_trangchu.jpg" 
                     alt="Gà rán" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -795,7 +795,7 @@ function Main(): JSX.Element {
               <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="400">
                 <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
                   <img 
-                    src="/public/images/system/nuocuong_trangchu.jpg" 
+                    src="/images/system/nuocuong_trangchu.jpg" 
                     alt="Thức uống" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -820,7 +820,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-right" data-aos-delay="100">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/burgerdacbiet.jpg" 
+                    src="/images/system/burgerdacbiet.jpg" 
                     alt="Burger Đặc Biệt" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -839,7 +839,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-up" data-aos-delay="200">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/khoaiphomai.jpg" 
+                    src="/images/system/khoaiphomai.jpg" 
                     alt="Khoai Phô Mai" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -858,7 +858,7 @@ function Main(): JSX.Element {
               <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-left" data-aos-delay="300">
                 <div className="h-56 overflow-hidden">
                   <img 
-                    src="/public/images/system/garansotthai.jpg" 
+                    src="/images/system/garansotthai.jpg" 
                     alt="Gà Rán Giòn" 
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
@@ -891,7 +891,7 @@ function Main(): JSX.Element {
             
             <div className="absolute right-0 top-0 opacity-20">
               <img 
-                src="/public/images/system/combogiadinh.jpg" 
+                src="/images/system/combogiadinh.jpg" 
                 alt="Family combo meal with burgers" 
                 className="h-full object-cover transition-transform duration-700 hover:scale-110"
               />

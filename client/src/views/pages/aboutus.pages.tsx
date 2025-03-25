@@ -67,7 +67,7 @@ const Aboutus = (): JSX.Element => {
             >
               <div className="transform transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-xl rounded-lg p-4">
                 <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto transform transition-transform duration-500 ease-out group-hover:scale-110">
-                  <img src="/public/images/system/icon-like.png" alt="Chất lượng" className="w-12 h-12"/>
+                  <img src="/images/system/icon-like.png" alt="Chất lượng" className="w-12 h-12"/>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2 text-center">Chất Lượng</h3>
                 <p className="text-gray-600 text-center">
@@ -84,7 +84,7 @@ const Aboutus = (): JSX.Element => {
             >
               <div className="transform transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-xl rounded-lg p-4">
                 <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto transform transition-transform duration-500 ease-out group-hover:scale-110">
-                  <img src="/public/images/system/icon-dish.png" alt="Đa dạng" className="w-12 h-12"/>
+                  <img src="/images/system/icon-dish.png" alt="Đa dạng" className="w-12 h-12"/>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2 text-center">Đa Dạng</h3>
                 <p className="text-gray-600 text-center">
@@ -101,7 +101,7 @@ const Aboutus = (): JSX.Element => {
             >
               <div className="transform transition-all duration-700 ease-out group-hover:-translate-y-2 group-hover:shadow-xl rounded-lg p-4">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mb-4 mx-auto transform transition-transform duration-500 ease-out group-hover:scale-110">
-                  <img src="/public/images/system/icon-world.png" alt="Toàn cầu" className="w-12 h-12"/>
+                  <img src="/images/system/icon-world.png" alt="Toàn cầu" className="w-12 h-12"/>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2 text-center">Toàn Cầu</h3>
                 <p className="text-gray-600 text-center">
@@ -144,7 +144,7 @@ const Aboutus = (): JSX.Element => {
             <div className="md:w-1/2 relative" data-aos="fade-left" data-aos-delay="300" data-aos-duration="1200">
               <div className="w-120 h-140 overflow-hidden rounded-lg shadow-xl transform transition duration-500 hover:shadow-2xl">
                 <img
-                  src="/public/images/system/quanan_aboutus.jpg"
+                  src="/images/system/quanan_aboutus.jpg"
                   alt="McDonald's History"
                   className="w-full h-auto transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:scale-110"
                 />
