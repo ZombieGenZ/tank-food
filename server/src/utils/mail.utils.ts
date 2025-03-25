@@ -6,7 +6,8 @@ import { generateQRCodeAttachment } from './qrcode.utils'
 const GOOGLE_MAILER_CLIENT_ID = process.env.GOOGLE_MAILER_CLIENT_ID as string
 const GOOGLE_MAILER_CLIENT_SECRET = process.env.GOOGLE_MAILER_CLIENT_SECRET as string
 const GOOGLE_MAILER_REFRESH_TOKEN = process.env.GOOGLE_MAILER_REFRESH_TOKEN as string
-const GOOGLE_MAILER_EMAIL_ADDRESS = process.env.GOOGLE_MAILER_EMAIL_ADDRESS as string
+const GOOGLE_MAILER_EMAIL_PRIMARY_ADDRESS = process.env.GOOGLE_MAILER_EMAIL_PRIMARY_ADDRESS as string
+const GOOGLE_MAILER_EMAIL_SEND_ADDRESS = process.env.GOOGLE_MAILER_EMAIL_SEND_ADDRESS as string
 
 const MailClient = new OAuth2Client(GOOGLE_MAILER_CLIENT_ID, GOOGLE_MAILER_CLIENT_SECRET)
 
@@ -14,7 +15,13 @@ MailClient.setCredentials({
   refresh_token: GOOGLE_MAILER_REFRESH_TOKEN
 })
 
-export const sendMail = async (to: string, subject: string, html: string, qrCodeUrl?: string) => {
+export const sendMail = async (
+  to: string,
+  subject: string,
+  html: string,
+  qrCodeUrl?: string,
+  fromEmail: string = GOOGLE_MAILER_EMAIL_SEND_ADDRESS
+) => {
   try {
     const access_token_object = await MailClient.getAccessToken()
     const access_token = access_token_object?.token as string
@@ -25,7 +32,7 @@ export const sendMail = async (to: string, subject: string, html: string, qrCode
       secure: true,
       auth: {
         type: 'OAuth2',
-        user: GOOGLE_MAILER_EMAIL_ADDRESS,
+        user: GOOGLE_MAILER_EMAIL_PRIMARY_ADDRESS,
         clientId: GOOGLE_MAILER_CLIENT_ID,
         clientSecret: GOOGLE_MAILER_CLIENT_SECRET,
         refreshToken: GOOGLE_MAILER_REFRESH_TOKEN,
@@ -36,7 +43,7 @@ export const sendMail = async (to: string, subject: string, html: string, qrCode
     const transport = nodemailer.createTransport(transportOptions)
 
     const mailOptions: nodemailer.SendMailOptions = {
-      from: GOOGLE_MAILER_EMAIL_ADDRESS,
+      from: fromEmail,
       to,
       subject,
       html
