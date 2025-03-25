@@ -22,5 +22,6 @@ declare module 'express' {
     total_price?: number
     product_list?: ProductList
     order?: Order
+    banned_time?: Date
   }
 }

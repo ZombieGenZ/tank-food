@@ -5,7 +5,12 @@ import { LANGUAGE } from '~/constants/language.constants'
 import { RegisterUserRequestsBody, LoginUserRequestsBody } from '~/models/requests/users.requests'
 import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { writeWarnLog } from '~/utils/log.utils'
-import { VIETNAMESE_STATIC_MESSAGE, ENGLISH_STATIC_MESSAGE } from '~/constants/message.constants'
+import {
+  VIETNAMESE_STATIC_MESSAGE,
+  ENGLISH_STATIC_MESSAGE,
+  VIETNAMESE_DYNAMIC_MESSAGE,
+  ENGLIS_DYNAMIC_MESSAGE
+} from '~/constants/message.constants'
 import { serverLanguage } from '..'
 import userService from '~/services/users.services'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
@@ -14,6 +19,7 @@ import { HashPassword } from '~/utils/encryption.utils'
 import { AuthenticateRequestsBody } from '~/models/requests/authenticate.requests'
 import { verifyToken } from '~/utils/jwt.utils'
 import { TokenPayload } from '~/models/requests/authentication.requests'
+import accountManagementService from '~/services/accountManagement.services'
 
 export const registerUserValidator = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -294,6 +300,28 @@ export const loginUserValidator = async (
                   ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.INCORRECT_EMAIL_OR_PASSWORD
                   : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.INCORRECT_EMAIL_OR_PASSWORD
               )
+            }
+
+            if (result.penalty !== null) {
+              const date = new Date()
+
+              if (result.penalty.expired_at < date) {
+                accountManagementService.unBan(result._id.toString())
+              } else {
+                throw new Error(
+                  serverLanguage == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_DYNAMIC_MESSAGE.BanAccount(
+                        result.display_name,
+                        result.penalty.reason,
+                        result.penalty.expired_at
+                      )
+                    : ENGLIS_DYNAMIC_MESSAGE.BanAccount(
+                        result.display_name,
+                        result.penalty.reason,
+                        result.penalty.expired_at
+                      )
+                )
+              }
             }
 
             ;(req as Request).user = result
