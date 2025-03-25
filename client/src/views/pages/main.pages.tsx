@@ -28,7 +28,8 @@ import Account from './Account.management.pages.tsx';
 import { RiUser3Line, RiHome5Line, RiShoppingCart2Line, RiTruckLine, RiPriceTag3Line, RiShoppingBag3Line } from "react-icons/ri";
 import { FaHome } from "react-icons/fa";
 import { IconType } from "react-icons";
-
+import AOS from "aos";
+import "aos/dist/aos.css"; 
 interface MenuItem {
   id: number;
   title: string;
@@ -673,8 +674,226 @@ function Main(): JSX.Element {
   return (
       <>
         <Slideshow />
+          {/* Wrapper với nền aura phù hợp với chủ đề đồ ăn nhanh */}
+        <div className="bg-gradient-to-b from-[#FFE5B4] to-[#92e2fb] relative overflow-hidden">
+          {/* Hiệu ứng aura */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxsaW5lIHgxPSIwIiB5PSIwIiB4Mj0iMCIgeTI9IjQwIiBzdHJva2U9IiNGRkI4MDAiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=')]"></div>
+          
+          {/* Phần Nâng tầm bữa ăn */}
+          <div className="flex flex-col md:flex-row items-center justify-between py-12 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up" data-aos-duration="1000">
+            <div className="relative w-full md:w-1/3 flex justify-center" data-aos="zoom-in" data-aos-delay="300">
+              <div className="relative transform transition-transform duration-500 hover:scale-105 hover:rotate-3">
+                {/* Khung tròn với đường viền */}
+                <div className="w-72 h-72 rounded-full border-4 border-[#FFB800] p-2 shadow-lg bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:border-[#FF7846]">
+                  <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#FF7846]/30 transition-all duration-300 hover:border-[#FFB800]">
+                    <img 
+                      src="/public/images/system/logo tank food.png" 
+                      alt="Burger đặc biệt" 
+                      className="w-full h-full object-cover rounded-full transition-transform duration-700 hover:scale-110"
+                    />
+                  </div>
+                </div>
+                <div className="absolute top-0 left-0 -translate-x-6 -translate-y-6 text-[#FFB800] animate-pulse">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <div className="w-full md:w-2/3 mt-8 md:mt-0 text-center md:text-left" data-aos="fade-left" data-aos-delay="500">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 font-serif">
+                <span className="text-[#654321]">Nâng </span>
+                <span className="text-[#FF7846]">cao </span>
+                <span className="text-[#654321]">bữa ăn</span>
+              </h2>
+              <p className="text-[#654321] mb-6 max-w-xl font-serif">
+                Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
+                  Đặt hàng ngay
+                </button>
+                <button className="border-2 border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px]">
+                  Xem thực đơn
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Phần Danh mục nổi bật */}
+          <div className="py-16 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up">
+            <h2 className="text-3xl font-bold text-center mb-8 font-serif" data-aos="zoom-in">
+              <span className="text-[#654321]">Danh mục </span>
+              <span className="text-[#FF7846]">nổi bật</span>
+            </h2>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="100">
+                <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Bánh mì kẹp thịt" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Bánh mì kẹp thịt</h3>
+                <p className="text-sm text-gray-500 text-center font-serif">Đa dạng hương vị</p>
+              </div>
+              
+              <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="200">
+                <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Khoai tây chiên" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Khoai tây chiên</h3>
+                <p className="text-sm text-gray-500 text-center font-serif">Giòn tan hấp dẫn</p>
+              </div>
+              
+              <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="300">
+                <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Gà rán" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Gà rán</h3>
+                <p className="text-sm text-gray-500 text-center font-serif">Thơm ngon đặc biệt</p>
+              </div>
+              
+              <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="400">
+                <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Thức uống" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-[#654321] text-center font-serif">Thức uống</h3>
+                <p className="text-sm text-gray-500 text-center font-serif">Giải khát sảng khoái</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Phần Nấu Ăn */}
+          <div className="py-16 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up">
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-medium text-[#654321] font-serif" data-aos="fade-up">MÓN ĂN NGON</h3>
+              <h2 className="text-5xl font-bold text-[#FF7846] mt-2 font-serif" data-aos="zoom-in" data-aos-delay="200">GIÁ TUYỆT VỜI</h2>
+              <p className="text-[#654321] max-w-2xl mx-auto mt-4 font-serif" data-aos="fade-up" data-aos-delay="400">
+                Khám phá các món ăn tuyệt vời của chúng tôi, được tạo ra để giúp bạn tìm đúng công thức cho bữa ăn hoàn hảo tại TankFood.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+              <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-right" data-aos-delay="100">
+                <div className="h-56 overflow-hidden">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Burger Đặc Biệt" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-[#654321] font-serif">Burger Đặc Biệt</h3>
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-[#FF7846] font-bold font-serif">89.000 ₫</span>
+                    <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white text-sm py-1 px-3 rounded-full transition-all duration-300 font-serif shadow-sm hover:shadow-md hover:px-4">
+                      Thêm vào giỏ
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-up" data-aos-delay="200">
+                <div className="h-56 overflow-hidden">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Khoai Phô Mai" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-[#654321] font-serif">Khoai Phô Mai</h3>
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-[#FF7846] font-bold font-serif">49.000 ₫</span>
+                    <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white text-sm py-1 px-3 rounded-full transition-all duration-300 font-serif shadow-sm hover:shadow-md hover:px-4">
+                      Thêm vào giỏ
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-left" data-aos-delay="300">
+                <div className="h-56 overflow-hidden">
+                  <img 
+                    src="/public/images/system/logo tank food.png" 
+                    alt="Gà Rán Giòn" 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-[#654321] font-serif">Gà Rán Giòn</h3>
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-[#FF7846] font-bold font-serif">79.000 ₫</span>
+                    <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white text-sm py-1 px-3 rounded-full transition-all duration-300 font-serif shadow-sm hover:shadow-md hover:px-4">
+                      Thêm vào giỏ
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Phần Combo Gia Đình */}
+          <div className="py-12 px-4 md:px-8 lg:px-16 bg-gradient-to-r from-[#FF9A3D] to-[#FF6B35] text-white rounded-lg mx-4 md:mx-8 lg:mx-16 my-16 relative overflow-hidden shadow-lg border border-[#FFB800]/30 transition-transform duration-300 hover:shadow-2xl hover:scale-[1.01]" data-aos="zoom-in-up">
+            <div className="absolute top-2 right-2 bg-white text-[#FF6B35] font-bold py-1 px-3 rounded-full text-sm font-serif shadow-md">-20%</div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif" data-aos="fade-right" data-aos-delay="200">Combo Gia Đình</h2>
+            <p className="mb-6 max-w-2xl font-serif" data-aos="fade-right" data-aos-delay="300">
+              Đặt combo gia đình cho 4 người chỉ với 299.000₫. Gồm 4 burger, 2 phần khoai tây, 4 món tráng miệng và 4 nước uống.
+            </p>
+            
+            <button className="bg-white text-[#FF6B35] hover:bg-gray-100 font-bold py-2 px-6 rounded-full transition-all duration-300 font-serif shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8" data-aos="fade-up" data-aos-delay="400">
+              Đặt Ngay
+            </button>
+            
+            <div className="absolute right-0 top-0 opacity-20">
+              <img 
+                src="/public/images/system/logo tank food.png" 
+                alt="Family combo meal with burgers" 
+                className="h-full object-cover transition-transform duration-700 hover:scale-110"
+              />
+            </div>
+          </div>
+
+          {/* Phần Call to Action */}
+          <div className="py-24 px-4 md:px-8 lg:px-16 bg-gradient-to-b from-[#9ce5fc] to-[#FFE5B4] text-center relative z-10 shadow-inner" data-aos="fade-up">
+            <div className="absolute top-8 left-1/4 text-[#FFB800] animate-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+              </svg>
+            </div>
+            
+            <h3 className="text-2xl font-medium text-[#654321] mb-2 font-serif" data-aos="fade-up" data-aos-delay="200">Vẫn còn đói?</h3>
+            <h2 className="text-6xl font-bold text-[#FF7846] mb-12 font-serif" data-aos="zoom-in" data-aos-delay="400">ĐẶT THÊM NGAY</h2>
+            
+            <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-serif shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
+              Đặt hàng ngay
+            </button>
+            
+            <div className="absolute bottom-8 right-1/4 text-[#FFB800] animate-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+              </svg>
+            </div>
+          </div>
+        </div>
       </>
     );
 }
-
-export default FormMain
+export default FormMain;
