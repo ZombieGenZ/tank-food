@@ -532,6 +532,15 @@ function Main(): JSX.Element {
   const Slideshow = (): JSX.Element => {
     const [slideIndex, setSlideIndex] = useState<number>(0);
     const slideTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+      AOS.init({
+        duration: 1000, // Thời gian hiệu ứng (ms)
+        offset: 100, // Khoảng cách kích hoạt hiệu ứng (px)
+        once: false,
+        mirror: true
+      });
+    }, []);
     
     const slides: Slide[] = [
       { src: "/images/system/1.png", alt: "Slide 1", effect: "fade-zoom" },
