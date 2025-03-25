@@ -1,13 +1,14 @@
 import { JSX, useEffect, useState } from "react";
-import { Space, Table, Tag, Input } from 'antd';
+import { Table, Input, Modal, InputNumber, Select } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
     key: string;
-    name: string;
-    age: number;
-    address: string;
-    tags: string[];
+    displayname: string;
+    email: string;
+    phone: string;
+    role: string;
+    note: string[];
   }
 
   interface Penalty {
@@ -33,6 +34,21 @@ const Account = (): JSX.Element => {
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [listuser, setListuser] = useState<User[]>([]);
+  const [data, setDataUser] = useState<DataType[]>([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const body = {
@@ -51,6 +67,7 @@ const Account = (): JSX.Element => {
       return response.json()
     }).then((data) => {
       setListuser(data.account)
+      console.log(data)
     })
   }, [refresh_token, access_token])
 
@@ -68,66 +85,68 @@ const Account = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    console.log(listuser)
-  }, [listuser])
+    const newData = listuser.map((user, index) => ({
+      key: String(index + 1),
+      displayname: user.display_name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role === 3 ? "Admin" : user.role === 2 ? "Shipper" : user.role === 1 ? "Employee" : "Customer",
+      note: ["Ban tài khoản"]
+    }));
+  
+    setDataUser(newData);
+  }, [listuser]);
 
   const columns: TableProps<DataType>['columns'] = [
     {
       title: 'Tên hiển thị',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'displayname',
+      key: 'displayname',
       width: 350,
-      render: (text) => <a>{text}</a>,
     },
     {
       title: 'Email',
-      dataIndex: 'age',
+      dataIndex: 'email',
       width: 350,
-      key: 'age',
+      key: 'email',
     },
     {
       title: 'Số điện thoại',
-      dataIndex: 'address',
+      dataIndex: 'phone',
       width: 450,
-      key: 'address',
+      key: 'phone',
     },
     {
       title: 'Quyền hạn',
-      key: 'tags',
-      dataIndex: 'tags',
+      key: 'role',
+      dataIndex: 'role',
       width: 250,
-      render: (_, { tags }) => (
+    },
+    {
+      title: 'Ghi chú',
+      key: 'note',
+      dataIndex: 'note',
+      width: 350,
+      render: (_, { note }) => (
         <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
+          {note.map((noteitem) => {
+            let color = noteitem.length > 5 ? 'geekblue' : 'green';
+            if (noteitem === 'loser') {
               color = 'volcano';
             }
             return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
+              <a color={color} 
+                 key={noteitem}
+                 onClick={showModal}>
+                {noteitem}
+              </a>
             );
           })}
         </>
       ),
     },
-    {
-      title: 'Ghi chú',
-      key: 'action',
-      width: 350,
-      render: (_, record) => (
-        <Space size="middle">
-          <a>Invite {record.name}</a>
-          <a>Delete</a>
-        </Space>
-      ),
-    },
   ];
   
-  const data: DataType[] = [
-    
-  ];
   
   const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
     type SearchProps = GetProps<typeof Input.Search>;
@@ -157,6 +176,22 @@ const Account = (): JSX.Element => {
                     </div>
                 </div>
             </div>
+            <Modal title={language() == "Tiếng Việt" ? "Ban tài khoản" : "Ban account"} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+              <div className="w-full flex gap-5">
+                <InputNumber
+                  min={1}
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500 outline-none"
+                />
+                <Select
+                  className="custom-select w-full"
+                  popupClassName="custom-dropdown"
+                  options={[
+                    { value: "option1", label: "Option 1" },
+                    { value: "option2", label: "Option 2" },
+                  ]}
+                />
+              </div>
+            </Modal>
         </div>
     )
 }

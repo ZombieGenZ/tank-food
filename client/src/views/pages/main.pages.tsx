@@ -310,7 +310,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
         })}
       </div>
       
-      <div className='absolute bottom-0 left-0 w-64 p-4 border-t border-slate-700'>
+      <div className='absolute bottom-0 left-0 w-full p-4 border-t border-slate-700'>
         <div className='flex items-center space-x-3 gap-2'>
           <Avatar
             size={32}
