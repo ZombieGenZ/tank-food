@@ -195,7 +195,8 @@ class UserService {
         },
         {
           $set: {
-            user_type: UserTypeEnum.VERIFIED
+            user_type: UserTypeEnum.VERIFIED,
+            email_verify_token: ''
           },
           $currentDate: {
             updated_at: true
@@ -269,7 +270,8 @@ class UserService {
         },
         {
           $set: {
-            password: HashPassword(payload.new_password)
+            password: HashPassword(payload.new_password),
+            forgot_password_token: ''
           },
           $currentDate: {
             updated_at: true
