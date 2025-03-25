@@ -435,7 +435,7 @@ export const forgotPasswordController = async (
   try {
     const ipData = (await axios.get(`https://ipinfo.io/${ip}/?token=${process.env.IPINFO_TOKEN}`)).data
     const [latitude, longitude] = ipData.loc.split(',')
-    const locationData = axios.get(
+    const locationData = await axios.get(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
     )
     console.log(locationData)
