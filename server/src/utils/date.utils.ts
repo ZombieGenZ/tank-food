@@ -54,11 +54,11 @@ export const isLastDayOfMonth = (): boolean => {
   return tomorrow.getDate() === 1
 }
 
-export const isValidTimeFormat = (str: string): boolean => /^\d+[smdwmo|ySMDWMO|Y]$/.test(str)
+export const isValidTimeFormat = (str: string): boolean => /^\d+[smdhmo|ySMDHMO|Y]$/.test(str)
 
 export const calculateFutureTime = (str: string): Date | null => {
   if (!isValidTimeFormat(str)) return null
-  const [_, value, unit] = str.match(/^(\d+)([smdwmo|ySMDWMO|Y])$/)!
+  const [_, value, unit] = str.match(/^(\d+)([smdhmo|ySMDHMO|Y])$/)!
   const n = +value
   const u = unit.toLowerCase() as Lowercase<TimeUnit>
 
@@ -67,13 +67,15 @@ export const calculateFutureTime = (str: string): Date | null => {
       ? n * 1000
       : u === 'm'
         ? n * 60000
-        : u === 'd'
-          ? n * 86400000
-          : u === 'w'
-            ? n * 604800000
-            : u === 'mo'
-              ? n * 2592000000
-              : n * 31536000000
+        : u === 'h'
+          ? n * 3600000
+          : u === 'd'
+            ? n * 86400000
+            : u === 'w'
+              ? n * 604800000
+              : u === 'mo'
+                ? n * 2592000000
+                : n * 31536000000
 
   return new Date(Date.now() + milliseconds)
 }

@@ -1,1 +1,1 @@
-export type TimeUnit = 's' | 'm' | 'd' | 'w' | 'mo' | 'y' | 'S' | 'M' | 'D' | 'W' | 'MO' | 'Y'
+export type TimeUnit = 's' | 'm' | 'h' | 'd' | 'w' | 'mo' | 'y' | 'S' | 'M' | 'H' | 'D' | 'W' | 'MO' | 'Y'
