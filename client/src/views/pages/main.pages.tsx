@@ -209,23 +209,6 @@ const FormMain = (): JSX.Element => {
 
   return(
     <>
-      {/* {user && user.role == 3 ? 
-        <div className='flex' ref={pageRef}>
-          <NavigationAdmin displayname={user.display_name}/>
-          <Routes>
-            <Route path="/*" element={<MainManage />} />
-          </Routes>
-        </div> : 
-        <div className='flex gap-5 flex-col' ref={pageRef}>
-          <NavigationButtons role={user?.role ?? 0}/>
-          <Routes>
-            <Route path="/*" element={<Main />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path='/menu' element={<Category />}/>
-            <Route path='/contact' element={<ContactUs />}/>
-            <Route path='/category' element={<CategoryManagement />}/>
-          </Routes>
-        </div>} */}
 
         {loading ? <Loading /> : (user && user.role == 3 ? 
           <div className='flex relative'>

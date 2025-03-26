@@ -72,7 +72,7 @@ const CategoryManagement = (): JSX.Element => {
       key: 'priority',
     },
     {
-      title: 'Ghi chú',
+      title: '',
       key: 'note',
       width: 350,
       render: (_, { note }) => (

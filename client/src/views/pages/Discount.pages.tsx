@@ -9,6 +9,7 @@ interface DataType {
     discount: string,
     requirement: number,
     expiration_date: string,
+    note: string[],
 }
 
 interface Voucher {
@@ -59,7 +60,8 @@ const DiscountCodeManagement = (): JSX.Element => {
             quantity: voucherV.quantity,
             discount: voucherV.discount.toLocaleString('vi-VN') + " VNĐ",
             requirement: voucherV.requirement,
-            expiration_date: voucherV.expiration_date
+            expiration_date: voucherV.expiration_date,
+            note: ["Chỉnh sửa"]
         }))
 
         setData(newData)
@@ -108,7 +110,24 @@ const DiscountCodeManagement = (): JSX.Element => {
               key: 'expiration_date',
               dataIndex: 'expiration_date',
               width: 350,
-            }
+            },
+            {
+                title: '',
+                key: 'note',
+                width: 350,
+                render: (_, { note }) => (
+                        <>
+                          {note.map((noteitem) => {
+                            return (
+                              <Button 
+                                      key={noteitem}>
+                                {noteitem}
+                              </Button>
+                            );
+                          })}
+                        </>
+                ),
+              },
           ];
     
           const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
