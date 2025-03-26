@@ -48,7 +48,7 @@ router.post(
  *    time: string
  * }
  */
-router.post(
+router.put(
   '/ban-account',
   authenticateValidator,
   authenticateVerifyAccountValidator,
@@ -70,7 +70,7 @@ router.post(
  *    user_id: string
  * }
  */
-router.post(
+router.put(
   '/unban-account',
   authenticateValidator,
   authenticateVerifyAccountValidator,
