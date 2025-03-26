@@ -87,7 +87,6 @@ export const sendEmbedMessageToUsersDM = async (
   try {
     const embed = new EmbedBuilder()
 
-    // Set embed properties based on provided data
     if (embedData.author) embed.setAuthor({ name: embedData.author })
     if (embedData.title) embed.setTitle(embedData.title)
     if (embedData.content) embed.setDescription(embedData.content)
@@ -97,7 +96,6 @@ export const sendEmbedMessageToUsersDM = async (
     if (embedData.thumbnailUrl) embed.setThumbnail(embedData.thumbnailUrl)
     if (embedData.embedUrl) embed.setURL(embedData.embedUrl)
 
-    // Loop through each user ID and send the embed to their DM
     for (const userId of userIds) {
       try {
         const user: User = await client.users.fetch(userId)

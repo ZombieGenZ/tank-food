@@ -255,6 +255,27 @@ export class VIETNAMESE_STATIC_MESSAGE {
     ACCOUNT_HAS_BEEN_LOOKED: 'Tài khoản đã bị khóa',
     ACCOUNT_IS_NOT_LOOKED: 'Tài khoản này không bị khóa'
   } as const
+  static CONTACT_MESSAGE = {
+    NAME_IS_REQUIRED: 'Tên không được để trống',
+    NAME_MUST_BE_A_STRING: 'Tên phải là một chuỗi ký tự',
+    NAME_LENGTH_MUST_BE_FROM_1_TO_50: 'Tên phải có độ dài từ 1 đến 50 ký tự',
+    EMAIL_IS_REQUIRED: 'Email không được để trống',
+    EMAIL_MUST_BE_A_STRING: 'Email phải là một chuỗi ký tự',
+    EMAIL_LENGTH_MUST_BE_FROM_5_TO_100: 'Email phải có độ dài từ 5 đến 100 ký tự',
+    EMAIL_IS_NOT_VALID: 'Email không hợp lệ',
+    PHONE_IS_REQUIRED: 'Số điện thoại không được để trống',
+    PHONE_MUST_BE_A_STRING: 'Số điện thoại phải là một chuỗi ký tự',
+    PHONE_LENGTH_MUST_BE_FROM_10_TO_11: 'Số điện thoại phải có độ dài từ 10 đến 11 ký tự',
+    PHONE_IS_NOT_VALID: 'Số điện thoại không hợp lệ',
+    TITLE_IS_REQUIRED: 'Tiêu đề không được để trống',
+    TITLE_MUST_BE_A_STRING: 'Tiêu đề phải là một chuỗi ký tự',
+    TITLE_LENGTH_MUST_BE_FROM_1_TO_100: 'Tiêu đề phải có độ dài từ 1 đến 100 ký tự',
+    CONTENT_IS_REQUIRED: 'Nội dung không được để trống',
+    CONTENT_MUST_BE_A_STRING: 'Nội dung phải là một chuỗi ký tự',
+    CONTENT_LENGTH_MUST_BE_FROM_1_TO_1000: 'Nội dung phải có độ dài từ 1 đến 1000 ký tự',
+    SEND_CONTACT_SUCCESS: 'Gửi yêu cầu hỗ trợ thành công',
+    SEND_CONTACT_FAILURE: 'Gửi yêu cầu hỗ trợ thất bại'
+  }
 }
 
 export class ENGLISH_STATIC_MESSAGE {
@@ -514,6 +535,28 @@ export class ENGLISH_STATIC_MESSAGE {
     ACCOUNT_HAS_BEEN_LOCKED: 'The account has been locked',
     ACCOUNT_IS_NOT_LOCKED: 'This account is not locked'
   } as const
+
+  static CONTACT_MESSAGE = {
+    NAME_IS_REQUIRED: 'Name is required',
+    NAME_MUST_BE_A_STRING: 'Name must be a string',
+    NAME_LENGTH_MUST_BE_FROM_1_TO_50: 'Name length must be between 1 and 50 characters',
+    EMAIL_IS_REQUIRED: 'Email is required',
+    EMAIL_MUST_BE_A_STRING: 'Email must be a string',
+    EMAIL_LENGTH_MUST_BE_FROM_5_TO_100: 'Email length must be between 5 and 100 characters',
+    EMAIL_IS_NOT_VALID: 'Email is not valid',
+    PHONE_IS_REQUIRED: 'Phone number is required',
+    PHONE_MUST_BE_A_STRING: 'Phone number must be a string',
+    PHONE_LENGTH_MUST_BE_FROM_10_TO_11: 'Phone number length must be between 10 and 11 characters',
+    PHONE_IS_NOT_VALID: 'Phone number is not valid',
+    TITLE_IS_REQUIRED: 'Title is required',
+    TITLE_MUST_BE_A_STRING: 'Title must be a string',
+    TITLE_LENGTH_MUST_BE_FROM_1_TO_100: 'Title length must be between 1 and 100 characters',
+    CONTENT_IS_REQUIRED: 'Content is required',
+    CONTENT_MUST_BE_A_STRING: 'Content must be a string',
+    CONTENT_LENGTH_MUST_BE_FROM_1_TO_1000: 'Content length must be between 1 and 1000 characters',
+    SEND_CONTACT_SUCCESS: 'Support request sent successfully',
+    SEND_CONTACT_FAILURE: 'Failed to send support request'
+  }
 }
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
@@ -735,6 +778,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static ChangeInformationFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện cập thông tin tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static SendContactSuccessful(ip: string) {
+    return `Thực hiện gửi yêu cầu hỗ trợ thành công (IP: ${ip})`
+  }
+  static SendContactFailed(ip: string, err: unknown) {
+    return `Thực hiện gửi yêu cầu hỗ trợ thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
 }
 
@@ -958,4 +1007,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static ChangeInformationFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to update account information (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
+  static SendContactSuccessful(ip: string) {
+    return `Support request sent successfully (IP: ${ip})`
+  }
+  static SendContactFailed(ip: string, err: unknown) {
+    return `Failed to send support request (IP: ${ip}) | Error: ${err}`
+  }
+
 }

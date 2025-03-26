@@ -46,6 +46,14 @@ export const formatDateOnlyDayAndMonthAndYear = (date: Date): string => {
   return `${day}/${month}/${year}`
 }
 
+export const formatDateOnlyMinuteAndHour = (date: Date): string => {
+  const formatDate = new Date(date)
+  const minute = String(formatDate.getMinutes()).padStart(2, '0')
+  const hour = String(formatDate.getHours()).padStart(2, '0')
+
+  return `${hour}:${minute}`
+}
+
 export const isLastDayOfMonth = (): boolean => {
   const today = new Date()
   const tomorrow = new Date(today)
