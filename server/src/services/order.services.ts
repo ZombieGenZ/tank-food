@@ -32,6 +32,7 @@ import { randomVoucherCode } from '~/utils/random.utils'
 import { sendMail } from '~/utils/mail.utils'
 import voucherPrivateService from './voucherPrivate.services'
 import { notificationRealtime } from '~/utils/realtime.utils'
+import { UserRoleEnum } from '~/constants/users.constants'
 
 class OrderService {
   async orderOnline(
@@ -415,93 +416,184 @@ class OrderService {
     return orders
   }
   async getOldOrderEmployee(user: User) {
-    const orders = await databaseService.order
-      .aggregate([
-        {
-          $match: {
-            user: { $ne: user._id },
-            payment_status: PaymentStatusEnum.PAID,
-            order_status: { $ne: OrderStatusEnum.PENDING }
+    let orders
+    if (user.role == UserRoleEnum.ADMINISTRATOR) {
+      orders = await databaseService.order
+        .aggregate([
+          {
+            $match: {
+              payment_status: PaymentStatusEnum.PAID,
+              order_status: { $ne: OrderStatusEnum.PENDING }
+            }
+          },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
+          },
+          {
+            $sort: { created_at: -1 }
           }
-        },
-        {
-          $lookup: {
-            from: 'products',
-            localField: 'product.product_id',
-            foreignField: '_id',
-            as: 'product_details'
+        ])
+        .toArray()
+    } else {
+      orders = await databaseService.order
+        .aggregate([
+          {
+            $match: {
+              user: { $ne: user._id },
+              payment_status: PaymentStatusEnum.PAID,
+              order_status: { $ne: OrderStatusEnum.PENDING }
+            }
+          },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
+          },
+          {
+            $sort: { created_at: -1 }
           }
-        },
-        {
-          $lookup: {
-            from: 'categories',
-            localField: 'product_details.category',
-            foreignField: '_id',
-            as: 'category_details'
-          }
-        },
-        {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
-        },
-        {
-          $group: {
-            _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
-            total_quantity: { $first: '$total_quantity' },
-            total_price: { $first: '$total_price' },
-            discount_code: { $first: '$discount_code' },
-            fee: { $first: '$fee' },
-            vat: { $first: '$vat' },
-            total_bill: { $first: '$total_bill' },
-            delivery_type: { $first: '$delivery_type' },
-            shipper: { $first: '$shipper' },
-            user: { $first: '$user' },
-            name: { $first: '$name' },
-            email: { $first: '$email' },
-            phone: { $first: '$phone' },
-            delivery_address: { $first: '$delivery_address' },
-            receiving_address: { $first: '$receiving_address' },
-            delivery_nation: { $first: '$delivery_nation' },
-            receiving_nation: { $first: '$receiving_nation' },
-            delivery_longitude: { $first: '$delivery_longitude' },
-            receiving_longitude: { $first: '$receiving_longitude' },
-            delivery_latitude: { $first: '$delivery_latitude' },
-            receiving_latitude: { $first: '$receiving_latitude' },
-            distance: { $first: '$distance' },
-            suggested_route: { $first: '$suggested_route' },
-            estimated_time: { $first: '$estimated_time' },
-            node: { $first: '$node' },
-            is_first_transaction: { $first: '$is_first_transaction' },
-            payment_type: { $first: '$payment_type' },
-            payment_status: { $first: '$payment_status' },
-            order_status: { $first: '$order_status' },
-            cancellation_reason: { $first: '$cancellation_reason' },
-            moderated_by: { $first: '$moderated_by' },
-            canceled_by: { $first: '$canceled_by' },
-            created_at: { $first: '$created_at' },
-            confirmmed_at: { $first: '$confirmmed_at' },
-            delivering_at: { $first: '$delivering_at' },
-            delivered_at: { $first: '$delivered_at' },
-            completed_at: { $first: '$completed_at' },
-            updated_at: { $first: '$updated_at' },
-            canceled_at: { $first: '$canceled_at' }
-          }
-        },
-        {
-          $sort: { created_at: -1 }
-        }
-      ])
-      .toArray()
+        ])
+        .toArray()
+    }
+
     return orders
   }
   async orderApproval(payload: OrderApprovalRequestsBody, order: Order, user: User, language: string) {
@@ -988,185 +1080,366 @@ class OrderService {
     ])
   }
   async getNewOrderShipper(user: User) {
-    const orders = await databaseService.order
-      .aggregate([
-        {
-          $match: {
-            user: { $ne: user._id },
-            delivery_type: DeliveryTypeEnum.DELIVERY,
-            payment_status: PaymentStatusEnum.PAID,
-            order_status: OrderStatusEnum.CONFIRMED
+    let orders
+    if (user.role == UserRoleEnum.ADMINISTRATOR) {
+      orders = await databaseService.order
+        .aggregate([
+          {
+            $match: {
+              delivery_type: DeliveryTypeEnum.DELIVERY,
+              payment_status: PaymentStatusEnum.PAID,
+              order_status: OrderStatusEnum.CONFIRMED
+            }
+          },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
+          },
+          {
+            $sort: { created_at: 1 }
           }
-        },
-        {
-          $lookup: {
-            from: 'products',
-            localField: 'product.product_id',
-            foreignField: '_id',
-            as: 'product_details'
+        ])
+        .toArray()
+    } else {
+      orders = await databaseService.order
+        .aggregate([
+          {
+            $match: {
+              user: { $ne: user._id },
+              delivery_type: DeliveryTypeEnum.DELIVERY,
+              payment_status: PaymentStatusEnum.PAID,
+              order_status: OrderStatusEnum.CONFIRMED
+            }
+          },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
+          },
+          {
+            $sort: { created_at: 1 }
           }
-        },
-        {
-          $lookup: {
-            from: 'categories',
-            localField: 'product_details.category',
-            foreignField: '_id',
-            as: 'category_details'
-          }
-        },
-        {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
-        },
-        {
-          $group: {
-            _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
-            total_quantity: { $first: '$total_quantity' },
-            total_price: { $first: '$total_price' },
-            discount_code: { $first: '$discount_code' },
-            fee: { $first: '$fee' },
-            vat: { $first: '$vat' },
-            total_bill: { $first: '$total_bill' },
-            delivery_type: { $first: '$delivery_type' },
-            shipper: { $first: '$shipper' },
-            user: { $first: '$user' },
-            name: { $first: '$name' },
-            email: { $first: '$email' },
-            phone: { $first: '$phone' },
-            delivery_address: { $first: '$delivery_address' },
-            receiving_address: { $first: '$receiving_address' },
-            delivery_nation: { $first: '$delivery_nation' },
-            receiving_nation: { $first: '$receiving_nation' },
-            delivery_longitude: { $first: '$delivery_longitude' },
-            receiving_longitude: { $first: '$receiving_longitude' },
-            delivery_latitude: { $first: '$delivery_latitude' },
-            receiving_latitude: { $first: '$receiving_latitude' },
-            distance: { $first: '$distance' },
-            suggested_route: { $first: '$suggested_route' },
-            estimated_time: { $first: '$estimated_time' },
-            node: { $first: '$node' },
-            is_first_transaction: { $first: '$is_first_transaction' },
-            payment_type: { $first: '$payment_type' },
-            payment_status: { $first: '$payment_status' },
-            order_status: { $first: '$order_status' },
-            cancellation_reason: { $first: '$cancellation_reason' },
-            moderated_by: { $first: '$moderated_by' },
-            canceled_by: { $first: '$canceled_by' },
-            created_at: { $first: '$created_at' },
-            confirmmed_at: { $first: '$confirmmed_at' },
-            delivering_at: { $first: '$delivering_at' },
-            delivered_at: { $first: '$delivered_at' },
-            completed_at: { $first: '$completed_at' },
-            updated_at: { $first: '$updated_at' },
-            canceled_at: { $first: '$canceled_at' }
-          }
-        },
-        {
-          $sort: { created_at: 1 }
-        }
-      ])
-      .toArray()
+        ])
+        .toArray()
+    }
     return orders
   }
   async getOldOrderShipper(user: User) {
-    const orders = await databaseService.order
-      .aggregate([
-        {
-          $match: {
-            user: { $ne: user._id },
-            shipper: user._id,
-            payment_status: PaymentStatusEnum.PAID,
-            order_status: { $ne: OrderStatusEnum.PENDING }
+    let orders
+    if (user.role == UserRoleEnum.ADMINISTRATOR) {
+      orders = await databaseService.order
+        .aggregate([
+          {
+            $match: {
+              payment_status: PaymentStatusEnum.PAID,
+              order_status: { $ne: OrderStatusEnum.PENDING }
+            }
+          },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
+          },
+          {
+            $sort: { created_at: -1 }
           }
-        },
-        {
-          $lookup: {
-            from: 'products',
-            localField: 'product.product_id',
-            foreignField: '_id',
-            as: 'product_details'
+        ])
+        .toArray()
+    } else {
+      orders = await databaseService.order
+        .aggregate([
+          {
+            $match: {
+              user: { $ne: user._id },
+              shipper: user._id,
+              payment_status: PaymentStatusEnum.PAID,
+              order_status: { $ne: OrderStatusEnum.PENDING }
+            }
+          },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $unwind: '$product_details'
+          },
+          {
+            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: {
+                $push: {
+                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
+                }
+              },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
+          },
+          {
+            $sort: { created_at: -1 }
           }
-        },
-        {
-          $lookup: {
-            from: 'categories',
-            localField: 'product_details.category',
-            foreignField: '_id',
-            as: 'category_details'
-          }
-        },
-        {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
-        },
-        {
-          $group: {
-            _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
-            total_quantity: { $first: '$total_quantity' },
-            total_price: { $first: '$total_price' },
-            discount_code: { $first: '$discount_code' },
-            fee: { $first: '$fee' },
-            vat: { $first: '$vat' },
-            total_bill: { $first: '$total_bill' },
-            delivery_type: { $first: '$delivery_type' },
-            shipper: { $first: '$shipper' },
-            user: { $first: '$user' },
-            name: { $first: '$name' },
-            email: { $first: '$email' },
-            phone: { $first: '$phone' },
-            delivery_address: { $first: '$delivery_address' },
-            receiving_address: { $first: '$receiving_address' },
-            delivery_nation: { $first: '$delivery_nation' },
-            receiving_nation: { $first: '$receiving_nation' },
-            delivery_longitude: { $first: '$delivery_longitude' },
-            receiving_longitude: { $first: '$receiving_longitude' },
-            delivery_latitude: { $first: '$delivery_latitude' },
-            receiving_latitude: { $first: '$receiving_latitude' },
-            distance: { $first: '$distance' },
-            suggested_route: { $first: '$suggested_route' },
-            estimated_time: { $first: '$estimated_time' },
-            node: { $first: '$node' },
-            is_first_transaction: { $first: '$is_first_transaction' },
-            payment_type: { $first: '$payment_type' },
-            payment_status: { $first: '$payment_status' },
-            order_status: { $first: '$order_status' },
-            cancellation_reason: { $first: '$cancellation_reason' },
-            moderated_by: { $first: '$moderated_by' },
-            canceled_by: { $first: '$canceled_by' },
-            created_at: { $first: '$created_at' },
-            confirmmed_at: { $first: '$confirmmed_at' },
-            delivering_at: { $first: '$delivering_at' },
-            delivered_at: { $first: '$delivered_at' },
-            completed_at: { $first: '$completed_at' },
-            updated_at: { $first: '$updated_at' },
-            canceled_at: { $first: '$canceled_at' }
-          }
-        },
-        {
-          $sort: { created_at: -1 }
-        }
-      ])
-      .toArray()
+        ])
+        .toArray()
+    }
     return orders
   }
   async receiveDeliveryShipper(payload: ReceiveDeliveryRequestsBody, user: User, order: Order) {

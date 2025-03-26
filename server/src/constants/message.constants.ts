@@ -53,8 +53,11 @@ export class VIETNAMESE_STATIC_MESSAGE {
     VERIFY_ACCOUNT_FAILURE: 'Xác thực tài khoản thất bại',
     SEND_MAIL_FORGOT_PASSWORD_SUCCESS: 'Gửi yêu cầu đặt lại mật khẩu thành công',
     SEND_MAIL_FORGOT_PASSWORD_FAILURE: 'Gửi yêu cầu đặt lại mật khẩu thất bại',
-    FORGOT_PASSWORD_SUCCESS: 'Cập nhật mật khẩu thành công',
-    FORGOT_PASSWORD_FAILURE: 'Cập nhật mật khẩu thất bại'
+    CHANGE_PASSWORD_SUCCESS: 'Cập nhật mật khẩu thành công',
+    CHANGE_PASSWORD_FAILURE: 'Cập nhật mật khẩu thất bại',
+    CHANGE_INFORMATION_SUCCESS: 'Cập nhật thông tin tài khoản thành công',
+    CHANGE_INFORMATION_FAILURE: 'Cập nhật thông tin tài khoản thất bại',
+    INCORRECT_PASSWORD: 'Mật khẩu không chính xác'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -308,8 +311,11 @@ export class ENGLISH_STATIC_MESSAGE {
     VERIFY_ACCOUNT_FAILURE: 'Account verification failed',
     SEND_MAIL_FORGOT_PASSWORD_SUCCESS: 'Password reset request sent successfully',
     SEND_MAIL_FORGOT_PASSWORD_FAILURE: 'Failed to send password reset request',
-    FORGOT_PASSWORD_SUCCESS: 'Password updated successfully',
-    FORGOT_PASSWORD_FAILURE: 'Password update failed'
+    CHANGE_PASSWORD_SUCCESS: 'Password updated successfully',
+    CHANGE_PASSWORD_FAILURE: 'Password update failed',
+    CHANGE_INFORMATION_SUCCESS: 'Account information updated successfully',
+    CHANGE_INFORMATION_FAILURE: 'Failed to update account information',
+    INCORRECT_PASSWORD: 'Incorrect password'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -718,11 +724,17 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static SendMailForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện gửi yêu cầu đặt mật khẩu thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
-  static ForgotPasswordSuccessfully(user_id: string, ip: string) {
+  static ChangePasswordSuccessfully(user_id: string, ip: string) {
     return `Thực hiện cập nhật mật khẩu thành công (User: ${user_id}) (IP: ${ip})`
   }
-  static ForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
+  static ChangePasswordFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện cập mật khẩu thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static ChangeInformationSuccessful(user_id: string, ip: string) {
+    return `Thực hiện cập nhật thông tin tài khoản thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static ChangeInformationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện cập thông tin tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
 }
 
@@ -934,10 +946,16 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static SendMailForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to send password reset request (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
-  static ForgotPasswordSuccessfully(user_id: string, ip: string) {
+  static ChangePasswordSuccessfully(user_id: string, ip: string) {
     return `Password update successful (User: ${user_id}) (IP: ${ip})`
   }
-  static ForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
+  static ChangePasswordFailed(user_id: string, ip: string, err: unknown) {
     return `Password update failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static ChangeInformationSuccessful(user_id: string, ip: string) {
+    return `Account information updated successfully (User: ${user_id}) (IP: ${ip})`
+  }
+  static ChangeInformationFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to update account information (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

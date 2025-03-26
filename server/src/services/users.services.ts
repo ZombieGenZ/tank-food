@@ -1,4 +1,9 @@
-import { RegisterUserRequestsBody, ForgotPasswordRequestsBody } from '~/models/requests/users.requests'
+import {
+  RegisterUserRequestsBody,
+  ForgotPasswordRequestsBody,
+  ChangeInfomationRequestsBody,
+  ChangePasswordRequestsBody
+} from '~/models/requests/users.requests'
 import databaseService from './database.services'
 import { signToken } from '~/utils/jwt.utils'
 import { TokenType } from '~/constants/jwt.constants'
@@ -272,6 +277,68 @@ class UserService {
           $set: {
             password: HashPassword(payload.new_password),
             forgot_password_token: ''
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      ),
+      databaseService.refreshToken.deleteMany({
+        user_id: user._id
+      }),
+      notificationRealtime(`freshSync-user-${user._id}`, 'logout', `user/${user._id}/logout`, data),
+      sendMail(user.email, change_password_subject, change_password_html)
+    ])
+  }
+  async changeInfomation(payload: ChangeInfomationRequestsBody, user: User) {
+    await databaseService.users.updateOne(
+      {
+        _id: user._id
+      },
+      {
+        $set: {
+          display_name: payload.display_name,
+          phone: payload.phone
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+  }
+  async changePassword(
+    payload: ChangePasswordRequestsBody,
+    user: User,
+    location: string,
+    ip: string,
+    browser: string,
+    os: string,
+    language: string
+  ) {
+    const date = formatDateFull2(new Date())
+    let change_password_subject
+    let change_password_html
+
+    if (language == LANGUAGE.VIETNAMESE) {
+      change_password_subject = VIETNAMESE_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).subject
+      change_password_html = VIETNAMESE_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).html
+    } else {
+      change_password_subject = ENGLIS_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).subject
+      change_password_html = ENGLIS_DYNAMIC_MAIL.changePassword(date, location, ip, browser, os).html
+    }
+
+    const data = {
+      date
+    }
+
+    await Promise.all([
+      databaseService.users.updateOne(
+        {
+          _id: user._id
+        },
+        {
+          $set: {
+            password: HashPassword(payload.new_password)
           },
           $currentDate: {
             updated_at: true

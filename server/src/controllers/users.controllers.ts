@@ -5,7 +5,9 @@ import {
   LoginUserRequestsBody,
   LogoutUserRequestsBody,
   VerifyAccountRequestsBody,
-  ForgotPasswordRequestsBody
+  ForgotPasswordRequestsBody,
+  ChangeInfomationRequestsBody,
+  ChangePasswordRequestsBody
 } from '~/models/requests/users.requests'
 import { serverLanguage } from '~/index'
 import { writeInfoLog, writeErrorLog } from '~/utils/log.utils'
@@ -458,30 +460,132 @@ export const forgotPasswordController = async (
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.ForgotPasswordSuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.ForgotPasswordSuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ChangePasswordSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ChangePasswordSuccessfully(user._id.toString(), ip)
     )
 
     res.json({
       code: RESPONSE_CODE.FORGOT_PASSWORD_SUCCESSFUL,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_SUCCESS
-          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_SUCCESS
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_SUCCESS
     })
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.ForgotPasswordFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.ForgotPasswordFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ChangePasswordFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ChangePasswordFailed(user._id.toString(), ip, err)
     )
 
     res.json({
       code: RESPONSE_CODE.FORGOT_PASSWORD_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_FAILURE
-          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.FORGOT_PASSWORD_FAILURE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_FAILURE
+    })
+  }
+}
+
+export const changeInformationController = async (
+  req: Request<ParamsDictionary, any, ChangeInfomationRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await userService.changeInfomation(req.body, user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ChangeInformationSuccessful(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ChangeInformationSuccessful(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CHANGE_INFORMATION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CHANGE_INFORMATION_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CHANGE_INFORMATION_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ChangeInformationFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ChangeInformationFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CHANGE_INFORMATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CHANGE_INFORMATION_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CHANGE_INFORMATION_FAILURE
+    })
+  }
+}
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, ChangePasswordRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const ipData = (await axios.get(`https://ipinfo.io/${ip}/?token=${process.env.IPINFO_TOKEN}`)).data
+    const [latitude, longitude] = ipData.loc.split(',')
+    const locationData = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    )
+    const userAgent = req.useragent
+    const deviceInfo = {
+      isMobile: userAgent?.isMobile,
+      browser: userAgent?.browser,
+      os: userAgent?.os
+    }
+
+    await userService.changePassword(
+      req.body,
+      user,
+      locationData.data.display_name,
+      ip,
+      deviceInfo.browser as string,
+      deviceInfo.os as string,
+      language
+    )
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ChangePasswordSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ChangePasswordSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ChangePasswordFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ChangePasswordFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.CHANGE_PASSWORD_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.CHANGE_PASSWORD_FAILURE
     })
   }
 }

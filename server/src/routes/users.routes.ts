@@ -8,7 +8,9 @@ import {
   sendEmailVerifyController,
   verifyAccountController,
   sendEmailForgotPasswordController,
-  forgotPasswordController
+  forgotPasswordController,
+  changeInformationController,
+  changePasswordController
 } from '~/controllers/users.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import {
@@ -18,7 +20,9 @@ import {
   sendEmailVerifyValidator,
   verifyAccountValidator,
   sendEmailForgotPasswordValidator,
-  forgotPasswordValidator
+  forgotPasswordValidator,
+  changeInformationValidator,
+  changePasswordValidator
 } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -149,5 +153,48 @@ router.put(
  * }
  */
 router.put('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
+
+/*
+ * Description: Thay đổi thông tin tài khoản
+ * Path: /api/users/change-infomation
+ * Method: PUT
+ * headers: {
+ *    authorization?: Bearer <token>
+ * },
+ * body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    display_name: string,
+ *    phone: string
+ * }
+ */
+router.put(
+  '/change-infomation',
+  authenticateValidator,
+  changeInformationValidator,
+  wrapRequestHandler(changeInformationController)
+)
+
+/*
+ * Description: Thay đổi mật khẩu
+ * Path: /api/users/change-password
+ * Method: PUT
+ * headers: {
+ *    authorization?: Bearer <token>
+ * },
+ * body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    password: string,
+ *    new_password: string,
+ *    confirm_new_password: string
+ * }
+ */
+router.put(
+  '/change-password',
+  authenticateValidator,
+  changePasswordValidator,
+  wrapRequestHandler(changePasswordController)
+)
 
 export default router
