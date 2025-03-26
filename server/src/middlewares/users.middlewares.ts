@@ -971,7 +971,7 @@ export const changePasswordValidator = async (req: Request, res: Response, next:
           options: async (value) => {
             const user = req.user as User
 
-            if (HashPassword(value) !== HashPassword(user.password)) {
+            if (HashPassword(value) !== user.password) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.INCORRECT_PASSWORD
