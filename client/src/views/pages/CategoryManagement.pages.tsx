@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from "react";
-import { Table, Input, Button } from 'antd';
+import { Table, Input, Button, Modal, InputNumber } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -24,10 +24,16 @@ interface Category {
 const CategoryManagement = (): JSX.Element => {
   const [category, setCategory] = useState<Category[]>([])
   const [dataView, setData] = useState<DataType[]>([])
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
+
+  const showcreate = () => { 
+    setShowCreateModal(true)
+  }
+
   useEffect(() => {
     const body = {
       language: null,
@@ -79,8 +85,7 @@ const CategoryManagement = (): JSX.Element => {
         <>
           {note.map((noteitem) => {
             return (
-              <Button 
-                      key={noteitem}>
+              <Button key={noteitem}>
                 {noteitem}
               </Button>
             );
@@ -103,7 +108,7 @@ const CategoryManagement = (): JSX.Element => {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách danh mục" : "Category list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
+                            <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
@@ -112,6 +117,23 @@ const CategoryManagement = (): JSX.Element => {
                     </div>
                 </div>
             </div>
+            <Modal title={language() == "Tiếng Việt" ? "Tạo danh mục" : "Create category"} visible={showCreateModal} okText="Tạo danh mục" onOk={() => setShowCreateModal(false)} onCancel={() => setShowCreateModal(false)}>
+              <div className="w-full flex flex-col gap-5">
+                <div className="flex gap-3 flex-col">
+                    <p>Tên danh mục:</p>
+                    <Input />
+                </div>
+                <div className="flex gap-3 flex-col">
+                  <p>Độ ưu tiên:</p>
+                  <div className="flex gap-3">
+                    <InputNumber
+                      min={1}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Modal>
         </div>
     )
 }
