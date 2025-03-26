@@ -29,3 +29,16 @@ export interface ForgotPasswordRequestsBody {
   new_password: string
   confirm_new_password: string
 }
+
+export interface ChangeInfomationRequestsBody {
+  language?: string
+  display_name: string
+  phone: string
+}
+
+export interface ChangePasswordRequestsBody {
+  language?: string
+  password: string
+  new_password: string
+  confirm_new_password: string
+}

@@ -88,9 +88,24 @@ const Account = (): JSX.Element => {
           },
         }).then(() => {
           setIsModalActiveOpen(false);
-          setTimeout(() => {
-            window.location.reload()
-          }, 1000)
+          const body = {
+            language: null,
+            refresh_token: refresh_token
+          }
+      
+          fetch(`${import.meta.env.VITE_API_URL}/api/account-management/get-account`, {
+            method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            setListuser(data.account)
+            console.log(data)
+          })
         })
       }
     })
@@ -140,16 +155,6 @@ const Account = (): JSX.Element => {
     }
     ).then((data) => {  
       console.log(data)
-      if(data.errors.time?.msg == "Thời gian không hợp lệ"){
-        messageApi.open({
-          type: 'error',
-          content: 'Thời gian không hợp lệ',
-          style: {
-            marginTop: '10vh',
-          },
-        })
-        return
-      }
       if(data.message == "Khóa tài khoản thành công"){
         messageApi.open({
           type: 'success',
@@ -159,9 +164,24 @@ const Account = (): JSX.Element => {
           },
         }).then(() => {
           setIsModalOpen(false);
-          setTimeout(() => {
-            window.location.reload()
-          }, 1000)
+          const body = {
+            language: null,
+            refresh_token: refresh_token
+          }
+      
+          fetch(`${import.meta.env.VITE_API_URL}/api/account-management/get-account`, {
+            method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            setListuser(data.account)
+            console.log(data)
+          })
         }) 
       }
     })

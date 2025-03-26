@@ -12,6 +12,7 @@ import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
 import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
 import Order from '~/models/schemas/orders.schemas'
 import PaymentHistory from '~/models/schemas/paymentHistory.schemas'
+import Contact from '~/models/schemas/contact.shemas'
 // import OrderOnline from '~/models/schemas/orderOnline.schemas'
 // import OrderOffline from '~/models/schemas/orderOffline.schemas'
 dotenv.config()
@@ -65,6 +66,9 @@ class DatabaseService {
   }
   get order(): Collection<Order> {
     return this.db.collection(process.env.DATABASE_ORDER_COLLECTION as string)
+  }
+  get contact(): Collection<Contact> {
+    return this.db.collection(process.env.DATABASE_CONTACT_COLLECTION as string)
   }
   get paymentHistory(): Collection<PaymentHistory> {
     return this.db.collection(process.env.DATABASE_PAYMENT_HISTORY_COLLECTION as string)
