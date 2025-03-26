@@ -25,10 +25,12 @@ interface DataType {
   key: string;
   title: string;
   category: string;
+  category_id: string;
   description: string;
   price: string;
   tags?: string;
   note: string[];
+  previewImage?: File;
 }
 
 interface UploadedImage {
@@ -164,6 +166,14 @@ function ProductManagement(): JSX.Element {
     
   }
 
+  const showEditModalFunc = () => {
+    setShowEditModal(true)
+  }
+
+  const showDeleteModalFunc = () => {
+    setShowDeleteModal(true)
+  }
+
   useEffect(() => {
     const newCategory: DropdownType[] = Category.map((category) => ({
       value: category._id,
@@ -206,6 +216,7 @@ function ProductManagement(): JSX.Element {
         key: String(index + 1),
         title: language() == "Tiếng Việt" ? product.title_translate_1 : product.title_translate_2,
         category: product.categories == null ? "không có danh mục" : (language() == "Tiếng Việt" ? product.categories.category_name_translate_1 : product.categories.category_name_translate_2),
+        category_id: product.categories == null ? "không có danh mục" : product.categories._id,
         description: language() == "Tiếng Việt" ? product.description_translate_1 : product.description_translate_2,
         price: product.price.toLocaleString('vi-VN') + " VNĐ", // Đảm bảo kiểu number
         tags: product.tag_translate_1 && product.tag_translate_1.trim() !== "" 
@@ -287,7 +298,71 @@ function ProductManagement(): JSX.Element {
                     </div>
                 </div>
             </div>
-            <Modal title={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Create product"} open={showCreateModal} okText={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"} onOk={() => CreateProduct()} onCancel={() => setShowCreateModal(false)}>
+          <Modal title={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Create product"} open={showCreateModal} okText={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"} onOk={() => CreateProduct()} onCancel={() => setShowCreateModal(false)}>
+            <div className="w-full flex flex-col gap-3">
+              <div className="flex gap-2 flex-col">
+                  <p>{language() == "Tiếng Việt" ? "Tên sản phẩm:" : "Product name:"}</p>
+                  <Input value={title} onChange={(e) => setTitle(e.target.value)}/>
+              </div>
+              <div className="flex gap-2 flex-col">
+                  <p>{language() == "Tiếng Việt" ? "Mô tả:" : "Description:"}</p>
+                  <Input value={description} onChange={(e) => setDescription(e.target.value)}/>
+              </div>
+              <div className="flex gap-2">
+                <div className=" flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Giá tiền:" : "Price:"}</p>
+                    <div>
+                        <InputNumber placeholder="VNĐ" value={price} onChange={handleChangePrice}/>
+                    </div>
+                </div>
+                <div className="w-full flex gap-2 flex-col">
+                  <p>{language() == "Tiếng Việt" ? "Danh mục:" : "Category:"}</p>
+                  <div>
+                  <Select
+                    className="custom-select w-full"
+                    popupClassName="custom-dropdown"
+                    placeholder="Chọn danh mục"
+                    options={categorymenu}
+                    value={category}
+                    onChange={(value) => setNewCategory(value)}
+                  />
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-3 flex-col">
+                <p>{language() == "Tiếng Việt" ? "Sản phẩm có sẵn:" : "product available"}</p>
+                <Select
+                    className="custom-select w-full"
+                    popupClassName="custom-dropdown"
+                    placeholder="Chọn trạng thái"
+                    options={[
+                      { value: true , label: "Có sẵn" },
+                      { value: false , label: "Không có sẵn" },
+                    ]}
+                    value={availability}
+                    onChange={(value) => setAvailability(value)}
+                />
+              </div>
+              <div className="flex gap-2 flex-col">
+                  <p>{language() == "Tiếng Việt" ? "Tags:" : "Tags:"}</p>
+                  <Input value={tag} onChange={(e) => setTag(e.target.value)}/>
+              </div>
+              <div className="flex gap-2 flex-col">
+                  <p>{language() == "Tiếng Việt" ? "ẢNh hiển thị sản phẩm:" : "Images:"}</p>
+                  <Dragger {...props} listType="picture"
+                                      maxCount={1} // Chỉ cho phép chọn 1 ảnh // Chỉ hiển thị 1 file
+                                      onChange={handleChange}
+                                      beforeUpload={() => false}>
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                  </Dragger>
+                  {imageUrl && <Image src={imageUrl} alt="Uploaded Image" />}
+              </div>
+            </div>
+          </Modal>
+          <Modal title={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Create product"} open={showEditModal} okText={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"} onOk={() => CreateProduct()} onCancel={() => setShowCreateModal(false)}>
             <div className="w-full flex flex-col gap-3">
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tên sản phẩm:" : "Product name:"}</p>
