@@ -35,10 +35,11 @@ const Account = (): JSX.Element => {
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [listuser, setListuser] = useState<User[]>([]);
   const [data, setDataUser] = useState<DataType[]>([]);
-
+  const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
+  const showModal = (value: DataType) => {
+    setSelectedRecord(value);
     setIsModalOpen(true);
   };
 
@@ -124,23 +125,30 @@ const Account = (): JSX.Element => {
       width: 250,
     },
     {
-      title: 'Ghi chú',
+      title: '',
       key: 'note',
       dataIndex: 'note',
       width: 350,
-      render: (_, { note }) => (
+      render: (_text, record) => {
+        const isDisabled = record.role === "Admin";
+        let color: string;
+        if(isDisabled) 
+          { 
+            color = "gray"
+          }
+        else 
+          { 
+            color = "red"
+          }
+        return (
         <>
-          {note.map((noteitem) => {
-            return (
-              <Button style={{ color:"red" }}
-                 key={noteitem}
-                 onClick={showModal}>
-                {noteitem}
-              </Button>
-            );
-          })}
+          {record.note.map((noteitem, index) => (
+            <Button key={index} style={{ color: color }} onClick={() => showModal(record)} disabled={isDisabled}>
+              {noteitem}
+            </Button>
+          ))}
         </>
-      ),
+      )},
     },
   ];
   
@@ -153,7 +161,7 @@ const Account = (): JSX.Element => {
     const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
     const language = (): string => {
         const Language = localStorage.getItem('language')
-        return Language ? JSON.parse(Language) : "Tiếng Việt"
+        return Language ? JSON.parse(Language) : "Tiếng Việt" 
     }
     
     return(
@@ -173,18 +181,33 @@ const Account = (): JSX.Element => {
             </div>
             <Modal title={language() == "Tiếng Việt" ? "Ban tài khoản" : "Ban account"} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
               <div className="w-full flex gap-5">
-                <InputNumber
-                  min={1}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500 outline-none"
-                />
-                <Select
-                  className="custom-select w-full"
-                  popupClassName="custom-dropdown"
-                  options={[
-                    { value: "option1", label: "Option 1" },
-                    { value: "option2", label: "Option 2" },
-                  ]}
-                />
+                {selectedRecord && (
+                  <div>
+                    <div>
+                      <p>Tên hiển thị:</p>
+                      <Input value={selectedRecord.displayname} readOnly/>
+                    </div>
+                    <div>
+                      <p>Email:</p>
+                      <Input value={selectedRecord.email} readOnly/>
+                    </div>
+                    <InputNumber
+                      min={1}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-700 focus:ring focus:ring-blue-300 focus:border-blue-500 outline-none"
+                    />
+                    <Select
+                      className="custom-select w-full"
+                      popupClassName="custom-dropdown"
+                      options={[
+                        { value: "giờ", label: "giờ" },
+                        { value: "ngày", label: "ngày" },
+                        { value: "tuần", label: "tuần" },
+                        { value: "tháng", label: "tháng" },
+                        { value: "năm", label: "năm" },
+                      ]}
+                    />
+                  </div>
+                )}
               </div>
             </Modal>
         </div>

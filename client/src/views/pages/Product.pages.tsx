@@ -124,7 +124,7 @@ function ProductManagement(): JSX.Element {
           width: 350,
         },
         {
-          title: 'Ghi chú',
+          title: '',
           key: 'note',
           width: 350,
           render: (_, { note }) => (
