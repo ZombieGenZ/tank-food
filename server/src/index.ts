@@ -66,6 +66,7 @@ import api_voucher_private from '~/routes/voucherPrivate.routes'
 import api_order_online from '~/routes/orders.routes'
 import api_statistical from '~/routes/statistical.routes'
 import api_account_management from '~/routes/accountManagement.routes'
+import api_contact from '~/routes/contact.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -75,6 +76,7 @@ app.use('/api/voucher-private', api_voucher_private)
 app.use('/api/orders', api_order_online)
 app.use('/api/statistical', api_statistical)
 app.use('/api/account-management', api_account_management)
+app.use('/api/contact', api_contact)
 
 app.use(defaultErrorHandler)
 
