@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from "react";
-import { Table, Input, Button } from 'antd';
+import { Table, Input, Button, Modal } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
@@ -15,7 +15,7 @@ interface DataType {
 interface Product {
   _id: string;
   availability: boolean;
-  categories: {
+  categories?: {
       _id: string;
       category_name_translate_1: string;
       category_name_translate_2: string;
@@ -53,10 +53,22 @@ interface Product {
 function ProductManagement(): JSX.Element {
   const [product, setProduct] = useState<Product[]>([]);
   const [data, setData] = useState<DataType[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false)
+  const [showEditModal, setShowEditModal] = useState<boolean>(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
+
+  const showcreate = () => { 
+    setShowCreateModal(true)
+  }
+
+  const CreateProduct = () => {
+
+  }
+
   useEffect(() => {
       const body = {
         language: null,
@@ -79,13 +91,13 @@ function ProductManagement(): JSX.Element {
       const newData: DataType[] = product.map((product, index) => ({
         key: String(index + 1),
         title: language() == "Tiếng Việt" ? product.title_translate_1 : product.title_translate_2,
-        category: language() == "Tiếng Việt" ? product.categories.category_name_translate_1 : product.categories.category_name_translate_2,
+        category: product.categories == null ? "không có danh mục" : (language() == "Tiếng Việt" ? product.categories.category_name_translate_1 : product.categories.category_name_translate_2),
         description: language() == "Tiếng Việt" ? product.description_translate_1 : product.description_translate_2,
         price: product.price.toLocaleString('vi-VN') + " VNĐ", // Đảm bảo kiểu number
         tags: product.tag_translate_1 && product.tag_translate_1.trim() !== "" 
-            ? (language() == "Tiếng Việt" ? product.tag_translate_1 : product.tag_translate_2) 
+            ? (language() == "Tiếng Việt" ? product.tag_translate_1 : product.tag_translate_2)
             : "Không có tags",
-        note: ["Chỉnh sửa"]
+        note: ["Chỉnh sửa", "Xoá"]
       }))
 
       setData(newData)
@@ -127,18 +139,14 @@ function ProductManagement(): JSX.Element {
           title: '',
           key: 'note',
           width: 350,
-          render: (_, { note }) => (
-                  <>
-                    {note.map((noteitem) => {
-                      return (
-                        <Button 
-                                key={noteitem}>
-                          {noteitem}
-                        </Button>
-                      );
-                    })}
-                  </>
-          ),
+          render: (_text, record) => {
+          return (
+            <div className="flex gap-2">
+              <Button style={{ background:"blue", color:"white" }}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
+              <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
+            </div>
+          )
+      },
         },
       ];
 
@@ -155,7 +163,7 @@ function ProductManagement(): JSX.Element {
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
+                            <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm sản phẩm theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
@@ -164,6 +172,9 @@ function ProductManagement(): JSX.Element {
                     </div>
                 </div>
             </div>
+            <Modal title={language() == "Tiếng Việt" ? "Tạo sản phẩm" : "Create product"} open={showCreateModal} onOk={() => CreateProduct()} onCancel={() => setShowCreateModal(false)}>
+                <p>Content</p>
+            </Modal>
         </div>
     )
 }
