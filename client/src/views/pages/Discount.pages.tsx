@@ -1,8 +1,8 @@
-import React ,{ JSX, useState, useEffect } from "react";
+import { JSX, useState, useEffect } from "react";
 import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 import { DatePicker } from 'antd';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 interface DataType {
     key: string,
@@ -11,7 +11,7 @@ interface DataType {
     quantity: number,
     discount: number,
     requirement: number,
-    expiration_date: string,
+    expiration_date: string | Dayjs,
     note: string[],
 }
 
@@ -37,6 +37,7 @@ const DiscountCodeManagement = (): JSX.Element => {
     const [showCreateCode, setShowCreateCode] = useState<boolean>(false);
     const [showUpdateCode, setShowUpdateCode] = useState<boolean>(false);
     const [showDeleteCode, setShowDeleteCode] = useState<boolean>(false);
+    const [selectCode, setSelectCode] = useState<DataType|null>(null);
     const [selectDeleteCode, setSelectDeleteCode] = useState<string | null>(null);
 
     const [code, setCode] = useState<string>("");
@@ -87,7 +88,7 @@ const DiscountCodeManagement = (): JSX.Element => {
 
     const handleDateChangeDateEdit = (date: Dayjs | null) => {
         if (!date) {
-            setExpirationDate(null);
+            setExpirationDateEdit(null);
             return;
         }
         setExpirationDateEdit(date);
@@ -103,15 +104,15 @@ const DiscountCodeManagement = (): JSX.Element => {
         console.log("ISO String:", date.toISOString()); // Chuyển đổi sang ISO
     };
 
-    const showEditModal = (id: string) => {
+    const showEditModal = (record: DataType) => {
         setShowUpdateCode(true)
-        setSelectEditCode(id)
+        setSelectEditCode(record._id)
+        setSelectCode(record)
     }
 
     const showDeleteModal = (id: string) => {
         setShowDeleteCode(true)
         setSelectDeleteCode(id)
-
     }
 
     const CreateCode = () => {
@@ -163,11 +164,98 @@ const DiscountCodeManagement = (): JSX.Element => {
     }
 
     const UpdateCode = (id: string) => {
-        
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            voucher_id: id,
+            code: codeEdit,
+            quantity: quantityEdit,
+            discount: discountEdit,
+            requirement: requirementEdit,
+            expiration_date: expiration_dateEdit ? expiration_dateEdit.toISOString() : null,
+        }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/update`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == "UPDATE_VOUCHER_SUCCESSFUL") {
+                messageApi.success(data.message)
+                setShowUpdateCode(false)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then((response) => {
+                    return response.json()
+                }).then((data) => {
+                    setVoucher(data.voucher)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.message)
+                return;
+            }
+        })
     }
     
     const DeleteCode = (id: string) => { 
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            voucher_id: id,
+        }
 
+        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/delete`, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == "DELETE_VOUCHER_SUCCESSFUL") {
+                messageApi.success(data.message)
+                setShowUpdateCode(false)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then((response) => {
+                    return response.json()
+                }).then((data) => {
+                    setVoucher(data.voucher)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.message)
+                return;
+            }
+        })
     }
 
     const PickDate: React.FC = () => <DatePicker readOnly value={expiration_date} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateCreate} needConfirm />;
@@ -177,6 +265,15 @@ const DiscountCodeManagement = (): JSX.Element => {
         const Language = localStorage.getItem('language')
         return Language ? JSON.parse(Language) : "Tiếng Việt"
     }
+
+    useEffect(() => {
+        setCodeEdit(selectCode ? selectCode?.code : "")
+        setQuantityEdit(selectCode ? selectCode.quantity : 0)
+        setRequirementEdit(selectCode ? selectCode.requirement : 0)
+        setDiscountEdit(selectCode ? selectCode.discount : 0)
+        setExpirationDateEdit(selectCode ? dayjs(selectCode.expiration_date) : null)
+    }, [selectCode])
+
     useEffect(() => {
         const body = {
             language: null,
@@ -200,11 +297,6 @@ const DiscountCodeManagement = (): JSX.Element => {
     useEffect(() => {
         const newData: DataType[] = voucher.map((voucherV, index) =>
              {
-                const expiration_date = new Date(voucherV.expiration_date).toLocaleDateString("vi-VN", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                })
                 return ({
                 key: String(index + 1),
                 _id: voucherV._id,
@@ -212,7 +304,7 @@ const DiscountCodeManagement = (): JSX.Element => {
                 quantity: voucherV.quantity,
                 discount: voucherV.discount,
                 requirement: voucherV.requirement,
-                expiration_date: expiration_date,
+                expiration_date: voucherV.expiration_date,
                 note: ["Chỉnh sửa"]
         })})
 
@@ -270,7 +362,7 @@ const DiscountCodeManagement = (): JSX.Element => {
                 render: (_text, record) => {
                     return (
                       <div className="flex gap-2">
-                        <Button style={{ background:"blue", color:"white" }} onClick={() => showEditModal(record._id)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
+                        <Button style={{ background:"blue", color:"white" }} onClick={() => showEditModal(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
                         <Button style={{ background:"red", color:"white" }} onClick={() => showDeleteModal(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
                       </div>
                     )

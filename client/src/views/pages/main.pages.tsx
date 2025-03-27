@@ -22,7 +22,6 @@ import { gsap } from 'gsap';
 import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
-import { MdAccountBox } from "react-icons/md";
 import Loading from '../components/loading_page_components.tsx'
 import Aboutus from './aboutus.pages.tsx';
 import Account from './Account.management.pages.tsx';
@@ -31,6 +30,7 @@ import { FaHome } from "react-icons/fa";
 import { IconType } from "react-icons";
 import AOS from "aos";
 import { Calendar } from 'lucide-react';
+import { IoSettings } from "react-icons/io5";
 import "aos/dist/aos.css"; 
 interface MenuItem {
   id: number;
@@ -126,8 +126,8 @@ const FormMain = (): JSX.Element => {
             />
             <Dropdown menu={{ items }} 
                       placement="bottom">
-              <div className='text-[#FF7846] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
-                <MdAccountBox />
+              <div className='text-[black] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
+                <IoSettings />
               </div>
             </Dropdown>
             </div>
@@ -484,7 +484,7 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
                       arrow>
               <Button
                 className='p-10'
-              ><MdAccountBox /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
+              ><IoSettings /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
             </Dropdown>
             : 
             <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
