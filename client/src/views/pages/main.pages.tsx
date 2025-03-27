@@ -428,7 +428,7 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
         {/* logo */}
         <div className='flex items-center font-bold cursor-pointer'>
           <div onClick={() => navigate("/")} className='flex items-center text-black gap-2.5'>
-            <img src="/images/system/logo tank food.png" className='w-16' alt="logo" /> 
+            <img src="/images/system/logo tank food.png" className='w-16' alt="logo"/> 
             <p>Tank<span className='text-[#ffcc00]'>Food</span></p>
           </div>
         </div>
@@ -525,7 +525,7 @@ function Main(): JSX.Element {
 
     useEffect(() => {
       AOS.init({
-        duration: 1000, // Thời gian hiệu ứng (ms)
+        duration: 1100, // Thời gian hiệu ứng (ms)
         offset: 100, // Khoảng cách kích hoạt hiệu ứng (px)
         once: false,
         mirror: true,

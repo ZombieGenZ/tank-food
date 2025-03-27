@@ -218,14 +218,7 @@ const Category = (): JSX.Element => {
               description: "Trà đá pha tươi, có đường hoặc không đường",
               price: 24000,
               image: "/public/images/system/trada_menu.jpg?height=200&width=200",
-            },
-            {
-              id: 13,
-              name: "tHAIS GAF",
-              description: "COS TINH TRUNG",
-              price: 24000000000,
-              image: "/public/images/system/trada_menu.jpg?height=200&width=200",
-            },
+            }
           ],
         },
       ]
@@ -358,17 +351,14 @@ const Category = (): JSX.Element => {
                                 data-aos="fade-up"
                                 data-aos-delay={index * 100}
                                 >
-                                <div className="relative h-64 w-full overflow-hidden">
+                                <div className="relative flex justify-center pt-6">
+                                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-orange-500 shadow-lg">
                                     <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      src={item.image}
+                                      alt={item.name}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
-                                    {item.popular && (
-                                    <div className="absolute top-4 right-4 bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                                        Phổ Biến
-                                    </div>
-                                    )}
+                                  </div>
                                 </div>
                                 <div className="p-6">
                                     <div className="flex justify-between items-start mb-3">
