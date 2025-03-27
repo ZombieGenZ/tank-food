@@ -180,14 +180,14 @@ const Category = (): JSX.Element => {
             {
               id: 8,
               name: "Vòng Hành Tây",
-              description: "Vòng hành tây chiên giòn phục vụ kèm sốt chấm",
+              description: "Vòng hành tây chiên giòn phục vụ kèm sốt chấm thái",
               price: 49000,
               image: "/public/images/system/vonghanhtay_menu.jpg?height=200&width=200",
             },
             {
               id: 9,
               name: "Salad Bắp Cải",
-              description: "Bắp cải tươi và cà rốt trong sốt kem",
+              description: "Bắp cải tươi và cà rốt được trộn trong dĩa sốt kem mặn",
               price: 29000,
               image: "/public/images/system/salad_menu.jpg?height=200&width=200",
             },
