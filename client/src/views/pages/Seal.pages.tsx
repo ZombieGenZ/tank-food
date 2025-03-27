@@ -101,6 +101,10 @@ const SealPage = () => {
     })
   }, [])
 
+  useEffect(() => {
+    AOS.refresh()
+  }, [activeTab])
+
   const copyVoucherCode = (code: string) => {
     navigator.clipboard.writeText(code)
     setCopiedCode(code)
