@@ -4,6 +4,7 @@ import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
     key: string,
+    _id: string,
     code: string,
     quantity: number,
     discount: string,
@@ -56,6 +57,7 @@ const DiscountCodeManagement = (): JSX.Element => {
     useEffect(() => {
         const newData: DataType[] = voucher.map((voucherV, index) => ({
             key: String(index + 1),
+            _id: voucherV._id,
             code: voucherV.code,
             quantity: voucherV.quantity,
             discount: voucherV.discount.toLocaleString('vi-VN') + " VNĐ",
@@ -115,18 +117,14 @@ const DiscountCodeManagement = (): JSX.Element => {
                 title: '',
                 key: 'note',
                 width: 350,
-                render: (_, { note }) => (
-                        <>
-                          {note.map((noteitem) => {
-                            return (
-                              <Button 
-                                      key={noteitem}>
-                                {noteitem}
-                              </Button>
-                            );
-                          })}
-                        </>
-                ),
+                render: (_text, record) => {
+                    return (
+                      <div className="flex gap-2">
+                        <Button style={{ background:"blue", color:"white" }}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
+                        <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
+                      </div>
+                    )
+                },
               },
           ];
     
