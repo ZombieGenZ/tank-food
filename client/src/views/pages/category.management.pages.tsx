@@ -350,11 +350,11 @@ const Category = (): JSX.Element => {
                                 data-aos="fade-up"
                                 data-aos-delay={index * 100}
                                 >
-                                <div className="relative h-56 overflow-hidden">
+                                <div className="relative h-64 w-full overflow-hidden">
                                     <img
                                     src={item.image}
                                     alt={item.name}
-                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                     {item.popular && (
                                     <div className="absolute top-4 right-4 bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full">
