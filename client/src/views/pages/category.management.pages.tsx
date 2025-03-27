@@ -218,6 +218,13 @@ const Category = (): JSX.Element => {
               price: 24000,
               image: "/public/images/system/trada_menu.jpg?height=200&width=200",
             },
+            {
+              id: 13,
+              name: "tHAIS GAF",
+              description: "COS TINH TRUNG",
+              price: 24000000000,
+              image: "/public/images/system/trada_menu.jpg?height=200&width=200",
+            },
           ],
         },
       ]
