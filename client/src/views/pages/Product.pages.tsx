@@ -2,7 +2,6 @@ import { JSX, useEffect, useState } from "react";
 import { Table, Input, Button, Modal, InputNumber, Select, message, Upload ,Image } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 import { UploadOutlined } from "@ant-design/icons";
-import { Edit } from "lucide-react";
 
 
 interface DropdownType {
@@ -182,7 +181,7 @@ function ProductManagement(): JSX.Element {
 
     const formData = new FormData();
     formData.append("language", null);
-    formData.append("refresh_token", refresh_token);
+    formData.append("refresh_token", String(refresh_token));
     formData.append("preview", image); 
     formData.append("title", title);
     formData.append("description", description);

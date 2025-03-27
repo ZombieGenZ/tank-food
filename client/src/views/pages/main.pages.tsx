@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, JSX } from 'react'
 import Signup from './signup.pages.tsx';
 import { Divider  } from '@mantine/core';
 import Category from './category.management.pages.tsx';
+import SealPage from './Seal.pages.tsx';
 import CategoryManagement from './CategoryManagement.pages.tsx';
 import ProductManagement from './Product.pages.tsx';
 import ShipManagement from './ShipManagement.pages.tsx';
@@ -233,6 +234,7 @@ const FormMain = (): JSX.Element => {
               <Route path="/aboutus" element={<Aboutus />} />
               <Route path="/signup" element={<Signup />} />
               <Route path='/menu' element={<Category />}/>
+              <Route path='/deal' element={<SealPage />}/>
               <Route path='/contact' element={<ContactUs />}/>
             </Routes>
           </div>)}
