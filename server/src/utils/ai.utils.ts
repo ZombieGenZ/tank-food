@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import GeminiAIPrompt from '~/constants/prompt.constants'
+import { OverviewResponseWithComparison } from '~/constants/statistical.constants'
 import promptService from '~/services/prompt.services'
 
 const MODEL_NAME = process.env.GEMINI_AI_MODEL_NAME || ''
@@ -12,7 +13,7 @@ export const translateContent = async (content: string) => {
   const prompt = GeminiAIPrompt.translate(content)
 
   const result = await model.generateContent(prompt)
-  const response = await result.response
+  const response = result.response
   const text = response.text()
 
   await promptService.insertPrompt(prompt, text)
@@ -20,13 +21,32 @@ export const translateContent = async (content: string) => {
   return text
 }
 
-export const CalculateShippingCosts = async (delivery_address: string, receiving_address: string) => {
+export const calculateShippingCosts = async (delivery_address: string, receiving_address: string) => {
   const model = genAI.getGenerativeModel({ model: MODEL_NAME })
 
-  const prompt = GeminiAIPrompt.CalculateShippingCosts(delivery_address, receiving_address)
+  const prompt = GeminiAIPrompt.calculateShippingCosts(delivery_address, receiving_address)
 
   const result = await model.generateContent(prompt)
-  const response = await result.response
+  const response = result.response
+  const text = response.text()
+
+  await promptService.insertPrompt(prompt, text)
+
+  return text
+}
+
+export const reportComment = async (
+  startTime: Date,
+  endTime: Date,
+  language: string,
+  data: OverviewResponseWithComparison
+) => {
+  const model = genAI.getGenerativeModel({ model: MODEL_NAME })
+
+  const prompt = GeminiAIPrompt.reportComment(startTime, endTime, language, data)
+
+  const result = await model.generateContent(prompt)
+  const response = result.response
   const text = response.text()
 
   await promptService.insertPrompt(prompt, text)

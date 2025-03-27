@@ -23,7 +23,7 @@ export const statisticalOverviewController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    const statistical = await statisticalService.overview(req.body)
+    const statistical = await statisticalService.overview(req.body.time)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE

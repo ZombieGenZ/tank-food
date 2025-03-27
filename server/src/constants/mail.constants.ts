@@ -1,3 +1,6 @@
+import { formatDateOnlyMonthAndYear } from '~/utils/date.utils'
+import { OverviewResponseWithComparison } from './statistical.constants'
+
 export class VIETNAMESE_DYNAMIC_MAIL {
   static welcomeMail(display_name: string) {
     return {
@@ -82,7 +85,6 @@ export class VIETNAMESE_DYNAMIC_MAIL {
       html: `
         <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
-                <!-- Header with solid color -->
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
                         <div style="position: relative;">
@@ -93,7 +95,6 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                     </td>
                 </tr>
                 
-                <!-- Banner section -->
                 <tr>
                     <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
                         <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Xác thực Tài khoản của Bạn</h2>
@@ -102,7 +103,6 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                     </td>
                 </tr>
                 
-                <!-- Main Content -->
                 <tr>
                     <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
                         <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Xin chào,</p>
@@ -126,7 +126,6 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                     </td>
                 </tr>
                 
-                <!-- Footer with solid color instead of gradient (matching the provided example) -->
                 <tr>
                     <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
                         <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Tất cả các quyền được bảo lưu.</p>
@@ -314,6 +313,127 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                 </tr>
             </table>
         </body>
+      `
+    }
+  }
+  static monthlyReport(date: Date, data: OverviewResponseWithComparison, comment: string) {
+    const daysInPeriod: number = data.dailyBreakdown.length
+    const maxRevenue: number = Math.max(...data.dailyBreakdown.map((day) => day.revenue))
+    const formatNumber = (num: number): string => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+    const getChangeStyle = (change: number): { color: string; symbol: string } => {
+      if (change > 0) {
+        return { color: '#2ecc71', symbol: '↑' }
+      } else if (change < 0) {
+        return { color: '#e74c3c', symbol: '↓' }
+      } else {
+        return { color: '#FF9A3D', symbol: '↔' }
+      }
+    }
+
+    const dailyBars: string = data.dailyBreakdown
+      .map((day) => {
+        const height: number = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0
+        return `<div style="width: ${100 / daysInPeriod}%; height: ${height}%; background-color: #FF8000;"></div>`
+      })
+      .join('')
+
+    const revenueChange = getChangeStyle(data.comparison.totalRevenueChange)
+    const ordersChange = getChangeStyle(data.comparison.totalOrdersChange)
+    const productsChange = getChangeStyle(data.comparison.totalProductsChange)
+    const customersChange = getChangeStyle(data.comparison.totalNewCustomersChange)
+
+    return {
+      subject: `Báo cáo hàng tháng - ${process.env.TRADEMARK_NAME}`,
+      html: `
+      <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+          <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+              <tr>
+                  <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                      <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                      <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                      <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                      <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Báo Cáo Hàng Tháng</h2>
+                      <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                      <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Thống kê tháng ${formatDateOnlyMonthAndYear(date)}</p>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td style="padding: 50px 40px; background-color: #FFFFFF;">
+                      <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Kính gửi Quản trị viên,</p>
+                      
+                      <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Dưới đây là báo cáo hoạt động kinh doanh của TANK-Food trong tháng ${formatDateOnlyMonthAndYear(date)}:</p>
+
+                      <table style="width: 100%; border-collapse: separate; border-spacing: 20px; margin-bottom: 30px;">
+                          <tr>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 20px; box-sizing: border-box; border-left: 4px solid ${revenueChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 16px; color: #333333;">Tổng Doanh Thu</h3>
+                                  <p style="font-size: 24px; font-weight: bold; margin: 0; color: #333333;">${formatNumber(data.totalRevenue)}₫</p>
+                                  <div style="display: flex; align-items: center; margin-top: 10px;">
+                                      <span style="font-size: 14px; color: ${revenueChange.color}; margin-right: 5px;">${revenueChange.symbol} ${Math.abs(data.comparison.totalRevenueChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">so với tháng trước</span>
+                                  </div>
+                              </td>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 20px; box-sizing: border-box; border-left: 4px solid ${ordersChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 16px; color: #333333;">Tổng Đơn Hàng</h3>
+                                  <p style="font-size: 24px; font-weight: bold; margin: 0; color: #333333;">${data.totalOrders}</p>
+                                  <div style="display: flex; align-items: center; margin-top: 10px;">
+                                      <span style="font-size: 14px; color: ${ordersChange.color}; margin-right: 5px;">${ordersChange.symbol} ${Math.abs(data.comparison.totalOrdersChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">so với tháng trước</span>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 20px; box-sizing: border-box; border-left: 4px solid ${productsChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 16px; color: #333333;">Tổng Sản Phẩm Bán Ra</h3>
+                                  <p style="font-size: 24px; font-weight: bold; margin: 0; color: #333333;">${data.totalProducts}</p>
+                                  <div style="display: flex; align-items: center; margin-top: 10px;">
+                                      <span style="font-size: 14px; color: ${productsChange.color}; margin-right: 5px;">${productsChange.symbol} ${Math.abs(data.comparison.totalProductsChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">so với tháng trước</span>
+                                  </div>
+                              </td>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 20px; box-sizing: border-box; border-left: 4px solid ${customersChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 16px; color: #333333;">Khách Hàng Mới</h3>
+                                  <p style="font-size: 24px; font-weight: bold; margin: 0; color: #333333;">${data.totalNewCustomers}</p>
+                                  <div style="display: flex; align-items: center; margin-top: 10px;">
+                                      <span style="font-size: 14px; color: ${customersChange.color}; margin-right: 5px;">${customersChange.symbol} ${Math.abs(data.comparison.totalNewCustomersChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">so với tháng trước</span>
+                                  </div>
+                              </td>
+                          </tr>
+                      </table>
+
+                      <h3 style="font-size: 20px; color: #333333; margin: 30px 0 20px 0;">Doanh Thu Theo Ngày</h3>
+                      <div style="width: 100%; height: 200px; background-color: #F2F2F2; border-radius: 8px; padding: 15px; position: relative;">
+                          <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; align-items: flex-end;">
+                              ${dailyBars}
+                          </div>
+                          <div style="position: absolute; bottom: -20px; width: 100%; text-align: center; font-size: 12px; color: #7f8c8d;">${data.dailyBreakdown[0].date} - ${data.dailyBreakdown[daysInPeriod - 1].date}</div>
+                      </div>
+
+                      <h3 style="font-size: 20px; color: #333333; margin: 30px 0 20px 0;">Nhận Xét Tổng Thể</h3>
+                      <div style="background-color: #F2F2F2; padding: 20px; border-radius: 8px; border-left: 4px solid #FF8000;">
+                          <p style="margin: 0; font-size: 16px; color: #333333; line-height: 1.7;">
+                              ${comment}
+                          </p>
+                      </div>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                      <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Tất cả các quyền được bảo lưu.</p>
+                      <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
+                  </td>
+              </tr>
+          </table>
+      </div>
       `
     }
   }
@@ -631,6 +751,127 @@ export class ENGLIS_DYNAMIC_MAIL {
                 </tr>
             </table>
         </body>
+      `
+    }
+  }
+  static monthlyReport(date: Date, data: OverviewResponseWithComparison, comment: string) {
+    const daysInPeriod: number = data.dailyBreakdown.length
+    const maxRevenue: number = Math.max(...data.dailyBreakdown.map((day) => day.revenue))
+    const formatNumber = (num: number): string => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+
+    const getChangeStyle = (change: number): { color: string; symbol: string } => {
+      if (change > 0) {
+        return { color: '#2ecc71', symbol: '↑' }
+      } else if (change < 0) {
+        return { color: '#e74c3c', symbol: '↓' }
+      } else {
+        return { color: '#FF9A3D', symbol: '↔' }
+      }
+    }
+
+    const dailyBars: string = data.dailyBreakdown
+      .map((day) => {
+        const height: number = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0
+        return `<div style="width: ${100 / daysInPeriod}%; height: ${height}%; background-color: #FF8000;"></div>`
+      })
+      .join('')
+
+    const revenueChange = getChangeStyle(data.comparison.totalRevenueChange)
+    const ordersChange = getChangeStyle(data.comparison.totalOrdersChange)
+    const productsChange = getChangeStyle(data.comparison.totalProductsChange)
+    const customersChange = getChangeStyle(data.comparison.totalNewCustomersChange)
+
+    return {
+      subject: `Monthly Report - ${process.env.TRADEMARK_NAME}`,
+      html: `
+      <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+          <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+              <tr>
+                  <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                      <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                      <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                      <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td style="backgroundColor: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                      <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Monthly Report</h2>
+                      <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                      <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Statistics for ${formatDateOnlyMonthAndYear(date)}</p>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td style="padding: 50px 40px; background-color: #FFFFFF;">
+                      <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Dear Administrator,</p>
+                      
+                      <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Below is the business performance report of TANK-Food for ${formatDateOnlyMonthAndYear(date)}:</p>
+
+                      <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                          <tr>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 15px; box-sizing: border-box; border-left: 4px solid ${revenueChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 5px; font-size: 16px; color: #333333;">Total Revenue</h3>
+                                  <p style="font-size: 22px; font-weight: bold; margin: 0; color: #333333;">${formatNumber(data.totalRevenue)}₫</p>
+                                  <div style="display: flex; align-items: center; margin-top: 8px;">
+                                      <span style="font-size: 14px; color: ${revenueChange.color}; margin-right: 5px;">${revenueChange.symbol} ${Math.abs(data.comparison.totalRevenueChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">compared to last month</span>
+                                  </div>
+                              </td>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 15px; box-sizing: border-box; border-left: 4px solid ${ordersChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 5px; font-size: 16px; color: #333333;">Total Orders</h3>
+                                  <p style="font-size: 22px; font-weight: bold; margin: 0; color: #333333;">${data.totalOrders}</p>
+                                  <div style="display: flex; align-items: center; margin-top: 8px;">
+                                      <span style="font-size: 14px; color: ${ordersChange.color}; margin-right: 5px;">${ordersChange.symbol} ${Math.abs(data.comparison.totalOrdersChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">compared to last month</span>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 15px; box-sizing: border-box; border-left: 4px solid ${productsChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 5px; font-size: 16px; color: #333333;">Total Products Sold</h3>
+                                  <p style="font-size: 22px; font-weight: bold; margin: 0; color: #333333;">${data.totalProducts}</p>
+                                  <div style="display: flex; align-items: center; margin-top: 8px;">
+                                      <span style="font-size: 14px; color: ${productsChange.color}; margin-right: 5px;">${productsChange.symbol} ${Math.abs(data.comparison.totalProductsChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">compared to last month</span>
+                                  </div>
+                              </td>
+                              <td style="width: 50%; background-color: #F2F2F2; border-radius: 8px; padding: 15px; box-sizing: border-box; border-left: 4px solid ${customersChange.color}; vertical-align: top;">
+                                  <h3 style="margin-top: 0; margin-bottom: 5px; font-size: 16px; color: #333333;">New Customers</h3>
+                                  <p style="font-size: 22px; font-weight: bold; margin: 0; color: #333333;">${data.totalNewCustomers}</p>
+                                  <div style="display: flex; align-items: center; margin-top: 8px;">
+                                      <span style="font-size: 14px; color: ${customersChange.color}; margin-right: 5px;">${customersChange.symbol} ${Math.abs(data.comparison.totalNewCustomersChange)}%</span>
+                                      <span style="font-size: 13px; color: #7f8c8d;">compared to last month</span>
+                                  </div>
+                              </td>
+                          </tr>
+                      </table>
+
+                      <h3 style="font-size: 20px; color: #333333; margin: 30px 0 20px 0;">Daily Revenue</h3>
+                      <div style="width: 100%; height: 200px; background-color: #F2F2F2; border-radius: 8px; padding: 15px; position: relative;">
+                          <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; align-items: flex-end;">
+                              ${dailyBars}
+                          </div>
+                          <div style="position: absolute; bottom: -20px; width: 100%; text-align: center; font-size: 12px; color: #7f8c8d;">${data.dailyBreakdown[0].date} - ${data.dailyBreakdown[daysInPeriod - 1].date}</div>
+                      </div>
+
+                      <h3 style="font-size: 20px; color: #333333; margin: 30px 0 20px 0;">Overall Comments</h3>
+                      <div style="background-color: #F2F2F2; padding: 20px; border-radius: 8px; border-left: 4px solid #FF8000;">
+                          <p style="margin: 0; font-size: 16px; color: #333333; line-height: 1.7;">
+                              ${comment}
+                          </p>
+                      </div>
+                  </td>
+              </tr>
+
+              <tr>
+                  <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                      <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                      <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
+                  </td>
+              </tr>
+          </table>
+      </div>
       `
     }
   }

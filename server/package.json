@@ -1,6 +1,6 @@
 {
   "name": "tank-food-server",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
@@ -17,6 +17,7 @@
   "description": "Máy chủ của dự án TANK-Travel food",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "@types/archiver": "^6.0.3",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/express-useragent": "^1.0.5",
@@ -42,6 +43,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
+    "archiver": "^7.0.1",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "discord.js": "^14.18.0",

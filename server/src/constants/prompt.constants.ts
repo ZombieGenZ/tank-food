@@ -1,3 +1,7 @@
+import { formatDateOnlyDayAndMonthAndYear, formatDateOnlyMonthAndYear } from '~/utils/date.utils'
+import { LANGUAGE } from './language.constants'
+import { OverviewResponseWithComparison } from './statistical.constants'
+
 export default class GeminiAIPrompt {
   static translate(content: string) {
     return `
@@ -13,7 +17,7 @@ Hãy dịch đoạn văn bản sau:
 ${content}
     `.trim()
   }
-  static CalculateShippingCosts(delivery_address: string, receiving_address: string) {
+  static calculateShippingCosts(delivery_address: string, receiving_address: string) {
     return `
 Bạn là một chuyên gia tính toán khoảng cách và chi phí di chuyển. Khi tôi cung cấp hai địa chỉ, hãy:
 
@@ -42,6 +46,39 @@ Thời gian ước tính: [giờ:phút]
 Dữ liệu:
 Địa chỉ giao: ${delivery_address}
 Địa chỉ nhận: ${receiving_address}
+    `.trim()
+  }
+  static reportComment(startTime: Date, endTime: Date, language: string, data: OverviewResponseWithComparison) {
+    return `
+Bạn là chuyên gia phân tích kinh doanh cao cấp với hơn 15 năm kinh nghiệm trong lĩnh vực tài chính và chiến lược kinh doanh.
+
+Thời gian tạo báo cáo ${formatDateOnlyDayAndMonthAndYear(startTime)} - ${formatDateOnlyDayAndMonthAndYear(endTime)}
+
+Yêu cầu đầu ra:
+- Viết nhận xét chuyên sâu, súc tích về tình hình kinh doanh của công ty TANK-Food.
+- Độ dài: 200 - 500 ký tự.
+- Phương pháp: Phân tích khách quan, chính xác, dựa trên dữ liệu cung cấp.
+- Ngôn ngữ: Chuyên nghiệp, rõ ràng, có giá trị chiến lược.
+- Sử dụng ${language == LANGUAGE.VIETNAMESE ? 'Tiếng Việt' : 'Tiếng anh'}
+
+Hướng dẫn phân tích:
+  - Đánh giá hiệu quả hoạt động kinh doanh:
+    - So sánh doanh thu, số đơn hàng, số sản phẩm đã bán, số khách hàng mới với kỳ trước và mục tiêu đặt ra.
+    - Xác định xu hướng tăng trưởng hoặc suy giảm.
+  - Xác định các điểm mạnh và thách thức:
+    - Chỉ ra các yếu tố giúp tăng trưởng tốt.
+    - Nhận diện các vấn đề cần cải thiện hoặc rủi ro tiềm ẩn.
+  - Nhận xét chiến lược:
+    - Đề xuất giải pháp cải thiện doanh thu, tối ưu đơn hàng.
+    - Dự báo ngắn hạn dựa trên xu hướng hiện tại.
+
+Lưu ý quan trọng:
+- Nội dung cần mạch lạc, tránh lan man.
+- Không chỉ mô tả số liệu mà phải rút ra kết luận có ý nghĩa.
+- Nhấn mạnh yếu tố chiến lược và tác động dài hạn.
+
+Dử liệu:
+${JSON.stringify(data)}
     `.trim()
   }
 }

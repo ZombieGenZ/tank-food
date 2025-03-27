@@ -13,8 +13,7 @@ import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
 import Order from '~/models/schemas/orders.schemas'
 import PaymentHistory from '~/models/schemas/paymentHistory.schemas'
 import Contact from '~/models/schemas/contact.shemas'
-// import OrderOnline from '~/models/schemas/orderOnline.schemas'
-// import OrderOffline from '~/models/schemas/orderOffline.schemas'
+import BackupLog from '~/models/schemas/backup_logs.shemas'
 dotenv.config()
 
 const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@tank-food.l2yv7.mongodb.net/?retryWrites=true&w=majority&appName=TANK-Food`
@@ -78,6 +77,9 @@ class DatabaseService {
   }
   get logs(): Collection<Log> {
     return this.db.collection(process.env.DATABASE_LOG_COLLECTION as string)
+  }
+  get backupLog(): Collection<BackupLog> {
+    return this.db.collection(process.env.DATABASE_BACKUP_LOG_COLLECTION as string)
   }
 }
 

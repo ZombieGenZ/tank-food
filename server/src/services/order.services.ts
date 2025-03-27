@@ -12,7 +12,7 @@ import {
   CancelOrderRequestsBody
 } from '~/models/requests/orders.requests'
 import User from '~/models/schemas/users.schemas'
-import { CalculateShippingCosts } from '~/utils/ai.utils'
+import { calculateShippingCosts } from '~/utils/ai.utils'
 import axios from 'axios'
 import { extractLocationData } from '~/utils/string.utils'
 import databaseService from './database.services'
@@ -54,7 +54,7 @@ class OrderService {
     ])
     const delivery_address = receiving.data.display_name
     const receiving_address = delivery.data.display_name
-    const locationData = await CalculateShippingCosts(delivery_address, receiving_address)
+    const locationData = await calculateShippingCosts(delivery_address, receiving_address)
     const location = extractLocationData(locationData)
 
     const fee = location.travelCost

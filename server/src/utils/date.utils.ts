@@ -37,6 +37,14 @@ export const formatDateOnlyDayAndMonth = (date: Date): string => {
   return `${day}/${month}`
 }
 
+export const formatDateOnlyMonthAndYear = (date: Date): string => {
+  const formatDate = new Date(date)
+  const month = String(formatDate.getMonth() + 1).padStart(2, '0')
+  const year = formatDate.getFullYear()
+
+  return `${month}/${year}`
+}
+
 export const formatDateOnlyDayAndMonthAndYear = (date: Date): string => {
   const formatDate = new Date(date)
   const day = formatDate.getDate().toString().padStart(2, '0')
@@ -86,4 +94,21 @@ export const calculateFutureTime = (str: string): Date | null => {
                 : n * 31536000000
 
   return new Date(Date.now() + milliseconds)
+}
+
+export const getDaysInMonth = (date: Date): number => {
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  return new Date(year, month + 1, 0).getDate()
+}
+
+export const getMonthStartAndEnd = (date: Date) => {
+  const year = date.getFullYear()
+  const month = date.getMonth()
+
+  const startTime = new Date(year, month, 1)
+
+  const endTime = new Date(year, month + 1, 0)
+
+  return { startTime, endTime }
 }

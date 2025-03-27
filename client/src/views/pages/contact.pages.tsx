@@ -103,8 +103,7 @@ export default function ContactPage() {
               <Mail className="h-6 w-6 text-white" />
             </div>
             <h3 className="text-lg font-semibold mb-2">Email</h3>
-            <p className="text-gray-600">📧 employee@tank-food.io.vn</p>
-            <p className="text-gray-600">📧 administrator@tank-food.io.vn</p>
+            <p className="text-gray-600">📧 Support@tank-food.io.vn</p>
           </div>
 
           <div
