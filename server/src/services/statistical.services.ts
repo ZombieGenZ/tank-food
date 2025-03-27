@@ -1,4 +1,3 @@
-import { StatisticalOverviewRequestsBody } from '~/models/requests/statistical.requests'
 import databaseService from './database.services'
 import { formatDateOnlyDayAndMonthAndYear } from '~/utils/date.utils'
 import { OrderStatusEnum } from '~/constants/orders.constants'
@@ -10,9 +9,9 @@ import {
 } from '~/constants/statistical.constants'
 
 class StatisticalService {
-  async overview(payload: StatisticalOverviewRequestsBody): Promise<OverviewResponseWithComparison> {
+  async overview(time: number): Promise<OverviewResponseWithComparison> {
     const currentDate = new Date()
-    const timePeriod = payload.time || 0
+    const timePeriod = time || 0
     const currentStartDate = new Date(currentDate)
     currentStartDate.setDate(currentDate.getDate() - timePeriod)
     const previousEndDate = new Date(currentStartDate)
