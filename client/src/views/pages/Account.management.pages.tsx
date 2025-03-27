@@ -286,7 +286,7 @@ const Account = (): JSX.Element => {
       key: 'active',
       dataIndex: 'active',
       width: 250,
-      render: (text) => <p className={text === "Hoạt động" ? "text-green-500" : "text-red-500"}>{text}</p>,
+      render: (text) => <p className={text === "Hoạt động" ? "text-green-500 bg-green-200 p-2 flex justify-center rounded-xl" : "text-red-500 bg-red-200 p-2 flex justify-center rounded-xl"}>{text}</p>,
     },
     {
       title: '',

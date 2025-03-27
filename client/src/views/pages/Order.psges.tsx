@@ -1,59 +1,61 @@
 import { JSX, useState, useEffect } from "react";
-import { Table, Input } from 'antd';
+import { Table, Input, Button } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 
 interface DataType {
     key: string;
     id: string,
-    total_price: string,
+    name: string,
+    total_price: number,
     date: string,
     status: string,
+    delivery_type: number | null,
     payment: string,
-    local?: string,
+    local?: string | null,
 }
 
 interface Order {
+    _id: string;
     canceled_at: string;
     canceled_by: string | null;
     cancellation_reason: string;
-    completed_at: string | null;
+    completed_at: string;
     confirmmed_at: string;
     created_at: string;
     delivered_at: string;
     delivering_at: string;
-    delivery_address: string;
-    delivery_latitude: number;
-    delivery_longitude: number;
-    delivery_nation: string;
-    delivery_type: string | null;
+    delivery_address: string | null;
+    delivery_latitude: number | null;
+    delivery_longitude: number | null;
+    delivery_nation: string | null;
+    delivery_type: number | null;
     discount_code: string | null;
-    distance: number;
-    email: string;
-    estimated_time: string;
+    distance: number | null;
+    email: string | null;
+    estimated_time: string | null;
     fee: number;
     is_first_transaction: boolean;
-    moderated_by: string | null;
-    name: string;
-    node: string | null;
+    moderated_by: string;
+    name: string | null;
+    node: string;
     order_status: number;
     payment_status: number;
     payment_type: number;
-    phone: string;
+    phone: string | null;
     product: Product[];
-    receiving_address: string;
-    receiving_latitude: number;
-    receiving_longitude: number;
-    receiving_nation: string;
+    receiving_address: string | null;
+    receiving_latitude: number | null;
+    receiving_longitude: number | null;
+    receiving_nation: string | null;
     shipper: string | null;
-    suggested_route: string;
+    suggested_route: string | null;
     total_bill: number;
     total_price: number;
     total_quantity: number;
     updated_at: string;
-    user: string;
+    user: string | null;
     vat: number;
-    _id: string;
-}
+  }
 
 interface Product {
     availability: string;
@@ -100,6 +102,9 @@ const OrderManagement = (): JSX.Element => {
     const [doneData, setDoneData] = useState<Order[]>([])
     const [waitView, setWaitView] = useState<DataType[]>([])
     const [doneView, setDoneView] = useState<DataType[]>([])
+    // const [messageApi, contextHolder] = message.useMessage();
+
+
     useEffect(() => {
         const body = {
             language: null,
@@ -134,6 +139,10 @@ const OrderManagement = (): JSX.Element => {
         })
     }, [refresh_token, access_token])
     
+    useEffect(() => {
+        console.log(doneData)
+    }, [doneData])
+
      useEffect(() => {
             const handleStorageChange = () => {
               setRefreshToken(localStorage.getItem("refresh_token"));
@@ -152,45 +161,86 @@ const OrderManagement = (): JSX.Element => {
             console.error("waitData is not an array:", waitData);
             return;
         }
-        const newWaitView: DataType[] = waitData.map((bill, index) => ({
-            key: String(index + 1),
-            id: bill._id,
-            total_price: bill.total_bill.toString(),
-            date: bill.created_at,
-            status: bill.order_status === 0 ? "Đang chờ duyệt" : 
-                    bill.order_status === 1 ? "Duyệt thành công" : 
-                    bill.order_status === 2 ? "Đang giao" : 
-                    bill.order_status === 3 ? "Giao đơn thành công" : 
-                    bill.order_status === 4 ? "Thành công" : "Thất bại",
-            payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
-                     bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
-            local: bill.receiving_address,
-        }))
 
-        const newDoneView: DataType[] = doneData.map((bill, index) => ({
-            key: String(index + 1),
-            id: bill._id,
-            total_price: bill.total_bill.toString(),
-            date: bill.created_at,
-            status: bill.order_status === 0 ? "Đang chờ duyệt" : 
-                    bill.order_status === 1 ? "Duyệt thành công" : 
-                    bill.order_status === 2 ? "Đang giao" : 
-                    bill.order_status === 3 ? "Giao đơn thành công" : 
-                    bill.order_status === 4 ? "Thành công" : "Thất bại",
-            payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
-                     bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
-            local: bill.receiving_address,
-        }))
+        const newWaitView: DataType[] = waitData.map((bill, index) => {
+            const IOString = bill.created_at;
+            const date = new Date(IOString);
+            return({
+                key: String(index + 1),
+                id: bill._id,
+                name: bill.product[0].title_translate_1,
+                total_price: bill.total_bill,
+                date: `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`,
+                delivery_type: bill.delivery_type,
+                status: bill.order_status === 0 ? "Đang chờ duyệt" : 
+                        bill.order_status === 1 ? "Duyệt thành công" : 
+                        bill.order_status === 2 ? "Đang giao" : 
+                        bill.order_status === 3 ? "Giao đơn thành công" : 
+                        bill.order_status === 4 ? "Thành công" : "Thất bại",
+                payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
+                        bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
+                local: bill.receiving_address,
+        })})
+
+        const newDoneView: DataType[] = doneData.map((bill, index) => {
+            const IOString = bill.created_at;
+            const date = new Date(IOString);
+            return ({
+                key: String(index + 1),
+                id: bill._id,
+                name: bill.product[0].title_translate_1,
+                total_price: bill.total_bill,
+                date: `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`,
+                delivery_type: bill.delivery_type,
+                status: bill.order_status === 0 ? "Đang chờ duyệt" : 
+                        bill.order_status === 1 ? "Duyệt thành công" : 
+                        bill.order_status === 2 ? "Đang giao" : 
+                        bill.order_status === 3 ? "Giao đơn thành công" : 
+                        bill.order_status === 4 ? "Thành công" : "Thất bại",
+                payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
+                        bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
+                local: bill.receiving_address,
+        })})
 
         setWaitView(newWaitView)
         setDoneView(newDoneView)
     }, [waitData, doneData])
 
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "Đang chờ duyệt":
+                return "#f0ad4e"; // Màu cam
+            case "Đang giao":
+                return "#5bc0de"; // Màu xanh dương
+            case "Thành công":
+                return "#5cb85c";
+            case "Duyệt thành công":
+                return "#5cb85c";
+            case "Giao đơn thành công":
+                return "#5cb85c";
+            case "Thất bại":
+                return "#d9534f"; // Màu đỏ
+            default:
+                return "#777"; // Màu xám cho trạng thái không xác định
+        }
+    };
+
+    const getPaymentColor = (payment: string) => {
+        switch (payment) {
+            case "Thanh toán thành công":
+                return "#5cb85c"; // Xanh lá
+            case "Thanh toán thất bại":
+                return "#d9534f"; // Đỏ
+            default:
+                return "#777"; // Xám
+        }
+    };
+
     const columns: TableProps<DataType>['columns'] = [
         {
           title: 'Mã đơn hàng',
-          dataIndex: 'id',
-          key: 'id',
+          dataIndex: 'name',
+          key: 'name',
           width: 350,
           render: (text) => <p className="font-bold">{text}</p>,
         },
@@ -211,12 +261,42 @@ const OrderManagement = (): JSX.Element => {
             key: 'status',
             dataIndex: 'status',
             width: 350,
+            render: (status) => (
+                <span 
+                    style={{
+                        backgroundColor: getStatusColor(status),
+                        color: "white",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        display: "inline-block",
+                        textAlign: "center",
+                        minWidth: "120px",
+                    }}
+                >
+                    {status}
+                </span>
+            ),
         },
         {
-            title: 'Thanh toán',
+            title: 'Trạng thái thanh toán',
             key: 'payment',
             dataIndex: 'payment',
             width: 350,
+            render: (payment) => (
+                <span 
+                    style={{
+                        backgroundColor: getPaymentColor(payment),
+                        color: "white",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        display: "inline-block",
+                        textAlign: "center",
+                        minWidth: "120px",
+                    }}
+                >
+                    {payment}
+                </span>
+            ),
         },
         {
             title: 'Địa chỉ giao hàng',
@@ -224,11 +304,106 @@ const OrderManagement = (): JSX.Element => {
             dataIndex: 'local',
             width: 350,
         },
+        {
+            title: '',
+            width: 350,
+            render: (_text, record) => {
+                return (
+                  <div className="flex gap-2 flex-col">
+                    {record.delivery_type == 0 && <Button style={{ background:"green", color:"white" }}>{language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"}</Button>}
+                    <Button style={{ background:"#f0ad4e", color:"white" }} >{language() == "Tiếng Việt" ? "Duyệt" : "Accept"}</Button>
+                    <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Từ chối" : "Refuse"}</Button>
+                  </div>
+                )
+            },
+        }
+      ];
+
+      const columnsAccept: TableProps<DataType>['columns'] = [
+        {
+          title: 'Mã đơn hàng',
+          dataIndex: 'name',
+          key: 'name',
+          width: 350,
+          render: (text) => <p className="font-bold">{text}</p>,
+        },
+        {
+          title: 'Tổng tiền đơn hàng',
+          dataIndex: 'total_price',
+          width: 350,
+          key: 'total_price',
+        },
+        {
+          title: 'Thời gian đặt hàng',
+          dataIndex: 'date',
+          width: 350,
+          key: 'date',
+        },
+        {
+            title: 'Trạng thái đơn hàng',
+            key: 'status',
+            dataIndex: 'status',
+            width: 350,
+            render: (status) => (
+                <span 
+                    style={{
+                        backgroundColor: getStatusColor(status),
+                        color: "white",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        display: "inline-block",
+                        textAlign: "center",
+                        minWidth: "120px",
+                    }}
+                >
+                    {status}
+                </span>
+            ),
+        },
+        {
+            title: 'Trạng thái thanh toán',
+            key: 'payment',
+            dataIndex: 'payment',
+            width: 350,
+            render: (payment) => (
+                <span 
+                    style={{
+                        backgroundColor: getPaymentColor(payment),
+                        color: "white",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        display: "inline-block",
+                        textAlign: "center",
+                        minWidth: "120px",
+                    }}
+                >
+                    {payment}
+                </span>
+            ),
+        },
+        {
+            title: 'Địa chỉ giao hàng',
+            key: 'local',
+            dataIndex: 'local',
+            width: 350,
+        },
+        {
+            title: '',
+            width: 350,
+            render: (_text, record) => {
+                return (
+                  <div className="flex gap-2 flex-col">
+                    <Button style={{ background:"green", color:"white" }} onClick={() => console.log(record.name, record.total_price, record.delivery_type, record.local)}>{language() == "Tiếng Việt" ? "Xác nhận thành công" : "Accpet confirm"}</Button>
+                    <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Huỷ" : "Cancel"}</Button>
+                  </div>
+                )
+            },
+        }
       ];
       
 
-      const WaitTable: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={waitView} pagination={{ pageSize: 5 }}/>;
-      const DoneTable: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={doneView} pagination={{ pageSize: 5 }}/>;
+      const WaitTable: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={waitView} pagination={{ pageSize: 25 }}/>;
+      const DoneTable: React.FC = () => <Table<DataType> className="w-full" columns={columnsAccept} dataSource={doneView} pagination={{ pageSize: 25 }}/>;
       type SearchProps = GetProps<typeof Input.Search>;
 
       const { Search } = Input;
@@ -241,6 +416,7 @@ const OrderManagement = (): JSX.Element => {
     }
     return(
         <div className="p-10">   
+            {/* {contextHolder} */}
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex justify-between items-end">

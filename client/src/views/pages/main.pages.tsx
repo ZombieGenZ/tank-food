@@ -271,6 +271,14 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
       )
     );
   };
+
+  useEffect(() => {
+    setNavbar((prevItems) =>
+      prevItems.map((item) =>
+        item.path === window.location.pathname ? { ...item, active: true } : { ...item, active: false }
+      )
+    );
+  }, []);
   
   return (
     <div className='w-1/5 sticky left-0 top-0 bg-slate-800 text-white h-screen'>

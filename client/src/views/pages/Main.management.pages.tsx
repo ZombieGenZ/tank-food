@@ -18,16 +18,15 @@ interface DailyBreakdown {
 }
 
 function MainManage (): JSX.Element {
-    const [list, setList] = useState<StatisticalData[]>([])
+    const [list, setList] = useState<StatisticalData|null>(null)
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
 
-    const stats = [
-      { id: 1, title: 'Tổng đơn hàng', value: 250, unit: 'đơn', change: '+12%', increased: true, color: '#f97316' },
-      { id: 2, title: 'Doanh thu tháng', value: '35.5M', unit: '₫', change: '+8.2%', increased: true, color: '#3b82f6' },
-      { id: 3, title: 'Sản phẩm đang bán', value: 184, unit: 'sản phẩm', change: '-2.5%', increased: false, color: '#22c55e' },
-      { id: 4, title: 'Khách hàng mới', value: 34, unit: 'khách', change: '+5.9%', increased: true, color: '#a855f7' }
-    ];
+    const language = (): string => {
+      const language = localStorage.getItem('language')
+      return language ? JSON.parse(language) : "Tiếng Việt"
+    }
+
   
     const recentOrders = [
       { id: '12345', date: '21/03/2025', amount: '2.350.000₫', status: 'completed' },
@@ -72,6 +71,24 @@ function MainManage (): JSX.Element {
       }).then((data) => {
         setList(data.statistical)
       })
+
+      const body1 = {
+        language: null, 
+        refresh_token: refresh_token
+      }
+
+      fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-order-overview`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(body1),
+      }).then(response => {
+        return response.json()
+      }).then(data => {
+        console.log(data)
+      })
     }, [refresh_token, access_token])
 
     useEffect(() => {
@@ -97,26 +114,78 @@ function MainManage (): JSX.Element {
       
       {/* Stats Overview */}
       <div className="grid grid-cols-4 gap-4 p-6">
-        {stats.map(stat => (
-          <div key={stat.id} className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden">
-            <div className="absolute top-0 right-0 bottom-0 left-0 opacity-5" style={{ backgroundColor: stat.color }}></div>
+          <div className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bottom-0 left-0 opacity-5" style={{ backgroundColor: "#f97316" }}></div>
             <div className="relative z-10">
               <div className="flex items-center space-x-2 mb-3">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `${stat.color}20` }}>
-                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: stat.color }}></div>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `#f9731620` }}>
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#f97316" }}></div>
                 </div>
-                <span className="text-gray-500 text-sm">{stat.title}</span>
+                <span className="text-gray-500 text-sm">{language() == "Tiếng Việt" ? "Tổng đơn hàng" : "Total bill"}</span>
               </div>
               <div className="flex items-baseline">
-                <span className="text-xl font-bold text-slate-900 mr-1">{stat.value}</span>
-                <span className="text-gray-500 text-xs">{stat.unit}</span>
+                <span className="text-xl font-bold text-slate-900 mr-1">{list?.totalOrders}</span>
+                <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "đơn" : "bill"}</span>
               </div>
-              <div className={`mt-1 text-xs ${stat.increased ? 'text-green-600' : 'text-red-600'}`}>
+              {/* <div className={`mt-1 text-xs ${stat.increased ? 'text-green-600' : 'text-red-600'}`}>
                 {stat.change} {stat.increased ? '↑' : '↓'}
-              </div>
+              </div> */}
             </div>
           </div>
-        ))}
+          <div className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bottom-0 left-0 opacity-5" style={{ backgroundColor: "#3b82f6" }}></div>
+            <div className="relative z-10">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `#3b82f620` }}>
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#3b82f6" }}></div>
+                </div>
+                <span className="text-gray-500 text-sm">{language() == "Tiếng Việt" ? "Số khách hàng mới" : "Total bill"}</span>
+              </div>
+              <div className="flex items-baseline">
+                <span className="text-xl font-bold text-slate-900 mr-1">{list?.totalNewCustomers}</span>
+                <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "khách hàng mới" : "new customers"}</span>
+              </div>
+              {/* <div className={`mt-1 text-xs ${stat.increased ? 'text-green-600' : 'text-red-600'}`}>
+                {stat.change} {stat.increased ? '↑' : '↓'}
+              </div> */}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bottom-0 left-0 opacity-5" style={{ backgroundColor: "#22c55e" }}></div>
+            <div className="relative z-10">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `#22c55e20` }}>
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#22c55e" }}></div>
+                </div>
+                <span className="text-gray-500 text-sm">{language() == "Tiếng Việt" ? "Số sản phẩm đang bán" : "Total product"}</span>
+              </div>
+              <div className="flex items-baseline">
+                <span className="text-xl font-bold text-slate-900 mr-1">{list?.totalProducts}</span>
+                <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "sản phẩm" : "sản phẩm"}</span>
+              </div>
+              {/* <div className={`mt-1 text-xs ${stat.increased ? 'text-green-600' : 'text-red-600'}`}>
+                {stat.change} {stat.increased ? '↑' : '↓'}
+              </div> */}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bottom-0 left-0 opacity-5" style={{ backgroundColor: "#a855f7" }}></div>
+            <div className="relative z-10">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `#a855f720` }}>
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#a855f7" }}></div>
+                </div>
+                <span className="text-gray-500 text-sm">{language() == "Tiếng Việt" ? "Danh thu" : "Revenue"}</span>
+              </div>
+              <div className="flex items-baseline">
+                <span className="text-xl font-bold text-slate-900 mr-1">{list?.totalRevenue}</span>
+                <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "VNĐ" : "VNĐ"}</span>
+              </div>
+              {/* <div className={`mt-1 text-xs ${stat.increased ? 'text-green-600' : 'text-red-600'}`}>
+                {stat.change} {stat.increased ? '↑' : '↓'}
+              </div> */}
+            </div>
+          </div>
       </div>
       
       {/* Charts and Orders Section */}
