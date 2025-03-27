@@ -97,7 +97,8 @@ router.put(
  *    price: number,
  *    availability: boolean,
  *    category_id: string,
- *    tag?: string
+ *    tag?: string,
+ *    preview: file
  * }
  */
 router.put(

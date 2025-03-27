@@ -15,6 +15,7 @@ import { TokenPayload } from './models/requests/authentication.requests'
 import { defaultErrorHandler } from './middlewares/errors.middlewares'
 import { UserRoleEnum } from './constants/users.constants'
 import expressUserAgent from 'express-useragent'
+import runAllCrons from './jobs/global.jobs'
 
 dotenv.config()
 const port = process.env.APP_PORT || 3000
@@ -408,6 +409,7 @@ server.listen(port, async () => {
     console.log(`\x1b[33mThời gian chạy máy chủ \x1b[36m${formatDateFull2(serverRunningTime)}\x1b[0m`)
     console.log()
     await startBot()
+    runAllCrons()
     console.log()
     console.log(`\x1b[33mMáy chủ đang chạy trên port \x1b[36m${port}\x1b[0m`)
     console.log(`\x1b[33mTruy cập tại: \x1b[36m${process.env.API_URL}/\x1b[0m`)
@@ -418,6 +420,7 @@ server.listen(port, async () => {
     console.log(`\x1b[33mServer running time \x1b[36m${formatDateFull2(serverRunningTime)}\x1b[0m`)
     console.log()
     await startBot()
+    runAllCrons()
     console.log()
     console.log(`\x1b[33mServer is running on port \x1b[36m${port}\x1b[0m`)
     console.log(`\x1b[33mAccess at: \x1b[36m${process.env.API_URL}/\x1b[0m`)
