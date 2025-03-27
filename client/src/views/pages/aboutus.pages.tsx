@@ -8,6 +8,7 @@ const Aboutus = (): JSX.Element => {
       duration: 1500, 
       once: false, 
       mirror: true, 
+      offset: 100
     });
   }, []);
 

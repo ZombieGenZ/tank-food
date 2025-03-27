@@ -66,6 +66,7 @@ const Category = (): JSX.Element => {
     useEffect(() => {
         AOS.init({
         duration: 1300,
+        offset: 100, 
         once: false,
         mirror: true
         })

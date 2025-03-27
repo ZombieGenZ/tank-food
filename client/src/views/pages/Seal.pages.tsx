@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, SetStateAction } from "react"
+import { useState, useEffect } from "react"
 import AOS from "aos"
 import "aos/dist/aos.css"
 
@@ -89,24 +89,25 @@ const popularItems = [
 ]
 
 const SealPage = () => {
-  const [selectedCombo, setSelectedCombo] = useState(null)
-  const [copiedCode, setCopiedCode] = useState(null)
+  const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("weekday")
 
   useEffect(() => {
     AOS.init({
-      duration: 800,
+      duration: 1100,
       once: false,
+      mirror: true,
+      offset: 100
     })
   }, [])
 
-  const copyVoucherCode = (code: string | SetStateAction<null>) => {
+  const copyVoucherCode = (code: string) => {
     navigator.clipboard.writeText(code)
     setCopiedCode(code)
     setTimeout(() => setCopiedCode(null), 2000)
   }
 
-  const formatCurrency = (amount: number | bigint) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount)
   }
 
