@@ -1,13 +1,15 @@
-import { JSX, useState, useEffect } from "react";
-import { Table, Input, Button } from 'antd';
+import React ,{ JSX, useState, useEffect } from "react";
+import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
 import type { TableProps, GetProps } from 'antd';
+import { DatePicker } from 'antd';
+import { Dayjs } from 'dayjs';
 
 interface DataType {
     key: string,
     _id: string,
     code: string,
     quantity: number,
-    discount: string,
+    discount: number,
     requirement: number,
     expiration_date: string,
     note: string[],
@@ -29,7 +31,148 @@ const DiscountCodeManagement = (): JSX.Element => {
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
     const [voucher, setVoucher] = useState<Voucher[]>([])
+    const [messageApi, contextHolder] = message.useMessage();
     const [data, setData] = useState<DataType[]>([]);
+    const [selectEditCode, setSelectEditCode] = useState<string>("");
+    const [showCreateCode, setShowCreateCode] = useState<boolean>(false);
+    const [showUpdateCode, setShowUpdateCode] = useState<boolean>(false);
+    const [showDeleteCode, setShowDeleteCode] = useState<boolean>(false);
+    const [selectDeleteCode, setSelectDeleteCode] = useState<string | null>(null);
+
+    const [code, setCode] = useState<string>("");
+    const [quantity, setQuantity] = useState<number>(1);
+    const [discount, setDiscount] = useState<number>(5000);
+    const [requirement, setRequirement] = useState<number>(0);
+    const [expiration_date, setExpirationDate] = useState<Dayjs|null>(null);
+
+    const [codeEdit, setCodeEdit] = useState<string>("");
+    const [quantityEdit, setQuantityEdit] = useState<number>(1);
+    const [discountEdit, setDiscountEdit] = useState<number>(5000);
+    const [requirementEdit, setRequirementEdit] = useState<number>(0);
+    const [expiration_dateEdit, setExpirationDateEdit] = useState<Dayjs|null>(null);
+
+    const showCreateModal = () => {
+        setShowCreateCode(true)
+    }
+
+    const handlechangQuantity = (value: number|null) => {
+        if(value == null) return;
+        setQuantity(value)
+    }
+
+    const handlechangDiscount = (value: number|null) => {
+        if(value == null) return;
+        setDiscount(value)
+    }
+
+    const handlechangRequirement = (value: number|null) => {
+        if(value == null) return;
+        setRequirement(value)
+    }
+
+    const handlechangQuantityEdit = (value: number|null) => {
+        if(value == null) return;
+        setQuantityEdit(value)
+    }
+
+    const handlechangDiscountEdit = (value: number|null) => {
+        if(value == null) return;
+        setDiscountEdit(value)
+    }
+
+    const handlechangRequirementEdit = (value: number|null) => {
+        if(value == null) return;
+        setRequirementEdit(value)
+    }
+
+    const handleDateChangeDateEdit = (date: Dayjs | null) => {
+        if (!date) {
+            setExpirationDate(null);
+            return;
+        }
+        setExpirationDateEdit(date);
+        console.log("ISO String:", date.toISOString()); // Chuyển đổi sang ISO
+    };
+
+    const handleDateChangeDateCreate = (date: Dayjs | null) => {
+        if (!date) {
+            setExpirationDate(null);
+            return;
+        }
+        setExpirationDate(date);
+        console.log("ISO String:", date.toISOString()); // Chuyển đổi sang ISO
+    };
+
+    const showEditModal = (id: string) => {
+        setShowUpdateCode(true)
+        setSelectEditCode(id)
+    }
+
+    const showDeleteModal = (id: string) => {
+        setShowDeleteCode(true)
+        setSelectDeleteCode(id)
+
+    }
+
+    const CreateCode = () => {
+        const body = {
+            language: null,
+            code: code,
+            quantity: quantity,
+            discount: discount,
+            requirement: requirement,
+            expiration_date: expiration_date?.toISOString(),
+            refresh_token: refresh_token,
+        }
+        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/create`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then((response) => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == "CREATE_VOUCHER_SUCCESSFUL") {
+                messageApi.success(data.message)
+                setShowCreateCode(false)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then((response) => {
+                    return response.json()
+                }).then((data) => {
+                    setVoucher(data.voucher)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.message)
+                return
+            }
+        })
+    }
+
+    const UpdateCode = (id: string) => {
+        
+    }
+    
+    const DeleteCode = (id: string) => { 
+
+    }
+
+    const PickDate: React.FC = () => <DatePicker readOnly value={expiration_date} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateCreate} needConfirm />;
+    const PickDateEdit: React.FC = () => <DatePicker readOnly value={expiration_dateEdit} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateEdit} needConfirm />;
+
     const language = (): string => {
         const Language = localStorage.getItem('language')
         return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -55,16 +198,23 @@ const DiscountCodeManagement = (): JSX.Element => {
     }, [refresh_token, access_token])
 
     useEffect(() => {
-        const newData: DataType[] = voucher.map((voucherV, index) => ({
-            key: String(index + 1),
-            _id: voucherV._id,
-            code: voucherV.code,
-            quantity: voucherV.quantity,
-            discount: voucherV.discount.toLocaleString('vi-VN') + " VNĐ",
-            requirement: voucherV.requirement,
-            expiration_date: voucherV.expiration_date,
-            note: ["Chỉnh sửa"]
-        }))
+        const newData: DataType[] = voucher.map((voucherV, index) =>
+             {
+                const expiration_date = new Date(voucherV.expiration_date).toLocaleDateString("vi-VN", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                })
+                return ({
+                key: String(index + 1),
+                _id: voucherV._id,
+                code: voucherV.code,
+                quantity: voucherV.quantity,
+                discount: voucherV.discount,
+                requirement: voucherV.requirement,
+                expiration_date: expiration_date,
+                note: ["Chỉnh sửa"]
+        })})
 
         setData(newData)
     }, [voucher])
@@ -120,8 +270,8 @@ const DiscountCodeManagement = (): JSX.Element => {
                 render: (_text, record) => {
                     return (
                       <div className="flex gap-2">
-                        <Button style={{ background:"blue", color:"white" }}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
-                        <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
+                        <Button style={{ background:"blue", color:"white" }} onClick={() => showEditModal(record._id)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
+                        <Button style={{ background:"red", color:"white" }} onClick={() => showDeleteModal(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
                       </div>
                     )
                 },
@@ -136,12 +286,13 @@ const DiscountCodeManagement = (): JSX.Element => {
           const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
     return(
         <div className=" p-10">
+            {contextHolder}
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex justify-between items-end">
                     <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Quản lý mã giảm giá" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
-                            <Button>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
+                            <Button onClick={() => showCreateModal()}>{language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create"}</Button>
                             <Search placeholder={language() == "Tiếng Việt" ? "Tìm mã giảm giá theo mã code" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
                     </div>
@@ -150,6 +301,63 @@ const DiscountCodeManagement = (): JSX.Element => {
                     </div>
                 </div>
             </div>
+            <Modal title={language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create discount code"} open={showCreateCode} okText={language() == "Tiếng Việt" ? "Tạo mã" : "Create"} onOk={CreateCode} onCancel={() => setShowCreateCode(false)}>
+                <div className="w-full flex flex-col gap-3">
+                    <div className="flex gap-2 flex-col">
+                        <p>{language() == "Tiếng Việt" ? "Nhập mã giảm giá:" : "Enter namecode:"}</p>
+                        <Input placeholder={language() == "Tiếng Việt" ? "Tên mã giảm giá" : "Discount code name"} value={code} onChange={(e) => setCode(e.target.value)}/>
+                    </div>
+                    <div className="flex gap-2 justify-between">
+                        <div className="flex gap-2 flex-col">
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số lượng mã giảm giá:" : "Enter quantity of code:"}</p>
+                            <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantity} onChange={handlechangQuantity}/>
+                        </div>
+                        <div className="flex gap-2 flex-col">
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
+                            <InputNumber min={5000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
+                        </div>
+                        <div className="flex gap-2 flex-col">
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
+                            <InputNumber min={0} className="w-full" value={requirement} onChange={handlechangRequirement}/>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 flex-col">
+                        <p>{language() == "Tiếng Việt" ? "Thời hạn mã giảm giá mới:" : "expiration date:"}</p>
+                        <PickDate />
+                    </div>
+                </div>
+            </Modal>
+            <Modal title={language() == "Tiếng Việt" ? "Cập nhật mã giảm giá" : "Update discount code"} open={showUpdateCode} onOk={() => UpdateCode(selectEditCode ? selectEditCode : "")} onCancel={() => setShowUpdateCode(false)}>
+                {selectEditCode && (
+                <div className="w-full flex flex-col gap-3">
+                    <div className="flex gap-2 flex-col">
+                        <p>{language() == "Tiếng Việt" ? "Nhập mã giảm giá:" : "Enter namecode:"}</p>
+                        <Input placeholder={language() == "Tiếng Việt" ? "Tên mã giảm giá" : "Discount code name"} value={codeEdit} onChange={(e) => setCodeEdit(e.target.value)}/>
+                    </div>
+                    <div className="flex gap-2 justify-between">
+                        <div className="flex gap-2 flex-col">
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số lượng mã giảm giá:" : "Enter quantity of code:"}</p>
+                            <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantityEdit} onChange={handlechangQuantityEdit}/>
+                        </div>
+                        <div className="flex gap-2 flex-col">
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
+                            <InputNumber min={5000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
+                        </div>
+                        <div className="flex gap-2 flex-col">
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
+                            <InputNumber min={0} className="w-full" value={requirementEdit} onChange={handlechangRequirementEdit}/>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 flex-col">
+                        <p>{language() == "Tiếng Việt" ? "Thời hạn mã giảm giá mới:" : "expiration date:"}</p>
+                        <PickDateEdit />
+                    </div>
+                </div>
+                )}
+            </Modal>
+            <Modal title={language() == "Tiếng Việt" ? "Xoá mã giảm giá" : "Delete discount code"} open={showDeleteCode} onOk={() => DeleteCode(selectDeleteCode ? selectDeleteCode : "")} onCancel={() => setShowDeleteCode(false)}>
+
+            </Modal>
         </div>
     )
 }

@@ -244,15 +244,15 @@ const FormMain = (): JSX.Element => {
 
 function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
   const navigate = useNavigate();
-  const [navbar, setNavbar] = useState<MenuItem[]>([
-    { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: FaHome , active: true },
-    { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: RiUser3Line , active: false },
-    { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: RiHome5Line , active: false },
-    { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: RiShoppingBag3Line , active: false },
-    { id: 5, title: 'Quản lý đơn đặt hàng', english: 'Order Management', path: '/order', icon: RiShoppingCart2Line , active: false },
-    { id: 6, title: 'Quản lý giao hàng', english: 'Shipping Management', path: '/ship', icon: RiTruckLine, active: false },
-    { id: 7, title: 'Quản lý mã giảm giá', english: 'Discount Management', path: '/discount', icon: RiPriceTag3Line , active: false }
-  ])
+  const [navbar, setNavbar] = useState<MenuItem[]>( [
+      { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: FaHome , active: true },
+      { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: RiUser3Line , active: false },
+      { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: RiHome5Line , active: false },
+      { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: RiShoppingBag3Line , active: false },
+      { id: 5, title: 'Quản lý đơn đặt hàng', english: 'Order Management', path: '/order', icon: RiShoppingCart2Line , active: false },
+      { id: 6, title: 'Quản lý giao hàng', english: 'Shipping Management', path: '/ship', icon: RiTruckLine, active: false },
+      { id: 7, title: 'Quản lý mã giảm giá', english: 'Discount Management', path: '/discount', icon: RiPriceTag3Line , active: false }
+    ]);
   const [language, setLanguage] = useState<string>(() => {
     const SaveedLanguage = localStorage.getItem('language')
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"

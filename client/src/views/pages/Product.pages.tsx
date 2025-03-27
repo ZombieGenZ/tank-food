@@ -275,6 +275,25 @@ function ProductManagement(): JSX.Element {
         body: formData
       }).then((response) => { return response.json() }).then((data) => {
         console.log(data)
+        if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
+          messageApi.success(data.message)
+          setShowEditModal(false)
+          const body = {
+            language: null,
+          } 
+          fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            setProduct(data.products)
+          })
+        }
       })
     } else {
       fetch(`${import.meta.env.VITE_API_URL}/api/products/update`, {
@@ -286,6 +305,28 @@ function ProductManagement(): JSX.Element {
       })
       .then((response) => { return response.json() }).then((data) => {
         console.log(data)
+        if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
+          messageApi.success(data.message)
+          setShowEditModal(false)
+          const body = {
+            language: null,
+          } 
+          fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            setProduct(data.products)
+          })
+        } else {
+          messageApi.error(data.message)
+          return;
+        }
       })
     }
   }
