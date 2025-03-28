@@ -185,6 +185,8 @@ export const sendEmbedMessageToUsersDM = async (
       const replyContent = interaction.fields.getTextInputValue('reply_content')
 
       try {
+        await interaction.deferReply({ ephemeral: true })
+
         const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
           method: 'POST',
           headers: {
@@ -252,10 +254,6 @@ export const hideReplyButton = async (sentMessages: { user_id: string; message_i
         embeds: message.embeds,
         components: []
       })
-
-      console.log(
-        `\x1b[33mĐã ẩn nút phản hồi cho message \x1b[36${message_id}\x1b[33m của user \x1b[36${user_id}\x1b[0m`
-      )
     } catch (error) {
       console.error(`\x1b[31mLỗi khi chỉnh sửa message cho user\x1b[33m ${user_id}\x1b[31m:\x1b[33m`, error)
     }
