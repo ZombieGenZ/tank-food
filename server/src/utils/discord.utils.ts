@@ -185,7 +185,7 @@ export const sendEmbedMessageToUsersDM = async (
       const replyContent = interaction.fields.getTextInputValue('reply_content')
 
       try {
-        await interaction.deferReply({ ephemeral: true })
+        // await interaction.deferReply({ ephemeral: true })
 
         const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
           method: 'POST',
