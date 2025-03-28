@@ -1,5 +1,5 @@
 import express from 'express'
-import { contactController } from '~/controllers/contact.controllers'
+import { contactController, responseContactController } from '~/controllers/contact.controllers'
 import { contactValidator, discordApiKeyValidator } from '~/middlewares/contact.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -33,6 +33,6 @@ router.post('/send', contactValidator, wrapRequestHandler(contactController))
  *    timestamp: Date
  * }
  */
-router.post('/response', discordApiKeyValidator)
+router.post('/response', discordApiKeyValidator, wrapRequestHandler(responseContactController))
 
 export default router
