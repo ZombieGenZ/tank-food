@@ -174,11 +174,13 @@ export const sendEmbedMessageToUsersDM = async (
       if (!interaction.customId.startsWith('reply_modal_')) return
 
       try {
-        await interaction.deferReply({ ephemeral: true })
+        await interaction.deferUpdate()
       } catch (deferError) {
-        console.error('Lỗi khi defer interaction:', deferError)
+        console.error('Lỗi khi defer button interaction:', deferError)
         return
       }
+
+      if (!userIds.includes(interaction.user.id)) return
 
       const replyContent = interaction.fields.getTextInputValue('reply_content')
 
