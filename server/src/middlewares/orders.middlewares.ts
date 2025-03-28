@@ -924,6 +924,8 @@ export const cancelOrderShipperValidator = async (req: Request, res: Response, n
               )
             }
 
+            console.log(order.shipper && order.shipper.equals(user._id))
+
             if (order.shipper && order.shipper.equals(user._id)) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
