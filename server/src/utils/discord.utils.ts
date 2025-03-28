@@ -84,6 +84,68 @@ export const sendMessageToDiscord = async (channelId: string, message: string): 
   }
 }
 
+export const setupInteractionHandlers = (client: Client) => {
+  client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isButton() || !interaction.customId.startsWith('reply_')) return
+
+    const contact_id = interaction.customId.split('_')[1]
+    const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
+
+    const replyInput = new TextInputBuilder()
+      .setCustomId('reply_content')
+      .setLabel('Nội dung phản hồi')
+      .setStyle(TextInputStyle.Paragraph)
+      .setMinLength(1)
+      .setMaxLength(4000)
+      .setRequired(true)
+
+    const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
+    modal.addComponents(actionRow)
+
+    try {
+      await interaction.deferReply({ ephemeral: true })
+      await interaction.showModal(modal)
+    } catch (error) {
+      console.error('Lỗi khi xử lý tương tác nút:', error)
+    }
+  })
+
+  client.on('interactionCreate', async (interaction) => {
+    if (!interaction.isModalSubmit() || !interaction.customId.startsWith('reply_modal_')) return
+
+    const contact_id = interaction.customId.split('_')[2]
+    const replyContent = interaction.fields.getTextInputValue('reply_content')
+
+    try {
+      await interaction.deferReply({ ephemeral: true })
+
+      const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
+        },
+        body: JSON.stringify({
+          contact_id,
+          user_id: interaction.user.id,
+          reply_content: replyContent,
+          timestamp: new Date().toISOString()
+        }),
+        signal: AbortSignal.timeout(30 * 1000)
+      })
+
+      if (response.ok) {
+        await interaction.editReply({ content: 'Đã gửi phản hồi thành công!' })
+      } else {
+        await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.' })
+      }
+    } catch (error) {
+      console.error('Lỗi khi gửi modal:', error)
+      await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.' })
+    }
+  })
+}
+
 export const sendEmbedMessageToUsersDM = async (
   userIds: string[],
   embedData: {
@@ -102,7 +164,6 @@ export const sendEmbedMessageToUsersDM = async (
 
   try {
     const embed = new EmbedBuilder()
-
     if (embedData.author) embed.setAuthor({ name: embedData.author })
     if (embedData.title) embed.setTitle(embedData.title)
     if (embedData.content) embed.setDescription(embedData.content)
@@ -133,102 +194,30 @@ export const sendEmbedMessageToUsersDM = async (
           if (serverLanguage === LANGUAGE.VIETNAMESE) {
             console.log(`\x1b[33mĐã gửi tin nhắn thành công đến người dùng \x1b[36m${userId}\x1b[0m`)
           } else {
-            console.log(`\x1b[33mSuccessfully sent message to user \x1b[36m$\x1b[0m{userId}\x1b[0m`)
+            console.log(`\x1b[33mSuccessfully sent message to user \x1b[36m${userId}\x1b[0m`)
           }
         }
       } catch (userError) {
         if (serverLanguage === LANGUAGE.VIETNAMESE) {
           console.error(`\x1b[31mLỗi khi gửi tin nhắn đến người dùng \x1b[33m${userId}\x1b[31m:\x1b[33m`, userError)
-          console.log('\x1b[0m')
         } else {
           console.error(`\x1b[31mError sending message to user \x1b[33m${userId}\x1b[31m:\x1b[33m`, userError)
-          console.log('\x1b[0m')
         }
       }
     }
-
-    client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isButton()) return
-      if (!interaction.customId.startsWith('reply_')) return
-
-      if (!userIds.includes(interaction.user.id)) return
-
-      const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
-
-      const replyInput = new TextInputBuilder()
-        .setCustomId('reply_content')
-        .setLabel('Nội dung phản hồi')
-        .setStyle(TextInputStyle.Paragraph)
-        .setMinLength(1)
-        .setMaxLength(4000)
-        .setRequired(true)
-
-      const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
-
-      modal.addComponents(actionRow)
-      await interaction.showModal(modal)
-    })
-
-    client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isModalSubmit()) return
-      if (!interaction.customId.startsWith('reply_modal_')) return
-
-      try {
-        await interaction.deferUpdate()
-      } catch (deferError) {
-        console.error('Lỗi khi defer button interaction:', deferError)
-        return
-      }
-
-      if (!userIds.includes(interaction.user.id)) return
-
-      const replyContent = interaction.fields.getTextInputValue('reply_content')
-
-      try {
-        const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
-          },
-          body: JSON.stringify({
-            contact_id: contact_id,
-            user_id: interaction.user.id,
-            reply_content: replyContent,
-            timestamp: new Date().toISOString()
-          }),
-          signal: AbortSignal.timeout(30 * 1000)
-        })
-
-        if (response.ok) {
-          await interaction.editReply({
-            content: 'Đã gửi phản hồi thành công!'
-          })
-        } else {
-          await interaction.editReply({
-            content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.'
-          })
-        }
-      } catch (error) {
-        await interaction.editReply({
-          content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
-        })
-      }
-    })
 
     return sentMessages
   } catch (error) {
     if (serverLanguage === LANGUAGE.VIETNAMESE) {
       console.error('\x1b[31mLỗi khi gửi embed đến DM của người dùng:\x1b[33m', error)
-      console.log('\x1b[0m')
     } else {
       console.error('"\x1b[31mError sending embed to users\' DMs:\x1b[33m"', error)
-      console.log('\x1b[0m')
     }
     return sentMessages
   }
 }
 
+// Ẩn nút phản hồi
 export const hideReplyButton = async (sentMessages: { user_id: string; message_id: string }[]): Promise<void> => {
   for (const { user_id, message_id } of sentMessages) {
     try {
@@ -239,7 +228,6 @@ export const hideReplyButton = async (sentMessages: { user_id: string; message_i
       }
 
       const dmChannel = await user.createDM()
-
       const message = await dmChannel.messages.fetch(message_id)
       if (!message) {
         console.error(
@@ -254,10 +242,10 @@ export const hideReplyButton = async (sentMessages: { user_id: string; message_i
       })
 
       console.log(
-        `\x1b[33mĐã ẩn nút phản hồi cho message \x1b[36${message_id}\x1b[33m của user \x1b[36${user_id}\x1b[0m`
+        `\x1b[33mĐã ẩn nút phản hồi cho message \x1b[36m${message_id}\x1b[33m của user \x1b[36m${user_id}\x1b[0m`
       )
     } catch (error) {
-      console.error(`\x1b[31mLỗi khi chỉnh sửa message cho user\x1b[33m ${user_id}\x1b[31m:\x1b[33m`, error)
+      console.error(`\x1b[31mLỗi khi chỉnh sửa message cho user \x1b[33m${user_id}\x1b[31m:\x1b[33m`, error)
     }
   }
 }
