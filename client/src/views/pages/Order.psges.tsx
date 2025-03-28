@@ -1,5 +1,5 @@
 import { JSX, useState, useEffect } from "react";
-import { Table, Input, Button ,message } from 'antd';
+import { Table, Input, Button ,message ,Modal } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 
@@ -11,6 +11,7 @@ interface DataType {
     date: string,
     status: string,
     delivery_type: number | null,
+    cancellation_reason: string | null;
     payment_status: number,
     payment: string,
     local?: string | null,
@@ -20,7 +21,7 @@ interface Order {
     _id: string;
     canceled_at: string;
     canceled_by: string | null;
-    cancellation_reason: string;
+    cancellation_reason: string | null;
     completed_at: string;
     confirmmed_at: string;
     created_at: string;
@@ -106,6 +107,211 @@ const OrderManagement = (): JSX.Element => {
     const [doneView, setDoneView] = useState<DataType[]>([])
     const [messageApi, contextHolder] = message.useMessage();
 
+    const [showreasonmodal, setShowreasonmodal] = useState<boolean>(false);
+    const [selectID, setSelectID] = useState<string|null>(null)
+    const [reasonRejection, setReason] = useState<string>("")
+
+    const [showCancelmodal, setShowcancelmodal] = useState<boolean>(false);
+    const [reasonCancelation, setReasonCancel] = useState<string>("")
+
+    const showModalReject = (orderID: string) => {
+        setShowreasonmodal(true)
+        setSelectID(orderID)
+    }
+
+    const showModalCancel = (orderID: string) => {
+        setShowcancelmodal(true)
+        setSelectID(orderID)
+    }
+
+    const handleConfirm = (orderID: string) => {
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID            
+        }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-completion-confirmation`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then((response) => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code) {
+                messageApi.success(data.message)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setWaitData(data.order)
+                    console.log(data)
+                })
+    
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setDoneData(data.order)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.errors.order_id.msg)
+                return
+            }
+        })
+    }
+
+    const handleCancel = (orderID: string) => {
+        if(!orderID) {
+            messageApi.error("Mã id không hợp lệ")
+            return;
+        }
+
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID,
+            reason: reasonCancelation,
+        }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/cancel-order-employee`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL){
+                setShowcancelmodal(false)
+                messageApi.success(data.message)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setWaitData(data.order)
+                    console.log(data)
+                })
+    
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setDoneData(data.order)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.errors.order_id.msg)
+                return
+            }
+        })
+    }
+
+    const handleReject = (orderID: string) => {
+        if(!orderID) {
+            messageApi.error("Mã id không hợp lệ")
+            return;
+        }
+
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID,
+            decision: false,
+            reason: reasonRejection,
+        }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-approval`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
+                messageApi.success(data.message)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setWaitData(data.order)
+                    console.log(data)
+                })
+
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setDoneData(data.order)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.errors.order_id.msg)
+                return
+            }
+        })
+    }
+
     const handleConfirmPayment = (orderId : string) => {
         console.log(orderId)
         const body = {
@@ -126,15 +332,102 @@ const OrderManagement = (): JSX.Element => {
             console.log(data)
             if(data.code == RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL) {
                 messageApi.success("Xác nhận thanh toán thành công")
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setWaitData(data.order)
+                    console.log(data)
+                })
+
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setDoneData(data.order)
+                    console.log(data)
+                })
             } else {
-                messageApi.error(data.message)
+                messageApi.error(data.errors.order_id.msg)
                 return
             }
         })
     };
 
     const handleAccpet = (orderId: string) => {
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderId,
+            decision: true,
+            reason: null
+        }
 
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-approval`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then((response) => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
+                messageApi.success(data.message)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setWaitData(data.order)
+                    console.log(data)
+                })
+
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    setDoneData(data.order)
+                    console.log(data)
+                })
+            } else {
+                messageApi.error(data.errors.order_id.msg)
+                return
+            }
+        })
     }
 
     useEffect(() => {
@@ -170,10 +463,6 @@ const OrderManagement = (): JSX.Element => {
             console.log(data)
         })
     }, [refresh_token, access_token])
-    
-    useEffect(() => {
-        console.log(doneData)
-    }, [doneData])
 
      useEffect(() => {
             const handleStorageChange = () => {
@@ -195,14 +484,15 @@ const OrderManagement = (): JSX.Element => {
         }
 
         const newWaitView: DataType[] = waitData.map((bill, index) => {
-            const IOString = bill.created_at;
-            const date = new Date(IOString);
+            // const IOString = bill.created_at;
+            // const date = new Date(IOString);
             return({
                 key: String(index + 1),
                 id: bill._id,
                 name: bill.product[0].title_translate_1,
                 total_price: bill.total_bill,
-                date: `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`,
+                cancellation_reason: bill.cancellation_reason,
+                date: bill.created_at,
                 payment_status: bill.payment_status,
                 delivery_type: bill.delivery_type,
                 status: bill.order_status === 0 ? "Đang chờ duyệt" : 
@@ -211,19 +501,21 @@ const OrderManagement = (): JSX.Element => {
                         bill.order_status === 3 ? "Giao đơn thành công" : 
                         bill.order_status === 4 ? "Thành công" : "Thất bại",
                 payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
-                        bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
+                        bill.payment_status === 1 ? "Thành công" : "Thất bại",
                 local: bill.receiving_address ? bill.receiving_address : "Tại quầy",
         })})
 
         const newDoneView: DataType[] = doneData.map((bill, index) => {
-            const IOString = bill.created_at;
-            const date = new Date(IOString);
+            // const IOString = bill.created_at;
+            // const date = new Date(IOString);
+            // `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`
             return ({
                 key: String(index + 1),
                 id: bill._id,
                 name: bill.product[0].title_translate_1,
                 total_price: bill.total_bill,
-                date: `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`,
+                cancellation_reason: bill.cancellation_reason,
+                date: bill.created_at,
                 payment_status: bill.payment_status,
                 delivery_type: bill.delivery_type,
                 status: bill.order_status === 0 ? "Đang chờ duyệt" : 
@@ -232,7 +524,7 @@ const OrderManagement = (): JSX.Element => {
                         bill.order_status === 3 ? "Giao đơn thành công" : 
                         bill.order_status === 4 ? "Thành công" : "Thất bại",
                 payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
-                        bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
+                        bill.payment_status === 1 ? "Thành công" : "Thất bại",
                 local: bill.receiving_address ? bill.receiving_address : "Tại quầy",
         })})
 
@@ -263,9 +555,9 @@ const OrderManagement = (): JSX.Element => {
 
     const getPaymentColor = (payment: string) => {
         switch (payment) {
-            case "Thanh toán thành công":
+            case "Thành công":
                 return "#5cb85c"; // Xanh lá
-            case "Thanh toán thất bại":
+            case "Thất bại":
                 return "#d9534f"; // Đỏ
             case "Đang chờ thanh toán":
                 return "#f0ad4e"
@@ -276,7 +568,7 @@ const OrderManagement = (): JSX.Element => {
 
     const columns: TableProps<DataType>['columns'] = [
         {
-          title: 'Mã đơn hàng',
+          title: 'Đơn hàng',
           dataIndex: 'name',
           key: 'name',
           width: 350,
@@ -344,13 +636,23 @@ const OrderManagement = (): JSX.Element => {
         },
         {
             title: '',
-            width: 350,
+            width: 150,
             render: (_text, record) => {
                 return (
-                  <div className="flex gap-2 flex-col">
-                    {(record.payment_status == 0 && record.delivery_type == 0) && <Button style={{ background:"green", color:"white" }} onClick={() => handleConfirmPayment(record.id)}>{language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"}</Button>}
-                    {(record.delivery_type == 1 || record.payment_status == 1) && <Button style={{ background:"#f0ad4e", color:"white" }}>{language() == "Tiếng Việt" ? "Duyệt" : "Accept"}</Button>}
-                    <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Từ chối" : "Refuse"}</Button>
+                    <div className="flex gap-2 flex-col">
+                    {(record.payment_status === 0 && record.delivery_type === 0) && (
+                      <Button className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2" onClick={() => handleConfirmPayment(record.id)}>
+                        ✅ {language() === "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"}
+                      </Button>
+                    )}
+                    {(record.delivery_type === 1 || record.payment_status === 1) && (
+                      <Button className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-2" onClick={() => handleAccpet(record.id)}>
+                        📦 {language() === "Tiếng Việt" ? "Duyệt" : "Accept"}
+                      </Button>
+                    )}
+                    <Button className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-2" onClick={() => showModalReject(record.id)}>
+                      ❌ {language() === "Tiếng Việt" ? "Từ chối" : "Refuse"}
+                    </Button>
                   </div>
                 )
             },
@@ -359,7 +661,7 @@ const OrderManagement = (): JSX.Element => {
 
       const columnsAccept: TableProps<DataType>['columns'] = [
         {
-          title: 'Mã đơn hàng',
+          title: 'Đơn hàng',
           dataIndex: 'name',
           key: 'name',
           width: 350,
@@ -429,12 +731,29 @@ const OrderManagement = (): JSX.Element => {
             title: '',
             width: 350,
             render: (_text, record) => {
-                return (
-                  <div className="flex gap-2">
-                    <Button style={{ background:"green", color:"white" }} onClick={() => console.log(record.name, record.total_price, record.delivery_type, record.local)}>{language() == "Tiếng Việt" ? "Xác nhận thành công" : "Accpet confirm"}</Button>
-                    <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Huỷ" : "Cancel"}</Button>
-                  </div>
-                )
+                if(record.status == "Thành công") {
+                    return <p className="text-green-600 font-bold">Xác nhận đơn hàng thành công</p>;
+                } else if (record.cancellation_reason === "") {
+                    return (
+                        <div className="flex gap-2">
+                            {record.delivery_type === 0 && (
+                                <Button 
+                                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" 
+                                    onClick={() => handleConfirm(record.id)}
+                                >
+                                    ✅ {language() === "Tiếng Việt" ? "Xác nhận thành công" : "Accept confirm"}
+                                </Button>
+                            )}
+                            <Button 
+                                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                                onClick={() => showModalCancel(record.id)}
+                            >
+                                ❌ {language() === "Tiếng Việt" ? "Huỷ" : "Cancel"}
+                            </Button>
+                        </div>
+                    );
+                } 
+                return <p className="text-red-500 font-bold">Đơn hàng đã bị huỷ</p>;
             },
         }
       ];
@@ -467,7 +786,7 @@ const OrderManagement = (): JSX.Element => {
                         <WaitTable />
                     </div>
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng đã duyệt" : "Product list"}</p>
+                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Đơn đặt hàng đã xử lý" : "Product list"}</p>
                         <div className="w-[30%] flex gap-2">
                             <Search placeholder={language() == "Tiếng Việt" ? "Đơn đặt hàng đã duyệt" : "Search category by name"} onSearch={onSearch} enterButton />
                         </div>
@@ -477,6 +796,23 @@ const OrderManagement = (): JSX.Element => {
                     </div>
                 </div>
             </div>
+            <Modal title={language() == "Tiếng Việt" ? "Lý do từ chối đơn hàng" : "Reasons for order rejection"} onOk={() => handleReject(selectID ? selectID : "")} okText={language() == "Tiếng Việt" ? "Xác nhận" : "Confirm"} open={showreasonmodal} onCancel={() => setShowreasonmodal(false)} onClose={() => setShowreasonmodal(false)}>
+                <div className="flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Lý do:" : "Reason:"}</p>
+                    <Input placeholder="Vui lòng nhập lý do cụ thể"
+                           value={reasonRejection}
+                           onChange={(e) => setReason(e.target.value)}/>
+                </div>
+            </Modal>
+
+            <Modal title={language() == "Tiếng Việt" ? "Lý do huỷ đơn hàng" : "Reasons for order cancelation"} onOk={() => handleCancel(selectID ? selectID : "")} okText={language() == "Tiếng Việt" ? "Xác nhận" : "Confirm"} open={showCancelmodal} onCancel={() => setShowcancelmodal(false)} onClose={() => setShowcancelmodal(false)}>
+                <div className="flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Lý do:" : "Reason:"}</p>
+                    <Input placeholder="Vui lòng nhập lý do cụ thể"
+                           value={reasonCancelation}
+                           onChange={(e) => setReasonCancel(e.target.value)}/>
+                </div>
+            </Modal>
         </div>
     )
 }
