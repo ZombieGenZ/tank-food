@@ -67,7 +67,7 @@ echo.
 
 echo !ESC![1;34m[HÀNH ĐỘNG]!ESC![0m Đang khởi động TANK-Food Client...
 echo.
-call npm run start
+call npm run dev
 if %errorlevel% neq 0 (
     echo.
     echo !ESC![1;31m[LỖI]!ESC![0m Khởi động máy khách thất bại!
