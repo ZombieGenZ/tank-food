@@ -79,7 +79,7 @@ class ContactService {
 
     await Promise.all([
       hideReplyButton(contact.discord_message_data),
-      sendMail(contact.email, email_subject, email_html),
+      sendMail(contact.email, email_subject, email_html, process.env.SUPPORT_EMAIL as string),
       databaseService.contact.updateOne(
         {
           _id: new ObjectId(payload.contact_id)

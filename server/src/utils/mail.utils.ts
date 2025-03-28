@@ -19,8 +19,8 @@ export const sendMail = async (
   to: string,
   subject: string,
   html: string,
-  qrCodeUrl?: string,
-  fromEmail: string = GOOGLE_MAILER_EMAIL_SEND_ADDRESS
+  fromEmail: string = GOOGLE_MAILER_EMAIL_SEND_ADDRESS,
+  qrCodeUrl?: string
 ) => {
   try {
     const access_token_object = await MailClient.getAccessToken()
