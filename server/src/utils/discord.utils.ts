@@ -160,6 +160,7 @@ export const sendEmbedMessageToUsersDM = async (
       modal.addComponents(actionRow)
 
       try {
+        await interaction.deferReply({ ephemeral: true })
         await interaction.showModal(modal)
       } catch (error) {
         console.error('Lỗi khi hiển thị modal:', error)
