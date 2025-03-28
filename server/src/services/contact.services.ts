@@ -71,10 +71,10 @@ class ContactService {
 
     if (serverLanguage == LANGUAGE.VIETNAMESE) {
       email_subject = VIETNAMESE_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
-      email_html = VIETNAMESE_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
+      email_html = VIETNAMESE_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).html
     } else {
       email_subject = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
-      email_html = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
+      email_html = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).html
     }
 
     await Promise.all([

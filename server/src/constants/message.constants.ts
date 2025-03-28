@@ -209,8 +209,8 @@ export class VIETNAMESE_STATIC_MESSAGE {
     ORDER_APPROVAL_FAILURE: 'Kiểm duyệt đơn hàng thất bại',
     CANCEL_ORDER_SUCCESS: 'Hủy đơn hàng thành công',
     CANCEL_ORDER_FAILURE: 'Hủy đơn hàng thất bại',
-    RECEIVE_DELIVERY_SUCCESS: 'Giao hàng thành công',
-    RECEIVE_DELIVERY_FAILURE: 'Giao hàng thất bại',
+    RECEIVE_DELIVERY_SUCCESS: 'Nhận giao hàng thành công',
+    RECEIVE_DELIVERY_FAILURE: 'Nhận giao hàng thất bại',
     PAYMENT_TYPE_IS_REQUIRED: 'Không được bỏ trống loại thanh toán',
     PAYMENT_TYPE_MUST_BE_A_NUMBER: 'Loại thanh toán phải là một số',
     PAYMENT_TYPE_IS_NOT_VALID: 'Loại thanh toán không đúng định dạng',
@@ -280,7 +280,6 @@ export class VIETNAMESE_STATIC_MESSAGE {
     INVALID_API_KEY: 'Api key không hợp lệ',
     RESPONSE_CONTACT_SUCCESS: 'Phản hồi yêu cầu hỗ trợ thành công',
     RESPONSE_CONTACT_FAILURE: 'Phản hồi yêu cầu hỗ trợ thất bại'
-
   }
 }
 
@@ -494,8 +493,8 @@ export class ENGLISH_STATIC_MESSAGE {
     ORDER_APPROVAL_FAILURE: 'Order approval failed',
     CANCEL_ORDER_SUCCESS: 'Order cancellation successful',
     CANCEL_ORDER_FAILURE: 'Order cancellation failed',
-    RECEIVE_DELIVERY_SUCCESS: 'Delivery successful',
-    RECEIVE_DELIVERY_FAILURE: 'Delivery failed',
+    RECEIVE_DELIVERY_SUCCESS: 'Receive delivery successful',
+    RECEIVE_DELIVERY_FAILURE: 'Receive Delivery failed',
     ORDER_UNPAID: 'unpaid order',
     PAYMENT_TYPE_IS_REQUIRED: 'Payment type cannot be empty',
     PAYMENT_TYPE_MUST_BE_A_NUMBER: 'Payment type must be a number',
@@ -567,7 +566,6 @@ export class ENGLISH_STATIC_MESSAGE {
     INVALID_API_KEY: 'Invalid API key',
     RESPONSE_CONTACT_SUCCESS: 'Support request responded successfully',
     RESPONSE_CONTACT_FAILURE: 'Failed to respond to support request'
-
   }
 }
 

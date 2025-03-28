@@ -1267,7 +1267,9 @@ class OrderService {
           {
             $match: {
               payment_status: PaymentStatusEnum.PAID,
-              order_status: { $ne: OrderStatusEnum.PENDING },
+              order_status: {
+                $in: [OrderStatusEnum.DELIVERING, OrderStatusEnum.DELIVERED, OrderStatusEnum.COMPLETED]
+              },
               delivery_type: DeliveryTypeEnum.DELIVERY
             }
           },
@@ -1357,7 +1359,9 @@ class OrderService {
               user: { $ne: user._id },
               shipper: user._id,
               payment_status: PaymentStatusEnum.PAID,
-              order_status: { $ne: OrderStatusEnum.PENDING },
+              order_status: {
+                $in: [OrderStatusEnum.DELIVERING, OrderStatusEnum.DELIVERED, OrderStatusEnum.COMPLETED]
+              },
               delivery_type: DeliveryTypeEnum.DELIVERY
             }
           },
