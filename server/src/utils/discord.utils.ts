@@ -129,12 +129,6 @@ export const sendEmbedMessageToUsersDM = async (
             components: [row]
           })
           sentMessages.push({ user_id: userId, message_id: sentMessage.id })
-
-          if (serverLanguage === LANGUAGE.VIETNAMESE) {
-            console.log(`\x1b[33mĐã gửi tin nhắn thành công đến người dùng \x1b[36m${userId}\x1b[0m`)
-          } else {
-            console.log(`\x1b[33mSuccessfully sent message to user \x1b[36m$\x1b[0m{userId}\x1b[0m`)
-          }
         }
       } catch (userError) {
         if (serverLanguage === LANGUAGE.VIETNAMESE) {
@@ -150,7 +144,6 @@ export const sendEmbedMessageToUsersDM = async (
     client.on('interactionCreate', async (interaction) => {
       if (!interaction.isButton()) return
       if (!interaction.customId.startsWith('reply_')) return
-
       if (!userIds.includes(interaction.user.id)) return
 
       await interaction.deferUpdate().catch(() => {})
@@ -178,6 +171,7 @@ export const sendEmbedMessageToUsersDM = async (
     client.on('interactionCreate', async (interaction) => {
       if (!interaction.isModalSubmit()) return
       if (!interaction.customId.startsWith('reply_modal_')) return
+      if (!userIds.includes(interaction.user.id)) return
 
       try {
         await interaction.deferReply({ ephemeral: true })
@@ -185,8 +179,6 @@ export const sendEmbedMessageToUsersDM = async (
         console.error('Lỗi khi defer interaction:', deferError)
         return
       }
-
-      if (!userIds.includes(interaction.user.id)) return
 
       const replyContent = interaction.fields.getTextInputValue('reply_content')
 
@@ -207,30 +199,18 @@ export const sendEmbedMessageToUsersDM = async (
         })
 
         if (response.ok) {
-          await interaction.editReply({
-            content: 'Đã gửi phản hồi thành công!'
-          })
+          await interaction.editReply({ content: 'Đã gửi phản hồi thành công!' })
         } else {
-          await interaction.editReply({
-            content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.'
-          })
+          await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.' })
         }
       } catch (error) {
-        await interaction.editReply({
-          content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
-        })
+        await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.' })
       }
     })
 
     return sentMessages
   } catch (error) {
-    if (serverLanguage === LANGUAGE.VIETNAMESE) {
-      console.error('\x1b[31mLỗi khi gửi embed đến DM của người dùng:\x1b[33m', error)
-      console.log('\x1b[0m')
-    } else {
-      console.error('"\x1b[31mError sending embed to users\' DMs:\x1b[33m"', error)
-      console.log('\x1b[0m')
-    }
+    console.error('Error sending embed to users DMs:', error)
     return sentMessages
   }
 }
@@ -240,17 +220,14 @@ export const hideReplyButton = async (sentMessages: { user_id: string; message_i
     try {
       const user: User = await client.users.fetch(user_id)
       if (!user) {
-        console.error(`\x1b[31mKhông tìm thấy user với ID: \x1b[33m${user_id}\x1b[0m`)
+        console.error(`Không tìm thấy user với ID: ${user_id}`)
         continue
       }
 
       const dmChannel = await user.createDM()
-
       const message = await dmChannel.messages.fetch(message_id)
       if (!message) {
-        console.error(
-          `\x1b[31mKhông tìm thấy message với ID: \x1b[33m${message_id}\x1b[31m cho user \x1b[33m${user_id}\x1b[0m`
-        )
+        console.error(`Không tìm thấy message với ID: ${message_id} cho user ${user_id}`)
         continue
       }
 
@@ -259,7 +236,7 @@ export const hideReplyButton = async (sentMessages: { user_id: string; message_i
         components: []
       })
     } catch (error) {
-      console.error(`\x1b[31mLỗi khi chỉnh sửa message cho user\x1b[33m ${user_id}\x1b[31m:\x1b[33m`, error)
+      console.error(`Lỗi khi chỉnh sửa message cho user ${user_id}:`, error)
     }
   }
 }
