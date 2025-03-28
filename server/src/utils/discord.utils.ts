@@ -174,9 +174,9 @@ export const sendEmbedMessageToUsersDM = async (
       if (!interaction.customId.startsWith('reply_modal_')) return
 
       try {
-        await interaction.deferUpdate()
+        await interaction.deferReply({ ephemeral: true })
       } catch (deferError) {
-        console.error('Lỗi khi defer button interaction:', deferError)
+        console.error('Lỗi khi defer interaction:', deferError)
         return
       }
 
@@ -185,8 +185,6 @@ export const sendEmbedMessageToUsersDM = async (
       const replyContent = interaction.fields.getTextInputValue('reply_content')
 
       try {
-        // await interaction.deferReply({ ephemeral: true })
-
         const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
           method: 'POST',
           headers: {
