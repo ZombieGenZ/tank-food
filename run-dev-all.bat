@@ -41,8 +41,8 @@ if errorlevel 1 (
 echo !ESC![32mCập nhật code thành công!!ESC![0m
 echo.
 
-start "TANK-Food Server" cmd /k "cd /d "%~dp0server" && call run-release.bat"
+start "TANK-Food Server" cmd /k "cd /d "%~dp0server" && call run-dev.bat"
 
-start "TANK-Food Client" cmd /k "cd /d "%~dp0client" && call run-release.bat"
+start "TANK-Food Client" cmd /k "cd /d "%~dp0client" && call run-dev.bat"
 
 exit
