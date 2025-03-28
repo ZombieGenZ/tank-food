@@ -202,6 +202,8 @@ export const sendEmbedMessageToUsersDM = async (
           signal: AbortSignal.timeout(60 * 1000)
         })
 
+        console.log(response)
+
         if (response.ok) {
           await interaction.editReply({
             content: 'Đã gửi phản hồi thành công!'
