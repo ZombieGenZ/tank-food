@@ -146,8 +146,6 @@ export const sendEmbedMessageToUsersDM = async (
       if (!interaction.customId.startsWith('reply_')) return
       if (!userIds.includes(interaction.user.id)) return
 
-      await interaction.deferUpdate().catch(() => {})
-
       const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
 
       const replyInput = new TextInputBuilder()
@@ -159,8 +157,8 @@ export const sendEmbedMessageToUsersDM = async (
         .setRequired(true)
 
       const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
-
       modal.addComponents(actionRow)
+
       try {
         await interaction.showModal(modal)
       } catch (error) {
