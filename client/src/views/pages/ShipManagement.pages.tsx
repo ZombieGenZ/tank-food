@@ -1,7 +1,16 @@
 import { JSX, useState, useEffect } from "react";
-import { Card, Select, Button } from "antd";
+import { Table, Button } from "antd";
+import type { TableProps } from 'antd';
 
-const { Option } = Select;
+
+interface DataType {
+    key: string;
+    title: string;
+    total_price: number;
+    address: string;
+    payment_type: string,
+    payment_status: string
+  }
 
 interface Order {
     _id: string;
@@ -85,7 +94,6 @@ interface Preview {
 }
 
 const ShipManagement = (): JSX.Element => {
-    const [selectedFilter, setSelectedFilter] = useState("Tháng này");
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
 
@@ -149,22 +157,65 @@ const ShipManagement = (): JSX.Element => {
         })
     }, [refresh_token, access_token])
 
-    const orders = [
+    const columns: TableProps<DataType>['columns'] = [
         {
-          id: "00001",
-          name: "Gà chín cửa",
-          price: "10.000 vnd",
-          status: "Đang giao",
-          date: "00:00 01/01/2025",
+          title: 'Đơn hàng',
+          dataIndex: 'name',
+          key: 'name',
+          render: (text) => <p className="font-bold">{text}</p>,
         },
         {
-          id: "00002",
-          name: "Gà chín cửa",
-          price: "10.000 vnd",
-          status: "Đang giao",
-          date: "00:00 01/01/2025",
+            title: 'Số điên thoại người đặt',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text) => <a>{text}</a>,
+          },
+        {
+          title: 'Giá tiền',
+          dataIndex: 'age',
+          key: 'age',
+        },
+        {
+          title: 'Địa chỉ giao hàng',
+          dataIndex: 'address',
+          key: 'address',
+        },
+        {
+          title: 'Map',
+          key: 'tags',
+          dataIndex: 'tags',
+          render: () => (
+            <>
+              <Button>Xem bản đồ</Button>
+            </>
+          ),
+        },
+        {
+          title: 'Thanh toán',
+          key: 'action',
+          dataIndex: 'action',
+        },
+        {
+          title: 'Phương thức thanh toán',
+          key: 'action',
+          dataIndex: 'action',
+        },
+        {
+          title: 'Phương thức thanh toán',
+          key: 'action',
+          dataIndex: 'action',
+          render: () => (
+            <>
+                <Button>Nhận đơn hàng</Button>
+            </>
+          )
         },
       ];
+      
+      const data: DataType[] = [];
+      
+      const App: React.FC = () => <Table<DataType> columns={columns} dataSource={data} />;
+
     const language = (): string => {
         const Language = localStorage.getItem('language')
         return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -175,73 +226,17 @@ const ShipManagement = (): JSX.Element => {
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex items-center justify-between">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách đơn hàng chưa nhận giao hàng" : "List of orders not yet delivered"}</p>
-                        <Select
-                            className="w-[15%]"
-                            value={selectedFilter}
-                            onChange={setSelectedFilter}
-                            >
-                            <Option value="Tháng này">Tháng này</Option>
-                            <Option value="Tháng trước">Tháng trước</Option>
-                            <Option value="Tuần trước">Tuần trước</Option>
-                            <Option value="Tuần này">Tuần này</Option>
-                        </Select>
                     </div>
-
-                    {orders.map((order) => (
-                        <Card key={order.id} className="mb-4 w-full" title={`Đơn #${order.id}`} extra={<span className="text-sm text-gray-500">{order.date}</span>}>
-                            <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-gray-300 flex items-center justify-center">
-                                <span className="text-gray-600">X</span>
-                                </div>
-                                <div className="flex-1">
-                                <p className="font-medium">{order.name}</p>
-                                <p className="text-gray-500 text-sm">{order.price}</p>
-                                </div>
-                                <span className="border rounded px-3 py-1">X1</span>
-                            </div>
-                            <p className="mt-2 text-sm">
-                                Trạng thái đơn hàng: <span className="text-blue-500">{order.status}</span>
-                            </p>
-                            <Button className="mt-3" type="default">
-                                Chi tiết đơn hàng
-                            </Button>
-                        </Card>
-                    ))}
+                    <div className="w-full overflow-x-auto">
+                        <App />
+                    </div>
 
                     <div className="w-full flex items-center justify-between">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách đơn hàng đang giao" : "List of orders being delivered"}</p>
-                        <Select
-                            className="w-[15%]"
-                            value={selectedFilter}
-                            onChange={setSelectedFilter}
-                            >
-                            <Option value="Tháng này">Tháng này</Option>
-                            <Option value="Tháng trước">Tháng trước</Option>
-                            <Option value="Tuần trước">Tuần trước</Option>
-                            <Option value="Tuần này">Tuần này</Option>
-                        </Select>
                     </div>
-
-                    {orders.map((order) => (
-                        <Card key={order.id} className="mb-4 w-full" title={`Đơn #${order.id}`} extra={<span className="text-sm text-gray-500">{order.date}</span>}>
-                            <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-gray-300 flex items-center justify-center">
-                                <span className="text-gray-600">X</span>
-                                </div>
-                                <div className="flex-1">
-                                <p className="font-medium">{order.name}</p>
-                                <p className="text-gray-500 text-sm">{order.price}</p>
-                                </div>
-                                <span className="border rounded px-3 py-1">X1</span>
-                            </div>
-                            <p className="mt-2 text-sm">
-                                Trạng thái đơn hàng: <span className="text-blue-500">{order.status}</span>
-                            </p>
-                            <Button className="mt-3" type="default">
-                                Chi tiết đơn hàng
-                            </Button>
-                        </Card>
-                    ))}
+                    <div className="w-full overflow-x-auto">
+                        <App />
+                    </div>
                 </div>
             </div>
         </div>
