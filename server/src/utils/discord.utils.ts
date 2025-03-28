@@ -142,67 +142,67 @@ export const sendEmbedMessageToUsersDM = async (
     }
 
     client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isButton()) return
-      if (!interaction.customId.startsWith('reply_')) return
-      if (!userIds.includes(interaction.user.id)) return
+      if (interaction.isButton()) {
+        if (!interaction.customId.startsWith('reply_')) return
+        if (!userIds.includes(interaction.user.id)) return
 
-      const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
+        const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
 
-      const replyInput = new TextInputBuilder()
-        .setCustomId('reply_content')
-        .setLabel('Nội dung phản hồi')
-        .setStyle(TextInputStyle.Paragraph)
-        .setMinLength(1)
-        .setMaxLength(4000)
-        .setRequired(true)
+        const replyInput = new TextInputBuilder()
+          .setCustomId('reply_content')
+          .setLabel('Nội dung phản hồi')
+          .setStyle(TextInputStyle.Paragraph)
+          .setMinLength(1)
+          .setMaxLength(4000)
+          .setRequired(true)
 
-      const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
-      modal.addComponents(actionRow)
+        const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
+        modal.addComponents(actionRow)
 
-      try {
-        await interaction.showModal(modal)
-      } catch (error) {
-        console.error('Lỗi khi hiển thị modal:', error)
-      }
-    })
-
-    client.on('interactionCreate', async (interaction) => {
-      if (!interaction.isModalSubmit()) return
-      if (!interaction.customId.startsWith('reply_modal_')) return
-      if (!userIds.includes(interaction.user.id)) return
-
-      try {
-        await interaction.deferReply({ ephemeral: true })
-      } catch (deferError) {
-        console.error('Lỗi khi defer interaction:', deferError)
-        return
-      }
-
-      const replyContent = interaction.fields.getTextInputValue('reply_content')
-
-      try {
-        const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
-          },
-          body: JSON.stringify({
-            contact_id: contact_id,
-            user_id: interaction.user.id,
-            reply_content: replyContent,
-            timestamp: new Date().toISOString()
-          }),
-          signal: AbortSignal.timeout(60 * 1000)
-        })
-
-        if (response.ok) {
-          await interaction.editReply({ content: 'Đã gửi phản hồi thành công!' })
-        } else {
-          await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.' })
+        try {
+          await interaction.showModal(modal)
+        } catch (error) {
+          console.error('Lỗi khi hiển thị modal:', error)
         }
-      } catch (error) {
-        await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.' })
+      }
+
+      if (interaction.isModalSubmit()) {
+        if (!interaction.customId.startsWith('reply_modal_')) return
+        if (!userIds.includes(interaction.user.id)) return
+
+        try {
+          await interaction.deferReply({ ephemeral: true }) // defer sau khi user submit modal
+        } catch (deferError) {
+          console.error('Lỗi khi defer interaction:', deferError)
+          return
+        }
+
+        const replyContent = interaction.fields.getTextInputValue('reply_content')
+
+        try {
+          const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
+            },
+            body: JSON.stringify({
+              contact_id: contact_id,
+              user_id: interaction.user.id,
+              reply_content: replyContent,
+              timestamp: new Date().toISOString()
+            }),
+            signal: AbortSignal.timeout(60 * 1000)
+          })
+
+          if (response.ok) {
+            await interaction.editReply({ content: 'Đã gửi phản hồi thành công!' })
+          } else {
+            await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.' })
+          }
+        } catch (error) {
+          await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.' })
+        }
       }
     })
 
