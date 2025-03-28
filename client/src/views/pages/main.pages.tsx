@@ -487,13 +487,16 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
             ?  // <Popover content="Nam đen" className='cursor-pointer text-lg'>
             //       <Avatar size="large" icon={<FaUserCircle />} />
             //     </Popover>
-            <Dropdown menu={{ items }} 
-                      placement="bottom" 
-                      arrow>
-              <Button
-                className='p-10'
-              ><IoSettings /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
-            </Dropdown>
+            <div className='flex gap-3'>
+              <Dropdown menu={{ items }} 
+                        placement="bottom" 
+                        arrow>
+                <Button
+                  className='p-10'
+                ><IoSettings /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
+              </Dropdown>
+              
+            </div>
             : 
             <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
                 onClick={() => navigate("/signup")}><IoIosLogIn />{language == "Tiếng Việt" ? "Đăng nhập" : "Login"}
