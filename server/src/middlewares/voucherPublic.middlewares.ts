@@ -289,15 +289,21 @@ export const updateVoucherPublicValidator = async (req: Request, res: Response, 
               : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_LENGTH_MUST_BE_FROM_1_TO_50
         },
         custom: {
-          options: async (value) => {
-            const [voucherPublic, voucherPrivate] = await Promise.all([
+          options: async (value, { req }) => {
+            const [voucherPublic, voucherPrivate, currentVoucherPublic] = await Promise.all([
               databaseService.voucherPublic.findOne({ code: value }),
-              databaseService.voucherPrivate.findOne({ code: value })
+              databaseService.voucherPrivate.findOne({ code: value }),
+              databaseService.voucherPublic.findOne({ _id: req.body.voucher_id })
             ])
 
-            if (voucherPublic || voucherPrivate) {
+            if (
+              (voucherPublic || voucherPrivate) &&
+              voucherPublic &&
+              currentVoucherPublic &&
+              voucherPublic._id !== currentVoucherPublic._id
+            ) {
               throw new Error(
-                language == LANGUAGE.VIETNAMESE
+                language === LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_ALREADY_EXISTS
                   : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.CODE_ALREADY_EXISTS
               )
