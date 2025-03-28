@@ -422,7 +422,6 @@ class OrderService {
         .aggregate([
           {
             $match: {
-              payment_status: PaymentStatusEnum.PAID,
               order_status: { $ne: OrderStatusEnum.PENDING }
             }
           },
@@ -510,7 +509,6 @@ class OrderService {
           {
             $match: {
               user: { $ne: user._id },
-              payment_status: PaymentStatusEnum.PAID,
               order_status: { $ne: OrderStatusEnum.PENDING }
             }
           },
