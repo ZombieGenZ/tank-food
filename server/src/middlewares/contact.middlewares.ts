@@ -206,6 +206,9 @@ export const discordApiKeyValidator = async (req: Request, res: Response, next: 
         },
         custom: {
           options: (value) => {
+            console.log(value)
+            console.log(process.env.DISCORD_RESPONSE_API_KEY)
+
             if (!value.startsWith('Apikey ')) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
@@ -215,7 +218,11 @@ export const discordApiKeyValidator = async (req: Request, res: Response, next: 
             }
 
             if (value.split(' ')[1] !== process.env.DISCORD_RESPONSE_API_KEY) {
-              // ...
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.CONTACT_MESSAGE.INVALID_API_KEY
+                  : ENGLISH_STATIC_MESSAGE.CONTACT_MESSAGE.INVALID_API_KEY
+              )
             }
 
             return true
