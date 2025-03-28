@@ -89,6 +89,7 @@ export const setupInteractionHandlers = (client: Client) => {
     if (!interaction.isButton() || !interaction.customId.startsWith('reply_')) return
 
     const contact_id = interaction.customId.split('_')[1]
+    console.log(`Nhấn nút với contact_id: ${contact_id}`)
     const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
 
     const replyInput = new TextInputBuilder()
