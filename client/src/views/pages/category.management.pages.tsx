@@ -311,17 +311,6 @@ const Category = (): JSX.Element => {
     
             {/* Menu Items Section with Soft Orange Background */}
             <section className="relative bg-gradient-to-r from-red-400 to-orange-200 pt-16 pb-20">
-                {/* Fixed Shopping Cart */}
-                <div className="fixed top-30 right-5 z-50 bg-orange-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-orange-700 transition-colors animate-pulse-soft">
-                    <div className="relative">
-                        <ShoppingCart className="w-6 h-6" />
-                        {cartItemCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                            {cartItemCount}
-                        </span>
-                        )}
-                    </div>
-                </div>
     
                 <div className="container mx-auto px-4">
                     <h2 className="text-6xl font-bold font-['Yeseva_One'] text-center text-orange-800 mb-12 " data-aos="fade-down">Thực Đơn TankFood</h2>

@@ -428,6 +428,8 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
     border: '1px solid rgba(245, 245, 245, 0.3)',
   };
 
+  const [cartItemCount, setCartItemCount] = useState<number>(0);
+
   return (
     <>
       <div className='sticky top-0 z-50 navbarName' style={style}>
@@ -481,6 +483,17 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
               ]}
               onChange={handleChange}
             />
+          </div>
+          {/* Thêm nút giỏ hàng */}
+          <div className="bg-orange-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-orange-700 transition-colors">
+            <div className="relative">
+              <RiShoppingCart2Line className="w-4 h-4" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </div>
           </div>
           {
             refresh_token !== null
