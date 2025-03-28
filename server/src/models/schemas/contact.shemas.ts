@@ -7,6 +7,7 @@ interface ContactType {
   phone: string
   title: string
   content: string
+  discord_message_data?: { user_id: string; message_id: string }[]
   created_at?: Date
 }
 
@@ -17,6 +18,7 @@ export default class Contact {
   phone: string
   title: string
   content: string
+  discord_message_data: { user_id: string; message_id: string }[]
   created_at: Date
 
   constructor(contact: ContactType) {
@@ -26,6 +28,7 @@ export default class Contact {
     this.phone = contact.phone
     this.title = contact.title
     this.content = contact.content
+    this.discord_message_data = contact.discord_message_data || []
     this.created_at = contact.created_at || new Date()
   }
 }

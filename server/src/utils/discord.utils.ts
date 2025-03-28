@@ -1,4 +1,17 @@
-import { Client, EmbedBuilder, IntentsBitField, Partials, TextChannel, User } from 'discord.js'
+import {
+  Client,
+  EmbedBuilder,
+  IntentsBitField,
+  Partials,
+  TextChannel,
+  User,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle
+} from 'discord.js'
 import { LANGUAGE } from '~/constants/language.constants'
 import { serverLanguage } from '~/index'
 
@@ -82,8 +95,11 @@ export const sendEmbedMessageToUsersDM = async (
     colorHex?: string
     thumbnailUrl?: string
     embedUrl?: string
-  }
-): Promise<void> => {
+  },
+  contact_id: string
+): Promise<{ user_id: string; message_id: string }[]> => {
+  const sentMessages: { user_id: string; message_id: string }[] = []
+
   try {
     const embed = new EmbedBuilder()
 
@@ -96,21 +112,28 @@ export const sendEmbedMessageToUsersDM = async (
     if (embedData.thumbnailUrl) embed.setThumbnail(embedData.thumbnailUrl)
     if (embedData.embedUrl) embed.setURL(embedData.embedUrl)
 
+    const replyButton = new ButtonBuilder()
+      .setCustomId(`reply_${contact_id}`)
+      .setLabel('Phản hồi')
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji('📧')
+
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(replyButton)
+
     for (const userId of userIds) {
       try {
         const user: User = await client.users.fetch(userId)
         if (user) {
-          await user.send({ embeds: [embed] })
+          const sentMessage = await user.send({
+            embeds: [embed],
+            components: [row]
+          })
+          sentMessages.push({ user_id: userId, message_id: sentMessage.id })
+
           if (serverLanguage === LANGUAGE.VIETNAMESE) {
-            console.log(`\x1b[32mĐã gửi embed thành công đến người dùng ${userId}\x1b[0m`)
+            console.log(`\x1b[33mĐã gửi tin nhắn thành công đến người dùng \x1b[36m${userId}\x1b[0m`)
           } else {
-            console.log(`\x1b[32mSuccessfully sent embed to user ${userId}\x1b[0m`)
-          }
-        } else {
-          if (serverLanguage === LANGUAGE.VIETNAMESE) {
-            console.error(`\x1b[31mKhông tìm thấy người dùng \x1b[33m${userId}\x1b[0m`)
-          } else {
-            console.error(`\x1b[31mUser \x1b[33m${userId}\x1b[31m not found\x1b[0m`)
+            console.log(`\x1b[33mSuccessfully sent message to user \x1b[36m$\x1b[0m{userId}\x1b[0m`)
           }
         }
       } catch (userError) {
@@ -123,6 +146,67 @@ export const sendEmbedMessageToUsersDM = async (
         }
       }
     }
+
+    client.on('interactionCreate', async (interaction) => {
+      if (!interaction.isButton()) return
+      if (!interaction.customId.startsWith('reply_')) return
+
+      if (!userIds.includes(interaction.user.id)) return
+
+      const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
+
+      const replyInput = new TextInputBuilder()
+        .setCustomId('reply_content')
+        .setLabel('Nội dung phản hồi (')
+        .setStyle(TextInputStyle.Paragraph)
+        .setMinLength(1)
+        .setMaxLength(4000)
+        .setRequired(true)
+
+      const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
+
+      modal.addComponents(actionRow)
+      await interaction.showModal(modal)
+    })
+
+    client.on('interactionCreate', async (interaction) => {
+      if (!interaction.isModalSubmit()) return
+      if (!interaction.customId.startsWith('reply_modal_')) return
+
+      const replyContent = interaction.fields.getTextInputValue('reply_content')
+
+      try {
+        const response = await fetch('YOUR_API_ENDPOINT', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'YOUR_AUTH_TOKEN'
+          },
+          body: JSON.stringify({
+            contact_id: contact_id,
+            user_id: interaction.user.id,
+            reply_content: replyContent,
+            timestamp: new Date().toISOString()
+          })
+        })
+
+        if (response.ok) {
+          await interaction.reply({
+            content: 'Đã gửi phản hồi thành công!',
+            ephemeral: true
+          })
+        } else {
+          throw new Error('Server response not OK')
+        }
+      } catch (error) {
+        await interaction.reply({
+          content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.',
+          ephemeral: true
+        })
+      }
+    })
+
+    return sentMessages
   } catch (error) {
     if (serverLanguage === LANGUAGE.VIETNAMESE) {
       console.error('\x1b[31mLỗi khi gửi embed đến DM của người dùng:\x1b[33m', error)
@@ -131,5 +215,6 @@ export const sendEmbedMessageToUsersDM = async (
       console.error('"\x1b[31mError sending embed to users\' DMs:\x1b[33m"', error)
       console.log('\x1b[0m')
     }
+    return sentMessages
   }
 }

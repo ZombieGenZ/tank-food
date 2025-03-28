@@ -5,39 +5,53 @@ import { serverLanguage } from '~/index'
 import databaseService from './database.services'
 import Contact from '~/models/schemas/contact.shemas'
 import { formatDateOnlyMinuteAndHour } from '~/utils/date.utils'
+import { ObjectId } from 'mongodb'
 
 class ContactService {
   async send(payload: SendContactRequestsBody) {
+    const contact_id = new ObjectId()
     const date = new Date()
     const supportUser = (process.env.SUPPORT_DISCORD_USER_ID as string).split(',')
 
+    let messageData
+
     if (serverLanguage == LANGUAGE.VIETNAMESE) {
-      await sendEmbedMessageToUsersDM(supportUser, {
-        author: 'TANK-Food website',
-        title: `${payload.title}`,
-        content: `${payload.content}\n\nThông tin liên hệ:\nĐịa chỉ email: ${payload.email}\nSố điện thoại: ${payload.phone}`,
-        footer: `Hệ thống TANK-Food | ${formatDateOnlyMinuteAndHour(date)}`,
-        colorHex: '#FF8000',
-        embedUrl: process.env.APP_URL
-      })
+      messageData = await sendEmbedMessageToUsersDM(
+        supportUser,
+        {
+          author: 'TANK-Food website',
+          title: `${payload.title}`,
+          content: `${payload.content}\n\nThông tin liên hệ:\nĐịa chỉ email: ${payload.email}\nSố điện thoại: ${payload.phone}`,
+          footer: `Hệ thống TANK-Food | ${formatDateOnlyMinuteAndHour(date)}`,
+          colorHex: '#FF8000',
+          embedUrl: process.env.APP_URL
+        },
+        contact_id.toString()
+      )
     } else {
-      await sendEmbedMessageToUsersDM(supportUser, {
-        author: 'TANK-Food website',
-        title: `${payload.title}`,
-        content: `${payload.content}\n\nContact Information:\nEmail Address: ${payload.email}\nPhone Number: ${payload.phone}`,
-        footer: `TANK-Food System | ${formatDateOnlyMinuteAndHour(date)}`,
-        colorHex: '#FF8000',
-        embedUrl: process.env.APP_URL
-      })
+      messageData = await sendEmbedMessageToUsersDM(
+        supportUser,
+        {
+          author: 'TANK-Food website',
+          title: `${payload.title}`,
+          content: `${payload.content}\n\nContact Information:\nEmail Address: ${payload.email}\nPhone Number: ${payload.phone}`,
+          footer: `TANK-Food System | ${formatDateOnlyMinuteAndHour(date)}`,
+          colorHex: '#FF8000',
+          embedUrl: process.env.APP_URL
+        },
+        contact_id.toString()
+      )
     }
 
     await databaseService.contact.insertOne(
       new Contact({
+        _id: contact_id,
         name: payload.name,
         email: payload.email,
         phone: payload.phone,
         title: payload.title,
         content: payload.content,
+        discord_message_data: messageData,
         created_at: date
       })
     )
