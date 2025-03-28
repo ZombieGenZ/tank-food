@@ -202,7 +202,7 @@ export const sendEmbedMessageToUsersDM = async (
           signal: AbortSignal.timeout(60 * 1000)
         })
 
-        console.log(response)
+        console.log(response.ok)
 
         if (response.ok) {
           await interaction.editReply({
