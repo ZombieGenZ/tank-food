@@ -94,7 +94,8 @@ const ShipManagement = (): JSX.Element => {
 
     useEffect(() => {
         console.log(billwait)
-    }, [billwait])
+        console.log(billtaked)
+    }, [billwait, billtaked])
 
     useEffect(() => {
         const handleStorageChange = () => {

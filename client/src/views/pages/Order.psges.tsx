@@ -1,6 +1,7 @@
 import { JSX, useState, useEffect } from "react";
-import { Table, Input, Button } from 'antd';
+import { Table, Input, Button ,message } from 'antd';
 import type { TableProps, GetProps } from 'antd';
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 
 interface DataType {
     key: string;
@@ -10,6 +11,7 @@ interface DataType {
     date: string,
     status: string,
     delivery_type: number | null,
+    payment_status: number,
     payment: string,
     local?: string | null,
 }
@@ -102,8 +104,38 @@ const OrderManagement = (): JSX.Element => {
     const [doneData, setDoneData] = useState<Order[]>([])
     const [waitView, setWaitView] = useState<DataType[]>([])
     const [doneView, setDoneView] = useState<DataType[]>([])
-    // const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = message.useMessage();
 
+    const handleConfirmPayment = (orderId : string) => {
+        console.log(orderId)
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderId,
+        }
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/payment-confirmation`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then((response) => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL) {
+                messageApi.success("Xác nhận thanh toán thành công")
+            } else {
+                messageApi.error(data.message)
+                return
+            }
+        })
+    };
+
+    const handleAccpet = (orderId: string) => {
+
+    }
 
     useEffect(() => {
         const body = {
@@ -171,6 +203,7 @@ const OrderManagement = (): JSX.Element => {
                 name: bill.product[0].title_translate_1,
                 total_price: bill.total_bill,
                 date: `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`,
+                payment_status: bill.payment_status,
                 delivery_type: bill.delivery_type,
                 status: bill.order_status === 0 ? "Đang chờ duyệt" : 
                         bill.order_status === 1 ? "Duyệt thành công" : 
@@ -179,7 +212,7 @@ const OrderManagement = (): JSX.Element => {
                         bill.order_status === 4 ? "Thành công" : "Thất bại",
                 payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
                         bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
-                local: bill.receiving_address,
+                local: bill.receiving_address ? bill.receiving_address : "Tại quầy",
         })})
 
         const newDoneView: DataType[] = doneData.map((bill, index) => {
@@ -191,6 +224,7 @@ const OrderManagement = (): JSX.Element => {
                 name: bill.product[0].title_translate_1,
                 total_price: bill.total_bill,
                 date: `${date.getUTCDate()}/${date.getUTCMonth() + 1}/${date.getUTCFullYear()}`,
+                payment_status: bill.payment_status,
                 delivery_type: bill.delivery_type,
                 status: bill.order_status === 0 ? "Đang chờ duyệt" : 
                         bill.order_status === 1 ? "Duyệt thành công" : 
@@ -199,7 +233,7 @@ const OrderManagement = (): JSX.Element => {
                         bill.order_status === 4 ? "Thành công" : "Thất bại",
                 payment: bill.payment_status === 0 ? "Đang chờ thanh toán" :
                         bill.payment_status === 1 ? "Thanh toán thành công" : "Thanh toán thất bại",
-                local: bill.receiving_address,
+                local: bill.receiving_address ? bill.receiving_address : "Tại quầy",
         })})
 
         setWaitView(newWaitView)
@@ -210,6 +244,8 @@ const OrderManagement = (): JSX.Element => {
         switch (status) {
             case "Đang chờ duyệt":
                 return "#f0ad4e"; // Màu cam
+            case "Đang chờ thanh toán":
+                return "#f0ad4e"
             case "Đang giao":
                 return "#5bc0de"; // Màu xanh dương
             case "Thành công":
@@ -231,6 +267,8 @@ const OrderManagement = (): JSX.Element => {
                 return "#5cb85c"; // Xanh lá
             case "Thanh toán thất bại":
                 return "#d9534f"; // Đỏ
+            case "Đang chờ thanh toán":
+                return "#f0ad4e"
             default:
                 return "#777"; // Xám
         }
@@ -310,8 +348,8 @@ const OrderManagement = (): JSX.Element => {
             render: (_text, record) => {
                 return (
                   <div className="flex gap-2 flex-col">
-                    {record.delivery_type == 0 && <Button style={{ background:"green", color:"white" }}>{language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"}</Button>}
-                    <Button style={{ background:"#f0ad4e", color:"white" }} >{language() == "Tiếng Việt" ? "Duyệt" : "Accept"}</Button>
+                    {(record.payment_status == 0 && record.delivery_type == 0) && <Button style={{ background:"green", color:"white" }} onClick={() => handleConfirmPayment(record.id)}>{language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"}</Button>}
+                    {(record.delivery_type == 1 || record.payment_status == 1) && <Button style={{ background:"#f0ad4e", color:"white" }}>{language() == "Tiếng Việt" ? "Duyệt" : "Accept"}</Button>}
                     <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Từ chối" : "Refuse"}</Button>
                   </div>
                 )
@@ -392,7 +430,7 @@ const OrderManagement = (): JSX.Element => {
             width: 350,
             render: (_text, record) => {
                 return (
-                  <div className="flex gap-2 flex-col">
+                  <div className="flex gap-2">
                     <Button style={{ background:"green", color:"white" }} onClick={() => console.log(record.name, record.total_price, record.delivery_type, record.local)}>{language() == "Tiếng Việt" ? "Xác nhận thành công" : "Accpet confirm"}</Button>
                     <Button style={{ background:"red", color:"white" }}>{language() == "Tiếng Việt" ? "Huỷ" : "Cancel"}</Button>
                   </div>
@@ -416,7 +454,7 @@ const OrderManagement = (): JSX.Element => {
     }
     return(
         <div className="p-10">   
-            {/* {contextHolder} */}
+            {contextHolder}
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex justify-between items-end">
