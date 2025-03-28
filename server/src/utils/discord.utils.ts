@@ -191,15 +191,17 @@ export const sendEmbedMessageToUsersDM = async (
         })
 
         if (response.ok) {
-          await interaction.reply({
-            content: 'Đã gửi phản hồi thành công!',
-            ephemeral: true
+          await interaction.editReply({
+            content: 'Đã gửi phản hồi thành công!'
+          })
+        } else {
+          await interaction.editReply({
+            content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.'
           })
         }
       } catch (error) {
-        await interaction.reply({
-          content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.',
-          ephemeral: true
+        await interaction.editReply({
+          content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
         })
       }
     })
