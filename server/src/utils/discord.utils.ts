@@ -157,7 +157,7 @@ export const sendEmbedMessageToUsersDM = async (
 
       const replyInput = new TextInputBuilder()
         .setCustomId('reply_content')
-        .setLabel('Nội dung phản hồi (')
+        .setLabel('Nội dung phản hồi')
         .setStyle(TextInputStyle.Paragraph)
         .setMinLength(1)
         .setMaxLength(4000)
