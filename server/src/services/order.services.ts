@@ -1559,7 +1559,7 @@ class OrderService {
       },
       {
         $set: {
-          order_status: OrderStatusEnum.COMPLETED,
+          order_status: OrderStatusEnum.CONFIRMED,
           shipper: null
         },
         $currentDate: {
