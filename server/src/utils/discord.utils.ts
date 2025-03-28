@@ -173,6 +173,13 @@ export const sendEmbedMessageToUsersDM = async (
       if (!interaction.isModalSubmit()) return
       if (!interaction.customId.startsWith('reply_modal_')) return
 
+      try {
+        await interaction.deferReply({ ephemeral: true })
+      } catch (deferError) {
+        console.error('Lỗi khi defer interaction:', deferError)
+        return
+      }
+
       const replyContent = interaction.fields.getTextInputValue('reply_content')
 
       try {
@@ -187,7 +194,8 @@ export const sendEmbedMessageToUsersDM = async (
             user_id: interaction.user.id,
             reply_content: replyContent,
             timestamp: new Date().toISOString()
-          })
+          }),
+          signal: AbortSignal.timeout(30 * 1000)
         })
 
         if (response.ok) {
