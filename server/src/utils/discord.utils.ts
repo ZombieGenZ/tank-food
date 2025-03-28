@@ -153,6 +153,8 @@ export const sendEmbedMessageToUsersDM = async (
 
       if (!userIds.includes(interaction.user.id)) return
 
+      await interaction.deferUpdate().catch(() => {})
+
       const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
 
       const replyInput = new TextInputBuilder()
@@ -166,7 +168,11 @@ export const sendEmbedMessageToUsersDM = async (
       const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
 
       modal.addComponents(actionRow)
-      await interaction.showModal(modal)
+      try {
+        await interaction.showModal(modal)
+      } catch (error) {
+        console.error('Lỗi khi hiển thị modal:', error)
+      }
     })
 
     client.on('interactionCreate', async (interaction) => {
