@@ -1,6 +1,6 @@
 import express from 'express'
 import { contactController } from '~/controllers/contact.controllers'
-import { contactValidator } from '~/middlewares/contact.middlewares'
+import { contactValidator, discordApiKeyValidator } from '~/middlewares/contact.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -18,5 +18,21 @@ const router = express.Router()
  * }
  */
 router.post('/send', contactValidator, wrapRequestHandler(contactController))
+
+/*
+ * Description: Nhận phản hồi từ Bot discord
+ * Path: /api/contact/response
+ * Method: POST
+ * headers: {
+ *    Authorization: Apikey <token>
+ * },
+ * Body: {
+ *    contact_id: string,
+ *    user_id: string,
+ *    reply_content: string,
+ *    timestamp: Date
+ * }
+ */
+router.post('/response', discordApiKeyValidator)
 
 export default router

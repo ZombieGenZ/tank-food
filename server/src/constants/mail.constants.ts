@@ -6,7 +6,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
     return {
       subject: `Chào mừng đến ${process.env.TRADEMARK_NAME}`,
       html: `
-        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
@@ -75,7 +75,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                     </td>
                 </tr>
             </table>
-        </body>
+        </div>
       `
     }
   }
@@ -83,7 +83,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
     return {
       subject: `Xác thực tài khoản - ${process.env.TRADEMARK_NAME}`,
       html: `
-        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
@@ -133,7 +133,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                     </td>
                 </tr>
             </table>
-        </body>
+        </div>
       `
     }
   }
@@ -267,7 +267,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
     return {
       subject: `Thông Báo Thay Đổi Mật Khẩu - ${process.env.TRADEMARK_NAME}`,
       html: `
-        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
@@ -312,7 +312,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                     </td>
                 </tr>
             </table>
-        </body>
+        </div>
       `
     }
   }
@@ -437,6 +437,48 @@ export class VIETNAMESE_DYNAMIC_MAIL {
       `
     }
   }
+  static supportRequestResponse(contant: string) {
+    return {
+      subject: `Phản hồi yêu cầu hổ trợ - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center;">
+                        <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                        <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic;">${process.env.SLOGAN}</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700;">Phản hồi yêu cầu hỗ trợ</h2>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; line-height: 1.5;">Chúng tôi đã nhận được yêu cầu của bạn và đây là phản hồi từ đội ngũ hỗ trợ.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF;">
+                        <p style="font-size: 18px; color: #333333; font-weight: 500;">Xin chào,</p>
+                        <p style="font-size: 18px; color: #333333; line-height: 1.7;">Chúng tôi đã xem xét yêu cầu hỗ trợ của bạn và có phản hồi như sau:</p>
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px;">
+                            <p style="color: #333333; font-size: 16px;">${contant}</p>
+                        </div>
+                        <p style="font-size: 18px; color: #333333; line-height: 1.7;">Nếu bạn cần thêm sự hỗ trợ, đừng ngần ngại liên hệ qua ${process.env.SUPPORT_EMAIL}. Chúng tôi luôn sẵn sàng phục vụ bạn!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center;">
+                        <p style="color: #FFFFFF; font-size: 15px;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Mọi quyền được bảo lưu.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+      `
+    }
+  }
 }
 
 export class ENGLIS_DYNAMIC_MAIL {
@@ -444,7 +486,7 @@ export class ENGLIS_DYNAMIC_MAIL {
     return {
       subject: `Welcome to ${process.env.TRADEMARK_NAME}`,
       html: `
-        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
@@ -513,7 +555,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                     </td>
                 </tr>
             </table>
-        </body>
+        </div>
       `
     }
   }
@@ -521,7 +563,7 @@ export class ENGLIS_DYNAMIC_MAIL {
     return {
       subject: `Account Verification - ${process.env.TRADEMARK_NAME}`,
       html: `
-        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
@@ -571,7 +613,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                     </td>
                 </tr>
             </table>
-        </body>
+        </div>
       `
     }
   }
@@ -705,7 +747,7 @@ export class ENGLIS_DYNAMIC_MAIL {
     return {
       subject: `Password Change Notification - ${process.env.TRADEMARK_NAME}`,
       html: `
-        <body style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
             <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
                 <tr>
                     <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
@@ -750,7 +792,7 @@ export class ENGLIS_DYNAMIC_MAIL {
                     </td>
                 </tr>
             </table>
-        </body>
+        </div>
       `
     }
   }
@@ -872,6 +914,48 @@ export class ENGLIS_DYNAMIC_MAIL {
               </tr>
           </table>
       </div>
+      `
+    }
+  }
+  static supportRequestResponse(contant: string) {
+    return {
+      subject: `Support Request Response - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center;">
+                        <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                        <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic;">${process.env.SLOGAN}</p>
+                    </td>
+                </tr>
+  
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700;">Support Request Response</h2>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; line-height: 1.5;">We have received your request, and here is the response from our support team.</p>
+                    </td>
+                </tr>
+  
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF;">
+                        <p style="font-size: 18px; color: #333333; font-weight: 500;">Hello,</p>
+                        <p style="font-size: 18px; color: #333333; line-height: 1.7;">We have reviewed your support request and here is our response:</p>
+                        <div style="background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px;">
+                            <p style="color: #333333; font-size: 16px;">${contant}</p>
+                        </div>
+                        <p style="font-size: 18px; color: #333333; line-height: 1.7;">If you need further assistance, don't hesitate to reach out to us at ${process.env.SUPPORT_EMAIL}. We are always ready to assist you!</p>
+                    </td>
+                </tr>
+  
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center;">
+                        <p style="color: #FFFFFF; font-size: 15px;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
       `
     }
   }

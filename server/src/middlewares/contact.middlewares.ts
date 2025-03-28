@@ -184,3 +184,76 @@ export const contactValidator = async (req: Request, res: Response, next: NextFu
       return
     })
 }
+
+export const discordApiKeyValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      Authorization: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.CONTACT_MESSAGE.AUTH_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.CONTACT_MESSAGE.AUTH_IS_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.CONTACT_MESSAGE.AUTH_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.CONTACT_MESSAGE.AUTH_MUST_BE_A_STRING
+        },
+        custom: {
+          options: (value) => {
+            if (!value.startsWith('Apikey ')) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.CONTACT_MESSAGE.INVALID_API_KEY
+                  : ENGLISH_STATIC_MESSAGE.CONTACT_MESSAGE.INVALID_API_KEY
+              )
+            }
+
+            if (value.split(' ')[1] !== process.env.DISCORD_RESPONSE_API_KEY) {
+              // ...
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}

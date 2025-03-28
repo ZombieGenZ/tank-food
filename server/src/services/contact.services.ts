@@ -1,11 +1,14 @@
 import { LANGUAGE } from '~/constants/language.constants'
-import { SendContactRequestsBody } from '~/models/requests/contact.requests'
-import { sendEmbedMessageToUsersDM } from '~/utils/discord.utils'
+import { ResponseContactRequestsBody, SendContactRequestsBody } from '~/models/requests/contact.requests'
+import { hideReplyButton, sendEmbedMessageToUsersDM } from '~/utils/discord.utils'
 import { serverLanguage } from '~/index'
 import databaseService from './database.services'
 import Contact from '~/models/schemas/contact.shemas'
 import { formatDateOnlyMinuteAndHour } from '~/utils/date.utils'
 import { ObjectId } from 'mongodb'
+import { sendMail } from '~/utils/mail.utils'
+import { ResponseTypeEnum } from '~/constants/contact.constants'
+import { VIETNAMESE_DYNAMIC_MAIL, ENGLIS_DYNAMIC_MAIL } from '~/constants/mail.constants'
 
 class ContactService {
   async send(payload: SendContactRequestsBody) {
@@ -55,6 +58,42 @@ class ContactService {
         created_at: date
       })
     )
+  }
+  async response(payload: ResponseContactRequestsBody) {
+    const contact = await databaseService.contact.findOne({ _id: new ObjectId(payload.contact_id) })
+
+    if (!contact) {
+      return
+    }
+
+    let email_subject
+    let email_html
+
+    if (serverLanguage == LANGUAGE.VIETNAMESE) {
+      email_subject = VIETNAMESE_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
+      email_html = VIETNAMESE_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
+    } else {
+      email_subject = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
+      email_html = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).subject
+    }
+
+    await Promise.all([
+      hideReplyButton(contact.discord_message_data),
+      sendMail(contact.email, email_subject, email_html),
+      databaseService.contact.updateOne(
+        {
+          _id: new ObjectId(payload.contact_id)
+        },
+        {
+          $set: {
+            response_type: ResponseTypeEnum.RESPONDED
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      )
+    ])
   }
 }
 

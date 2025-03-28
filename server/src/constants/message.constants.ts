@@ -274,7 +274,13 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CONTENT_MUST_BE_A_STRING: 'Nội dung phải là một chuỗi ký tự',
     CONTENT_LENGTH_MUST_BE_FROM_1_TO_1000: 'Nội dung phải có độ dài từ 1 đến 1000 ký tự',
     SEND_CONTACT_SUCCESS: 'Gửi yêu cầu hỗ trợ thành công',
-    SEND_CONTACT_FAILURE: 'Gửi yêu cầu hỗ trợ thất bại'
+    SEND_CONTACT_FAILURE: 'Gửi yêu cầu hỗ trợ thất bại',
+    AUTH_IS_REQUIRED: 'Mã ủy quyền không được để trống',
+    AUTH_MUST_BE_A_STRING: 'Mã ủy quyền phải là một chuỗi kí tự',
+    INVALID_API_KEY: 'Api key không hợp lệ',
+    RESPONSE_CONTACT_SUCCESS: 'Phản hồi yêu cầu hỗ trợ thành công',
+    RESPONSE_CONTACT_FAILURE: 'Phản hồi yêu cầu hỗ trợ thất bại'
+
   }
 }
 
@@ -555,7 +561,13 @@ export class ENGLISH_STATIC_MESSAGE {
     CONTENT_MUST_BE_A_STRING: 'Content must be a string',
     CONTENT_LENGTH_MUST_BE_FROM_1_TO_1000: 'Content length must be between 1 and 1000 characters',
     SEND_CONTACT_SUCCESS: 'Support request sent successfully',
-    SEND_CONTACT_FAILURE: 'Failed to send support request'
+    SEND_CONTACT_FAILURE: 'Failed to send support request',
+    AUTH_IS_REQUIRED: 'Authorization code is required',
+    AUTH_MUST_BE_A_STRING: 'Authorization code must be a string',
+    INVALID_API_KEY: 'Invalid API key',
+    RESPONSE_CONTACT_SUCCESS: 'Support request responded successfully',
+    RESPONSE_CONTACT_FAILURE: 'Failed to respond to support request'
+
   }
 }
 
@@ -785,6 +797,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static SendContactFailed(ip: string, err: unknown) {
     return `Thực hiện gửi yêu cầu hỗ trợ thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static responseContactSuccessful(ip: string) {
+    return `Phản hồi yêu cầu hỗ trợ thành công (IP: ${ip})`
+  }
+  static responseContactFailed(ip: string, err: unknown) {
+    return `Phản hồi yêu cầu hỗ trợ thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -1013,5 +1031,10 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static SendContactFailed(ip: string, err: unknown) {
     return `Failed to send support request (IP: ${ip}) | Error: ${err}`
   }
-
+  static responseContactSuccessful(ip: string) {
+    return `Support request responded successfully (IP: ${ip})`
+  }
+  static responseContactFailed(ip: string, err: unknown) {
+    return `Failed to respond to support request (IP: ${ip}) | Error: ${err}`
+  }
 }
