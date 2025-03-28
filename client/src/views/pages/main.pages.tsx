@@ -485,16 +485,6 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
             />
           </div>
           {/* Thêm nút giỏ hàng */}
-          <div className="bg-orange-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-orange-700 transition-colors">
-            <div className="relative">
-              <RiShoppingCart2Line className="w-4 h-4" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItemCount}
-                </span>
-              )}
-            </div>
-          </div>
           {
             refresh_token !== null
             ?  // <Popover content="Nam đen" className='cursor-pointer text-lg'>
@@ -508,7 +498,16 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
                   className='p-10'
                 ><IoSettings /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
               </Dropdown>
-              
+              <div className="bg-orange-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-orange-700 transition-colors">
+                <div className="relative">
+                  <RiShoppingCart2Line className="w-4 h-4" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
             : 
             <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
