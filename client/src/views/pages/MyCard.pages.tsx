@@ -2,7 +2,7 @@ import { JSX, Dispatch, SetStateAction } from "react";
 import { Trash2, Plus, Minus } from "lucide-react";
 
 interface CartItem {
-    id: number;
+    id: string;
     quantity: number;
     name: string;
     price: number;
@@ -14,7 +14,7 @@ interface MyCardProps {
     setCart: Dispatch<SetStateAction<CartItem[]>>;
   }
 const MyCard = ({ cart, setCart }: MyCardProps): JSX.Element => {
-    const increaseQuantity = (id: number) => {
+    const increaseQuantity = (id: string) => {
       setCart((prevCart) =>
         prevCart.map((item) =>
           item.id === id ? { ...item, quantity: item.quantity + 1 } : item
@@ -22,7 +22,7 @@ const MyCard = ({ cart, setCart }: MyCardProps): JSX.Element => {
       );
     };
   
-    const decreaseQuantity = (id: number) => {
+    const decreaseQuantity = (id: string) => {
       setCart((prevCart) =>
         prevCart.map((item) =>
           item.id === id && item.quantity > 1
@@ -32,7 +32,7 @@ const MyCard = ({ cart, setCart }: MyCardProps): JSX.Element => {
       );
     };
   
-    const removeItem = (id: number) => {
+    const removeItem = (id: string) => {
       setCart((prevCart) => prevCart.filter((item) => item.id !== id));
     };
   

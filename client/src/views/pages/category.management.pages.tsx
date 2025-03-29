@@ -2,7 +2,7 @@ import AOS from "aos"
 import "aos/dist/aos.css"
 import { JSX, useState, useEffect } from "react";
 import { ChevronUp, Plus } from "lucide-react"
-import { message } from 'antd';
+// import { message } from 'antd';
 
 interface MenuItem {
   key: string,
@@ -69,11 +69,11 @@ interface Product {
     updated_by: string;
 }
 
-interface Section {
-    key: string;   // Khóa định danh
-    href: string;  // Đường dẫn liên kết
-    title: string; // Tiêu đề hiển thị
-}
+// interface Section {
+//     key: string;   // Khóa định danh
+//     href: string;  // Đường dẫn liên kết
+//     title: string; // Tiêu đề hiển thị
+// }
 
 
 interface CartItem {
@@ -90,23 +90,23 @@ interface CategoryProps {
 }
 
 const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
-  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
-  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
-  const [messageApi, contextHolder] = message.useMessage();
+  // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+  // const [messageApi, contextHolder] = message.useMessage();
   const [collapsedCategories, setCollapsedCategories] = useState<string[]>(["burger"])
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setRefreshToken(localStorage.getItem("refresh_token"));
-      setAccessToken(localStorage.getItem("access_token"));
-    };
+  // useEffect(() => {
+  //   const handleStorageChange = () => {
+  //     setRefreshToken(localStorage.getItem("refresh_token"));
+  //     setAccessToken(localStorage.getItem("access_token"));
+  //   };
             
-    window.addEventListener("storage", handleStorageChange);
+  //   window.addEventListener("storage", handleStorageChange);
             
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, []);
 
     useEffect(() => {
         AOS.init({
@@ -123,7 +123,7 @@ const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
         )
     }
     
-     const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
+    // const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
     
       // Format price in VND
     const formatPrice = (price: number) => {
@@ -140,7 +140,6 @@ const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
     }
     const [product, setProduct] = useState<Product[]>([])
     const [category, setCategory] = useState<CategoryItem[]>([])
-    const [categoryView, setCategoryView] = useState<Section[]>([])
     const [showProduct, setShowProduct] = useState<MenuCategory[]>([])
 
 
@@ -195,26 +194,10 @@ const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
 
         fetchData()
     }, [])
-    
-    useEffect(() => {
-        if (product.length > 0) {
-            const newCategoryView = product.map((item, index) => ({
-                key: `part-${index + 1}`,  // Dùng ID duy nhất thay vì index
-                href: `part-${index + 1}`,
-                title: language() === "Tiếng Việt"
-                    ? item.categories?.category_name_translate_1
-                    : item.categories?.category_name_translate_2,
-            }));
-    
-            console.log("Số lượng danh mục sau khi map:", newCategoryView.length);
-            setCategoryView(newCategoryView);
-        }
-    }, [product]);
-
     return (
         // Header
         <div className="min-h-screen bg-orange-50">
-          {contextHolder}
+          {/* {contextHolder} */}
             {/* Hero Section */}
             <section className="relative w-full overflow-hidden bg-gradient-to-r from-red-400 to-orange-200">
                 {/* Main content */}
