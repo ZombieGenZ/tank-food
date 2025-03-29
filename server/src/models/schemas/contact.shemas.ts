@@ -10,6 +10,8 @@ interface ContactType {
   content: string
   discord_message_data?: { user_id: string; message_id: string }[]
   response_type?: ResponseTypeEnum
+  response?: string
+  discord_user_id_response?: string
   created_at?: Date
   updated_at?: Date
 }
@@ -23,6 +25,8 @@ export default class Contact {
   content: string
   discord_message_data: { user_id: string; message_id: string }[]
   response_type: ResponseTypeEnum
+  response: string
+  discord_user_id_response: string
   created_at: Date
   updated_at: Date
 
@@ -35,6 +39,8 @@ export default class Contact {
     this.content = contact.content
     this.discord_message_data = contact.discord_message_data || []
     this.response_type = contact.response_type || ResponseTypeEnum.PENDING
+    this.response = contact.response || ''
+    this.discord_user_id_response = contact.discord_user_id_response || ''
     this.created_at = contact.created_at || new Date()
     this.updated_at = contact.updated_at || new Date()
   }

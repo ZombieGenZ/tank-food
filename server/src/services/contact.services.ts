@@ -16,6 +16,9 @@ class ContactService {
     const date = new Date()
     const supportUser = (process.env.SUPPORT_DISCORD_USER_ID as string).split(',')
 
+    const timestampMilliseconds = date.getTime()
+    const timestampSeconds = Math.floor(timestampMilliseconds / 1000)
+
     let messageData
 
     if (serverLanguage == LANGUAGE.VIETNAMESE) {
@@ -24,7 +27,7 @@ class ContactService {
         {
           author: 'TANK-Food website',
           title: `${payload.title}`,
-          content: `${payload.content}\n\nThông tin liên hệ:\nĐịa chỉ email: ${payload.email}\nSố điện thoại: ${payload.phone}`,
+          content: `<t:${timestampMilliseconds}:F> (<t:${timestampMilliseconds}:R>)\n${payload.content}\n\nThông tin liên hệ:\nĐịa chỉ email: ${payload.email}\nSố điện thoại: ${payload.phone}`,
           footer: `Hệ thống TANK-Food | ${formatDateOnlyMinuteAndHour(date)}`,
           colorHex: '#FF8000',
           embedUrl: process.env.APP_URL
@@ -37,7 +40,7 @@ class ContactService {
         {
           author: 'TANK-Food website',
           title: `${payload.title}`,
-          content: `${payload.content}\n\nContact Information:\nEmail Address: ${payload.email}\nPhone Number: ${payload.phone}`,
+          content: `<t:${timestampMilliseconds}:F> (<t:${timestampMilliseconds}:R>)\n${payload.content}\n\nContact information:\nEmail address: ${payload.email}\nPhone number: ${payload.phone}`,
           footer: `TANK-Food System | ${formatDateOnlyMinuteAndHour(date)}`,
           colorHex: '#FF8000',
           embedUrl: process.env.APP_URL
@@ -77,8 +80,17 @@ class ContactService {
       email_html = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).html
     }
 
+    const date = new Date()
+
+    const timestampMilliseconds = date.getTime()
+    const timestampSeconds = Math.floor(timestampMilliseconds / 1000)
+
     await Promise.all([
-      hideReplyButton(contact.discord_message_data),
+      hideReplyButton(
+        contact.discord_message_data,
+        { user_id: payload.user_id, reply_content: payload.reply_content },
+        timestampSeconds
+      ),
       sendMail(contact.email, email_subject, email_html, process.env.SUPPORT_EMAIL as string),
       databaseService.contact.updateOne(
         {
@@ -86,10 +98,10 @@ class ContactService {
         },
         {
           $set: {
-            response_type: ResponseTypeEnum.RESPONDED
-          },
-          $currentDate: {
-            updated_at: true
+            response_type: ResponseTypeEnum.RESPONDED,
+            discord_user_id_response: payload.user_id,
+            response: payload.reply_content,
+            updated_at: date
           }
         }
       )

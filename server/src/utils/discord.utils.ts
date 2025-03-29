@@ -96,7 +96,7 @@ export const sendEmbedMessageToUsersDM = async (
     thumbnailUrl?: string
     embedUrl?: string
   },
-  contact_id: string
+  id: string
 ): Promise<{ user_id: string; message_id: string }[]> => {
   const sentMessages: { user_id: string; message_id: string }[] = []
 
@@ -113,7 +113,7 @@ export const sendEmbedMessageToUsersDM = async (
     if (embedData.embedUrl) embed.setURL(embedData.embedUrl)
 
     const replyButton = new ButtonBuilder()
-      .setCustomId(`reply_${contact_id}`)
+      .setCustomId(`reply_${id}`)
       .setLabel(serverLanguage == LANGUAGE.VIETNAMESE ? 'Phản hồi' : 'Response')
       .setStyle(ButtonStyle.Primary)
       .setEmoji('📧')
@@ -146,11 +146,12 @@ export const sendEmbedMessageToUsersDM = async (
         if (!interaction.customId.startsWith('reply_')) return
         if (!userIds.includes(interaction.user.id)) return
 
-        const modal = new ModalBuilder().setCustomId(`reply_modal_${contact_id}`).setTitle('Phản hồi')
+        const modal = new ModalBuilder().setCustomId(`reply_modal_${id}`).setTitle('Phản hồi')
 
         const replyInput = new TextInputBuilder()
           .setCustomId('reply_content')
-          .setLabel('Nội dung phản hồi')
+          .setLabel(serverLanguage == LANGUAGE.VIETNAMESE ? 'Nội dung phản hồi' : 'Response content')
+          .setPlaceholder(serverLanguage == LANGUAGE.VIETNAMESE ? 'Nhập nội dung phản hồi' : 'Enter response content')
           .setStyle(TextInputStyle.Paragraph)
           .setMinLength(1)
           .setMaxLength(4000)
@@ -199,7 +200,7 @@ export const sendEmbedMessageToUsersDM = async (
               Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
             },
             body: JSON.stringify({
-              contact_id: contact_id,
+              contact_id: id,
               user_id: interaction.user.id,
               reply_content: replyContent,
               timestamp: new Date().toISOString()
@@ -243,7 +244,8 @@ export const sendEmbedMessageToUsersDM = async (
 
 export const hideReplyButton = async (
   sentMessages: { user_id: string; message_id: string }[],
-  replyData?: { user_id: string; reply_content: string }
+  replyData?: { user_id: string; reply_content: string },
+  time?: number
 ): Promise<void> => {
   for (const { user_id, message_id } of sentMessages) {
     try {
@@ -288,7 +290,7 @@ export const hideReplyButton = async (
         .setURL(existingEmbed.url || null)
 
       if (replyData && replyData.user_id === user_id) {
-        const replyText = `\n\nPhản hồi bởi: <@${replyData.user_id}>\nNội dung: ||${replyData.reply_content}||`
+        const replyText = `\n\nPhản hồi bởi: <@${replyData.user_id}>\nNội dung: ||${replyData.reply_content}||\nPhản hồi lúc: <t:${time || 0}:F> (<t:${time || 0}:R>)`
         updatedEmbed.setDescription((existingEmbed.description || '') + replyText)
       }
 
