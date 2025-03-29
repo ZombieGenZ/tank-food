@@ -150,6 +150,11 @@ export const sendEmbedMessageToUsersDM = async (
           if (!interaction.customId.startsWith('reply_')) return
           if (!userIds.includes(interaction.user.id)) return
 
+          // Kiểm tra xem interaction đã được xử lý chưa
+          if (interaction.replied || interaction.deferred) {
+            return // Thoát nếu interaction đã được xử lý
+          }
+
           const modal = new ModalBuilder().setCustomId(`reply_modal_${id}`).setTitle('Phản hồi')
 
           const replyInput = new TextInputBuilder()
