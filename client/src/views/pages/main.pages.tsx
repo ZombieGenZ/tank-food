@@ -70,7 +70,7 @@ interface Slide {
 }
 
 interface CartItem {
-  id: number;
+  id: string;
   quantity: number;
   name: string;
   price: number;
@@ -79,7 +79,7 @@ interface CartItem {
 
 const FormMain = (): JSX.Element => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const addToCart = (item: { id: number; name: string; price: number; image: string }) => {
+  const addToCart = (item: { id: string; name: string; price: number; image: string }) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
       if (existingItem) {

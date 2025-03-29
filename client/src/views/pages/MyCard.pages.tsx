@@ -9,11 +9,11 @@ interface CartItem {
     image: string;
   }
   
-  interface MyCardProps {
+interface MyCardProps {
     cart: CartItem[];
     setCart: Dispatch<SetStateAction<CartItem[]>>;
   }
-  const MyCard = ({ cart, setCart }: MyCardProps): JSX.Element => {
+const MyCard = ({ cart, setCart }: MyCardProps): JSX.Element => {
     const increaseQuantity = (id: number) => {
       setCart((prevCart) =>
         prevCart.map((item) =>
