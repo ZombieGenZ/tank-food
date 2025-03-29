@@ -1,18 +1,20 @@
 import AOS from "aos"
 import "aos/dist/aos.css"
 import { JSX, useState, useEffect } from "react";
-import { ChevronUp, ShoppingCart, Plus } from "lucide-react"
+import { ChevronUp, Plus } from "lucide-react"
+import { message } from 'antd';
 
 interface MenuItem {
-  id: number;
+  key: string,
+  id: string;
   name: string;
   description: string;
   price: number;
-  image: string;
-  popular?: boolean; // Tuỳ chọn, chỉ có khi món ăn phổ biến
+  image: string;// Tuỳ chọn, chỉ có khi món ăn phổ biến
 }
 
 interface MenuCategory {
+  key: string,
   id: string;
   name: string;
   items: MenuItem[];
@@ -26,7 +28,7 @@ interface CategoryItem {
     translate_1_language: string;
     translate_2_language: string;
     updated_at: string;
-    id: string;
+    _id: string;
 }
 
 interface Product {
@@ -67,15 +69,31 @@ interface Product {
     updated_by: string;
 }
 
-interface Section {
-    key: string;   // Khóa định danh
-    href: string;  // Đường dẫn liên kết
-    title: string; // Tiêu đề hiển thị
-}
+// interface Section {
+//     key: string;   // Khóa định danh
+//     href: string;  // Đường dẫn liên kết
+//     title: string; // Tiêu đề hiển thị
+// }
 
 const Category = (): JSX.Element => {
-    const [collapsedCategories, setCollapsedCategories] = useState<string[]>(["burger"])
-    const [cart, setCart] = useState<{ id: number; quantity: number }[]>([])
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+  const [messageApi, contextHolder] = message.useMessage();
+  const [collapsedCategories, setCollapsedCategories] = useState<string[]>(["burger"])
+  const [cart, setCart] = useState<{ id: string; quantity: number }[]>([])
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+            
+    window.addEventListener("storage", handleStorageChange);
+            
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
     useEffect(() => {
         AOS.init({
@@ -92,7 +110,24 @@ const Category = (): JSX.Element => {
         )
     }
     
-    const addToCart = (itemId: number) => {
+    const addToCart = (itemId: string) => {
+      if(refresh_token == null) {
+        messageApi.open({
+          type: 'error',
+          content: language() == "Tiếng Việt" ? "Vui lòng đăng nhập để thêm món hàng vào giỏ" : "Please login to add item to cart",
+          style: {
+            marginTop: "10vh",
+          }
+        })
+        return;
+      }
+      messageApi.open({
+        type: 'success',
+        content: language() == "Tiếng Việt" ? "Thêm hàng thành công" : "Add order successfully",
+        style: {
+          marginTop: "10vh",
+        }
+      })
         setCart((prevCart) => {
           const existingItem = prevCart.find((item) => item.id === itemId)
           if (existingItem) {
@@ -103,7 +138,7 @@ const Category = (): JSX.Element => {
         })
     }
     
-    const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
+     const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
     
       // Format price in VND
     const formatPrice = (price: number) => {
@@ -120,122 +155,36 @@ const Category = (): JSX.Element => {
     }
     const [product, setProduct] = useState<Product[]>([])
     const [category, setCategory] = useState<CategoryItem[]>([])
-    const [categoryView, setCategoryView] = useState<Section[]>([])
+    // const [categoryView, setCategoryView] = useState<Section[]>([])
+    const [showProduct, setShowProduct] = useState<MenuCategory[]>([])
 
+
+    useEffect(() => {
+      const newData: MenuCategory[] = category.map((categorys, index) => {
+        const newProduct: MenuItem[] = product
+          .filter((p) => p.categories._id === categorys._id)
+          .map((p, idx) => ({
+            key: String(idx + 1),
+            id: p._id,
+            name: language() === "Tiếng Việt" ? p.title_translate_1 : p.title_translate_2,
+            description: language() === "Tiếng Việt" ? p.description_translate_1 : p.description_translate_2,
+            price: p.price,
+            image: p.preview.url,
+          }));
+        return({
+          key: String(index + 1),
+          id: categorys._id,
+          name: language() == "Tiếng Việt" ? categorys.category_name_translate_1 : categorys.category_name_translate_2,
+          items: newProduct,
+        })
+      })
+      setShowProduct(newData)
+    }, [product, category])
+
+    useEffect(() => {
+      console.log("Show cart: ", cart)
+    }, [cart])
     // Hardcoded categories data to match the second code
-    const categories = [
-        {
-          id: "burgers",
-          name: "Bánh Burger",
-          items: [
-            {
-              id: 1,
-              name: "Burger Phô Mai Cổ Điển",
-              description: "Thịt bò mọng nước với phô mai tan chảy, rau xà lách, cà chua và sốt đặc biệt của chúng tôi",
-              price: 89000,
-              image: "/public/images/system/burgerphomai_menu.jpg?height=200&width=200",
-              popular: true,
-            },
-            {
-              id: 2,
-              name: "Burger Thịt Xông Khói Đôi",
-              description: "Hai miếng thịt bò với thịt xông khói giòn, phô mai cheddar và sốt BBQ",
-              price: 129000,
-              image: "/public/images/system/burgerthitxongkhoi_menu.jpg?height=200&width=200",
-            },
-            {
-              id: 3,
-              name: "Burger Chay",
-              description: "Miếng thịt từ thực vật với rau tươi và sốt mayonnaise chay",
-              price: 99000,
-              image: "/public/images/system/burgerchay_menu.jpg?height=200&width=200",
-            },
-          ],
-        },
-        {
-          id: "chicken",
-          name: "Gà Rán",
-          items: [
-            {
-              id: 4,
-              name: "Gà Giòn Thơm",
-              description: "Những miếng gà mềm với lớp vỏ giòn, phục vụ kèm sốt chấm",
-              price: 79000,
-              image: "/public/images/system/gagionthom_menu.jpg?height=200&width=200",
-              popular: true,
-            },
-            {
-              id: 5,
-              name: "Cánh Gà Cay",
-              description: "Cánh gà giòn tẩm ướp trong sốt cay đặc trưng của chúng tôi",
-              price: 109000,
-              image: "/public/images/system/canhgacay_menu.jpg?height=200&width=200",
-            },
-            {
-              id: 6,
-              name: "Xô Gà",
-              description: "10 miếng gà rán nổi tiếng của chúng tôi với hương vị nguyên bản và cay",
-              price: 189000,
-              image: "/public/images/system/xoga_menu.jpg?height=200&width=200",
-            },
-          ],
-        },
-        {
-          id: "sides",
-          name: "Món Phụ",
-          items: [
-            {
-              id: 7,
-              name: "Khoai Tây Chiên",
-              description: "Khoai tây chiên giòn vàng được nêm với hỗn hợp gia vị đặc biệt",
-              price: 39000,
-              image: "/public/images/system/khoaitaychien_menu.jpg?height=200&width=200",
-              popular: true,
-            },
-            {
-              id: 8,
-              name: "Vòng Hành Tây",
-              description: "Vòng hành tây chiên giòn phục vụ kèm sốt chấm thái",
-              price: 49000,
-              image: "/public/images/system/vonghanhtay_menu.jpg?height=200&width=200",
-            },
-            {
-              id: 9,
-              name: "Salad Bắp Cải",
-              description: "Bắp cải tươi và cà rốt được trộn trong dĩa sốt kem mặn",
-              price: 29000,
-              image: "/public/images/system/salad_menu.jpg?height=200&width=200",
-            },
-          ],
-        },
-        {
-          id: "drinks",
-          name: "Đồ Uống",
-          items: [
-            {
-              id: 10,
-              name: "Sữa Lắc",
-              description: "Sữa lắc kem có sẵn các vị sô cô la, vani hoặc dâu",
-              price: 59000,
-              image: "/public/images/system/sualac_menu.jpg?height=200&width=200",
-            },
-            {
-              id: 11,
-              name: "Nước Ngọt",
-              description: "Lựa chọn nước ngọt với đồ uống miễn phí",
-              price: 24000,
-              image: "/public/images/system/nuocngot_menu.jpg?height=200&width=200",
-            },
-            {
-              id: 12,
-              name: "Trà Đá",
-              description: "Trà đá pha tươi, có đường hoặc không đường",
-              price: 24000,
-              image: "/public/images/system/trada_menu.jpg?height=200&width=200",
-            }
-          ],
-        },
-      ]
 
     useEffect(() => {
         const fetchData = async () => {
@@ -262,30 +211,31 @@ const Category = (): JSX.Element => {
         fetchData()
     }, [])
 
-    useEffect(() => {
-        console.log("Product đã cập nhật:", product);
-        console.log("Category đã cập nhật:", category);
-        console.log("Category menu đã cập nhật:", categoryView);
-    }, [product, category, categoryView]); // Chạy lại khi state thay đổi
+    // useEffect(() => {
+    //     console.log("Product đã cập nhật:", product);
+    //     console.log("Category đã cập nhật:", category);
+    //     console.log("Category menu đã cập nhật:", categoryView);
+    // }, [product, category, categoryView]); // Chạy lại khi state thay đổi
     
-    useEffect(() => {
-        if (product.length > 0) {
-            const newCategoryView = product.map((item, index) => ({
-                key: `part-${index + 1}`,  // Dùng ID duy nhất thay vì index
-                href: `part-${index + 1}`,
-                title: language() === "Tiếng Việt"
-                    ? item.categories?.category_name_translate_1
-                    : item.categories?.category_name_translate_2,
-            }));
+    // useEffect(() => {
+    //     if (product.length > 0) {
+    //         const newCategoryView = product.map((item, index) => ({
+    //             key: `part-${index + 1}`,  // Dùng ID duy nhất thay vì index
+    //             href: `part-${index + 1}`,
+    //             title: language() === "Tiếng Việt"
+    //                 ? item.categories?.category_name_translate_1
+    //                 : item.categories?.category_name_translate_2,
+    //         }));
     
-            console.log("Số lượng danh mục sau khi map:", newCategoryView.length);
-            setCategoryView(newCategoryView);
-        }
-    }, [product]);
+    //         console.log("Số lượng danh mục sau khi map:", newCategoryView.length);
+    //         setCategoryView(newCategoryView);
+    //     }
+    // }, [product]);
 
     return (
         // Header
         <div className="min-h-screen bg-orange-50">
+          {contextHolder}
             {/* Hero Section */}
             <section className="relative w-full overflow-hidden bg-gradient-to-r from-red-400 to-orange-200">
                 {/* Main content */}
@@ -329,7 +279,7 @@ const Category = (): JSX.Element => {
                 <div className="container mx-auto px-4">
                     <h2 className="text-6xl font-bold font-['Yeseva_One'] text-center text-orange-800 mb-12 " data-aos="fade-down">Thực Đơn TankFood</h2>
     
-                    {categories.map((category) => (
+                    {showProduct.map((category) => (
                         <div key={category.id} className="mb-12" data-aos="fade-up">
                         <div
                             className="flex justify-between items-center cursor-pointer mb-6 group"
@@ -338,16 +288,16 @@ const Category = (): JSX.Element => {
                             <h2 className="text-4xl font-bold font-['Yeseva_One'] text-orange-800 group-hover:text-orange-700 transition-colors">
                             {category.name}
                             </h2>
-                            <ChevronUp
-                            className={`w-8 h-8 text-orange-800 transition-transform duration-300 ${
-                                collapsedCategories.includes(category.id) ? "rotate-180" : ""
-                            }`}
+                              <ChevronUp
+                              className={`w-8 h-8 text-orange-800 transition-transform duration-300 ${
+                                  collapsedCategories.includes(category.id) ? "rotate-180" : ""
+                              }`}
                             />
                         </div>
     
                         {!collapsedCategories.includes(category.id) && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {category.items.map((item, index) => (
+                            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {category.items.length !== 0 ? category.items.map((item, index) => (
                                 <div
                                 key={item.id}
                                 className="bg-white rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(194,65,12,0.07)] hover:shadow-[0_15px_35px_rgba(194,65,12,0.1)] transition-all duration-300 group"
@@ -378,7 +328,7 @@ const Category = (): JSX.Element => {
                                     </button>
                                 </div>
                                 </div>
-                            ))}
+                            )) : <p className="font-bold text-center">Hiện chưa có sản phẩm cho mục này</p>}
                             </div>
                         )}
                         </div>
