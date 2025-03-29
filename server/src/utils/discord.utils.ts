@@ -177,8 +177,11 @@ export const sendEmbedMessageToUsersDM = async (
         if (!interaction.customId.startsWith('reply_modal_')) return
         if (!userIds.includes(interaction.user.id)) return
 
+        // Defer ngay lập tức để tránh timeout
+        let deferred = false
         try {
           await interaction.deferReply({ ephemeral: true })
+          deferred = true
         } catch (deferError) {
           if (serverLanguage === LANGUAGE.VIETNAMESE) {
             console.error('\x1b[31mLỗi khi defer interaction:\x1b[33m', deferError)
@@ -219,12 +222,22 @@ export const sendEmbedMessageToUsersDM = async (
             })
           }
         } catch (error) {
-          await interaction.editReply({
-            content:
-              serverLanguage == LANGUAGE.VIETNAMESE
-                ? 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
-                : 'Error sending response, please try again later.'
-          })
+          if (deferred) {
+            await interaction.editReply({
+              content:
+                serverLanguage == LANGUAGE.VIETNAMESE
+                  ? 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
+                  : 'Error sending response, please try again later.'
+            })
+          } else {
+            if (serverLanguage === LANGUAGE.VIETNAMESE) {
+              console.error('\x1b[31mLỗi khi gửi phản hồi (chưa defer):\x1b[33m', error)
+              console.log('\x1b[0m')
+            } else {
+              console.error('\x1b[31mError sending response (not deferred):\x1b[33m', error)
+              console.log('\x1b[0m')
+            }
+          }
         }
       }
     })
