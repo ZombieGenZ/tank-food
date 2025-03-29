@@ -289,7 +289,7 @@ export const hideReplyButton = async (
         .setThumbnail(existingEmbed.thumbnail?.url || null)
         .setURL(existingEmbed.url || null)
 
-      if (replyData && replyData.user_id === user_id) {
+      if (replyData) {
         const replyText = `\n\nPhản hồi bởi: <@${replyData.user_id}>\nNội dung: ||${replyData.reply_content}||\nPhản hồi lúc: <t:${time || 0}:F> (<t:${time || 0}:R>)`
         updatedEmbed.setDescription((existingEmbed.description || '') + replyText)
       }

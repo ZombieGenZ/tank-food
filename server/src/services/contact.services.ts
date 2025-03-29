@@ -16,8 +16,7 @@ class ContactService {
     const date = new Date()
     const supportUser = (process.env.SUPPORT_DISCORD_USER_ID as string).split(',')
 
-    const timestampMilliseconds = date.getTime()
-    const timestampSeconds = Math.floor(timestampMilliseconds / 1000)
+    const timestampSeconds = Math.floor(Date.now() / 1000)
 
     let messageData
 
@@ -27,7 +26,7 @@ class ContactService {
         {
           author: 'TANK-Food website',
           title: `${payload.title}`,
-          content: `<t:${timestampMilliseconds}:F> (<t:${timestampMilliseconds}:R>)\n${payload.content}\n\nThông tin liên hệ:\nĐịa chỉ email: ${payload.email}\nSố điện thoại: ${payload.phone}`,
+          content: `<t:${timestampSeconds}:F> (<t:${timestampSeconds}:R>)\n${payload.content}\n\nThông tin liên hệ:\nĐịa chỉ email: ${payload.email}\nSố điện thoại: ${payload.phone}`,
           footer: `Hệ thống TANK-Food | ${formatDateOnlyMinuteAndHour(date)}`,
           colorHex: '#FF8000',
           embedUrl: process.env.APP_URL
@@ -40,7 +39,7 @@ class ContactService {
         {
           author: 'TANK-Food website',
           title: `${payload.title}`,
-          content: `<t:${timestampMilliseconds}:F> (<t:${timestampMilliseconds}:R>)\n${payload.content}\n\nContact information:\nEmail address: ${payload.email}\nPhone number: ${payload.phone}`,
+          content: `<t:${timestampSeconds}:F> (<t:${timestampSeconds}:R>)\n${payload.content}\n\nContact information:\nEmail address: ${payload.email}\nPhone number: ${payload.phone}`,
           footer: `TANK-Food System | ${formatDateOnlyMinuteAndHour(date)}`,
           colorHex: '#FF8000',
           embedUrl: process.env.APP_URL
@@ -80,10 +79,7 @@ class ContactService {
       email_html = ENGLIS_DYNAMIC_MAIL.supportRequestResponse(payload.reply_content).html
     }
 
-    const date = new Date()
-
-    const timestampMilliseconds = date.getTime()
-    const timestampSeconds = Math.floor(timestampMilliseconds / 1000)
+    const timestampSeconds = Math.floor(Date.now() / 1000)
 
     await Promise.all([
       hideReplyButton(
@@ -100,8 +96,10 @@ class ContactService {
           $set: {
             response_type: ResponseTypeEnum.RESPONDED,
             discord_user_id_response: payload.user_id,
-            response: payload.reply_content,
-            updated_at: date
+            response: payload.reply_content
+          },
+          $currentDate: {
+            updated_at: true
           }
         }
       )
