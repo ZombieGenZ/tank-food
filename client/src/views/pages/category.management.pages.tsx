@@ -3,6 +3,20 @@ import "aos/dist/aos.css"
 import { JSX, useState, useEffect } from "react";
 import { ChevronUp, ShoppingCart, Plus } from "lucide-react"
 
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  popular?: boolean; // Tuỳ chọn, chỉ có khi món ăn phổ biến
+}
+
+interface MenuCategory {
+  id: string;
+  name: string;
+  items: MenuItem[];
+}
 //Giữ nguyên 
 interface CategoryItem {
     category_name_translate_1: string;

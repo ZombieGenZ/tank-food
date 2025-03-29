@@ -566,7 +566,7 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
               <ul className='flex items-center flex-col gap-5'>
                 {
                   NavbarUser.map((item: NavbarItem) => {
-                    return <li key={item.id} className="text-xl">
+                    return <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                               <button onClick={() => navigate(item.path)}
                                       className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                       {language == "Tiếng Việt" ? item.title : item.english}</button> 
