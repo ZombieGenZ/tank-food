@@ -140,7 +140,7 @@ const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
     }
     const [product, setProduct] = useState<Product[]>([])
     const [category, setCategory] = useState<CategoryItem[]>([])
-    // const [categoryView, setCategoryView] = useState<Section[]>([])
+    const [categoryView, setCategoryView] = useState<Section[]>([])
     const [showProduct, setShowProduct] = useState<MenuCategory[]>([])
 
 
@@ -195,27 +195,21 @@ const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
 
         fetchData()
     }, [])
-
-    // useEffect(() => {
-    //     console.log("Product đã cập nhật:", product);
-    //     console.log("Category đã cập nhật:", category);
-    //     console.log("Category menu đã cập nhật:", categoryView);
-    // }, [product, category, categoryView]); // Chạy lại khi state thay đổi
     
-    // useEffect(() => {
-    //     if (product.length > 0) {
-    //         const newCategoryView = product.map((item, index) => ({
-    //             key: `part-${index + 1}`,  // Dùng ID duy nhất thay vì index
-    //             href: `part-${index + 1}`,
-    //             title: language() === "Tiếng Việt"
-    //                 ? item.categories?.category_name_translate_1
-    //                 : item.categories?.category_name_translate_2,
-    //         }));
+    useEffect(() => {
+        if (product.length > 0) {
+            const newCategoryView = product.map((item, index) => ({
+                key: `part-${index + 1}`,  // Dùng ID duy nhất thay vì index
+                href: `part-${index + 1}`,
+                title: language() === "Tiếng Việt"
+                    ? item.categories?.category_name_translate_1
+                    : item.categories?.category_name_translate_2,
+            }));
     
-    //         console.log("Số lượng danh mục sau khi map:", newCategoryView.length);
-    //         setCategoryView(newCategoryView);
-    //     }
-    // }, [product]);
+            console.log("Số lượng danh mục sau khi map:", newCategoryView.length);
+            setCategoryView(newCategoryView);
+        }
+    }, [product]);
 
     return (
         // Header
