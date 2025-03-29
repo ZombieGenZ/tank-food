@@ -1,6 +1,0 @@
-Cài đặt NodeJS nếu chưa có
-Link: https://nodejs.org/en/download
-
-Chạy file:
-run-dev-all.bat: để chạy môi trường phát triển
-run-release-all.bat: để chạy môi trường triển khai
