@@ -7,3 +7,5 @@ db.refresh_token.createIndex({ "token": 1 }, { name: "token_1", unique: true })
 db.voucher_public.createIndex({ "code": 1 }, { name: "code_1", unique: true })
 // orders collections
 db.orders.createIndex({ "user": 1 }, { name: "user_1" })
+// orders backup_logs
+db.backup_logs.createIndex({ "file_id": 1 }, { name: "file_id_1" })
