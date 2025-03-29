@@ -2,22 +2,23 @@ import { JSX, useEffect, useState } from "react";
 import { Table, Input, Button, Modal, InputNumber, Select, message, Upload ,Image } from 'antd';
 import type { TableProps, GetProps } from 'antd';
 import { UploadOutlined } from "@ant-design/icons";
-
+import Verify from "../components/VerifyToken.components";
 
 interface DropdownType {
   value: string;
   label: string;
 }
 
-interface Product {
-  title: string;
-  description: string;
-  price: number;
-  availability: boolean;
-  category_id: string;
-  tag?: string;
-  previewImage: File;
-}
+// interface Products {
+//   title: string;
+//   description: string;
+//   price: number;
+//   availability: boolean;
+//   category_id: string;
+//   tag?: string;
+//   discount: number,
+//   previewImage: File;
+// }
 
 interface DataType {
   key: string;
@@ -31,6 +32,7 @@ interface DataType {
   category_id: string;
   description: string;
   price: string;
+  discount: string,
   tags?: string;
   note: string[];
   previewImage?: File;
@@ -63,6 +65,7 @@ interface Product {
       type: string;
       url: string;
   };
+  discount: number,
   price: number;
   tag_translate_1: string;
   tag_translate_1_language: string;
@@ -113,6 +116,7 @@ function ProductManagement(): JSX.Element {
   const [description, setDescription] = useState<string>("")
   const [price, setPrice] = useState<number>(0)
   const [availability, setAvailability] = useState<boolean>(false)
+  const [discount, setDiscount] = useState<number>(0)
   const [category, setNewCategory] = useState<string>("Đồ ăn nhanh")
   const [tag, setTag] = useState<string>("")
 
@@ -120,6 +124,7 @@ function ProductManagement(): JSX.Element {
   const [descriptionEdit, setDescriptionEdit] = useState<string>(selectProduct?.description || "")
   const [priceEdit, setPriceEdit] = useState<string>(selectProduct ? selectProduct.price : "0")
   const [availabilityEdit, setAvailabilityEdit] = useState<boolean>(selectProduct?.availability || false)
+  const [discountEdit, setDiscountEdit] = useState<string>(selectProduct ? selectProduct.discount : "0")
   const [categoryEdit, setNewCategoryEdit] = useState<string>("Đồ ăn nhanh")
   const [tagEdit, setTagEdit] = useState<string>(selectProduct?.tags || "")
   const [imageEdit, setImageEdit] = useState<File | null>(null);
@@ -136,6 +141,16 @@ function ProductManagement(): JSX.Element {
   const handleChangePriceEdit = (e: string|null) => {
     if(e == null) return;
     setPriceEdit(e);
+  }
+
+  const handleChangeDiscount = (e: number|null) => {
+    if(e == null) return;
+    setDiscount(e);
+  }
+
+  const handleChangeDiscountEdit = (e: string|null) => {
+    if(e == null) return;
+    setDiscountEdit(e);
   }
 
   const beforeUpload = (file: File) => {
@@ -180,10 +195,11 @@ function ProductManagement(): JSX.Element {
     console.log("Gửi ảnh lên server:", image);
 
     const formData = new FormData();
-    formData.append("language", null);
+    formData.append("language", String(null));
     formData.append("refresh_token", String(refresh_token));
     formData.append("preview", image); 
     formData.append("title", title);
+    formData.append("discount", String(discount));
     formData.append("description", description);
     formData.append("price", String(price));
     formData.append("availability", String(availability));
@@ -230,6 +246,7 @@ function ProductManagement(): JSX.Element {
     setNewCategoryEdit(selectProduct?.category_id || "");
     setTagEdit(selectProduct?.tags || "");
     setImageUrlEdit(selectProduct?.preview?.url || null);
+    setDiscountEdit(selectProduct?.discount || "0")
   }, [selectProduct])
 
   const showEditModalFunc = (record: DataType) => {
@@ -239,96 +256,108 @@ function ProductManagement(): JSX.Element {
   }
 
   const EditProduct = (id: string) => {
-
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-      product_id: id,
-      title: titleEdit,
-      description: descriptionEdit,
-      price: Number(priceEdit),
-      availability: availabilityEdit,
-      category_id: categoryEdit,
-      tag: tagEdit,
-    }
-
-    const formData = new FormData();
-    formData.append("language", null);
-    formData.append("refresh_token", String(refresh_token));
-    formData.append("product_id", id);
-    formData.append("title", titleEdit);
-    formData.append("description", descriptionEdit);
-    formData.append("price", priceEdit);
-    formData.append("availability", String(availabilityEdit));
-    formData.append("category_id", categoryEdit);
-    formData.append("tag", tagEdit);
-    if (isImageChanged && imageEdit) {
-      formData.append("preview", imageEdit);
-    }
-
-    if(isImageChanged == true) {
-      fetch(`${import.meta.env.VITE_API_URL}/api/products/update-change-image`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-        body: formData
-      }).then((response) => { return response.json() }).then((data) => {
-        console.log(data)
-        if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
-          messageApi.success(data.message)
-          setShowEditModal(false)
-          const body = {
-            language: null,
-          } 
-          fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
-            console.log(data)
-            setProduct(data.products)
-          })
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      console.log(isValid)
+      if (isValid) {
+        const body = {
+          language: null,
+          refresh_token: refresh_token,
+          product_id: id,
+          title: titleEdit,
+          description: descriptionEdit,
+          price: Number(priceEdit),
+          availability: availabilityEdit,
+          category_id: categoryEdit,
+          tag: tagEdit,
+          discount: Number(discountEdit),
         }
-      })
-    } else {
-      fetch(`${import.meta.env.VITE_API_URL}/api/products/update`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify(body)
-      })
-      .then((response) => { return response.json() }).then((data) => {
-        console.log(data)
-        if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
-          messageApi.success(data.message)
-          setShowEditModal(false)
-          const body = {
-            language: null,
-          } 
-          fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-            method: 'POST',
+    
+        const formData = new FormData();
+        formData.append("language", String(null));
+        formData.append("refresh_token", String(refresh_token));
+        formData.append("product_id", id);
+        formData.append("title", titleEdit);
+        formData.append("discount", discountEdit);
+        formData.append("description", descriptionEdit);
+        formData.append("price", priceEdit);
+        formData.append("availability", String(availabilityEdit));
+        formData.append("category_id", categoryEdit);
+        formData.append("tag", tagEdit);
+        if (isImageChanged && imageEdit) {
+          formData.append("preview", imageEdit);
+        }
+    
+        if(isImageChanged == true) {
+          fetch(`${import.meta.env.VITE_API_URL}/api/products/update-change-image`, {
+            method: 'PUT',
             headers: {
-              'Content-Type': 'application/json'
+              Authorization: `Bearer ${access_token}`,
             },
-            body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
+            body: formData
+          }).then((response) => { return response.json() }).then((data) => {
             console.log(data)
-            setProduct(data.products)
+            if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
+              messageApi.success(data.message)
+              setShowEditModal(false)
+              const body = {
+                language: null,
+              } 
+              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              }).then((response) => {
+                return response.json()
+              }).then((data) => {
+                console.log(data)
+                setProduct(data.products)
+              })
+            }
           })
         } else {
-          messageApi.error(data.message)
-          return;
+          fetch(`${import.meta.env.VITE_API_URL}/api/products/update`, {
+            method: 'PUT',
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          })
+          .then((response) => { return response.json() }).then((data) => {
+            console.log(data)
+            if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
+              messageApi.success(data.message)
+              setShowEditModal(false)
+              const body = {
+                language: null,
+              } 
+              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              }).then((response) => {
+                return response.json()
+              }).then((data) => {
+                console.log(data)
+                setProduct(data.products)
+              })
+            } else {
+              messageApi.error(data.message)
+              return;
+            }
+          })
         }
-      })
-    }
+      } else {
+          console.log("Token không hợp lệ!");
+      }
+    };
+    
+    checkToken();
   }
 
   const SetshowDeleteModal = () => {
@@ -429,6 +458,7 @@ function ProductManagement(): JSX.Element {
         category_id: product.categories == null ? "không có danh mục" : product.categories._id,
         description: language() == "Tiếng Việt" ? product.description_translate_1 : product.description_translate_2,
         price: String(product.price), // Đảm bảo kiểu number
+        discount: String(product.discount),
         tags: product.tag_translate_1 && product.tag_translate_1.trim() !== "" 
             ? (language() == "Tiếng Việt" ? product.tag_translate_1 : product.tag_translate_2)
             : "Không có tags",
@@ -462,6 +492,12 @@ function ProductManagement(): JSX.Element {
           title: 'Giá tiền (VNĐ)',
           key: 'price',
           dataIndex: 'price',
+          width: 350,
+        },
+        {
+          title: 'Giảm giá',
+          key: 'discount',
+          dataIndex: 'discount',
           width: 350,
         },
         {
@@ -523,6 +559,12 @@ function ProductManagement(): JSX.Element {
                     <p>{language() == "Tiếng Việt" ? "Giá tiền:" : "Price:"}</p>
                     <div>
                         <InputNumber placeholder="VNĐ" value={price} onChange={handleChangePrice}/>
+                    </div>
+                </div>
+                <div className=" flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Giảm giá:" : "Discount:"}</p>
+                    <div>
+                        <InputNumber placeholder="VNĐ" value={discount} onChange={handleChangeDiscount}/>
                     </div>
                 </div>
                 <div className="w-full flex gap-2 flex-col">
@@ -589,6 +631,12 @@ function ProductManagement(): JSX.Element {
                     <p>{language() == "Tiếng Việt" ? "Giá tiền:" : "Price:"}</p>
                     <div>
                         <InputNumber placeholder="VNĐ" value={priceEdit} onChange={handleChangePriceEdit}/>
+                    </div>
+                </div>
+                <div className=" flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Giảm giá:" : "Discount:"}</p>
+                    <div>
+                        <InputNumber placeholder="VNĐ" value={discountEdit} onChange={handleChangeDiscountEdit}/>
                     </div>
                 </div>
                 <div className="w-full flex gap-2 flex-col">

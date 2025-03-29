@@ -33,6 +33,7 @@ import AOS from "aos";
 import { Calendar } from 'lucide-react';
 import { IoSettings } from "react-icons/io5";
 import "aos/dist/aos.css";
+import { FaUserAlt } from "react-icons/fa";
 import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
 
 interface MenuItem {
@@ -78,11 +79,14 @@ interface CartItem {
 }
 
 const FormMain = (): JSX.Element => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const cartlocal = localStorage.getItem('my_cart')
+    return cartlocal ? JSON.parse(cartlocal) : []
+  });
   const addToCart = (item: { id: string; name: string; price: number; image: string }) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
-      if (existingItem) {
+      if (existingItem) { 
         return prevCart.map((cartItem) =>
           cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
         );
@@ -90,7 +94,13 @@ const FormMain = (): JSX.Element => {
         return [...prevCart, { ...item, quantity: 1 }];
       }
     });
+    messageApi.success(`Thêm ${item.name} vào giỏ hàng thành công !`)
   };
+
+  useEffect(() => {
+    localStorage.setItem('my_cart', JSON.stringify(cart))
+  }, [cart])
+
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const language = () => {
     const savedLanguage = localStorage.getItem('language');
@@ -270,6 +280,7 @@ const FormMain = (): JSX.Element => {
         <Loading />
       ) : user && user.role === 3 ? (
         <div className='flex relative'>
+          {contextHolder}
           <NavigationAdmin displayname={user.display_name} />
           <div className='w-full flex flex-col'>
             <NavAdmin display_name={`${language() === "Tiếng Việt" ? "Bảng thống kê" : "Dash board"}`} />
@@ -286,6 +297,7 @@ const FormMain = (): JSX.Element => {
         </div>
       ) : (
         <div className='flex gap-5 flex-col' ref={pageRef}>
+          {contextHolder}
           <NavigationButtons role={user?.role ?? 0} cartItemCount={cartItemCount} />
           <Routes>
             <Route path="/*" element={<Main />} />
@@ -294,7 +306,7 @@ const FormMain = (): JSX.Element => {
             <Route path='/menu' element={<Category addToCart={addToCart} cart={cart} />} />
             <Route path='/deal' element={<SealPage />} />
             <Route path='/contact' element={<ContactUs />} />
-            <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} />} />
+            <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user}/>} />
           </Routes>
         </div>
       )}
@@ -544,11 +556,11 @@ function NavigationButtons({ role, cartItemCount }: { role: number; cartItemCoun
             </div>
             {refresh_token !== null ? (
               <div className='flex gap-5 justify-center items-center'>
-                <div className="bg-orange-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-orange-700 transition-colors" onClick={() => navigate("/mycard")} >
+                <div className="text-orange-600 p-4 rounded-full shadow-lg cursor-pointer transition-colors" onClick={() => navigate("/mycard")} >
                   <div className="relative">
                     <RiShoppingCart2Line className="w-4 h-4"/>
                     {cartItemCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-2 h-2 flex items-center justify-center">
+                      <span className="absolute p-2 -top-4 -right-4 bg-red-500 text-white text-xs rounded-full w-2 h-2 flex items-center justify-center">
                         {cartItemCount}
                       </span>
                     )}
@@ -556,7 +568,7 @@ function NavigationButtons({ role, cartItemCount }: { role: number; cartItemCoun
                 </div>
                 <Dropdown menu={{ items }} placement="bottom" arrow>
                   <Button className='p-10'>
-                    <IoSettings /> {language === "Tiếng Việt" ? "Tài khoản" : "User account"}
+                    <FaUserAlt />
                   </Button>
                 </Dropdown>
               </div>
