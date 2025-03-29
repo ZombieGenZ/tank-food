@@ -15,6 +15,7 @@ import ContactUs from './contact.pages.tsx';
 import DiscountCodeManagement from './Discount.pages.tsx';
 import OrderManagement from './Order.psges.tsx';
 import MainManage from './Main.management.pages.tsx';
+import MyCard from './MyCard.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message,Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -32,6 +33,8 @@ import AOS from "aos";
 import { Calendar } from 'lucide-react';
 import { IoSettings } from "react-icons/io5";
 import "aos/dist/aos.css"; 
+import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
+
 interface MenuItem {
   id: number;
   title: string;
@@ -73,6 +76,7 @@ const FormMain = (): JSX.Element => {
     const SaveedLanguage = localStorage.getItem('language')
     return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
   }
+  const [messageApi, contextHolder] = message.useMessage();
   function NavAdmin({ display_name }: {display_name: string}) {
     const [language, setLanguage] = useState<string>(() => {
       const SaveedLanguage = localStorage.getItem('language')
@@ -104,12 +108,44 @@ const FormMain = (): JSX.Element => {
         label: (
           <button
             className='flex gap-2 items-center'
+            onClick={() => Logout()}
           ><IoLogOutOutline /> Đăng xuất</button>
         ),
       },
     ];
+
+    const Logout = () => {
+      const body = {
+        language: null,
+        refresh_token: refresh_token
+      }
+      fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${access_token}`
+        },
+        body: JSON.stringify(body)
+      }).then(response => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+        if(data.code == RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
+          messageApi.open({
+            type: 'success',
+            content: 'Đăng xuất thành công',
+          }).then(() => {
+            localStorage.removeItem('refresh_token')
+            localStorage.removeItem('access_token')
+          }).then(() => {
+            window.location.reload()
+          })
+        }
+      })
+    }
     return(
       <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
+          {contextHolder}
           <h1 className="text-xl font-bold text-slate-900">{display_name}</h1>
           <div className="flex items-center gap-5">
             <div className="flex items-center space-x-2">
@@ -236,6 +272,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/menu' element={<Category />}/>
               <Route path='/deal' element={<SealPage />}/>
               <Route path='/contact' element={<ContactUs />}/>
+              <Route path='/mycard' element={<MyCard />}/>
             </Routes>
           </div>)}
     </>
@@ -378,7 +415,7 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
       language: null,
       refresh_token: refresh_token
     }
-    fetch('http://localhost:3000/api/users/logout', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -389,13 +426,20 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
       return response.json()
     }).then((data) => {
       console.log(data)
-      messageApi.open({
-        type: 'success',
-        content: 'Đăng nhập thành công',
-        style: {
-          marginTop: '10vh',
-        },
-      })
+        if(data.code == RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
+          messageApi.open({
+            type: 'success',
+            content: 'Đăng xuất thành công',
+            style: {
+              marginTop: "10vh",
+            }
+          }).then(() => {
+            localStorage.removeItem('refresh_token')
+            localStorage.removeItem('access_token')
+          }).then(() => {
+            window.location.reload()
+          })
+        }
     })
   }
   
@@ -447,20 +491,20 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
             {(
               // Thanh nav cho nhân viên 
               role == 1 ? NavbarUser.map((item: NavbarItem) => {
-                  return <li key={item.id} className="text-xl">
+                  return <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
                           </li>
                     // Thanh nav cho shipper
               }) : (role == 2 ? NavbarUser.map((item: NavbarItem) => {
-                  return <li key={item.id} className="text-xl">
+                  return <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:bg-[#FF6B35] after:h-[2px] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
                           </li>}) : NavbarUser.map((item: NavbarItem) => {
                     // Thanh nav cho khách hàng
-                  return <li key={item.id} className="text-xl">
+                  return <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                             <button onClick={() => navigate(item.path)}
                                     className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                                     {language == "Tiếng Việt" ? item.title : item.english}</button> 
@@ -490,17 +534,10 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
             ?  // <Popover content="Nam đen" className='cursor-pointer text-lg'>
             //       <Avatar size="large" icon={<FaUserCircle />} />
             //     </Popover>
-            <div className='flex gap-3'>
-              <Dropdown menu={{ items }} 
-                        placement="bottom" 
-                        arrow>
-                <Button
-                  className='p-10'
-                ><IoSettings /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
-              </Dropdown>
+            <div className='flex gap-5 justify-center items-center'>
               <div className="bg-orange-600 text-white p-4 rounded-full shadow-lg cursor-pointer hover:bg-orange-700 transition-colors">
                 <div className="relative">
-                  <RiShoppingCart2Line className="w-4 h-4" />
+                  <RiShoppingCart2Line className="w-4 h-4" onClick={() => navigate("/mycard")}/>
                   {cartItemCount > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       {cartItemCount}
@@ -508,6 +545,13 @@ function NavigationButtons({ role }: { role: number }): JSX.Element {
                   )}
                 </div>
               </div>
+              <Dropdown menu={{ items }} 
+                        placement="bottom" 
+                        arrow>
+                <Button
+                  className='p-10'
+                ><IoSettings /> {language == "Tiếng Việt" ? "Tài khoản" : "User account"}</Button>
+              </Dropdown>
             </div>
             : 
             <button className='flex items-center gap-2.5 cursor-pointer hover:bg-[#FF9A3D] hover:text-[#ffffff] transition duration-200 text-[#FF9A3D] rounded-full font-semibold border-2 border-[#FF9A3D] px-6 py-2' 
