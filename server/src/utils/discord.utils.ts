@@ -114,7 +114,7 @@ export const sendEmbedMessageToUsersDM = async (
 
     const replyButton = new ButtonBuilder()
       .setCustomId(`reply_${contact_id}`)
-      .setLabel('Phản hồi')
+      .setLabel(serverLanguage == LANGUAGE.VIETNAMESE ? 'Phản hồi' : 'Response')
       .setStyle(ButtonStyle.Primary)
       .setEmoji('📧')
 
@@ -162,7 +162,13 @@ export const sendEmbedMessageToUsersDM = async (
         try {
           await interaction.showModal(modal)
         } catch (error) {
-          console.error('Lỗi khi hiển thị modal:', error)
+          if (serverLanguage === LANGUAGE.VIETNAMESE) {
+            console.error('\x1b[31mLỗi khi hiển thị modal:\x1b[33m', error)
+            console.log('\x1b[0m')
+          } else {
+            console.error('\x1b[31mError displaying modal:\x1b[33m', error)
+            console.log('\x1b[0m')
+          }
         }
       }
 
@@ -171,9 +177,15 @@ export const sendEmbedMessageToUsersDM = async (
         if (!userIds.includes(interaction.user.id)) return
 
         try {
-          await interaction.deferReply({ ephemeral: true }) // defer sau khi user submit modal
+          await interaction.deferReply({ ephemeral: true })
         } catch (deferError) {
-          console.error('Lỗi khi defer interaction:', deferError)
+          if (serverLanguage === LANGUAGE.VIETNAMESE) {
+            console.error('\x1b[31mLỗi khi defer interaction:\x1b[33m', deferError)
+            console.log('\x1b[0m')
+          } else {
+            console.error('\x1b[31mError deferring interaction:\x1b[33m', deferError)
+            console.log('\x1b[0m')
+          }
           return
         }
 
@@ -196,45 +208,102 @@ export const sendEmbedMessageToUsersDM = async (
           })
 
           if (response.ok) {
-            await interaction.editReply({ content: 'Đã gửi phản hồi thành công!' })
+            await interaction.editReply({
+              content:
+                serverLanguage == LANGUAGE.VIETNAMESE ? 'Đã gửi phản hồi thành công!' : 'Response sent successfully!'
+            })
           } else {
-            await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi đến server, vui lòng thử lại sau.' })
+            await interaction.editReply({
+              content: serverLanguage == LANGUAGE.VIETNAMESE ? 'Có lỗi khi gửi phản hồi!' : 'Error sending response!'
+            })
           }
         } catch (error) {
-          await interaction.editReply({ content: 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.' })
+          await interaction.editReply({
+            content:
+              serverLanguage == LANGUAGE.VIETNAMESE
+                ? 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
+                : 'Error sending response, please try again later.'
+          })
         }
       }
     })
 
     return sentMessages
   } catch (error) {
-    console.error('Error sending embed to users DMs:', error)
+    if (serverLanguage === LANGUAGE.VIETNAMESE) {
+      console.error('\x1b[31mLỗi khi gửi thông báo nhúng đến tin nhắn riêng của người dùng:\x1b[33m', error)
+      console.log('\x1b[0m')
+    } else {
+      console.error('\x1b[31mError sending embed to users DMs:\x1b[33m', error)
+      console.log('\x1b[0m')
+    }
     return sentMessages
   }
 }
 
-export const hideReplyButton = async (sentMessages: { user_id: string; message_id: string }[]): Promise<void> => {
+export const hideReplyButton = async (
+  sentMessages: { user_id: string; message_id: string }[],
+  replyData?: { user_id: string; reply_content: string }
+): Promise<void> => {
   for (const { user_id, message_id } of sentMessages) {
     try {
       const user: User = await client.users.fetch(user_id)
       if (!user) {
-        console.error(`Không tìm thấy user với ID: ${user_id}`)
+        if (serverLanguage === LANGUAGE.VIETNAMESE) {
+          console.error(`\x1b[31mKhông tìm thấy user với ID: \x1b[33m${user_id}\x1b[33m`)
+          console.log('\x1b[0m')
+        } else {
+          console.error(`\x1b[31mUser not found with ID: \x1b[33m${user_id}\x1b[33m`)
+          console.log('\x1b[0m')
+        }
         continue
       }
 
       const dmChannel = await user.createDM()
       const message = await dmChannel.messages.fetch(message_id)
       if (!message) {
-        console.error(`Không tìm thấy message với ID: ${message_id} cho user ${user_id}`)
+        if (serverLanguage === LANGUAGE.VIETNAMESE) {
+          console.error(
+            `\x1b[31mKhông tìm thấy message với ID: \x1b[33m${message_id}\x1b[31m cho user \x1b[33m${user_id}\x1b[33m`
+          )
+          console.log('\x1b[0m')
+        } else {
+          console.error(
+            `\x1b[31mMessage not found with ID: \x1b[33m${message_id}\x1b[31m for user \x1b[33m${user_id}\x1b[33m`
+          )
+          console.log('\x1b[0m')
+        }
         continue
       }
 
+      const existingEmbed = message.embeds[0]
+      const updatedEmbed = new EmbedBuilder()
+        .setAuthor(existingEmbed.author ? { name: existingEmbed.author.name } : null)
+        .setTitle(existingEmbed.title || null)
+        .setDescription(existingEmbed.description || null)
+        .setImage(existingEmbed.image?.url || null)
+        .setFooter(existingEmbed.footer ? { text: existingEmbed.footer.text } : null)
+        .setColor((existingEmbed.color || null) as any)
+        .setThumbnail(existingEmbed.thumbnail?.url || null)
+        .setURL(existingEmbed.url || null)
+
+      if (replyData && replyData.user_id === user_id) {
+        const replyText = `\n\nPhản hồi bởi: <@${replyData.user_id}>\nNội dung: ||${replyData.reply_content}||`
+        updatedEmbed.setDescription((existingEmbed.description || '') + replyText)
+      }
+
       await message.edit({
-        embeds: message.embeds,
+        embeds: [updatedEmbed],
         components: []
       })
     } catch (error) {
-      console.error(`Lỗi khi chỉnh sửa message cho user ${user_id}:`, error)
+      if (serverLanguage === LANGUAGE.VIETNAMESE) {
+        console.error(`\x1b[31mLỗi khi chỉnh sửa message cho user \x1b[33m${user_id}\x1b[31m:\x1b[33m`, error)
+        console.log('\x1b[0m')
+      } else {
+        console.error(`\x1b[31mError editing message for user \x1b[33m${user_id}\x1b[31m:\x1b[33m`, error)
+        console.log('\x1b[0m')
+      }
     }
   }
 }
