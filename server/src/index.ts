@@ -68,7 +68,6 @@ import api_order_online from '~/routes/orders.routes'
 import api_statistical from '~/routes/statistical.routes'
 import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
-import { backupPublicFolder } from './jobs/functions/backupUploadFile.functions'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -402,8 +401,6 @@ io.on('connection', (socket: Socket) => {
     }
   })
 })
-
-backupPublicFolder()
 
 server.listen(port, async () => {
   if (serverLanguage == LANGUAGE.VIETNAMESE) {
