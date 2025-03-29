@@ -54,7 +54,7 @@ class ProductService {
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
       preview: image,
-      discount: Number(payload.discount),
+      discount: payload.discount ? Number(payload.discount) : 0,
       created_by: user._id,
       updated_by: user._id
     })
@@ -80,7 +80,7 @@ class ProductService {
     const translateTitleResult = SplitTranslationString(translateTile)
     const translateDescriptionResult = SplitTranslationString(translateDescription)
 
-    const product_id = new ObjectId()
+    const product_id = new ObjectId(payload.product_id)
     const data = {
       _id: product_id,
       title_translate_1: payload.title.trim(),
@@ -99,7 +99,7 @@ class ProductService {
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
       preview: product.preview,
-      discount: Number(payload.discount),
+      discount: payload.discount ? Number(payload.discount) : 0,
       updated_by: user._id
     }
 
@@ -125,7 +125,7 @@ class ProductService {
             tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
             tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
             tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-            discount: Number(payload.discount),
+            discount: payload.discount ? Number(payload.discount) : 0,
             updated_by: user._id
           },
           $currentDate: {
@@ -152,7 +152,7 @@ class ProductService {
     const translateTitleResult = SplitTranslationString(translateTile)
     const translateDescriptionResult = SplitTranslationString(translateDescription)
 
-    const product_id = new ObjectId()
+    const product_id = new ObjectId(payload.product_id)
     const data = {
       _id: product_id,
       title_translate_1: payload.title.trim(),
@@ -171,7 +171,7 @@ class ProductService {
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
       preview: product.preview,
-      discount: Number(payload.discount),
+      discount: payload.discount ? Number(payload.discount) : 0,
       updated_by: user._id
     }
 
@@ -198,7 +198,7 @@ class ProductService {
             tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
             tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
             preview: image,
-            discount: Number(payload.discount),
+            discount: payload.discount ? Number(payload.discount) : 0,
             updated_by: user._id
           },
           $currentDate: {
