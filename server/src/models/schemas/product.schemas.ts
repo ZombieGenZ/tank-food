@@ -19,6 +19,7 @@ interface ProductType {
   tag_translate_2?: string
   tag_translate_2_language?: string
   preview: ImageType
+  discount?: number
   created_by: ObjectId
   updated_by: ObjectId
   created_at?: Date
@@ -43,6 +44,7 @@ export default class Product {
   tag_translate_2: string
   tag_translate_2_language: string
   preview: ImageType
+  discount: number
   created_by: ObjectId
   updated_by: ObjectId
   created_at: Date
@@ -68,6 +70,7 @@ export default class Product {
     this.tag_translate_2 = product.tag_translate_2 || ''
     this.tag_translate_2_language = product.tag_translate_2_language || ''
     this.preview = product.preview
+    this.discount = product.discount || 0
     this.created_by = product.created_by
     this.updated_by = product.updated_by
     this.created_at = product.created_at || date

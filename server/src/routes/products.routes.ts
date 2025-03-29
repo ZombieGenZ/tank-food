@@ -39,6 +39,7 @@ const router = express.Router()
  *    availability: boolean,
  *    category_id: string,
  *    tag?: string,
+ *    discount?: number,
  *    preview: file
  * }
  */
@@ -69,7 +70,8 @@ router.post(
  *    price: number,
  *    availability: boolean,
  *    category_id: string,
- *    tag?: string
+ *    tag?: string,
+ *    discount?: number
  * }
  */
 router.put(
@@ -98,6 +100,7 @@ router.put(
  *    availability: boolean,
  *    category_id: string,
  *    tag?: string,
+ *    discount?: number,
  *    preview: file
  * }
  */

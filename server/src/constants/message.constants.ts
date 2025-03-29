@@ -124,7 +124,8 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Lấy thông tin sản phẩm thành công',
     GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
-    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký tự'
+    KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký tự',
+    PRODUCT_HAS_BEEN_ORDERED: 'Sản phẩm đã được đặt hàng'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -408,7 +409,8 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_PRODUCT_SUCCESS: 'Product information retrieved successfully',
     GET_PRODUCT_FAILURE: 'Product information retrieval failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
-    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string'
+    KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
+    PRODUCT_HAS_BEEN_ORDERED: 'The product has been ordered'
   } as const
 
   static VOUCHER_MESSAGE = {

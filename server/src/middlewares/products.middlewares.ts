@@ -14,6 +14,7 @@ import fs from 'fs'
 import sharp from 'sharp'
 import { ImageType } from '~/constants/images.constants'
 import { deleteCurrentFile, deleteTemporaryFile } from '~/utils/image.utils'
+import productService from '~/services/products.services'
 
 export const setupProductImage = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -714,6 +715,16 @@ export const deleteProductValidator = async (req: Request, res: Response, next: 
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_DOES_NOT_EXIST
                   : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_DOES_NOT_EXIST
+              )
+            }
+
+            const checkexistOrder = await productService.checkProductExist(product._id.toString())
+
+            if (checkexistOrder) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_HAS_BEEN_ORDERED
+                  : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_HAS_BEEN_ORDERED
               )
             }
 

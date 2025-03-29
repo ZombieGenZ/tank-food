@@ -42,7 +42,7 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
               )
             }
 
-            const newProductList = []
+            const newProductList: { product_id: ObjectId; quantity: number; price: number }[] = []
             let total_quantity = 0
             let total_price = 0
 
@@ -91,12 +91,26 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
                 )
               }
 
+              const existingProduct = newProductList.find((p) => p.product_id.toString() === item.product_id.toString())
+
+              if (existingProduct) {
+                existingProduct.quantity += Number(item.quantity)
+                existingProduct.price =
+                  existingProduct.quantity * (product.price - (product.price / 100) * product.discount)
+              } else {
+                newProductList.push({
+                  product_id: product._id,
+                  quantity: Number(item.quantity),
+                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
+                })
+              }
+
               total_quantity += Number(item.quantity)
-              total_price += Number(item.quantity) * product.price
+              total_price += Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
               newProductList.push({
                 product_id: product._id,
                 quantity: item.quantity,
-                price: Number(item.quantity) * product.price
+                price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
               })
             }
 
@@ -1020,7 +1034,7 @@ export const orderOfflineValidator = async (req: Request, res: Response, next: N
               )
             }
 
-            const newProductList = []
+            const newProductList: { product_id: ObjectId; quantity: number; price: number }[] = []
             let total_quantity = 0
             let total_price = 0
 
@@ -1069,12 +1083,26 @@ export const orderOfflineValidator = async (req: Request, res: Response, next: N
                 )
               }
 
+              const existingProduct = newProductList.find((p) => p.product_id.toString() === item.product_id.toString())
+
+              if (existingProduct) {
+                existingProduct.quantity += Number(item.quantity)
+                existingProduct.price =
+                  existingProduct.quantity * (product.price - (product.price / 100) * product.discount)
+              } else {
+                newProductList.push({
+                  product_id: product._id,
+                  quantity: Number(item.quantity),
+                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
+                })
+              }
+
               total_quantity += Number(item.quantity)
-              total_price += Number(item.quantity) * product.price
+              total_price += Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
               newProductList.push({
                 product_id: product._id,
                 quantity: item.quantity,
-                price: Number(item.quantity) * product.price
+                price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
               })
             }
 

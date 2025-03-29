@@ -6,6 +6,7 @@ export interface CreateProductRequestsBody {
   availability: boolean
   tag: string
   category_id: string
+  discount?: number
 }
 
 export interface UpdateProductRequestsBody {
@@ -17,6 +18,7 @@ export interface UpdateProductRequestsBody {
   availability: boolean
   tag: string
   category_id: string
+  discount?: number
 }
 
 export interface DeleteProductRequestsBody {

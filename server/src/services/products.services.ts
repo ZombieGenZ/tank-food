@@ -14,6 +14,11 @@ import { notificationRealtime } from '~/utils/realtime.utils'
 import User from '~/models/schemas/users.schemas'
 
 class ProductService {
+  async checkProductExist(product_id: string) {
+    const product = await databaseService.order.findOne({ 'product.product_id': new ObjectId(product_id) })
+
+    return !!product
+  }
   async create(payload: CreateProductRequestsBody, image: ImageType, user: User) {
     let translateTagResult = null
     if (payload.tag) {
@@ -49,6 +54,7 @@ class ProductService {
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
       preview: image,
+      discount: Number(payload.discount),
       created_by: user._id,
       updated_by: user._id
     })
@@ -93,6 +99,7 @@ class ProductService {
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
       preview: product.preview,
+      discount: Number(payload.discount),
       updated_by: user._id
     }
 
@@ -118,6 +125,7 @@ class ProductService {
             tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
             tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
             tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
+            discount: Number(payload.discount),
             updated_by: user._id
           },
           $currentDate: {
@@ -163,6 +171,7 @@ class ProductService {
       tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
       tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
       preview: product.preview,
+      discount: Number(payload.discount),
       updated_by: user._id
     }
 
@@ -189,6 +198,7 @@ class ProductService {
             tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
             tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
             preview: image,
+            discount: Number(payload.discount),
             updated_by: user._id
           },
           $currentDate: {
