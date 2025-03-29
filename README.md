@@ -1,5 +1,7 @@
 # Tank Food - Hệ thống đặt đồ ăn nhanh trực tuyến
 
+[📖 Hướng dẫn cài đặt](INSTALLATION_STEPS.md)
+
 ## Giới thiệu ℹ️
 Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung cấp giải pháp thuận tiện cho khách hàng và doanh nghiệp. Hệ thống hỗ trợ quản lý bán hàng, theo dõi doanh thu, thông báo realtime và nhiều tính năng hữu ích khác.
 
