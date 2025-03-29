@@ -10,7 +10,8 @@ import {
   ButtonStyle,
   ModalBuilder,
   TextInputBuilder,
-  TextInputStyle
+  TextInputStyle,
+  Interaction
 } from 'discord.js'
 import { LANGUAGE } from '~/constants/language.constants'
 import { serverLanguage } from '~/index'
@@ -141,106 +142,107 @@ export const sendEmbedMessageToUsersDM = async (
       }
     }
 
-    client.on('interactionCreate', async (interaction) => {
-      if (interaction.isButton()) {
-        if (!interaction.customId.startsWith('reply_')) return
-        if (!userIds.includes(interaction.user.id)) return
+    const listenerKey = `interactionCreate_${id}`
+    const existingListeners = client.listeners('interactionCreate')
+    if (!existingListeners.some((listener) => (listener as any).__id === listenerKey)) {
+      const listener = async (interaction: Interaction) => {
+        if (interaction.isButton()) {
+          if (!interaction.customId.startsWith('reply_')) return
+          if (!userIds.includes(interaction.user.id)) return
 
-        const modal = new ModalBuilder().setCustomId(`reply_modal_${id}`).setTitle('Phản hồi')
+          const modal = new ModalBuilder().setCustomId(`reply_modal_${id}`).setTitle('Phản hồi')
 
-        const replyInput = new TextInputBuilder()
-          .setCustomId('reply_content')
-          .setLabel(serverLanguage == LANGUAGE.VIETNAMESE ? 'Nội dung phản hồi' : 'Response content')
-          .setPlaceholder(serverLanguage == LANGUAGE.VIETNAMESE ? 'Nhập nội dung phản hồi' : 'Enter response content')
-          .setStyle(TextInputStyle.Paragraph)
-          .setMinLength(1)
-          .setMaxLength(4000)
-          .setRequired(true)
+          const replyInput = new TextInputBuilder()
+            .setCustomId('reply_content')
+            .setLabel(serverLanguage == LANGUAGE.VIETNAMESE ? 'Nội dung phản hồi' : 'Response content')
+            .setPlaceholder(serverLanguage == LANGUAGE.VIETNAMESE ? 'Nhập nội dung phản hồi' : 'Enter response content')
+            .setStyle(TextInputStyle.Paragraph)
+            .setMinLength(1)
+            .setMaxLength(4000)
+            .setRequired(true)
 
-        const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
-        modal.addComponents(actionRow)
+          const actionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(replyInput)
+          modal.addComponents(actionRow)
 
-        try {
-          await interaction.showModal(modal)
-        } catch (error) {
-          if (serverLanguage === LANGUAGE.VIETNAMESE) {
-            console.error('\x1b[31mLỗi khi hiển thị modal:\x1b[33m', error)
-            console.log('\x1b[0m')
-          } else {
-            console.error('\x1b[31mError displaying modal:\x1b[33m', error)
-            console.log('\x1b[0m')
+          try {
+            await interaction.showModal(modal)
+          } catch (error) {
+            if (serverLanguage === LANGUAGE.VIETNAMESE) {
+              console.error('\x1b[31mLỗi khi hiển thị modal:\x1b[33m', error)
+              console.log('\x1b[0m')
+            } else {
+              console.error('\x1b[31mError displaying modal:\x1b[33m', error)
+              console.log('\x1b[0m')
+            }
           }
         }
-      }
 
-      if (interaction.isModalSubmit()) {
-        if (!interaction.customId.startsWith('reply_modal_')) return
-        if (!userIds.includes(interaction.user.id)) return
+        if (interaction.isModalSubmit()) {
+          if (!interaction.customId.startsWith('reply_modal_')) return
+          if (!userIds.includes(interaction.user.id)) return
 
-        // Defer ngay lập tức để tránh timeout
-        let deferred = false
-        try {
-          await interaction.deferReply({ ephemeral: true })
-          deferred = true
-        } catch (deferError) {
-          if (serverLanguage === LANGUAGE.VIETNAMESE) {
-            console.error('\x1b[31mLỗi khi defer interaction:\x1b[33m', deferError)
-            console.log('\x1b[0m')
-          } else {
-            console.error('\x1b[31mError deferring interaction:\x1b[33m', deferError)
-            console.log('\x1b[0m')
+          try {
+            await interaction.deferReply({ ephemeral: true })
+          } catch (deferError) {
+            if (serverLanguage === LANGUAGE.VIETNAMESE) {
+              console.error('\x1b[31mLỗi khi defer interaction:\x1b[33m', deferError)
+              console.log('\x1b[0m')
+            } else {
+              console.error('\x1b[31mError deferring interaction:\x1b[33m', deferError)
+              console.log('\x1b[0m')
+            }
+            return
           }
-          return
-        }
 
-        const replyContent = interaction.fields.getTextInputValue('reply_content')
+          const replyContent = interaction.fields.getTextInputValue('reply_content')
 
-        try {
-          const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
-            },
-            body: JSON.stringify({
-              contact_id: id,
-              user_id: interaction.user.id,
-              reply_content: replyContent,
-              timestamp: new Date().toISOString()
-            }),
-            signal: AbortSignal.timeout(60 * 1000)
-          })
-
-          if (response.ok) {
-            await interaction.editReply({
-              content:
-                serverLanguage == LANGUAGE.VIETNAMESE ? 'Đã gửi phản hồi thành công!' : 'Response sent successfully!'
+          try {
+            const response = await fetch(`${process.env.API_URL}/api/contact/response`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Apikey ${process.env.DISCORD_RESPONSE_API_KEY}`
+              },
+              body: JSON.stringify({
+                contact_id: id,
+                user_id: interaction.user.id,
+                reply_content: replyContent,
+                timestamp: new Date().toISOString()
+              }),
+              signal: AbortSignal.timeout(60 * 1000)
             })
-          } else {
-            await interaction.editReply({
-              content: serverLanguage == LANGUAGE.VIETNAMESE ? 'Có lỗi khi gửi phản hồi!' : 'Error sending response!'
-            })
-          }
-        } catch (error) {
-          if (deferred) {
+
+            if (response.ok) {
+              await interaction.editReply({
+                content:
+                  serverLanguage == LANGUAGE.VIETNAMESE ? 'Đã gửi phản hồi thành công!' : 'Response sent successfully!'
+              })
+            } else {
+              await interaction.editReply({
+                content: serverLanguage == LANGUAGE.VIETNAMESE ? 'Có lỗi khi gửi phản hồi!' : 'Error sending response!'
+              })
+            }
+          } catch (error) {
             await interaction.editReply({
               content:
                 serverLanguage == LANGUAGE.VIETNAMESE
                   ? 'Có lỗi khi gửi phản hồi, vui lòng thử lại sau.'
                   : 'Error sending response, please try again later.'
             })
-          } else {
             if (serverLanguage === LANGUAGE.VIETNAMESE) {
-              console.error('\x1b[31mLỗi khi gửi phản hồi (chưa defer):\x1b[33m', error)
+              console.error('\x1b[31mLỗi khi gửi phản hồi:\x1b[33m', error)
               console.log('\x1b[0m')
             } else {
-              console.error('\x1b[31mError sending response (not deferred):\x1b[33m', error)
+              console.error('\x1b[31mError sending response:\x1b[33m', error)
               console.log('\x1b[0m')
             }
           }
         }
       }
-    })
+
+      ;(listener as any).__id = listenerKey
+      client.on('interactionCreate', listener)
+    }
 
     return sentMessages
   } catch (error) {
