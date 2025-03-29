@@ -4,6 +4,7 @@ export interface ProductList {
   product_id: ObjectId
   quantity: number
   price?: number
+  data?: any
 }
 
 export enum DeliveryTypeEnum {

@@ -42,7 +42,7 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
               )
             }
 
-            const newProductList: { product_id: ObjectId; quantity: number; price: number }[] = []
+            const newProductList: { product_id: ObjectId; quantity: number; price: number; data: any }[] = []
             let total_quantity = 0
             let total_price = 0
 
@@ -101,17 +101,13 @@ export const orderOnlineValidator = async (req: Request, res: Response, next: Ne
                 newProductList.push({
                   product_id: product._id,
                   quantity: Number(item.quantity),
-                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
+                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount),
+                  data: product
                 })
               }
 
               total_quantity += Number(item.quantity)
               total_price += Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
-              newProductList.push({
-                product_id: product._id,
-                quantity: item.quantity,
-                price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
-              })
             }
 
             ;(req as Request).total_price = total_price
@@ -1034,7 +1030,7 @@ export const orderOfflineValidator = async (req: Request, res: Response, next: N
               )
             }
 
-            const newProductList: { product_id: ObjectId; quantity: number; price: number }[] = []
+            const newProductList: { product_id: ObjectId; quantity: number; price: number; data: any }[] = []
             let total_quantity = 0
             let total_price = 0
 
@@ -1093,17 +1089,13 @@ export const orderOfflineValidator = async (req: Request, res: Response, next: N
                 newProductList.push({
                   product_id: product._id,
                   quantity: Number(item.quantity),
-                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
+                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount),
+                  data: product
                 })
               }
 
               total_quantity += Number(item.quantity)
               total_price += Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
-              newProductList.push({
-                product_id: product._id,
-                quantity: item.quantity,
-                price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
-              })
             }
 
             ;(req as Request).total_price = total_price

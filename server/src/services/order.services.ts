@@ -1996,6 +1996,10 @@ class OrderService {
         vat: vat,
         total_bill: total_bill
       }
+    } else {
+      return {
+        product: product_list
+      }
     }
   }
   async paymentConfirmation(payload: PaymentConfirmationRequestsBody) {
