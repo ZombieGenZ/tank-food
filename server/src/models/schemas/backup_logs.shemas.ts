@@ -16,7 +16,7 @@ export default class BackupLog {
   constructor(log: BackupLogType) {
     this._id = log._id || new ObjectId()
     this.drive_url = log.drive_url
-    this.file_id = log.drive_url
+    this.file_id = log.file_id
     this.created_at = log.created_at || new Date()
   }
 }

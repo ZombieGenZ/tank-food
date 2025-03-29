@@ -1,6 +1,6 @@
 {
   "name": "tank-food-server",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
@@ -44,6 +44,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "archiver": "^7.0.1",
+    "archiver-zip-encrypted": "^2.0.0",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "discord.js": "^14.18.0",

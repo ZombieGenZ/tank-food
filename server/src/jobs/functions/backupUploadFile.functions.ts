@@ -1,8 +1,18 @@
+import { LANGUAGE } from '~/constants/language.constants'
+import { serverLanguage } from '~/index'
 import { uploadPuclicFolder } from '~/utils/drive.utils'
 
 export const backupPublicFolder = async () => {
   const date = new Date()
-  console.log('\x1b[33mĐang thực hiện sao lưu folder \x1b[36mUpload\x1b[33m...\x1b[0m')
+  if (serverLanguage == LANGUAGE.VIETNAMESE) {
+    console.log('\x1b[33mĐang thực hiện sao lưu folder \x1b[36mUpload\x1b[33m...\x1b[0m')
+  } else {
+    console.log('\x1b[33mPerforming backup of the \x1b[36mUpload\x1b[33m folder...\x1b[0m')
+  }
   await uploadPuclicFolder(date)
-  console.log('\x1b[33mSao lưu folder \x1b[36mUpload\x1b[33m thành công!\x1b[0m')
+  if (serverLanguage == LANGUAGE.VIETNAMESE) {
+    console.log('\x1b[33mSao lưu folder \x1b[36mUpload\x1b[33m thành công!\x1b[0m')
+  } else {
+    console.log('\x1b[33mBackup of the \x1b[36mUpload\x1b[33m folder successful!\x1b[0m')
+  }
 }
