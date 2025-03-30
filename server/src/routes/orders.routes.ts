@@ -52,7 +52,7 @@ const router = express.Router()
  * Body: {
  *    language?: string,
  *    refresh_token: string,
- *    product: [
+ *    products: [
  *      ...
  *      {
  *        product_id: string,
@@ -323,7 +323,7 @@ router.put(
  * Method: POST
  * Body: {
  *    language?: string,
- *    product: [
+ *    products: [
  *      ...
  *      {
  *        product_id: string,

@@ -769,3 +769,155 @@ export const deleteProductValidator = async (req: Request, res: Response, next: 
       return
     })
 }
+
+export const discountValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+  const discount = req.body.discount
+
+  if (discount) {
+    if (discount < 0 || discount > 100) {
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.INPUT_DATA_ERROR,
+        message:
+          language == LANGUAGE.VIETNAMESE
+            ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.DISCOUNT_MUST_BE_FROM_1_TO_100
+            : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.DISCOUNT_MUST_BE_FROM_1_TO_100
+      })
+      return
+    }
+  }
+
+  next()
+}
+
+export const getProductListValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      products: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_IS_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_IS_REQUIRED
+        },
+        isArray: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_MUST_BE_AN_ARRAY
+              : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_MUST_BE_AN_ARRAY
+        },
+        custom: {
+          options: async (value: any) => {
+            if (!Array.isArray(value) || value.length < 1) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_MUST_BE_AN_ARRAY
+                  : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_MUST_BE_AN_ARRAY
+              )
+            }
+
+            const productList: { product_id: ObjectId; quantity: number; price: number; data: any }[] = []
+            let total_quantity = 0
+            let total_price = 0
+
+            for (const item of value) {
+              if (typeof item !== 'object' || item === null || Array.isArray(item)) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_IS_REQUIRED
+                    : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_IS_REQUIRED
+                )
+              }
+
+              if (!item.product_id || !item.quantity) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_IS_REQUIRED
+                    : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_IS_REQUIRED
+                )
+              }
+
+              if (typeof item.quantity !== 'number' || item.quantity <= 0) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0
+                    : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0
+                )
+              }
+
+              const product = await databaseService.products.findOne({
+                _id: new ObjectId(item.product_id)
+              })
+
+              if (!product) {
+                continue
+              }
+
+              if (!product.availability) {
+                continue
+              }
+
+              const existingProduct = productList.find((p) => p.product_id.toString() === item.product_id.toString())
+
+              if (existingProduct) {
+                existingProduct.quantity += Number(item.quantity)
+                existingProduct.price =
+                  existingProduct.quantity * (product.price - (product.price / 100) * product.discount)
+              } else {
+                productList.push({
+                  product_id: product._id,
+                  quantity: Number(item.quantity),
+                  price: Number(item.quantity) * (product.price - (product.price / 100) * product.discount),
+                  data: product
+                })
+              }
+
+              total_quantity += Number(item.quantity)
+              total_price += Number(item.quantity) * (product.price - (product.price / 100) * product.discount)
+            }
+
+            ;(req as Request).total_price = total_price
+            ;(req as Request).total_quantity = total_quantity
+            ;(req as Request).product_list = productList
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}

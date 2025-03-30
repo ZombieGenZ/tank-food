@@ -7,6 +7,7 @@ import Category from './models/schemas/categories.schemas'
 import { ImageType } from './constants/images.constants'
 import Product from './models/schemas/product.schemas'
 import Order from './models/schemas/orders.schemas'
+import { ProductList } from './constants/orders.constants'
 
 declare module 'express' {
   interface Request {
@@ -22,7 +23,7 @@ declare module 'express' {
     image?: ImageType
     total_quantity?: number
     total_price?: number
-    product_list?: ProductList
+    product_list?: ProductList[]
     order?: Order
     banned_time?: Date
   }

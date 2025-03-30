@@ -125,7 +125,13 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_PRODUCT_FAILURE: 'Lấy thông tin sản phẩm thất bại',
     KEYWORD_IS_REQUIRED: 'Không được bỏ trống từ khóa tìm kiếm',
     KEYWORD_MUST_BE_A_STRING: 'Từ khóa tìm kiếm phải là một chuỗi ký tự',
-    PRODUCT_HAS_BEEN_ORDERED: 'Sản phẩm đã được đặt hàng'
+    PRODUCT_HAS_BEEN_ORDERED: 'Sản phẩm đã được đặt hàng',
+    DISCOUNT_MUST_BE_FROM_1_TO_100: 'Giảm giá phải từ 1% đến 100%',
+    PRODUCT_IS_REQUIRED: 'Sản phẩm không được để trống',
+    PRODUCT_MUST_BE_AN_ARRAY: 'Sản phẩm phải là một mảng',
+    PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0: 'Số lượng sản phẩm phải là một số lớn hơn 0',
+    PRODUCT_IS_NOT_FOUND: 'Không tìm thấy sản phẩm',
+    PRODUCT_IS_NOT_AVAILABLE: 'Sản phẩm không có sẵn'
   } as const
 
   static VOUCHER_MESSAGE = {
@@ -410,7 +416,14 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_PRODUCT_FAILURE: 'Product information retrieval failed',
     KEYWORD_IS_REQUIRED: 'Search keyword is required',
     KEYWORD_MUST_BE_A_STRING: 'Search keyword must be a string',
-    PRODUCT_HAS_BEEN_ORDERED: 'The product has been ordered'
+    PRODUCT_HAS_BEEN_ORDERED: 'The product has been ordered',
+    DISCOUNT_MUST_BE_FROM_1_TO_100: 'Discount must be between 1% and 100%',
+    PRODUCT_IS_REQUIRED: 'Product is required',
+    PRODUCT_MUST_BE_AN_ARRAY: 'Product must be an array',
+    PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0: 'Product quantity must be a number greater than 0',
+    PRODUCT_IS_NOT_FOUND: 'Product is not found',
+    PRODUCT_IS_NOT_AVAILABLE: 'Product is not available'
+
   } as const
 
   static VOUCHER_MESSAGE = {
