@@ -16,6 +16,7 @@ import DiscountCodeManagement from './Discount.pages.tsx';
 import OrderManagement from './Order.psges.tsx';
 import MainManage from './Main.management.pages.tsx';
 import MyCard from './MyCard.pages.tsx';
+import OrderPageWithPayment from './Payment.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message, Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -307,6 +308,7 @@ const FormMain = (): JSX.Element => {
             <Route path='/deal' element={<SealPage />} />
             <Route path='/contact' element={<ContactUs />} />
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user}/>} />
+            <Route path='/payment' element={<OrderPageWithPayment />} />
           </Routes>
         </div>
       )}

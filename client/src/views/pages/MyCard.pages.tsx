@@ -6,6 +6,30 @@ import type { TableProps } from 'antd';
 import MapPicker from "../components/Mapicket.components";
 import Verify from "../components/VerifyToken.components";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+import { useNavigate } from "react-router-dom";
+
+interface Products {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface OrderInformation {
+  account_name: string;
+  account_no: string;
+  bank_id: string;
+  distance: number;
+  fee: number;
+  order_id: string;
+  payment_qr_url: string;
+  product: Products[];
+  total_bill: number;
+  total_price: number;
+  total_quantity: number;
+  vat: number;
+}
+
 
 interface CartItem {
     id: string;
@@ -58,9 +82,11 @@ interface MyCardProps {
     user_infor: UserInfo | null;
   }
 const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
+    const navigate = useNavigate(); 
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
     const [dataBill, setDatabill] = useState<ProductView[]>([])
+    const [bill, setBill] = useState<OrderInformation|null>(null)
 
     useEffect(() => {
       const newData: ProductView[] = cart.map((cart) => ({
@@ -138,8 +164,9 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
             return response.json()
           }).then((data) => {
             if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
-              message.success("Đơn hàng được tạo thành công")
-              console.log(data)
+              console.log(data);
+              // navigate('/payment', { state: data })
+              setBill(data.information)
             } else {
               messageApi.error(data.message)
               return
@@ -150,9 +177,15 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
             return
         }
       };
-    
     checkToken();
     }
+
+    useEffect(() => {
+        if(bill !== null) {
+          navigate('/payment', { replace: true, state: bill })
+        }
+        console.log(bill)
+    }, [bill, navigate])
 
     const increaseQuantity = (id: string) => {
       setCart((prevCart) =>
