@@ -230,3 +230,49 @@ export const getProductController = async (
     })
   }
 }
+
+export const getProductListController = async (
+  req: Request<ParamsDictionary, any, GetProductRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const language = req.body.language || serverLanguage
+  const total_quantity = req.total_quantity
+  const total_price = req.total_price
+  const product_list = req.product_list
+
+  try {
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetProductSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetProductSuccessfully(ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_PRODUCT_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.GET_PRODUCT_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.GET_PRODUCT_SUCCESS,
+      infomation: {
+        total_quantity,
+        total_price,
+        product_list
+      }
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetProductFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetProductFailed(ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_PRODUCT_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.PRODUCT_MESSAGE.GET_PRODUCT_FAILURE
+          : ENGLISH_STATIC_MESSAGE.PRODUCT_MESSAGE.GET_PRODUCT_FAILURE
+    })
+  }
+}

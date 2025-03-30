@@ -73,7 +73,7 @@ class OrderService {
     const order_id = new ObjectId()
     const order = new Order({
       _id: order_id,
-      product: product_list,
+      product: product_list.map(({ data, ...rest }) => rest),
       total_quantity: total_quantity,
       total_price: total_price,
       discount_code: payload.voucher,
@@ -2386,7 +2386,7 @@ class OrderService {
       _id: order_id,
       delivery_type: DeliveryTypeEnum.COUNTER,
       payment_type: payload.payment_type,
-      product: product_list,
+      product: product_list.map(({ data, ...rest }) => rest),
       total_price: total_price,
       total_quantity: total_quantity,
       total_bill: total_bill,

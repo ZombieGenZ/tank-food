@@ -4,7 +4,8 @@ import {
   updateProductController,
   updateProductChangeImageController,
   deleteProductController,
-  getProductController
+  getProductController,
+  getProductListController
 } from '~/controllers/products.controllers'
 import {
   authenticateUploadImageValidator,
@@ -17,7 +18,9 @@ import {
   createProductValidator,
   updateProductValidator,
   updateProductChangeImageValidator,
-  deleteProductValidator
+  deleteProductValidator,
+  discountValidator,
+  getProductListValidator
 } from '~/middlewares/products.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 import { uploadProduct } from '~/utils/image.utils'
@@ -51,6 +54,7 @@ router.post(
   authenticateAdministratorUploadImageValidator,
   setupProductImage,
   createProductValidator,
+  discountValidator,
   wrapRequestHandler(createProductController)
 )
 
@@ -80,6 +84,7 @@ router.put(
   authenticateVerifyAccountValidator,
   authenticateAdministratorUploadImageValidator,
   updateProductValidator,
+  discountValidator,
   wrapRequestHandler(updateProductController)
 )
 
@@ -112,6 +117,7 @@ router.put(
   authenticateAdministratorUploadImageValidator,
   setupProductImage,
   updateProductChangeImageValidator,
+  discountValidator,
   wrapRequestHandler(updateProductChangeImageController)
 )
 
@@ -146,5 +152,26 @@ router.delete(
  * }
  */
 router.post('/get-product', wrapRequestHandler(getProductController))
+
+/*
+ * Description: Lấy thông tin danh sách sản phẩm
+ * Path: /api/products/get-product-list
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    product: [
+ *      ...
+ *      {
+ *        product_id: string,
+ *        quantity: number
+ *      }
+ *    ],
+ * }
+ */
+router.post('/get-product-list', getProductListValidator, wrapRequestHandler(getProductListController))
 
 export default router
