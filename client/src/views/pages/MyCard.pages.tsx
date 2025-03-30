@@ -8,27 +8,32 @@ import Verify from "../components/VerifyToken.components";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import { useNavigate } from "react-router-dom";
 
-interface Products {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
+// interface Products {
+//   id: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
+// }
 
-interface OrderInformation {
-  account_name: string;
-  account_no: string;
-  bank_id: string;
-  distance: number;
-  fee: number;
-  order_id: string;
-  payment_qr_url: string;
-  product: Products[];
-  total_bill: number;
-  total_price: number;
-  total_quantity: number;
-  vat: number;
-}
+// interface OrderInformation {
+//   account_name: string;
+//   account_no: string;
+//   bank_id: string;
+//   distance: number;
+//   fee: number;
+//   order_id: string;
+//   payment_qr_url: string;
+//   product: Products[];
+//   total_bill: number;
+//   total_price: number;
+//   total_quantity: number;
+//   vat: number;
+// }
+
+// interface ApiResponse {
+//   information: OrderInformation;
+//   message: string;
+// }
 
 
 interface CartItem {
@@ -86,7 +91,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
     const [dataBill, setDatabill] = useState<ProductView[]>([])
-    const [bill, setBill] = useState<OrderInformation|null>(null)
+    // const [bill, setBill] = useState<ApiResponse>()
 
     useEffect(() => {
       const newData: ProductView[] = cart.map((cart) => ({
@@ -166,7 +171,8 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
             if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
               console.log(data);
               // navigate('/payment', { state: data })
-              setBill(data.information)
+              navigate('/payment', { replace: true, state: data })
+              // setBill(data)
             } else {
               messageApi.error(data.message)
               return
@@ -180,12 +186,12 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
     checkToken();
     }
 
-    useEffect(() => {
-        if(bill !== null) {
-          navigate('/payment', { replace: true, state: bill })
-        }
-        console.log(bill)
-    }, [bill, navigate])
+    // useEffect(() => {
+    //     if(bill !== null) {
+    //       navigate('/payment', { replace: true, state: bill })
+    //     }
+    //     console.log(bill)
+    // }, [bill, navigate])
 
     const increaseQuantity = (id: string) => {
       setCart((prevCart) =>

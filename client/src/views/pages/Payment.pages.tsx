@@ -15,7 +15,7 @@ interface OrderInformation {
   distance: number;
   fee: number;
   order_id: string;
-  payment_qr_url: string|null;
+  payment_qr_url: string;
   product: Products[];
   total_bill: number;
   total_price: number;
@@ -23,23 +23,20 @@ interface OrderInformation {
   vat: number;
 }
 
-interface OrderInfo {
-  supplier: string;
-  accountHolder: string;
-  accountNumber: string;
-  bank: string;
-  amount: number;
-  transferContent: string;
+interface ApiResponse {
+  infomation: OrderInformation;
+  message: string;
+  code: string,
 }
+
 
 interface PaymentPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  orderInfo: OrderInfo;
-  userBill: OrderInformation,
+  userBill: ApiResponse,
 }
 
-const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, orderInfo, userBill }) => {
+const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, userBill }) => {
   const [minutes, setMinutes] = useState<number>(10);
   const [seconds, setSeconds] = useState<number>(0);
 
@@ -55,12 +52,13 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, orderInfo,
           return 59;
         } else {
           clearInterval(countdown);
+          onClose()
           return 0;
         }
       });
     }, 1000);
 
-    return () => clearInterval(countdown);
+    return () => {clearInterval(countdown)};
   }, [isOpen, minutes]);
 
   if (!isOpen) return null;
@@ -75,27 +73,27 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, orderInfo,
           </h2>
           <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
             <p className="text-gray-500 text-sm mb-1">Nhà cung cấp</p>
-            <p className="font-medium">{orderInfo.supplier}</p>
+            <p className="font-medium">DPTCLOUD.VN</p>
           </div>
           <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
             <p className="text-gray-500 text-sm mb-1">Chủ tài khoản</p>
-            <p className="font-medium uppercase">{orderInfo.accountHolder}</p>
+            <p className="font-medium uppercase">{userBill.infomation.account_name}</p>
           </div>
           <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
             <p className="text-gray-500 text-sm mb-1">Số tài khoản</p>
-            <p className="font-medium text-orange-600">{orderInfo.accountNumber}</p>
+            <p className="font-medium text-orange-600">{userBill.infomation.account_no}</p>
           </div>
           <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
             <p className="text-gray-500 text-sm mb-1">Ngân hàng thụ hưởng</p>
-            <p className="font-medium">{orderInfo.bank}</p>
+            <p className="font-medium">{userBill.infomation.bank_id}</p>
           </div>
           <div className="border-b border-gray-200 pb-4 mb-5">
             <p className="text-gray-500 text-sm mb-1">Số tiền</p>
-            <p className="font-bold text-xl text-orange-600">{orderInfo.amount.toLocaleString()}đ</p>
+            <p className="font-bold text-xl text-orange-600">{userBill.infomation.total_bill.toLocaleString()}đ</p>
           </div>
           <div className="bg-orange-50 p-4 rounded-lg border border-orange-100 mb-6 shadow-sm">
             <p className="text-gray-600 text-sm mb-1">Nội dung chuyển tiền</p>
-            <p className="font-medium text-orange-600 text-lg">{orderInfo.transferContent}</p>
+            <p className="font-medium text-orange-600 text-lg">{userBill.infomation.order_id}</p>
           </div>
           <div className="bg-gray-100 p-5 rounded-lg shadow-inner">
             <p className="text-gray-600 text-sm mb-3 font-medium">Đơn hàng sẽ hết hạn sau:</p>
@@ -103,7 +101,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, orderInfo,
               <div className="text-2xl font-bold text-orange-600">{String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}</div>
             </div>
           </div>
-          <div className="mt-6">
+          <div className="mt-5">
             <button 
               onClick={onClose} 
               className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition w-full shadow-lg hover:shadow-xl">
@@ -116,7 +114,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, orderInfo,
         <div className="w-3/5 bg-gradient-to-br from-orange-500 to-orange-600 p-8 flex flex-col items-center justify-start relative">
           <h2 className="text-2xl font-semibold text-white mb-8">Quét mã QR để thanh toán</h2>
           <div className="bg-white rounded-xl p-4 mb-6 w-full max-w-xs shadow-xl">
-            <img src={userBill.payment_qr_url || "/api/placeholder/60/30"} alt="QR Code" className="w-full h-auto" />
+            <img src={userBill.infomation.payment_qr_url || "/api/placeholder/60/30"} alt="QR Code" className="w-full h-auto" />
           </div>
           <p className="text-center text-sm text-gray-200">Quét mã để thanh toán nhanh chóng</p>
         </div>
@@ -128,21 +126,11 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, orderInfo,
 const OrderPageWithPayment = () => {
     const [showPayment, setShowPayment] = useState(false);
     const location = useLocation();
-    const userBill: OrderInformation = location.state;
-    console.log("UserBill Data: ", userBill);
-    const orderInfo = {
-      supplier: "DPTCLOUD.VN",
-      accountHolder: "NGUYEN DUC ANH",
-      accountNumber: "0978266980",
-      bank: "MB BANK",
-      amount: 135000,
-      transferContent: "DH3890",
-      orderId: "DH3890"
-    };
+    const userBill: ApiResponse = location.state;
     
     return (
       <div className="p-8 bg-gray-100 min-h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Demo Thanh Toán Chuyển Khoản</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Xem thông tin chuyển khoản và thanh toán dưới đây</h1>
         <button 
           onClick={() => setShowPayment(true)}
           className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -154,7 +142,6 @@ const OrderPageWithPayment = () => {
             <PaymentPopup
                 isOpen={showPayment}
                 onClose={() => setShowPayment(false)}
-                orderInfo={orderInfo}
                 userBill={userBill}
             />
         )}
