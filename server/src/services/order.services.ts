@@ -123,22 +123,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -233,22 +261,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -353,22 +409,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -442,22 +526,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -534,22 +646,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -623,22 +763,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -749,22 +917,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -856,22 +1052,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -985,22 +1209,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -1096,22 +1348,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -1205,22 +1485,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -1295,22 +1603,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -1391,22 +1727,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -1484,22 +1848,50 @@ class OrderService {
             }
           },
           {
-            $unwind: '$product'
-          },
-          {
-            $unwind: '$product_details'
-          },
-          {
-            $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           },
           {
             $group: {
               _id: '$_id',
-              product: {
-                $push: {
-                  $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-                }
-              },
+              product: { $first: '$product' },
               total_quantity: { $first: '$total_quantity' },
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
@@ -1586,22 +1978,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -1692,22 +2112,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -1813,22 +2261,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -1939,22 +2415,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -2055,22 +2559,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -2144,22 +2676,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -2200,6 +2760,9 @@ class OrderService {
             updated_at: { $first: '$updated_at' },
             canceled_at: { $first: '$canceled_at' }
           }
+        },
+        {
+          $sort: { created_at: -1 }
         }
       ])
       .toArray()
@@ -2241,22 +2804,50 @@ class OrderService {
           }
         },
         {
-          $unwind: '$product'
-        },
-        {
-          $unwind: '$product_details'
-        },
-        {
-          $unwind: { path: '$category_details', preserveNullAndEmptyArrays: true }
+          $addFields: {
+            product: {
+              $map: {
+                input: '$product',
+                as: 'p',
+                in: {
+                  $mergeObjects: [
+                    '$$p',
+                    {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$product_details',
+                            as: 'pd',
+                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      category: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: '$category_details',
+                              as: 'cd',
+                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                            }
+                          },
+                          0
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
         },
         {
           $group: {
             _id: '$_id',
-            product: {
-              $push: {
-                $mergeObjects: ['$product', '$product_details', { category: '$category_details' }]
-              }
-            },
+            product: { $first: '$product' },
             total_quantity: { $first: '$total_quantity' },
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
@@ -2302,12 +2893,6 @@ class OrderService {
       .next()
 
     await Promise.all([notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)])
-  }
-  async getOrderOverview() {
-    return await databaseService.order
-      .find({ order_status: OrderStatusEnum.COMPLETED })
-      .sort({ created_at: 1 })
-      .toArray()
   }
 }
 
