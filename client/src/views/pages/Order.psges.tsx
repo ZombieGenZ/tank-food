@@ -489,9 +489,11 @@ const OrderManagement = (): JSX.Element => {
             return({
                 key: String(index + 1),
                 id: bill._id,
-                name: bill.product[0].title_translate_1,
+                name: bill.product.map((bills) => {
+                    return `${language() == "Tiếng Việt" ? bills.title_translate_1 : bills.title_translate_2},`
+                }),
                 total_price: bill.total_bill,
-                cancellation_reason: bill.cancellation_reason,
+                cancellation_reason: bill.cancellation_reason ? bill.cancellation_reason : null,
                 date: bill.created_at,
                 payment_status: bill.payment_status,
                 delivery_type: bill.delivery_type,
@@ -512,9 +514,9 @@ const OrderManagement = (): JSX.Element => {
             return ({
                 key: String(index + 1),
                 id: bill._id,
-                name: bill.product[0].title_translate_1,
+                name: bill.product.map((bills) => `${language() == "Tiếng Việt" ? bills.title_translate_1 : bills.title_translate_2}, `),
                 total_price: bill.total_bill,
-                cancellation_reason: bill.cancellation_reason,
+                cancellation_reason: bill.cancellation_reason ? bill.cancellation_reason : null,
                 date: bill.created_at,
                 payment_status: bill.payment_status,
                 delivery_type: bill.delivery_type,

@@ -113,7 +113,6 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
             product_id: carts.id,
             quantity: carts.quantity
           }))
-          console.log(product)
           const body: OrderData = {
             language: null,
             refresh_token: refresh_token,
@@ -126,6 +125,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
             note: note,
             voucher: voucher,
           }
+          console.log(body)
 
           fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-online`, {
             method: 'POST',

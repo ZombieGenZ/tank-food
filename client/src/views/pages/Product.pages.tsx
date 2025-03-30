@@ -216,7 +216,15 @@ function ProductManagement(): JSX.Element {
       console.log(data)
       if (data.code == "CREATE_PRODUCT_SUCCESSFUL") {
         messageApi.success(data.message)
+        setTitle("")
+        setDescription("")
+        setPrice(0)
+        setDiscount(0)
+        setAvailability(false)
         setShowCreateModal(false)
+        setNewCategory("Đồ ăn nhanh")
+        setTag("")
+        setImageUrl(null)
         const body = {
           language: null,
         } 
@@ -615,7 +623,7 @@ function ProductManagement(): JSX.Element {
               </div>
             </div>
           </Modal>
-          <Modal title={language() == "Tiếng Việt" ? "Sửa sản phẩm" : "product repair"} open={showEditModal} okText={language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"} onOk={() => EditProduct(selectProduct ? selectProduct?._id : "")} onCancel={() => setShowEditModal(false)}>
+          <Modal title={language() == "Tiếng Việt" ? "Sửa sản phẩm" : "product repair"} open={showEditModal} okText={language() == "Tiếng Việt" ? "Cập nhật sản phẩm" : "Update product"} onOk={() => EditProduct(selectProduct ? selectProduct?._id : "")} onCancel={() => setShowEditModal(false)}>
             {selectProduct && (
               <div className="w-full flex flex-col gap-3">
               <div className="flex gap-2 flex-col">
@@ -636,7 +644,7 @@ function ProductManagement(): JSX.Element {
                 <div className=" flex gap-2 flex-col">
                     <p>{language() == "Tiếng Việt" ? "Giảm giá:" : "Discount:"}</p>
                     <div>
-                        <InputNumber placeholder="VNĐ" value={discountEdit} onChange={handleChangeDiscountEdit}/>
+                        <InputNumber max={String(100)} placeholder="VNĐ" value={discountEdit} onChange={handleChangeDiscountEdit}/>
                     </div>
                 </div>
                 <div className="w-full flex gap-2 flex-col">

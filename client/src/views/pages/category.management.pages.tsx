@@ -89,7 +89,7 @@ interface CategoryProps {
   cart: CartItem[]; // Thêm cart vào props
 }
 
-const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
+const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
   // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   // const [messageApi, contextHolder] = message.useMessage();
@@ -308,4 +308,4 @@ const Category = ({ addToCart, cart }: CategoryProps): JSX.Element => {
     )
 }
 
-export default Category
+export default Menu
