@@ -15,8 +15,7 @@ import {
   orderOfflineController,
   paymentConfirmationController,
   getOrderController,
-  cancelOrderController,
-  getOrderOverviewController
+  cancelOrderController
 } from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
