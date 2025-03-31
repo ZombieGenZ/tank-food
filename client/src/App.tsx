@@ -2,6 +2,7 @@ import FormMain from "./views/pages/main.pages";
 import { useWindowScroll } from '@mantine/hooks';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Transition } from '@mantine/core';
+import OrderAtStore from "./views/pages/OrderAtStore.pages";
 
 const App = () => {
   const [scroll, scrollTo] = useWindowScroll();
@@ -10,6 +11,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<FormMain />} />
+          <Route path='/orderatstore' element={<OrderAtStore />} />
         </Routes>
       </BrowserRouter>
       <Transition transition="slide-up" mounted={scroll.y > 200}>
