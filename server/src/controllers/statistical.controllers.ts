@@ -13,6 +13,7 @@ import {
 } from '~/constants/message.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import User from '~/models/schemas/users.schemas'
+import { formatNumber } from '~/utils/number.utils'
 
 export const statisticalOverviewController = async (
   req: Request<ParamsDictionary, any, StatisticalOverviewRequestsBody>,
@@ -48,6 +49,31 @@ export const statisticalOverviewController = async (
 
     res.json({
       code: RESPONSE_CODE.STATICSTICAL_OVERVIEW_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_FAILURE
+          : ENGLISH_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_FAILURE
+    })
+  }
+}
+
+export const analyticsTotalRequestsController = async (req: Request, res: Response) => {
+  const language = serverLanguage
+
+  try {
+    const statistical = await statisticalService.totalRequests()
+
+    res.json({
+      code: RESPONSE_CODE.ANALYTICS_TOTAL_REQUESTS_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_SUCCESS,
+      total: formatNumber(statistical)
+    })
+  } catch (err) {
+    res.json({
+      code: RESPONSE_CODE.ANALYTICS_TOTAL_REQUESTS_FAILED,
       message:
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_FAILURE

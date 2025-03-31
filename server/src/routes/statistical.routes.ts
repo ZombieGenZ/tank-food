@@ -1,5 +1,5 @@
 import express from 'express'
-import { statisticalOverviewController } from '~/controllers/statistical.controllers'
+import { statisticalOverviewController, analyticsTotalRequestsController } from '~/controllers/statistical.controllers'
 import {
   authenticateValidator,
   authenticateVerifyAccountValidator,
@@ -28,5 +28,12 @@ router.post(
   authenticateAdministratorValidator,
   wrapRequestHandler(statisticalOverviewController)
 )
+
+/*
+ * Description: Lấy thông tin thống kê số lượt truy cập
+ * Path: /api/statistical/analytics-total-requests
+ * Method: POST
+ */
+router.post('/analytics-total-requests', wrapRequestHandler(analyticsTotalRequestsController))
 
 export default router

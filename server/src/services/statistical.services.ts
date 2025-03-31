@@ -7,6 +7,13 @@ import {
   DailyStats,
   OverviewResponseWithComparison
 } from '~/constants/statistical.constants'
+import axios from 'axios'
+
+const CF_API_URL = 'https://api.cloudflare.com/client/v4/graphql'
+const CF_EMAIL = process.env.CLOUDFLARE_EMAIL as string
+const CF_API_KEY = process.env.CLOUDFLARE_API_KEY as string
+const CF_ZONE_ID = process.env.CLOUDFLARE_ZONE_ID as string
+const START_DATE_STRING = process.env.CLOUDFLARE_START_ANALYTICS_DATE as string
 
 class StatisticalService {
   async overview(time: number): Promise<OverviewResponseWithComparison> {
@@ -163,6 +170,47 @@ class StatisticalService {
     const change = ((current - previous) / previous) * 100
     const rounded = Math.round(change * 10) / 10
     return Number(rounded.toFixed(1))
+  }
+  async totalRequests() {
+    try {
+      const END_DATE = new Date().toISOString().split('T')[0]
+      const START_DATE = new Date(START_DATE_STRING).toISOString().split('T')[0]
+
+      const query = {
+        query: `
+        {
+          viewer {
+            zones(filter: { zoneTag: "${CF_ZONE_ID}" }) {
+              httpRequests1dGroups(limit: 10, filter: { date_geq: "${START_DATE}", date_leq: "${END_DATE}" }) {
+                sum {
+                  requests
+                }
+                dimensions {
+                  date
+                }
+              }
+            }
+          }
+        }`
+      }
+
+      const response = await axios.post(CF_API_URL, query, {
+        headers: {
+          'X-Auth-Email': CF_EMAIL,
+          'X-Auth-Key': CF_API_KEY,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.data.errors) {
+        return 0
+      }
+
+      const analyticsData = response.data.data.viewer.zones[0].httpRequests1dGroups
+      return analyticsData.reduce((sum: number, item: any) => sum + item.sum.requests, 0)
+    } catch (error: any) {
+      return 0
+    }
   }
 }
 
