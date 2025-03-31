@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Plus, Minus, ShoppingCart } from "lucide-react"
+import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
 import "aos/dist/aos.css"
 
@@ -53,6 +53,28 @@ const OrderAtStore: React.FC = () => {
       quantity: 2,
     },
   ])
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<"qr" | "cash" | null>(null)
+  const [paymentCompleted, setPaymentCompleted] = useState(false)
+  const [orderId, setOrderId] = useState("")
+
+  useEffect(() => {
+    if (isModalOpen) {
+      // Generate a random order ID when modal opens
+      setOrderId(`DH${Math.floor(1000 + Math.random() * 9000)}`)
+    }
+  }, [isModalOpen])
+
+  // Simulate payment completion after 5 seconds when in QR mode
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (paymentMethod === "qr" && !paymentCompleted) {
+      timer = setTimeout(() => {
+        setPaymentCompleted(true)
+      }, 5000)
+    }
+    return () => clearTimeout(timer)
+  }, [paymentMethod, paymentCompleted])
 
   const menuItems: FoodItem[] = [
     {
@@ -143,6 +165,25 @@ const OrderAtStore: React.FC = () => {
     return `${price.toLocaleString()}đ`
   }
 
+  const openModal = () => {
+    setIsModalOpen(true)
+    setPaymentMethod(null)
+    setPaymentCompleted(false)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setPaymentMethod(null)
+    setPaymentCompleted(false)
+  }
+
+  const handleOrderComplete = () => {
+    closeModal()
+    // Here you would typically handle order completion logic
+    // For example, clearing the cart or redirecting to a confirmation page
+    setCart([])
+  }
+
   const filteredMenuItems = menuItems.filter(
     (item) =>
       (activeTab === "food" && item.category === "food") || (activeTab === "drinks" && item.category === "drinks"),
@@ -213,6 +254,7 @@ const OrderAtStore: React.FC = () => {
                 className="relative w-full py-3 bg-green-500 text-white rounded-lg font-medium overflow-hidden group transition-all duration-300 ease-out hover:bg-green-600 active:scale-95"
                 data-aos="zoom-in"
                 data-aos-delay="400"
+                onClick={openModal}
               >
                 <div className="absolute inset-0 w-full h-full transition-all duration-300 scale-0 group-hover:scale-100 group-hover:bg-green-600/30 rounded-lg"></div>
                 <div className="relative flex items-center justify-center gap-2">
@@ -341,6 +383,122 @@ const OrderAtStore: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm h-auto max-h-[80vh] overflow-hidden">
+            <div className="max-h-[80vh] overflow-y-auto">
+              {/* Modal Header */}
+              <div className="relative p-4 border-b">
+                <h3 className="text-xl font-bold text-center">Phương thức thanh toán</h3>
+                <button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                  aria-label="Close"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-4">
+                {!paymentMethod ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      onClick={() => setPaymentMethod("qr")}
+                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
+                    >
+                      <QrCode size={48} className="text-blue-600 mb-2" />
+                      <span className="font-medium text-center">Thanh toán bằng QR</span>
+                    </button>
+                    <button
+                      onClick={() => setPaymentMethod("cash")}
+                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all"
+                    >
+                      <Wallet size={48} className="text-green-600 mb-2" />
+                      <span className="font-medium text-center">Thanh toán bằng tiền mặt</span>
+                    </button>
+                  </div>
+                ) : paymentMethod === "qr" ? (
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white p-4 rounded-lg border mb-4">
+                      <h4 className="text-lg font-bold text-center mb-2">Đặt hàng thành công</h4>
+                      <p className="text-center text-gray-600 mb-4">Mã đơn hàng #{orderId}</p>
+
+                      <div className="border-t border-b py-4 my-4">
+                        <h5 className="text-center font-medium mb-4">
+                          Hướng dẫn thanh toán qua chuyển khoản ngân hàng
+                        </h5>
+
+                        <div className="flex justify-center mb-4">
+                          <img
+                            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-yKB4MDTuuD7rS2ch4WSKzwWWgEvWcV.png"
+                            alt="QR Payment"
+                            className="w-48 h-48 object-contain"
+                          />
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Ngân hàng:</span>
+                            <span className="font-medium">MBBank</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Chủ tài khoản:</span>
+                            <span className="font-medium">Bùi Tấn Việt</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Số TK:</span>
+                            <span className="font-medium">0903252427</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Số tiền:</span>
+                            <span className="font-medium">{formatPrice(calculateTotal())}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Nội dung CK:</span>
+                            <span className="font-medium">{orderId}</span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-gray-500 mt-4">
+                          Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {orderId} để hệ thống tự động xác nhận thanh
+                          toán
+                        </p>
+                      </div>
+
+                      <button
+                        className={`w-full py-3 rounded-lg font-medium ${
+                          paymentCompleted ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
+                        } text-white transition-colors`}
+                        onClick={paymentCompleted ? handleOrderComplete : undefined}
+                        disabled={!paymentCompleted}
+                      >
+                        {paymentCompleted ? "Hoàn tất đơn hàng!" : "Đang chờ thanh toán..."}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center p-6">
+                    <div className="text-center mb-6">
+                      <p className="text-lg font-medium mb-4">
+                        Vui lòng di chuyển qua quầy thanh toán để hoàn tất đơn hàng 🍔😊❤️
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setPaymentMethod(null)}
+                      className="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
+                    >
+                      Quay lại
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
