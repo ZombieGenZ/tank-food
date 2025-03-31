@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
+import Verify from '../components/VerifyToken.components';
+import { message } from 'antd';
+import { RESPONSE_CODE } from '../../constants/responseCode.constants';
 // Define types for our data
 
 interface Order {
@@ -89,6 +91,7 @@ const ShipManagement: React.FC = () => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
+  const [messageApi, contextHolder] = message.useMessage();
   const [activeTab, setActiveTab] = useState<'waiting' | 'received'>('waiting');
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
@@ -107,6 +110,219 @@ const ShipManagement: React.FC = () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  const TakeBill = (orderID: string) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID
+          }
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/orders/receive-delivery`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.RECEIVE_DELIVERY_SUCCESSFUL) {
+              messageApi.success(data.message)
+              const body = {
+                language: null,
+                refresh_token: refresh_token
+              } 
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  console.log(data)
+                  if(data.code == "GET_ORDER_SUCCESSFUL") {
+                    setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
+                  }
+              })
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  console.log(data)
+                  if(data.code == "GET_ORDER_SUCCESSFUL") {
+                    setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
+                  }
+              })
+            } else {
+              messageApi.error(data.errors.order_id.msg)
+              return
+            }
+          })    
+      } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+      }
+  };
+    checkToken();
+  }
+
+  const ConfirmBill = (orderID: string) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID
+          }
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm-delivery-completion`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_SUCCESSFUL) {
+              messageApi.success(data.message)
+              const body = {
+                language: null,
+                refresh_token: refresh_token
+              } 
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  console.log(data)
+                  if(data.code == "GET_ORDER_SUCCESSFUL") {
+                    setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
+                  }
+              })
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  console.log(data)
+                  if(data.code == "GET_ORDER_SUCCESSFUL") {
+                    setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
+                  }
+              })
+            } else {
+              messageApi.error(data.message)
+              return
+            }
+          })    
+      } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+      }
+  };
+    checkToken();
+  }
+
+  const RejectBill = (orderID: string) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID
+          }
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/orders/cancel-order-shipper`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL) {
+              messageApi.success(data.message)
+              const body = {
+                language: null,
+                refresh_token: refresh_token
+              } 
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  console.log(data)
+                  if(data.code == "GET_ORDER_SUCCESSFUL") {
+                    setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
+                  }
+              })
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  console.log(data)
+                  if(data.code == "GET_ORDER_SUCCESSFUL") {
+                    setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
+                  }
+              })
+            } else {
+              messageApi.error(data.message)
+              return
+            }
+          })    
+      } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+      }
+  };
+    checkToken();
+  } 
 
   useEffect(() => {
     const body = {
@@ -181,12 +397,14 @@ const ShipManagement: React.FC = () => {
     return activeTab === 'waiting' ? waitingOrders : receivedOrders;
   };
 
+
   const filterOptions: string[] = ["Tất cả", "đơn mới nhất", "đơn cũ nhất"];
   const [activeFilter, setActiveFilter] = useState<string>("Tất cả");
 
   return (
     <div className="bg-gray-50 p-4 w-full mx-auto">
       {/* Tabs */}
+      {contextHolder}
       <div className="flex mb-4">
         <button 
           onClick={() => setActiveTab('waiting')}
@@ -242,7 +460,7 @@ const ShipManagement: React.FC = () => {
                 className="flex items-center justify-between bg-gray-50 px-4 py-3 cursor-pointer hover:bg-gray-100 transition"
                 onClick={() => toggleOrderExpansion(order._id)}
               >
-                <div className="flex items-center">
+                <div className="flex items-center gap-5">
                   <span className="inline-flex items-center justify-center bg-gray-200 h-8 w-8 rounded mr-2">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -258,12 +476,13 @@ const ShipManagement: React.FC = () => {
                 <div className="flex items-center">
                   <span className="text-gray-600 mr-4">{order.created_at}</span>
                   {/* Only show delete button in received tab */}
-                  {activeTab === 'received' && (
+                  {activeTab === 'received' && order.order_status !== 4 && (
                     <button 
                       type="button" 
-                      className="h-8 w-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-full mr-2 transition"
+                      className="h-8 w-8 flex items-center justify-center cursor-pointer text-red-500 hover:bg-red-50 rounded-full mr-2 transition"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering the parent onClick
+                        e.stopPropagation();
+                        RejectBill(order._id) // Prevent triggering the parent onClick
                       }}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -313,14 +532,25 @@ const ShipManagement: React.FC = () => {
                     <div className="flex-1">
                       <p className="font-medium">
                         Trạng thái đơn hàng: 
-                        <span className={`ml-2 ${order.order_status === 4 ? "text-green-500" : "text-orange-500"}`}>
-                          {"Giao thành công"}
+                        <span className={`ml-2 ${
+                          order.order_status === 0 ? "text-yellow-500" : 
+                          order.order_status === 1 ? "text-blue-500" : 
+                          order.order_status === 2 ? "text-blue-600" : 
+                          order.order_status === 3 ? "text-green-600" : 
+                          order.order_status === 4 ? "text-green-500" : 
+                          "text-red-500"
+                        }`}>
+                          {order.order_status === 0 ? "Đang chờ duyệt" : 
+                          order.order_status === 1 ? "Duyệt thành công" : 
+                          order.order_status === 2 ? "Đang giao" : 
+                          order.order_status === 3 ? "Giao đơn thành công" : 
+                          order.order_status === 4 ? "Thành công" : "Thất bại"}
                         </span>
                       </p>
                     </div>
                     <button 
                       type="button"
-                      className="px-4 py-1.5 bg-white border border-gray-200 rounded-md hover:bg-gray-50 font-medium text-sm transition"
+                      className="px-4 py-1.5 cursor-pointer bg-white border border-gray-200 rounded-md hover:bg-gray-50 font-medium text-sm transition"
                     >
                       MAP
                     </button>
@@ -341,17 +571,24 @@ const ShipManagement: React.FC = () => {
                     {activeTab === 'waiting' ? (
                       <button 
                         type="button"
-                        className="h-10 w-10 rounded-md bg-white border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition"
+                        className="rounded-md p-2 gap-2 cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition"
+                        onClick={() => TakeBill(order._id)}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
+                        Nhận đơn hàng
                       </button>
-                    ) : (
-                      <div className="h-10 w-10 flex items-center justify-center">
+                    ) : (order.order_status == 4 ?
+                      <div className="cursor-pointer p-2 gap-2 bg-white border border-gray-200 transition hover:bg-gray-50 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
+                      </div> : <div className="cursor-pointer p-2 gap-2 bg-white border border-gray-200 transition hover:bg-gray-50 flex items-center justify-center" onClick={() => ConfirmBill(order._id)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Giao đơn hàng thành công
                       </div>
                     )}
                   </div>

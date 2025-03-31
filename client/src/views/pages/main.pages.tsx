@@ -110,7 +110,8 @@ const FormMain = (): JSX.Element => {
   };
   const [messageApi, contextHolder] = message.useMessage();
 
-  function NavAdmin({ display_name }: { display_name: string }) {
+  function NavAdmin({ display_name, userInfo }: { display_name: string; userInfo: UserInfo }) {
+    const navigate = useNavigate()
     const [language, setLanguage] = useState<string>(() => {
       const savedLanguage = localStorage.getItem('language');
       return savedLanguage ? JSON.parse(savedLanguage) : "Tiếng Việt";
@@ -131,7 +132,7 @@ const FormMain = (): JSX.Element => {
       {
         key: '1',
         label: (
-          <button className='flex gap-2 items-center'>
+          <button className='flex gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
             <FaRegUserCircle /> Thông tin tài khoản
           </button>
         ),
@@ -283,9 +284,9 @@ const FormMain = (): JSX.Element => {
       ) : user && user.role === 3 ? (
         <div className='flex relative'>
           {contextHolder}
-          <NavigationAdmin displayname={user.display_name} />
+          <NavigationAdmin displayname={user.display_name}/>
           <div className='w-full flex flex-col'>
-            <NavAdmin display_name={`${language() === "Tiếng Việt" ? "Bảng thống kê" : "Dash board"}`} />
+            <NavAdmin display_name={`${language() === "Tiếng Việt" ? "Bảng thống kê" : "Dash board"}`} userInfo={user}/>
             <Routes>
               <Route path="/*" element={<MainManage />} />
               <Route path="/Account" element={<Account />} />
@@ -294,13 +295,14 @@ const FormMain = (): JSX.Element => {
               <Route path='/product' element={<ProductManagement />} />
               <Route path='/ship' element={<ShipManagement />} />
               <Route path='/discount' element={<DiscountCodeManagement />} />
+              <Route path='/profile' element={<ProfilePage />} />
             </Routes>
           </div>
         </div>
       ) : (
         <div className='flex gap-5 flex-col' ref={pageRef}>
           {contextHolder}
-          <NavigationButtons role={user?.role ?? 0} cartItemCount={cartItemCount} />
+          <NavigationButtons role={user?.role ?? 0} cartItemCount={cartItemCount} userInfo={user ?? null}/>
           <Routes>
             <Route path="/*" element={<Main />} />
             <Route path="/aboutus" element={<Aboutus />} />
@@ -400,7 +402,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   );
 }
 
-function NavigationButtons({ role, cartItemCount }: { role: number; cartItemCount: number }): JSX.Element {
+function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; cartItemCount: number; userInfo: UserInfo|null }): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -481,7 +483,7 @@ function NavigationButtons({ role, cartItemCount }: { role: number; cartItemCoun
     {
       key: '1',
       label: (
-        <button className='flex gap-2 items-center' onClick={() => navigate("/profile")}>
+        <button className='flex gap-2 items-center' onClick={() => navigate("/profile", { replace: true, state: userInfo })}>
           <FaRegUserCircle /> Thông tin tài khoản
         </button>
       ),

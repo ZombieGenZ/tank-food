@@ -14,7 +14,7 @@ const App = () => {
           <Route path='/orderatstore' element={<OrderAtStore />} />
         </Routes>
       </BrowserRouter>
-      <Transition transition="slide-up" mounted={scroll.y > 200}>
+      <Transition transition="slide-up" mounted={scroll.y > 500}>
           {(transitionStyles) => (
             <button 
             onClick={() => scrollTo({ y: 0 })}
