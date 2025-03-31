@@ -64,8 +64,8 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, userBill }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-h-screen shadow-2xl w-full max-w-4xl flex overflow-x-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-70 min-h-full flex justify-center z-50">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex overflow-x-auto">
         {/* Left Section - Order Info */}
         <div className="w-2/5 p-8 bg-white">
           <h2 className="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">
@@ -111,7 +111,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ isOpen, onClose, userBill }
         </div>
 
         {/* Right Section - QR Code */}
-        <div className="w-3/5 bg-gradient-to-br from-orange-500 to-orange-600 p-8 flex flex-col items-center justify-start relative">
+        <div className="w-3/5 bg-gradient-to-br h-[110%] from-orange-500 to-orange-600 p-8 flex flex-col items-center justify-start relative">
           <h2 className="text-2xl font-semibold text-white mb-8">Quét mã QR để thanh toán</h2>
           <div className="bg-white rounded-xl p-4 mb-6 w-full max-w-xs shadow-xl">
             <img src={userBill.infomation.payment_qr_url || "/api/placeholder/60/30"} alt="QR Code" className="w-full h-auto" />
@@ -129,7 +129,7 @@ const OrderPageWithPayment = () => {
     const userBill: ApiResponse = location.state;
     
     return (
-      <div className="p-8 bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+      <div className="p-8 bg-gray-100 min-h-[100vh] flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Xem thông tin chuyển khoản và thanh toán dưới đây</h1>
         <button 
           onClick={() => setShowPayment(true)}

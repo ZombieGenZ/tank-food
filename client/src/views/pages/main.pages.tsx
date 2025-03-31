@@ -25,6 +25,7 @@ import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
 import Loading from '../components/loading_page_components.tsx';
+import ProfilePage from './Profile.pages.tsx';
 import Aboutus from './aboutus.pages.tsx';
 import Account from './Account.management.pages.tsx';
 import { RiUser3Line, RiHome5Line, RiShoppingCart2Line, RiTruckLine, RiPriceTag3Line, RiShoppingBag3Line } from "react-icons/ri";
@@ -309,6 +310,7 @@ const FormMain = (): JSX.Element => {
             <Route path='/contact' element={<ContactUs />} />
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user}/>} />
             <Route path='/payment' element={<OrderPageWithPayment />} />
+            <Route path='/profile' element={<ProfilePage />} />
           </Routes>
         </div>
       )}
@@ -479,7 +481,7 @@ function NavigationButtons({ role, cartItemCount }: { role: number; cartItemCoun
     {
       key: '1',
       label: (
-        <button className='flex gap-2 items-center'>
+        <button className='flex gap-2 items-center' onClick={() => navigate("/profile")}>
           <FaRegUserCircle /> Thông tin tài khoản
         </button>
       ),
