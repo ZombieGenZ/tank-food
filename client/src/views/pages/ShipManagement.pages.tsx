@@ -85,6 +85,10 @@ interface Preview {
 }
 
 const ShipManagement: React.FC = () => {
+  const language = (): string => {
+    const Language = localStorage.getItem('language')
+    return Language ? JSON.parse(Language) : "Tiếng Việt"
+  }
   const [activeTab, setActiveTab] = useState<'waiting' | 'received'>('waiting');
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
@@ -231,7 +235,7 @@ const ShipManagement: React.FC = () => {
 
         {/* Orders */}
         <div className="space-y-4">
-          {getActiveOrders().map((order, index) => (
+          {getActiveOrders().map(order => (
             <div key={order._id} className="border border-gray-200 rounded-lg overflow-hidden">
               {/* Order header - entire header clickable for toggle */}
               <div 
@@ -244,7 +248,12 @@ const ShipManagement: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                   </span>
-                  <span className="font-medium">Đơn #{String(index + 1).padStart(5, '0')}</span>
+                  <span className="font-medium">Đơn: {order.product.map((name: Product, index: number) => {
+                    if(index == order.product.length) {
+                      return `${language() == "Tiếng Việt" ? name.title_translate_1 : name.description_translate_2}, `
+                    }
+                    return `${language() == "Tiếng Việt" ? name.title_translate_1 : name.description_translate_2}`
+                  })}</span>
                 </div>
                 <div className="flex items-center">
                   <span className="text-gray-600 mr-4">{order.created_at}</span>
