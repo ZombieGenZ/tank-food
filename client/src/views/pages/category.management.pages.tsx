@@ -146,7 +146,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
     useEffect(() => {
       const newData: MenuCategory[] = category.map((categorys, index) => {
         const newProduct: MenuItem[] = product
-          .filter((p) => p.categories._id === categorys._id)
+          .filter((p) => p.categories?._id === categorys?._id)
           .map((p, idx) => ({
             key: String(idx + 1),
             id: p._id,
