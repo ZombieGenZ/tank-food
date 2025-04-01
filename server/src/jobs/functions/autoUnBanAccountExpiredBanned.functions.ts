@@ -16,7 +16,7 @@ export const autoUnBanAccountExpiredBanned = async () => {
       continue
     }
 
-    if (user.penalty.expired_at > currentDate) {
+    if (user.penalty.expired_at <= currentDate) {
       promises.push(
         new Promise((resolve, reject) => {
           try {
