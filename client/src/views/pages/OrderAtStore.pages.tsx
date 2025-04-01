@@ -4,7 +4,40 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
+import { message } from "antd"
 import "aos/dist/aos.css"
+import { RESPONSE_CODE } from "../../constants/responseCode.constants"
+
+interface Products {
+  product_id: string;
+  quantity: number;
+  price: number;
+  data: Product; // Sử dụng Record để đại diện cho object data
+}
+
+interface Information {
+  account_name: string;
+  account_no: string;
+  bank_id: string;
+  order_id: string;
+  payment_qr_url: string;
+  product: Products[];
+  total_bill: number;
+  total_price: number;
+  total_quantity: number;
+  vat: number;
+}
+
+interface ResponseData {
+  infomation: Information;
+  message: string;
+  code: string;
+}
+
+interface ListProduct {
+  product_id: string,
+  quantity: number,
+}
 
 interface Category {
   category_name_translate_1: string;
@@ -49,6 +82,11 @@ interface Product {
 }
 
 const OrderAtStore: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const language = (): string => {
+    const Language = localStorage.getItem('language')
+    return Language ? JSON.parse(Language) : "Tiếng Việt"
+  }
   const [product, setProduct] = useState<Product[]>([]);
   const [Category, setCategory] = useState<Category[]>([]);
   useEffect(() => {
@@ -87,17 +125,13 @@ const OrderAtStore: React.FC = () => {
         })
     }, [])
 
-    useEffect(() => {
-      console.log(product)
-      console.log(Category)
-    }, [product, Category])
-
-  const [activeTab, setActiveTab] = useState<"food" | "drinks">("food")
   const [cart, setCart] = useState<Product[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<"qr" | "cash" | null>(null)
   const [paymentCompleted, setPaymentCompleted] = useState(false)
   const [orderId, setOrderId] = useState("")
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [bill, setBill] = useState<ResponseData|null>(null)
 
   useEffect(() => {
     if (isModalOpen) {
@@ -190,7 +224,7 @@ const OrderAtStore: React.FC = () => {
   }
 
   const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
+    if (newQuantity == 0) {
       removeFromCart(id)
       return
     }
@@ -206,7 +240,44 @@ const OrderAtStore: React.FC = () => {
     return `${price.toLocaleString()}đ`
   }
 
+  const handelByMoney = () => {
+    const listproduct: ListProduct[] = cart.map((cart) => ({
+      product_id: cart._id,
+      quantity: cart.quantity ? cart.quantity : 0
+    }))
+
+    const body = {
+      language: null,
+      products: listproduct,
+      payment_type: 0,
+      voucher: null,
+    }
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-offline`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    }).then(response => {
+      return response.json()
+    }).then((data) => {
+      console.log(data)
+      if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
+        messageApi.success(data.message)
+        setBill(data)
+        setCart([])
+      } else {
+        messageApi.error(data.message)
+        return;      }
+    })
+  }
+
   const openModal = () => {
+    if(cart.length == 0) {
+      messageApi.error("Vui lòng chọn ít nhất 1 món !");
+      return;
+    }
     setIsModalOpen(true)
     setPaymentMethod(null)
     setPaymentCompleted(false)
@@ -218,26 +289,52 @@ const OrderAtStore: React.FC = () => {
     setPaymentCompleted(false)
   }
 
+  const handleCreateBill = () => {
+    const listproduct: ListProduct[] = cart.map((cart) => ({
+      product_id: cart._id,
+      quantity: cart.quantity ? cart.quantity : 0
+    }))
+
+    const body = {
+      language: null,
+      products: listproduct,
+      payment_type: 1,
+      voucher: null,
+    }
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-offline`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    }).then(response => {
+      return response.json()
+    }).then((data) => {
+      console.log(data)
+      if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
+        messageApi.success(data.message)
+        setBill(data)
+        setCart([])
+      } else {
+        messageApi.error(data.message)
+        return;      }
+    })
+  }
+
   const handleOrderComplete = () => {
     closeModal()
-    // Here you would typically handle order completion logic
-    // For example, clearing the cart or redirecting to a confirmation page
+    
     setCart([])
   }
 
-
-  const burgerItems = product.filter((item) => item.categories?.category_name_translate_1 === Category[0]?.category_name_translate_1)
-  const sideItems = product.filter((item) => item.categories?.category_name_translate_1 === Category[1]?.category_name_translate_1)
-  const drinkItems = product.filter((item) => item.categories?.category_name_translate_1 === Category[2]?.category_name_translate_1)
-
-  useEffect(() => {
-    console.log(burgerItems)
-    console.log(sideItems)
-    console.log(drinkItems)
-  }, [burgerItems, sideItems, drinkItems])
+  const filteredProducts = selectedCategoryId
+  ? product.filter((item) => item.categories?._id === selectedCategoryId)
+  : product;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
+      {contextHolder}
       <div className="max-w-7xl mx-auto" data-aos="fade-up" data-aos-delay="100">
         <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Order At Store
@@ -317,34 +414,32 @@ const OrderAtStore: React.FC = () => {
             {/* Tabs */}
             <div className="flex border-b mb-6">
               <button
-                className={`pb-2 px-4 font-medium transition-all ${
-                  activeTab === "food" ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
-                }`}
-                onClick={() => setActiveTab("food")}
-              >
-                Đồ ăn
-              </button>
-              <button
-                className={`pb-2 px-4 font-medium transition-all ${
-                  activeTab === "drinks"
-                    ? "text-red-500 border-b-2 border-red-500"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-                onClick={() => setActiveTab("drinks")}
-              >
-                Đồ uống
-              </button>
+                 className={`pb-2 px-4 font-medium transition-all ${
+                   selectedCategoryId === null ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
+                 }`}
+                 onClick={() => setSelectedCategoryId(null)}
+               >
+                 {language() == "Tiếng Việt" ? "Tất cả" : "All"}
+               </button>
+              {Category.map(category => 
+                <button
+                 className={`pb-2 px-4 font-medium transition-all ${
+                   selectedCategoryId === category._id ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
+                 }`}
+                 onClick={() => setSelectedCategoryId(category._id)}
+               >
+                 {language() == "Tiếng Việt" ? category.category_name_translate_1 : category.category_name_translate_2}
+               </button>
+              )}
             </div>
-
-            {activeTab === "food" && (
               <>
                 {/* Burgers */}
                 <div data-aos="fade-up" data-aos-delay="400">
                   <h3 className="text-lg font-bold mb-4">Burger</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    {burgerItems.map((item) => (
+                    {filteredProducts.map((item, index) => (
                       <div
-                        key={item._id}
+                        key={index}
                         className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
                         onClick={() => addToCart(item)}
                         data-aos="zoom-in"
@@ -365,64 +460,7 @@ const OrderAtStore: React.FC = () => {
                     ))}
                   </div>
                 </div>
-
-                {/* Side Dishes */}
-                <div data-aos="fade-up" data-aos-delay="500">
-                  <h3 className="text-lg font-bold mb-4">Phần ăn phụ</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {sideItems.map((item) => (
-                      <div
-                        key={item._id}
-                        className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
-                        onClick={() => addToCart(item)}
-                        data-aos="zoom-in"
-                        data-aos-delay={500 + Number.parseInt(item._id) * 50}
-                      >
-                        <div className="h-32 bg-gray-100 flex items-center justify-center">
-                          <img
-                            src={item.preview.url || "/placeholder.svg"}
-                            alt={item.title_translate_1}
-                            className="h-24 w-24 object-cover"
-                          />
-                        </div>
-                        <div className="p-3 text-center">
-                          <h4 className="font-medium">{item.title_translate_1}</h4>
-                          <p className="text-red-500 font-bold">{formatPrice(item.price)}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </>
-            )}
-
-            {activeTab === "drinks" && (
-              <div data-aos="fade-up" data-aos-delay="400">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {drinkItems.map((item) => (
-                    <div
-                      key={item._id}
-                      className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
-                      onClick={() => addToCart(item)}
-                      data-aos="zoom-in"
-                      data-aos-delay={400 + Number.parseInt(item._id) * 50}
-                    >
-                      <div className="h-32 bg-gray-100 flex items-center justify-center">
-                        <img
-                          src={item.preview.url || "/placeholder.svg"}
-                          alt={item.tag_translate_1}
-                          className="h-24 w-24 object-cover"
-                        />
-                      </div>
-                      <div className="p-3 text-center">
-                        <h4 className="font-medium">{item.title_translate_1}</h4>
-                        <p className="text-red-500 font-bold">{formatPrice(item.price)}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -449,14 +487,14 @@ const OrderAtStore: React.FC = () => {
                 {!paymentMethod ? (
                   <div className="grid grid-cols-2 gap-4">
                     <button
-                      onClick={() => setPaymentMethod("qr")}
+                      onClick={() => {setPaymentMethod("qr"); handleCreateBill()}}
                       className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
                     >
                       <QrCode size={48} className="text-blue-600 mb-2" />
                       <span className="font-medium text-center">Thanh toán bằng QR</span>
                     </button>
                     <button
-                      onClick={() => setPaymentMethod("cash")}
+                      onClick={() => {setPaymentMethod("cash"); handelByMoney()}}
                       className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all"
                     >
                       <Wallet size={48} className="text-green-600 mb-2" />
@@ -471,12 +509,12 @@ const OrderAtStore: React.FC = () => {
 
                       <div className="border-t border-b py-4 my-4">
                         <h5 className="text-center font-medium mb-4">
-                          Hướng dẫn thanh toán qua chuyển khoản ngân hàng
+                          Vui lòng chuyển khoản qua mã QR dưới đây
                         </h5>
 
                         <div className="flex justify-center mb-4">
                           <img
-                            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-yKB4MDTuuD7rS2ch4WSKzwWWgEvWcV.png"
+                            src={bill?.infomation.payment_qr_url}
                             alt="QR Payment"
                             className="w-48 h-48 object-contain"
                           />
@@ -485,15 +523,15 @@ const OrderAtStore: React.FC = () => {
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Ngân hàng:</span>
-                            <span className="font-medium">MBBank</span>
+                            <span className="font-medium">{bill?.infomation.bank_id}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Chủ tài khoản:</span>
-                            <span className="font-medium">Bùi Tấn Việt</span>
+                            <span className="font-medium">{bill?.infomation.account_name}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Số TK:</span>
-                            <span className="font-medium">0903252427</span>
+                            <span className="font-medium">{bill?.infomation.account_no}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Số tiền:</span>
@@ -501,12 +539,12 @@ const OrderAtStore: React.FC = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Nội dung CK:</span>
-                            <span className="font-medium">{orderId}</span>
+                            <span className="font-medium">{bill?.infomation.order_id}</span>
                           </div>
                         </div>
 
                         <p className="text-xs text-gray-500 mt-4">
-                          Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {orderId} để hệ thống tự động xác nhận thanh
+                          Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {bill?.infomation.order_id} để hệ thống tự động xác nhận thanh
                           toán
                         </p>
                       </div>
@@ -529,12 +567,6 @@ const OrderAtStore: React.FC = () => {
                         Vui lòng di chuyển qua quầy thanh toán để hoàn tất đơn hàng 🍔😊❤️
                       </p>
                     </div>
-                    <button
-                      onClick={() => setPaymentMethod(null)}
-                      className="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors"
-                    >
-                      Quay lại
-                    </button>
                   </div>
                 )}
               </div>

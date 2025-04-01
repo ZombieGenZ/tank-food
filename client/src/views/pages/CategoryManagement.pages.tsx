@@ -274,7 +274,6 @@ const CategoryManagement = (): JSX.Element => {
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-cente gap-5">
                     <div className="w-full flex justify-between items-end">
-                        <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách danh mục" : "Category list"}</p>
                         <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Tạo danh mục" : "Create"}</Button>
                     </div>
                     <div className="w-full overflow-x-auto">

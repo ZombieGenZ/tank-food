@@ -366,10 +366,10 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
         item.path === window.location.pathname ? { ...item, active: true } : { ...item, active: false }
       )
     );
-  }, []);
+  }, [window.location.pathname]);
 
   return (
-    <div className='w-1/5 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
+    <div className='w-1/5 z-[999] sticky left-0 top-0 bg-slate-800 text-white h-screen'>
       <div className='p-4 flex items-center space-x-3'>
         <div className='w-10 h-10 rounded-full bg-[#1890ff] flex items-center justify-center text-white font-bold'>A</div>
         <span className='text-lg font-bold'>ADMINISTRATOR</span>

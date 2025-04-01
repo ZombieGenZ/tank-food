@@ -882,8 +882,6 @@ const handleReject = (orderID: string) => {
     <div className="bg-gray-100 min-h-screen p-8">
       {contextHolder}
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Quản lý đơn đặt hàng</h1>
-
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <div className="flex space-x-4 border-b border-gray-200">
             <button

@@ -1,6 +1,6 @@
 import { JSX, useState, useEffect } from "react";
 import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
-import type { TableProps, GetProps } from 'antd';
+import type { TableProps } from 'antd';
 import { DatePicker } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -371,22 +371,13 @@ const DiscountCodeManagement = (): JSX.Element => {
           ];
     
           const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
-          type SearchProps = GetProps<typeof Input.Search>;
-    
-          const { Search } = Input;
-              
-          const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
     return(
         <div className=" p-10">
             {contextHolder}
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-center gap-5">
                     <div className="w-full flex justify-between items-end">
-                    <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Quản lý mã giảm giá" : "Product list"}</p>
-                        <div className="w-[30%] flex gap-2">
-                            <Button onClick={() => showCreateModal()}>{language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm mã giảm giá theo mã code" : "Search category by name"} onSearch={onSearch} enterButton />
-                        </div>
+                        <Button onClick={() => showCreateModal()}>{language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create"}</Button>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />

@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from "react";
 import { Table, Input, Modal, InputNumber, Select, Button, message } from 'antd';
-import type { TableProps, GetProps } from 'antd';
+import type { TableProps } from 'antd';
 
 interface DataType {
     key: string;
@@ -324,29 +324,18 @@ const Account = (): JSX.Element => {
     },
   ];
   
+  const language = (): string => {
+    const language = localStorage.getItem('language')
+    return language ? JSON.parse(language) : "Tiếng Việt"
+  }
   
   const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 5 }} />;
-    type SearchProps = GetProps<typeof Input.Search>;
-
-    const { Search } = Input;
-
-    const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
-    const language = (): string => {
-        const Language = localStorage.getItem('language')
-        return Language ? JSON.parse(Language) : "Tiếng Việt" 
-    }
     
     return(
         <div className="p-10">
             {contextHolder}
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-cente gap-5">
-                    <div className="w-full flex justify-between items-end">
-                        <p className="font-bold">{language() == "Tiếng Việt" ? "Danh sách tài khoản" : "Account list"}</p>
-                        <div className="w-[25%]">
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm tài khoản theo tên" : "Search account by name"} onSearch={onSearch} enterButton />
-                        </div>
-                    </div>
                     <div className="w-full overflow-x-auto">
                         <App />
                     </div>
