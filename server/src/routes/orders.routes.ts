@@ -15,7 +15,8 @@ import {
   orderOfflineController,
   paymentConfirmationController,
   getOrderController,
-  cancelOrderController
+  cancelOrderController,
+  getOrderOverViewController
 } from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
@@ -370,7 +371,12 @@ router.put(
  *    refresh_token: string
  * }
  */
-router.post('/get-order', authenticateValidator, wrapRequestHandler(getOrderController))
+router.post(
+  '/get-order',
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  wrapRequestHandler(getOrderController)
+)
 
 /*
  * Description: Hủy đơn hàng (cho user)
@@ -391,6 +397,26 @@ router.put(
   authenticateVerifyAccountValidator,
   cancelOrderValidator,
   wrapRequestHandler(cancelOrderController)
+)
+
+/*
+ * Description: Lấy danh sách order tổng quan
+ * Path: /api/orders/get-order-overview
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string
+ * }
+ */
+router.post(
+  '/get-order-overview',
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  authenticateAdministratorValidator,
+  wrapRequestHandler(getOrderOverViewController)
 )
 
 export default router
