@@ -447,12 +447,14 @@ export const orderApprovalValidator = async (req: Request, res: Response, next: 
               )
             }
 
-            if (order.payment_status !== PaymentStatusEnum.PAID) {
-              throw new Error(
-                language == LANGUAGE.VIETNAMESE
-                  ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
-                  : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
-              )
+            if (req.body.decision) {
+              if (order.payment_status !== PaymentStatusEnum.PAID) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+                    : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.ORDER_UNPAID
+                )
+              }
             }
 
             const user = (req as Request).user as User
