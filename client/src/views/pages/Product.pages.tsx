@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from "react";
 import { Table, Input, Button, Modal, InputNumber, Select, message, Upload ,Image } from 'antd';
-import type { TableProps, GetProps } from 'antd';
+import type { TableProps } from 'antd';
 import { UploadOutlined } from "@ant-design/icons";
 import Verify from "../components/VerifyToken.components";
 
@@ -530,11 +530,6 @@ function ProductManagement(): JSX.Element {
       ];
 
     const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} />;
-    type SearchProps = GetProps<typeof Input.Search>;
-    
-    const { Search } = Input;
-    
-    const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
     return(
         <div className="p-10">
             {contextHolder}
@@ -542,10 +537,7 @@ function ProductManagement(): JSX.Element {
                 <div className="w-full flex justify-center flex-col items-cente gap-5">
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách sản phẩm" : "Product list"}</p>
-                        <div className="w-[30%] flex gap-2">
-                            <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm sản phẩm theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
-                        </div>
+                        <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"}</Button>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />

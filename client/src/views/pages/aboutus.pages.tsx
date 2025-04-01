@@ -1,8 +1,10 @@
 import { JSX, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; 
+import { useNavigate } from "react-router-dom"
 
 const Aboutus = (): JSX.Element => {
+  const navigate = useNavigate()
   useEffect(() => {
     AOS.init({
       duration: 1500, 
@@ -30,7 +32,7 @@ const Aboutus = (): JSX.Element => {
               <button className="bg-red-600 text-white font-medium py-3 px-6 rounded-full shadow-lg transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-red-700 hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
                 Tìm hiểu thêm
               </button>
-              <button className="bg-white text-red-600 font-medium py-3 px-6 rounded-full shadow-lg transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gray-100 hover:-translate-y-1 hover:scale-105 hover:shadow-xl border border-red-600">
+              <button onClick={() => navigate('/menu')} className="bg-white text-red-600 font-medium py-3 px-6 rounded-full shadow-lg transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gray-100 hover:-translate-y-1 hover:scale-105 hover:shadow-xl border border-red-600">
                 Xem Thực Đơn
               </button>
             </div>

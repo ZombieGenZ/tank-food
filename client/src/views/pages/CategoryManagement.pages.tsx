@@ -1,6 +1,6 @@
 import { JSX, useEffect, useState } from "react";
 import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
-import type { TableProps, GetProps } from 'antd';
+import type { TableProps } from 'antd';
 
 interface DataType {
     key: string;
@@ -268,11 +268,6 @@ const CategoryManagement = (): JSX.Element => {
   }, []);
 
   const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={dataView} pagination={{ pageSize: 25 }} />; 
-    type SearchProps = GetProps<typeof Input.Search>;
-    
-        const { Search } = Input;
-    
-        const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
     return(
         <div className="p-10">  
             {contextHolder} 
@@ -280,10 +275,7 @@ const CategoryManagement = (): JSX.Element => {
                 <div className="w-full flex justify-center flex-col items-cente gap-5">
                     <div className="w-full flex justify-between items-end">
                         <p className="font-bold text-[#FF7846]">{language() == "Tiếng Việt" ? "Danh sách danh mục" : "Category list"}</p>
-                        <div className="w-[30%] flex gap-2">
-                            <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Tạo" : "Create"}</Button>
-                            <Search placeholder={language() == "Tiếng Việt" ? "Tìm kiếm danh mục theo tên" : "Search category by name"} onSearch={onSearch} enterButton />
-                        </div>
+                        <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Tạo danh mục" : "Create"}</Button>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />

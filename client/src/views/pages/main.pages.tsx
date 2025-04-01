@@ -37,6 +37,7 @@ import { IoSettings } from "react-icons/io5";
 import "aos/dist/aos.css";
 import { FaUserAlt } from "react-icons/fa";
 import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
+import Verify from '../components/VerifyToken.components.tsx';
 
 interface MenuItem {
   id: number;
@@ -148,36 +149,48 @@ const FormMain = (): JSX.Element => {
     ];
 
     const Logout = () => {
-      const body = {
-        language: null,
-        refresh_token: refresh_token,
-      };
-      fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify(body),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
-            messageApi.open({
-              type: 'success',
-              content: 'Đăng xuất thành công',
-            }).then(() => {
-              localStorage.removeItem('refresh_token');
-              localStorage.removeItem('access_token');
-            }).then(() => {
-              window.location.reload();
-            });
+      const checkToken = async () => {
+        const isValid = await Verify(refresh_token, access_token);
+          if (isValid) {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+            };
+            fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data);
+                if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
+                  localStorage.removeItem('refresh_token');
+                  localStorage.removeItem('access_token');
+                  messageApi.open({
+                    type: 'success',
+                    content: 'Đăng xuất thành công',
+                    style: {
+                      marginTop: "10vh",
+                    },
+                  }).then(() => {
+                    window.location.reload();
+                  });
+                } else {
+                  messageApi.error(data.message)
+                  return
+                }
+              });
+          } else {
+            messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
           }
-        });
+      };
+      checkToken();
     };
 
-    const newDate = new Date().toISOString()
 
     return (
       <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
@@ -186,7 +199,7 @@ const FormMain = (): JSX.Element => {
         <div className="flex items-center gap-5">
           <div className="flex items-center space-x-2">
             <Calendar size={20} className="text-gray-500" />
-            <span className="text-sm text-gray-500">{newDate}</span>
+            <span className="text-sm text-gray-500">{"01/04/2025"}</span>
           </div>
           <Select
             defaultValue={language}
@@ -262,10 +275,6 @@ const FormMain = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    console.log(user);
-  }, [user]);
-
-  useEffect(() => {
     gsap.from(pageRef.current, {
       scale: 0.8,
       duration: 0.3,
@@ -304,7 +313,7 @@ const FormMain = (): JSX.Element => {
       ) : (
         <div className='flex gap-5 flex-col' ref={pageRef}>
           {contextHolder}
-          <NavigationButtons role={user?.role ?? 0} cartItemCount={cartItemCount} userInfo={user ?? null}/>
+          <NavigationButtons role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null}/>
           <Routes>
             <Route path="/*" element={<Main />} />
             <Route path="/aboutus" element={<Aboutus />} />
@@ -404,7 +413,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   );
 }
 
-function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; cartItemCount: number; userInfo: UserInfo|null }): JSX.Element {
+function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null }): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -449,39 +458,50 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
   }, []);
 
   const Logout = () => {
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-    };
-    fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
-          messageApi.open({
-            type: 'success',
-            content: 'Đăng xuất thành công',
-            style: {
-              marginTop: "10vh",
-            },
-          }).then(() => {
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('access_token');
-          }).then(() => {
-            window.location.reload();
-          });
-        }
-      });
+    
+    const checkToken = async () => {
+          const isValid = await Verify(refresh_token, access_token);
+            if (isValid) {
+              const body = {
+                language: null,
+                refresh_token: refresh_token,
+              };
+              fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data);
+                  if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
+                    localStorage.removeItem('refresh_token');
+                    localStorage.removeItem('access_token');
+                    messageApi.open({
+                      type: 'success',
+                      content: 'Đăng xuất thành công',
+                      style: {
+                        marginTop: "10vh",
+                      },
+                    }).then(() => {
+                      window.location.reload();
+                    });
+                  } else {
+                    messageApi.error(data.message)
+                    return
+                  }
+                });
+            } else {
+              messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+            }
+        };
+        checkToken();
   };
 
-  const items: MenuProps['items'] = [
+  const items: MenuProps['items'] = ([
     {
       key: '1',
       label: (
@@ -498,7 +518,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
         </button>
       ),
     },
-  ];
+  ]);
 
   const style = {
     background: 'rgba(245, 245, 245, 0.2)',
@@ -522,7 +542,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
           </div>
           <div className='hidden xl:block px-6 py-2'>
             <ul className='flex items-center gap-5'>
-              {role === 0 && (
+              {(role === 0 || role === null) && (
                 NavbarUser.map((item: NavbarItem) => (
                   <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                     <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
@@ -548,16 +568,18 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
             </div>
             {refresh_token !== null ? (
               <div className='flex gap-5 justify-center items-center'>
-                <div className="text-orange-600 p-4 rounded-full shadow-lg cursor-pointer transition-colors" onClick={() => navigate("/mycard")} >
-                  <div className="relative">
-                    <RiShoppingCart2Line className="w-4 h-4"/>
-                    {cartItemCount > 0 && (
-                      <span className="absolute p-2 -top-4 -right-4 bg-red-500 text-white text-xs rounded-full w-2 h-2 flex items-center justify-center">
-                        {cartItemCount}
-                      </span>
-                    )}
+                {role === 0 && (
+                  <div className="text-orange-600 p-4 rounded-full shadow-lg cursor-pointer transition-colors" onClick={() => navigate("/mycard")} >
+                    <div className="relative">
+                      <RiShoppingCart2Line className="w-4 h-4"/>
+                      {cartItemCount > 0 && (
+                        <span className="absolute p-2 -top-4 -right-4 bg-red-500 text-white text-xs rounded-full w-2 h-2 flex items-center justify-center">
+                          {cartItemCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
                 <Dropdown menu={{ items }} placement="bottom" arrow>
                   <Button className='p-10'>
                     <FaUserAlt />
@@ -572,23 +594,26 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
                 <IoIosLogIn />{language === "Tiếng Việt" ? "Đăng nhập" : "Login"}
               </button>
             )}
-            <div className='xl:hidden px-4 py-2 bg-[#FF6B35] rounded-full text-[#ffffff]'>
-              <button onClick={openDrawer}><IoMenu /></button>
-            </div>
-            <Drawer title="TankFood" onClose={closeDrawer} open={open}>
-              <div className='w-full'>
-                <ul className='flex items-center flex-col gap-5'>
-                  {NavbarUser.map((item: NavbarItem) => (
-                    <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
-                      <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
-                        {language === "Tiếng Việt" ? item.title : item.english}
-                      </button>
-                      <Divider my="md" />
-                    </li>
-                  ))}
-                </ul>
+            {(role === 0 || role === null) && (
+            <>
+              <div className='xl:hidden px-4 py-2 bg-[#FF6B35] rounded-full text-[#ffffff]'>
+                <button onClick={openDrawer}><IoMenu /></button>
               </div>
-            </Drawer>
+              <Drawer title="TankFood" onClose={closeDrawer} open={open}>
+                <div className='w-full'>
+                  <ul className='flex items-center flex-col gap-5'>
+                    {NavbarUser.map((item: NavbarItem) => (
+                      <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
+                        <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                          {language === "Tiếng Việt" ? item.title : item.english}
+                        </button>
+                        <Divider my="md" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Drawer>
+            </>)}
           </div>
         </div>
       </div>
@@ -597,6 +622,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
 }
 
 function Main(): JSX.Element {
+  const navigate = useNavigate()
   const Slideshow = (): JSX.Element => {
     const [slideIndex, setSlideIndex] = useState<number>(0);
     const slideTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -785,10 +811,10 @@ function Main(): JSX.Element {
               Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
+              <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
                 Đặt hàng ngay
               </button>
-              <button className="border-2 border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px]">
+              <button onClick={() => navigate('/menu')} className="border-2 border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px]">
                 Xem thực đơn
               </button>
             </div>
@@ -952,7 +978,7 @@ function Main(): JSX.Element {
           <h3 className="text-4xl font-bold text-[#654321] mb-2 font-stretch-semi-condensed blur-text" data-aos="fade-up" data-aos-delay="200">Vẫn còn đói?</h3>
           <h2 className="text-6xl font-bold text-[#FF7846] mb-12 font-roboto blur-text" data-aos="zoom-in" data-aos-delay="400">ĐẶT THÊM NGAY</h2>
 
-          <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-roboto shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
+          <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-roboto shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
             Đặt hàng ngay
           </button>
 

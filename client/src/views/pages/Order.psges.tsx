@@ -518,11 +518,6 @@ const handleReject = (orderID: string) => {
 
 
   useEffect(() => {
-    console.log(waitData)
-    console.log(doneData)
-  }, [waitData, doneData])
-
-  useEffect(() => {
     const handleStorageChange = () => {
       setRefreshToken(localStorage.getItem("refresh_token"));
       setAccessToken(localStorage.getItem("access_token"));
@@ -551,6 +546,7 @@ const handleReject = (orderID: string) => {
         return response.json()
     }).then((data) => {
         if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+          console.log(data)
             messageApi.success(data.message)
             setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
         } else {
@@ -570,6 +566,7 @@ const handleReject = (orderID: string) => {
         return response.json()
     }).then((data) => {
         if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+          console.log(data)
             messageApi.success(data.message)
             setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
         } else {
@@ -577,7 +574,7 @@ const handleReject = (orderID: string) => {
             return;
         }
     })
-}, [refresh_token, access_token])
+}, [refresh_token, access_token, messageApi])
 
   const [activeTab, setActiveTab] = useState<'pending' | 'processed'>('pending');
   const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
@@ -707,9 +704,9 @@ const handleReject = (orderID: string) => {
           </div>
 
           <div className="flex gap-3 mt-6 justify-end">
-            {isPickup && (
+            {isPickup ? (
               <>
-                {order.order_status == 0 && order.payment_type == 0 && order.payment_status == 0 ? (
+                {(order.delivery_type == 0 && order.payment_type == 0 && order.payment_status == 0) ? (
                   <button
                     onClick={() => handleConfirm(order._id)}
                     className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -724,6 +721,21 @@ const handleReject = (orderID: string) => {
                     Duyệt
                   </button>
                 )}
+                <button
+                  onClick={() => showModalReject(order._id)}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Từ chối
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                    onClick={() => handleAproval(order._id)}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  >
+                    Duyệt
+                </button>
                 <button
                   onClick={() => showModalReject(order._id)}
                   className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -844,7 +856,7 @@ const handleReject = (orderID: string) => {
             ))}
           </div>
           <div className="flex gap-3 mt-6 justify-end">
-            {isPickup ? (
+            {(isPickup && order.order_status !== 5 && order.payment_type == 0) ? (
               <>
                 <button
                   onClick={() => handleConfirmSuccess(order._id)}
@@ -859,7 +871,7 @@ const handleReject = (orderID: string) => {
                   Huỷ đơn hàng
                 </button>
               </>
-            ) : order.order_status == 5 ? <p className='text-red-500 font-bold'>Đơn hàng đã bị từ chối hoặc bị huỷ</p> : <p className='text-green-600 font-bold'>Đơn hàng được giao thành công</p>}
+            ) : order.order_status == 5 ? <p className='text-red-500 font-bold'>Đơn hàng đã bị từ chối hoặc bị huỷ</p> : <p className='text-green-600 font-bold'>Xác nhận đơn hàng thành công</p>}
           </div>
         </div>
       </div>

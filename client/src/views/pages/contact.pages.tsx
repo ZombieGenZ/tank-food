@@ -5,8 +5,10 @@ import { useState, useEffect } from "react"
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react"
 import AOS from "aos"
 import "aos/dist/aos.css"
+import { useNavigate } from "react-router-dom"
 
 export default function ContactPage() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -334,7 +336,7 @@ export default function ContactPage() {
                 placeholder="Địa Chỉ Email Của Bạn"
                 className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
               />
-              <button className="bg-white text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+              <button onClick={() => navigate('/menu')} className="bg-white text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
                 Đặt Hàng Ngay
               </button>
             </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import AOS from "aos"
 import "aos/dist/aos.css"
 
@@ -89,6 +90,7 @@ const popularItems = [
 ]
 
 const SealPage = () => {
+  const navigate = useNavigate()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("weekday")
 
@@ -126,7 +128,7 @@ const SealPage = () => {
             <p className="text-xl md:text-2xl text-white/90 mb-8">
               Nhanh tay đặt ngay để thưởng thức những ưu đãi hấp dẫn
             </p>
-            <button className="px-6 py-3 bg-white text-orange-600 hover:bg-orange-100 rounded-md font-medium text-lg flex items-center justify-center mx-auto">
+            <button onClick={() => navigate('/menu')} className="px-6 py-3 bg-white text-orange-600 hover:bg-orange-100 rounded-md font-medium text-lg flex items-center justify-center mx-auto">
               Đặt Hàng Ngay
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -568,7 +570,7 @@ const SealPage = () => {
               </div>
               <p className="mt-2">Các khuyến mãi sẽ kết thúc sớm. Đặt hàng ngay trước khi hết hạn!</p>
             </div>
-            <button className="bg-white text-orange-600 hover:bg-orange-100 px-6 py-3 rounded-md font-medium text-lg">
+            <button onClick={() => navigate('/menu')} className="bg-white text-orange-600 hover:bg-orange-100 px-6 py-3 rounded-md font-medium text-lg">
               Đặt Hàng Ngay
             </button>
           </div>
