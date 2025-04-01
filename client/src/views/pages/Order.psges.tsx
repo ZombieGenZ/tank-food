@@ -113,6 +113,166 @@ const showModalCancel = (orderID: string) => {
     setSelectID(orderID)
 }
 
+const handleConfirmSuccess = (orderId: string) => {
+  const checkToken = async () => {
+    const isValid = await Verify(refresh_token, access_token);
+    if (isValid) {
+      const body = {
+        language: null,
+        refresh_token: refresh_token,
+        order_id: orderId,
+        decision: true,
+        reason: null
+      }
+
+      fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-completion-confirmation`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(body)
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+        if(data.code){
+            messageApi.success(data.message)
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+            }
+            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body)
+            }).then(response => {
+                return response.json()
+            }).then((data) => {
+                if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                    messageApi.success(data.message)
+                    setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                } else {
+                    messageApi.error(data.message)
+                    return;
+                }
+            })
+
+            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body)
+            }).then(response => {
+                return response.json()
+            }).then((data) => {
+                if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                    messageApi.success(data.message)
+                    setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                } else {
+                    messageApi.error(data.message)
+                    return;
+                }
+            })
+        } else {
+            messageApi.error(data.errors.order_id.msg)
+            return
+        }
+    })
+
+    } else {
+      messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+    }
+  };
+
+  checkToken();
+}
+
+const handleAproval = (orderId: string) => {
+  const checkToken = async () => {
+    const isValid = await Verify(refresh_token, access_token);
+    if (isValid) {
+      const body = {
+        language: null,
+        refresh_token: refresh_token,
+        order_id: orderId,
+        decision: true,
+        reason: null
+      }
+
+      fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-approval`, {
+        method: 'PUT',
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(body)
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+        if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
+            messageApi.success(data.message)
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+            }
+            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body)
+            }).then(response => {
+                return response.json()
+            }).then((data) => {
+                if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                    messageApi.success(data.message)
+                    setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                } else {
+                    messageApi.error(data.message)
+                    return;
+                }
+            })
+
+            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body)
+            }).then(response => {
+                return response.json()
+            }).then((data) => {
+                if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                    messageApi.success(data.message)
+                    setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                } else {
+                    messageApi.error(data.message)
+                    return;
+                }
+            })
+        } else {
+            messageApi.error(data.errors.order_id.msg)
+            return
+        }
+    })
+
+    } else {
+      messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+    }
+  };
+
+  checkToken();
+}
+
 const handleConfirm = (orderID: string) => {
     const checkToken = async () => {
         const isValid = await Verify(refresh_token, access_token);
@@ -150,10 +310,15 @@ const handleConfirm = (orderID: string) => {
                     }).then(response => {
                         return response.json()
                     }).then((data) => {
-                        setWaitData(data.order)
-                        console.log(data)
+                        if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                            messageApi.success(data.message)
+                            setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                        } else {
+                            messageApi.error(data.message)
+                            return;
+                        }
                     })
-        
+
                     fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
                         method: 'POST',
                         headers: {
@@ -164,8 +329,13 @@ const handleConfirm = (orderID: string) => {
                     }).then(response => {
                         return response.json()
                     }).then((data) => {
-                        setDoneData(data.order)
-                        console.log(data)
+                        if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                            messageApi.success(data.message)
+                            setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                        } else {
+                            messageApi.error(data.message)
+                            return;
+                        }
                     })
                 } else {
                     messageApi.error(data.errors.order_id.msg)
@@ -206,7 +376,7 @@ const handleCancel = (orderID: string) => {
                 return response.json()
             }).then((data) => {
                 console.log(data)
-                if(data.code){
+                if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL){
                     setShowcancelmodal(false)
                     messageApi.success(data.message)
                     const body = {
@@ -223,10 +393,15 @@ const handleCancel = (orderID: string) => {
                     }).then(response => {
                         return response.json()
                     }).then((data) => {
-                        setWaitData(data.order)
-                        console.log(data)
+                        if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                            messageApi.success(data.message)
+                            setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                        } else {
+                            messageApi.error(data.message)
+                            return;
+                        }
                     })
-        
+
                     fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
                         method: 'POST',
                         headers: {
@@ -237,8 +412,13 @@ const handleCancel = (orderID: string) => {
                     }).then(response => {
                         return response.json()
                     }).then((data) => {
-                        setDoneData(data.order)
-                        console.log(data)
+                        if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                            messageApi.success(data.message)
+                            setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                        } else {
+                            messageApi.error(data.message)
+                            return;
+                        }
                     })
                 } else {
                     messageApi.error(data.errors.order_id.msg)
@@ -259,7 +439,7 @@ const handleReject = (orderID: string) => {
     }
 
     const checkToken = async () => {
-        const isValid = await Verify(refresh_token, access_token);
+      const isValid = await Verify(refresh_token, access_token);
         if (isValid) {
             const body = {
                 language: null,
@@ -282,6 +462,7 @@ const handleReject = (orderID: string) => {
                 console.log(data)
                 if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
                     messageApi.success(data.message)
+                    setShowreasonmodal(false)
                     const body = {
                         language: null,
                         refresh_token: refresh_token,
@@ -296,10 +477,15 @@ const handleReject = (orderID: string) => {
                     }).then(response => {
                         return response.json()
                     }).then((data) => {
-                        setWaitData(data.order)
-                        console.log(data)
+                        if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                            messageApi.success(data.message)
+                            setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                        } else {
+                            messageApi.error(data.message)
+                            return;
+                        }
                     })
-        
+
                     fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
                         method: 'POST',
                         headers: {
@@ -310,8 +496,13 @@ const handleReject = (orderID: string) => {
                     }).then(response => {
                         return response.json()
                     }).then((data) => {
-                        setDoneData(data.order)
-                        console.log(data)
+                        if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                            messageApi.success(data.message)
+                            setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                        } else {
+                            messageApi.error(data.message)
+                            return;
+                        }
                     })
                 } else {
                     messageApi.error(data.errors.order_id.msg)
@@ -516,7 +707,7 @@ const handleReject = (orderID: string) => {
           </div>
 
           <div className="flex gap-3 mt-6 justify-end">
-            {isPickup ? (
+            {isPickup && (
               <>
                 {order.order_status == 0 && order.payment_type == 0 && order.payment_status == 0 ? (
                   <button
@@ -527,6 +718,7 @@ const handleReject = (orderID: string) => {
                   </button>
                 ) : (
                   <button
+                    onClick={() => handleAproval(order._id)}
                     className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     Duyệt
@@ -539,20 +731,6 @@ const handleReject = (orderID: string) => {
                   Từ chối
                 </button>
               </>
-            ) : (
-              <>
-                <button
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Duyệt
-                </button>
-                <button
-                  onClick={() => showModalCancel(order._id)}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Huỷ đơn hàng
-                </button>
-              </>
             )}
           </div>
         </div>
@@ -561,6 +739,7 @@ const handleReject = (orderID: string) => {
   };
 
   const renderProcessedOrder = (order: Order) => {
+    const isPickup = order.address === order.receiving_address || order.order_status == 1;
     const statusColors: Record<string, string> = {
       "Thành công": "bg-green-100 text-green-600",
       "Duyệt thành công": "bg-green-100 text-green-600",
@@ -576,8 +755,8 @@ const handleReject = (orderID: string) => {
               <h3 className="text-xl font-semibold text-gray-800">Đơn hàng #{order._id}</h3>
               <p className="text-gray-500 text-sm">{order.created_at}</p>
             </div>
-            <div className={`${statusColors[order.order_status == 0 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"]} px-3 py-1 rounded-full text-sm font-medium`}>
-              {order.order_status == 0 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"}
+            <div className={`${statusColors[order.order_status == 1 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"]} px-3 py-1 rounded-full text-sm font-medium`}>
+              {order.order_status == 1 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"}
             </div>
           </div>
 
@@ -663,6 +842,24 @@ const handleReject = (orderID: string) => {
                 <span className="text-orange-600 font-medium">{product.price.toLocaleString()}đ</span>
               </div>
             ))}
+          </div>
+          <div className="flex gap-3 mt-6 justify-end">
+            {isPickup ? (
+              <>
+                <button
+                  onClick={() => handleConfirmSuccess(order._id)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Xác nhận đơn hàng thành công
+                </button>
+                <button
+                  onClick={() => showModalCancel(order._id)}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  Huỷ đơn hàng
+                </button>
+              </>
+            ) : order.order_status == 5 ? <p className='text-red-500 font-bold'>Đơn hàng đã bị từ chối hoặc bị huỷ</p> : <p className='text-green-600 font-bold'>Đơn hàng được giao thành công</p>}
           </div>
         </div>
       </div>

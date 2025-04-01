@@ -177,6 +177,8 @@ const FormMain = (): JSX.Element => {
         });
     };
 
+    const newDate = new Date().toISOString()
+
     return (
       <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
         {contextHolder}
@@ -184,7 +186,7 @@ const FormMain = (): JSX.Element => {
         <div className="flex items-center gap-5">
           <div className="flex items-center space-x-2">
             <Calendar size={20} className="text-gray-500" />
-            <span className="text-sm text-gray-500">24/03/2025</span>
+            <span className="text-sm text-gray-500">{newDate}</span>
           </div>
           <Select
             defaultValue={language}
@@ -359,8 +361,8 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   return (
     <div className='w-1/5 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
       <div className='p-4 flex items-center space-x-3'>
-        <div className='w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white font-bold'>B</div>
-        <span className='text-lg font-bold'>BUI DANG KHOA</span>
+        <div className='w-10 h-10 rounded-full bg-[#1890ff] flex items-center justify-center text-white font-bold'>A</div>
+        <span className='text-lg font-bold'>ADMINISTRATOR</span>
       </div>
       <div className='mt-8'>
         {navbar.map((item) => {
@@ -520,23 +522,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number; ca
           </div>
           <div className='hidden xl:block px-6 py-2'>
             <ul className='flex items-center gap-5'>
-              {role === 1 ? (
-                NavbarUser.map((item: NavbarItem) => (
-                  <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
-                    <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
-                      {language === "Tiếng Việt" ? item.title : item.english}
-                    </button>
-                  </li>
-                ))
-              ) : role === 2 ? (
-                NavbarUser.map((item: NavbarItem) => (
-                  <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
-                    <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
-                      {language === "Tiếng Việt" ? item.title : item.english}
-                    </button>
-                  </li>
-                ))
-              ) : (
+              {role === 0 && (
                 NavbarUser.map((item: NavbarItem) => (
                   <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                     <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">

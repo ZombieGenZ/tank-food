@@ -6,17 +6,51 @@ import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
 import "aos/dist/aos.css"
 
-interface FoodItem {
-  id: string
-  name: string
-  price: number
-  category: string
-  subcategory?: string
-  image: string
-  quantity?: number
+interface Category {
+  category_name_translate_1: string;
+  category_name_translate_2: string;
+  created_at: string;  // ISO date string
+  index: number;
+  translate_1_language: string;
+  translate_2_language: string;
+  updated_at: string;  // ISO date string
+  _id: string;
+}
+
+interface Product {
+  _id: string;
+  availability: boolean;
+  categories?: Category;
+  created_at: string;
+  created_by: string;
+  description_translate_1: string;
+  description_translate_1_language: string;
+  description_translate_2: string;
+  description_translate_2_language: string;
+  preview: {
+      path: string;
+      size: number;
+      type: string;
+      url: string;
+  };
+  discount: number,
+  price: number;
+  tag_translate_1: string;
+  tag_translate_1_language: string;
+  tag_translate_2: string;
+  tag_translate_2_language: string;
+  title_translate_1: string;
+  title_translate_1_language: string;
+  title_translate_2: string;
+  title_translate_2_language: string;
+  updated_at: string;
+  updated_by: string;
+  quantity?: number | null;
 }
 
 const OrderAtStore: React.FC = () => {
+  const [product, setProduct] = useState<Product[]>([]);
+  const [Category, setCategory] = useState<Category[]>([]);
   useEffect(() => {
     AOS.init({
       duration: 800,
@@ -24,35 +58,42 @@ const OrderAtStore: React.FC = () => {
     })
   }, [])
 
+  useEffect(() => {
+        const body = {
+          language: null,
+        } 
+        fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        }).then((response) => {
+          return response.json()
+        }).then((data) => {
+          setProduct(data.products)
+        })
+  
+        fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        }).then((response) => {
+          return response.json()
+        }).then((data) => {
+          setCategory(data.categories)
+        })
+    }, [])
+
+    useEffect(() => {
+      console.log(product)
+      console.log(Category)
+    }, [product, Category])
+
   const [activeTab, setActiveTab] = useState<"food" | "drinks">("food")
-  const [cart, setCart] = useState<FoodItem[]>([
-    {
-      id: "1",
-      name: "Burger Bò Phô Mai",
-      price: 45000,
-      category: "food",
-      subcategory: "burger",
-      image: "/placeholder.svg?height=100&width=100",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      name: "Khoai tây chiên",
-      price: 25000,
-      category: "food",
-      subcategory: "side",
-      image: "/placeholder.svg?height=100&width=100",
-      quantity: 1,
-    },
-    {
-      id: "3",
-      name: "COCA-COLA",
-      price: 15000,
-      category: "drinks",
-      image: "/placeholder.svg?height=100&width=100",
-      quantity: 2,
-    },
-  ])
+  const [cart, setCart] = useState<Product[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState<"qr" | "cash" | null>(null)
   const [paymentCompleted, setPaymentCompleted] = useState(false)
@@ -76,67 +117,67 @@ const OrderAtStore: React.FC = () => {
     return () => clearTimeout(timer)
   }, [paymentMethod, paymentCompleted])
 
-  const menuItems: FoodItem[] = [
-    {
-      id: "1",
-      name: "Burger Bò Phô Mai",
-      price: 45000,
-      category: "food",
-      subcategory: "burger",
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    {
-      id: "4",
-      name: "Burger Gà Chiên",
-      price: 40000,
-      category: "food",
-      subcategory: "burger",
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    {
-      id: "5",
-      name: "Burger Cá Muối Ran",
-      price: 65000,
-      category: "food",
-      subcategory: "burger",
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    {
-      id: "2",
-      name: "Khoai Tây Chiên",
-      price: 25000,
-      category: "food",
-      subcategory: "side",
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    {
-      id: "6",
-      name: "Gà Rán (3 miếng)",
-      price: 55000,
-      category: "food",
-      subcategory: "side",
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    {
-      id: "7",
-      name: "Hot Dog",
-      price: 20000,
-      category: "food",
-      subcategory: "side",
-      image: "/placeholder.svg?height=100&width=100",
-    },
-    { id: "3", name: "COCA-COLA", price: 15000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
-    { id: "8", name: "Pepsi", price: 15000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
-    { id: "9", name: "Trà Đào", price: 20000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
-  ]
+  // const menuItems: FoodItem[] = [
+  //   {
+  //     id: "1",
+  //     name: "Burger Bò Phô Mai",
+  //     price: 45000,
+  //     category: "food",
+  //     subcategory: "burger",
+  //     image: "/placeholder.svg?height=100&width=100",
+  //   },
+  //   {
+  //     id: "4",
+  //     name: "Burger Gà Chiên",
+  //     price: 40000,
+  //     category: "food",
+  //     subcategory: "burger",
+  //     image: "/placeholder.svg?height=100&width=100",
+  //   },
+  //   {
+  //     id: "5",
+  //     name: "Burger Cá Muối Ran",
+  //     price: 65000,
+  //     category: "food",
+  //     subcategory: "burger",
+  //     image: "/placeholder.svg?height=100&width=100",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Khoai Tây Chiên",
+  //     price: 25000,
+  //     category: "food",
+  //     subcategory: "side",
+  //     image: "/placeholder.svg?height=100&width=100",
+  //   },
+  //   {
+  //     id: "6",
+  //     name: "Gà Rán (3 miếng)",
+  //     price: 55000,
+  //     category: "food",
+  //     subcategory: "side",
+  //     image: "/placeholder.svg?height=100&width=100",
+  //   },
+  //   {
+  //     id: "7",
+  //     name: "Hot Dog",
+  //     price: 20000,
+  //     category: "food",
+  //     subcategory: "side",
+  //     image: "/placeholder.svg?height=100&width=100",
+  //   },
+  //   { id: "3", name: "COCA-COLA", price: 15000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
+  //   { id: "8", name: "Pepsi", price: 15000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
+  //   { id: "9", name: "Trà Đào", price: 20000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
+  // ]
 
-  const addToCart = (item: FoodItem) => {
-    const existingItem = cart.find((cartItem) => cartItem.id === item.id)
+  const addToCart = (item: Product) => {
+    const existingItem = cart.find((cartItem) => cartItem._id === item._id)
 
     if (existingItem) {
       setCart(
         cart.map((cartItem) =>
-          cartItem.id === item.id ? { ...cartItem, quantity: (cartItem.quantity || 0) + 1 } : cartItem,
+          cartItem._id === item._id ? { ...cartItem, quantity: (cartItem.quantity || 0) + 1 } : cartItem,
         ),
       )
     } else {
@@ -145,7 +186,7 @@ const OrderAtStore: React.FC = () => {
   }
 
   const removeFromCart = (id: string) => {
-    setCart(cart.filter((item) => item.id !== id))
+    setCart(cart.filter((item) => item._id !== id))
   }
 
   const updateQuantity = (id: string, newQuantity: number) => {
@@ -154,7 +195,7 @@ const OrderAtStore: React.FC = () => {
       return
     }
 
-    setCart(cart.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
+    setCart(cart.map((item) => (item._id === id ? { ...item, quantity: newQuantity } : item)))
   }
 
   const calculateTotal = () => {
@@ -184,14 +225,16 @@ const OrderAtStore: React.FC = () => {
     setCart([])
   }
 
-  const filteredMenuItems = menuItems.filter(
-    (item) =>
-      (activeTab === "food" && item.category === "food") || (activeTab === "drinks" && item.category === "drinks"),
-  )
 
-  const burgerItems = filteredMenuItems.filter((item) => item.subcategory === "burger")
-  const sideItems = filteredMenuItems.filter((item) => item.subcategory === "side")
-  const drinkItems = filteredMenuItems.filter((item) => item.category === "drinks")
+  const burgerItems = product.filter((item) => item.categories?.category_name_translate_1 === Category[0]?.category_name_translate_1)
+  const sideItems = product.filter((item) => item.categories?.category_name_translate_1 === Category[1]?.category_name_translate_1)
+  const drinkItems = product.filter((item) => item.categories?.category_name_translate_1 === Category[2]?.category_name_translate_1)
+
+  useEffect(() => {
+    console.log(burgerItems)
+    console.log(sideItems)
+    console.log(drinkItems)
+  }, [burgerItems, sideItems, drinkItems])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
@@ -215,25 +258,25 @@ const OrderAtStore: React.FC = () => {
               ) : (
                 cart.map((item) => (
                   <div
-                    key={item.id}
+                    key={item._id}
                     className="flex justify-between items-center border-b pb-3"
                     data-aos="fade-up"
                     data-aos-delay="300"
                   >
                     <div>
-                      <p className="font-medium">{item.name}</p>
+                      <p className="font-medium">{item.title_translate_1}</p>
                       <p className="text-gray-600">{formatPrice(item.price)}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => updateQuantity(item.id, (item.quantity || 0) - 1)}
+                        onClick={() => updateQuantity(item._id, (item.quantity || 0) - 1)}
                         className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                       >
                         <Minus size={16} />
                       </button>
                       <span className="w-6 text-center">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item.id, (item.quantity || 0) + 1)}
+                        onClick={() => updateQuantity(item._id, (item.quantity || 0) + 1)}
                         className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                       >
                         <Plus size={16} />
@@ -301,21 +344,21 @@ const OrderAtStore: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     {burgerItems.map((item) => (
                       <div
-                        key={item.id}
+                        key={item._id}
                         className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
                         onClick={() => addToCart(item)}
                         data-aos="zoom-in"
-                        data-aos-delay={400 + Number.parseInt(item.id) * 50}
+                        data-aos-delay={400 + Number.parseInt(item._id) * 50}
                       >
                         <div className="h-32 bg-gray-100 flex items-center justify-center">
                           <img
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
+                            src={item.preview.url || "/placeholder.svg"}
+                            alt={item.title_translate_1}
                             className="h-24 w-24 object-cover"
                           />
                         </div>
                         <div className="p-3 text-center">
-                          <h4 className="font-medium">{item.name}</h4>
+                          <h4 className="font-medium">{item.title_translate_1}</h4>
                           <p className="text-red-500 font-bold">{formatPrice(item.price)}</p>
                         </div>
                       </div>
@@ -329,21 +372,21 @@ const OrderAtStore: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {sideItems.map((item) => (
                       <div
-                        key={item.id}
+                        key={item._id}
                         className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
                         onClick={() => addToCart(item)}
                         data-aos="zoom-in"
-                        data-aos-delay={500 + Number.parseInt(item.id) * 50}
+                        data-aos-delay={500 + Number.parseInt(item._id) * 50}
                       >
                         <div className="h-32 bg-gray-100 flex items-center justify-center">
                           <img
-                            src={item.image || "/placeholder.svg"}
-                            alt={item.name}
+                            src={item.preview.url || "/placeholder.svg"}
+                            alt={item.title_translate_1}
                             className="h-24 w-24 object-cover"
                           />
                         </div>
                         <div className="p-3 text-center">
-                          <h4 className="font-medium">{item.name}</h4>
+                          <h4 className="font-medium">{item.title_translate_1}</h4>
                           <p className="text-red-500 font-bold">{formatPrice(item.price)}</p>
                         </div>
                       </div>
@@ -358,21 +401,21 @@ const OrderAtStore: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {drinkItems.map((item) => (
                     <div
-                      key={item.id}
+                      key={item._id}
                       className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
                       onClick={() => addToCart(item)}
                       data-aos="zoom-in"
-                      data-aos-delay={400 + Number.parseInt(item.id) * 50}
+                      data-aos-delay={400 + Number.parseInt(item._id) * 50}
                     >
                       <div className="h-32 bg-gray-100 flex items-center justify-center">
                         <img
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
+                          src={item.preview.url || "/placeholder.svg"}
+                          alt={item.tag_translate_1}
                           className="h-24 w-24 object-cover"
                         />
                       </div>
                       <div className="p-3 text-center">
-                        <h4 className="font-medium">{item.name}</h4>
+                        <h4 className="font-medium">{item.title_translate_1}</h4>
                         <p className="text-red-500 font-bold">{formatPrice(item.price)}</p>
                       </div>
                     </div>

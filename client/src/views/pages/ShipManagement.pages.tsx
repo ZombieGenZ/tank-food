@@ -324,6 +324,23 @@ const ShipManagement: React.FC = () => {
     checkToken();
   } 
 
+  const takeLocation = (longtitude: number|null, lattitude: number|null) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+        if(longtitude !== null && lattitude !== null) {
+          messageApi.info(`${longtitude} | ${lattitude}`)
+        }
+        else {
+          messageApi.error(language() == "Tiếng Việt" ? "Lỗi khi lấy vị trí" : "Error getting location")
+          return
+        };
+      } else {
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+      }
+    };
+    checkToken();
+  }
   useEffect(() => {
     const body = {
       language: null,
@@ -550,6 +567,7 @@ const ShipManagement: React.FC = () => {
                     </div>
                     <button 
                       type="button"
+                      onClick={() => takeLocation(order.delivery_longitude, order.delivery_latitude)}
                       className="px-4 py-1.5 cursor-pointer bg-white border border-gray-200 rounded-md hover:bg-gray-50 font-medium text-sm transition"
                     >
                       MAP
