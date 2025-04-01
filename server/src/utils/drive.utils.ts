@@ -59,7 +59,7 @@ export const uploadPuclicFolder = async (date: Date) => {
               drive.files.delete({
                 fileId: file.id!
               }),
-              databaseService.backupLog.deleteOne({ file_id: file.id as string })
+              databaseService.backupLog.deleteOne({ file_id: file.id! })
             ])
 
             if (serverLanguage === LANGUAGE.VIETNAMESE) {
