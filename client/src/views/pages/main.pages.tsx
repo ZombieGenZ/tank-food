@@ -87,6 +87,7 @@ const FormMain = (): JSX.Element => {
     return cartlocal ? JSON.parse(cartlocal) : []
   });
   const addToCart = (item: { id: string; name: string; price: number; image: string }) => {
+    if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu món vào giỏ hàng !"); return};
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
       if (existingItem) { 
