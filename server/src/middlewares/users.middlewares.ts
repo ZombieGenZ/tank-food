@@ -600,7 +600,6 @@ export const verifyAccountValidator = async (req: Request, res: Response, next: 
 
 export const sendEmailForgotPasswordValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
-  console.log(req.body)
 
   checkSchema(
     {
