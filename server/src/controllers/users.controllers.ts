@@ -7,7 +7,8 @@ import {
   VerifyAccountRequestsBody,
   ForgotPasswordRequestsBody,
   ChangeInfomationRequestsBody,
-  ChangePasswordRequestsBody
+  ChangePasswordRequestsBody,
+  SendForgotPasswordRequestsBody
 } from '~/models/requests/users.requests'
 import { serverLanguage } from '~/index'
 import { writeInfoLog, writeErrorLog } from '~/utils/log.utils'
@@ -387,7 +388,7 @@ export const verifyAccountController = async (
 }
 
 export const sendEmailForgotPasswordController = async (
-  req: Request<ParamsDictionary, any, AuthenticateRequestsBody>,
+  req: Request<ParamsDictionary, any, SendForgotPasswordRequestsBody>,
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
