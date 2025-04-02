@@ -347,7 +347,7 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-statistical
     // sự kiện:
     // update-chart: Cập nhật thông tin thống kê chart
-    // update-order-complete: Cập nhật thông tin thống kê chart
+    // update-order-complete: Cập nhật thông tin thống kê đơn hàng gần đây
     //
 
     if (!refresh_token) {

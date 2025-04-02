@@ -423,7 +423,6 @@ export class ENGLISH_STATIC_MESSAGE {
     PRODUCT_QUANTITY_MUST_BE_A_NUMBER_GREATER_THAN_0: 'Product quantity must be a number greater than 0',
     PRODUCT_IS_NOT_FOUND: 'Product is not found',
     PRODUCT_IS_NOT_AVAILABLE: 'Product is not available'
-
   } as const
 
   static VOUCHER_MESSAGE = {
