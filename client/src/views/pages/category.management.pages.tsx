@@ -2,6 +2,7 @@ import AOS from "aos"
 import "aos/dist/aos.css"
 import { JSX, useState, useEffect } from "react";
 import { ChevronUp, Plus } from "lucide-react"
+import { useNavigate } from "react-router-dom";
 // import { message } from 'antd';
 
 interface MenuItem {
@@ -10,7 +11,10 @@ interface MenuItem {
   name: string;
   description: string;
   price: number;
-  image: string;// Tuỳ chọn, chỉ có khi món ăn phổ biến
+  image: string;
+  tag: string|null;
+  discount: number,
+  priceAfterdiscount: number
 }
 
 interface MenuCategory {
@@ -46,6 +50,7 @@ interface Product {
     };
     created_at: string;
     created_by: string;
+    discount: number;
     description_translate_1: string;
     description_translate_1_language: string;
     description_translate_2: string;
@@ -82,10 +87,12 @@ interface CartItem {
   name: string;
   price: number;
   image: string;
+  priceAfterdiscount: number; 
+  discount: number
 }
 
 interface CategoryProps {
-  addToCart: (item: { id: string; name: string; price: number; image: string }) => void;
+  addToCart: (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => void;
   cart: CartItem[]; // Thêm cart vào props
 }
 
@@ -93,6 +100,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
   // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   // const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
   const [collapsedCategories, setCollapsedCategories] = useState<string[]>(["burger"])
 
   // useEffect(() => {
@@ -122,17 +130,6 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
           prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId],
         )
     }
-    
-    // const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0)
-    
-      // Format price in VND
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-          maximumFractionDigits: 0,
-        }).format(price)
-    }
 
     const language = (): string => {
         const SaveedLanguage = localStorage.getItem('language')
@@ -154,6 +151,9 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
             description: language() === "Tiếng Việt" ? p.description_translate_1 : p.description_translate_2,
             price: p.price,
             image: p.preview.url,
+            tag: language() === "Tiếng Việt" ? p.tag_translate_1 : p.tag_translate_2,
+            discount: p.discount,
+            priceAfterdiscount: p.price - (p.price * p.discount/100)
           }));
         return({
           key: String(index + 1),
@@ -163,6 +163,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
         })
       })
       setShowProduct(newData)
+      console.log(product)
     }, [product, category])
 
     useEffect(() => {
@@ -194,6 +195,15 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
 
         fetchData()
     }, [])
+
+    function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+      const formatter = new Intl.NumberFormat(currencyCode, {
+        style: 'currency',
+        currency: currency,
+      });
+      return formatter.format(amount);
+    }
+
     return (
         // Header
         <div className="min-h-screen bg-orange-50">
@@ -236,8 +246,9 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
             </section>
     
             {/* Menu Items Section with Soft Orange Background */}
+            
+            {/* Footer */}
             <section className="relative bg-gradient-to-r from-red-400 to-orange-200 pt-16 pb-20">
-    
                 <div className="container mx-auto px-4">
                     <h2 className="text-6xl font-bold font-['Yeseva_One'] text-center text-orange-800 mb-12 " data-aos="fade-down">Thực Đơn TankFood</h2>
     
@@ -258,52 +269,165 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                         </div>
     
                         {!collapsedCategories.includes(category.id) && (
-                            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
                             {category.items.length !== 0 ? category.items.map((item, index) => (
-                                <div
-                                key={item.id}
-                                className="bg-white rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(194,65,12,0.07)] hover:shadow-[0_15px_35px_rgba(194,65,12,0.1)] transition-all duration-300 group"
-                                data-aos="fade-up"
-                                data-aos-delay={index * 100}
-                                >
-                                <div className="relative flex justify-center pt-6">
-                                  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-orange-500 shadow-lg">
-                                    <img
-                                      src={item.image}
-                                      alt={item.name}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-['Yeseva_One'] text-gray-800">{item.name}</h3>
-                                    <span className="text-lg font-bold text-orange-700">{formatPrice(item.price)}</span>
-                                    </div>
-                                    <p className="text-gray-600 mb-6 text-sm font-['Roboto_Slab']">{item.description}</p>
-                                    <button
-                                    onClick={() => addToCart({ id: item.id, name: item.name, price: item.price, image: item.image })}
-                                    className="w-full py-3 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl font-medium text-white flex items-center justify-center gap-2 hover:from-orange-700 hover:to-orange-600 transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-lg"
-                                    >
-                                    <Plus className="w-5 h-5" />
-                                    Thêm Vào Giỏ Hàng
-                                    </button>
-                                </div>
-                                </div>
-                            )) : <p className="font-bold text-center">Hiện chưa có sản phẩm cho mục này</p>}
+                                 <div
+                                 key={index}
+                                 className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl"
+                                 data-aos="fade-up"
+                                 data-aos-delay={index * 100}
+                               >
+                                 <div className="relative">
+                                   <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
+                                   <span className="absolute top-2 right-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                     {item.tag}
+                                   </span>
+                                 </div>
+                                 <div className="p-4">
+                                   <h3 className="font-bold text-xl mb-1">{item.name}</h3>
+                                   <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+                                   <div className="flex items-center gap-2 mb-4">
+                                     <span className="text-lg text-gray-500 line-through">{formatCurrency(item.price)}</span>
+                                     <span className="text-2xl font-bold text-orange-600">{formatCurrency(item.price - (item.price * item.discount/100))}</span>
+                                     <span className="ml-auto text-xs font-medium text-green-600 border border-green-600 rounded px-2 py-1">
+                                       Tiết kiệm {formatCurrency(item.price - (item.price - (item.price * item.discount/100)))}
+                                     </span>
+                                   </div>
+                                 </div>
+                                 <div className="px-4 pb-4">
+                                   <button onClick={() => addToCart(item)} className="w-full flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
+                                     <Plus /> Thêm vào giỏ hàng
+                                   </button>
+                                 </div>
+                               </div>
+                            )) : <p></p>}
                             </div>
                         )}
                         </div>
                     ))}
                 </div>
             </section>
-    
-            {/* Footer */}
+            <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">
+        {/* Background pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-full h-full">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      fontSize: `${Math.random() * 2 + 1}rem`,
+                      transform: `rotate(${Math.random() * 360}deg)`,
+                      opacity: 0.3,
+                    }}
+                  >
+                    🍔
+                  </div>
+                ))}
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <div
+                    key={i + 20}
+                    className="absolute"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      fontSize: `${Math.random() * 2 + 1}rem`,
+                      transform: `rotate(${Math.random() * 360}deg)`,
+                      opacity: 0.3,
+                    }}
+                  >
+                    🍟
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="container mx-auto px-4 relative z-10">
+              <div
+                className="max-w-3xl mx-auto text-center"
+                data-aos="zoom-in-up"
+                data-aos-duration="1000"
+                data-aos-delay="100"
+                data-aos-anchor-placement="top-bottom"
+              >
+                <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
+                  <h2
+                    className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
+                    style={{
+                      textShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                    }}
+                  >
+                    TankFood
+                  </h2>
+                  <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
+                </div>
+
+                <p className="text-xl text-white/90 mb-8 drop-shadow-md">
+                  Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
+                  <input
+                    type="email"
+                    placeholder="Địa Chỉ Email Của Bạn"
+                    className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
+                  />
+                  <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+                    Đặt Hàng Ngay
+                  </button>
+                </div>
+
+                <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
+                  {["Burger", "Gà Rán", "Pizza", "Đồ Uống"].map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Animated elements */}
+            <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+              <div className="relative h-16">
+                <div
+                  className="absolute bottom-0 left-0 w-[200%] h-16"
+                  style={{
+                    background:
+                      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%23FFFFFF'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%23FFFFFF'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%23FFFFFF'/%3E%3C/svg%3E\")",
+                    backgroundSize: "100% 100%",
+                    animation: "wave 15s linear infinite",
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes wave {
+              0% {
+                transform: translateX(0);
+              }
+              50% {
+                transform: translateX(-25%);
+              }
+              100% {
+                transform: translateX(-50%);
+              }
+            }
+          `}</style>
             <footer className="py-8 bg-orange-800 text-white">
                 <div className="container mx-auto px-4 text-center">
                 <p className="font-['Roboto_Slab']">© 2025 TankFood. Đã đăng ký bản quyền.</p>
                 </div>
             </footer>
+            
         </div>
     )
 }

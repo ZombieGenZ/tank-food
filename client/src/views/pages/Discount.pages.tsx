@@ -323,6 +323,22 @@ const DiscountCodeManagement = (): JSX.Element => {
           window.removeEventListener("storage", handleStorageChange);
         };
       }, []);
+
+      function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+        const formatter = new Intl.NumberFormat(currencyCode, {
+          style: 'currency',
+          currency: currency,
+        });
+        return formatter.format(amount);
+      }
+
+      function formatDateFromISO(isoDateString: string): string {
+        const date = new Date(isoDateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
     const columns: TableProps<DataType>['columns'] = [
             {
               title: 'Mã giảm giá',
@@ -338,22 +354,25 @@ const DiscountCodeManagement = (): JSX.Element => {
                 key: 'quantity',
             },
             {
-              title: 'Số tiền được giảm',
+              title: 'Phần trăm được giảm',
               dataIndex: 'discount',
               width: 350,
               key: 'discount',
+              render: (text) => <p>{text}%</p>
             },
             {
                 title: 'Yêu cầu tối thiểu đơn hàng từ',
                 key: 'requirement',
                 dataIndex: 'requirement',
                 width: 350,
+                render: (text) => <p>{formatCurrency(text)}</p>
             },
             {
               title: 'Thời gian hết hạn',
               key: 'expiration_date',
               dataIndex: 'expiration_date',
               width: 350,
+              render: (text) => <p>{formatDateFromISO(text)}</p>
             },
             {
                 title: '',
@@ -396,8 +415,8 @@ const DiscountCodeManagement = (): JSX.Element => {
                             <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantity} onChange={handlechangQuantity}/>
                         </div>
                         <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
-                            <InputNumber min={5000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Phần trăm giảm giá:" : "Enter discount:"}</p>
+                            <InputNumber min={0} max={100} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
                         </div>
                         <div className="flex gap-2 flex-col">
                             <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
@@ -423,8 +442,8 @@ const DiscountCodeManagement = (): JSX.Element => {
                             <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantityEdit} onChange={handlechangQuantityEdit}/>
                         </div>
                         <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
-                            <InputNumber min={5000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Phần trăm giảm giá:" : "Enter discount:"}</p>
+                            <InputNumber min={0} max={100} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
                         </div>
                         <div className="flex gap-2 flex-col">
                             <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>

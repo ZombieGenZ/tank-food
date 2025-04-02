@@ -586,6 +586,14 @@ const handleReject = (orderID: string) => {
     }));
   };
 
+  function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+    const formatter = new Intl.NumberFormat(currencyCode, {
+      style: 'currency',
+      currency: currency,
+    });
+    return formatter.format(amount);
+  }
+
   const renderPendingOrder = (order: Order) => {
     const isPickup = order.address === "Tại quầy";
 
@@ -598,7 +606,7 @@ const handleReject = (orderID: string) => {
               <p className="text-gray-500 text-sm">{order.created_at}</p>
             </div>
             <div className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
-              Ch  Chờ duyệt
+               Chờ duyệt
             </div>
           </div>
 
@@ -638,7 +646,7 @@ const handleReject = (orderID: string) => {
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
               <p className="text-gray-500 text-sm mb-1">Tổng tiền</p>
-              <p className="font-bold text-xl text-orange-600">{String(order.total_bill).toLocaleString()}đ</p>
+              <p className="font-bold text-xl text-orange-600">{formatCurrency(order.total_bill)}</p>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
               <p className="text-gray-500 text-sm mb-1">Hình thức thanh toán</p>
@@ -698,7 +706,7 @@ const handleReject = (orderID: string) => {
                   </div>
                   <span className="font-medium">{product.title_translate_1} (x{product.quantity})</span>
                 </div>
-                <span className="text-orange-600 font-medium">{product.price.toLocaleString()}đ</span>
+                <span className="text-orange-600 font-medium">{formatCurrency(Number(product.price))}</span>
               </div>
             ))}
           </div>
@@ -808,7 +816,7 @@ const handleReject = (orderID: string) => {
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
               <p className="text-gray-500 text-sm mb-1">Tổng tiền</p>
-              <p className="font-bold text-xl text-orange-600">{order.total_bill.toLocaleString()}đ</p>
+              <p className="font-bold text-xl text-orange-600">{formatCurrency(order.total_bill)}</p>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
               <p className="text-gray-500 text-sm mb-1">Hình thức thanh toán</p>
@@ -851,27 +859,28 @@ const handleReject = (orderID: string) => {
                   </div>
                   <span className="font-medium">{product.title_translate_1} (x{product.quantity})</span>
                 </div>
-                <span className="text-orange-600 font-medium">{product.price.toLocaleString()}đ</span>
+                <span className="text-orange-600 font-medium">{formatCurrency(Number(product.price))}</span>
               </div>
             ))}
           </div>
           <div className="flex gap-3 mt-6 justify-end">
-            {(isPickup && order.order_status !== 5 && order.payment_type == 0) ? (
-              <>
+            {(isPickup && order.order_status !== 5 && order.payment_type == 0) && 
                 <button
                   onClick={() => handleConfirmSuccess(order._id)}
                   className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Xác nhận đơn hàng thành công
                 </button>
-                <button
-                  onClick={() => showModalCancel(order._id)}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Huỷ đơn hàng
-                </button>
-              </>
-            ) : order.order_status == 5 ? <p className='text-red-500 font-bold'>Đơn hàng đã bị từ chối hoặc bị huỷ</p> : <p className='text-green-600 font-bold'>Xác nhận đơn hàng thành công</p>}
+            }
+            
+            {order.order_status == 5 ? <p className='text-red-500 font-bold'>Đơn hàng đã bị từ chối hoặc bị huỷ</p> :
+             order.order_status == 4 ? <p className='text-green-500 font-bold'>Hoàn thành đơn hàng</p> : 
+              <button
+                onClick={() => showModalCancel(order._id)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Huỷ đơn hàng
+              </button>}
           </div>
         </div>
       </div>

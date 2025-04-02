@@ -175,7 +175,7 @@ export default function ContactPage() {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 rounded-md flex items-center justify-center gap-2 transition-all"
+                    className="w-full cursor-pointer bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-3 rounded-md flex items-center justify-center gap-2 transition-all"
                   >
                     Gửi Tin Nhắn
                     <Send className="h-4 w-4" />
@@ -336,7 +336,7 @@ export default function ContactPage() {
                 placeholder="Địa Chỉ Email Của Bạn"
                 className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
               />
-              <button onClick={() => navigate('/menu')} className="bg-white text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+              <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
                 Đặt Hàng Ngay
               </button>
             </div>

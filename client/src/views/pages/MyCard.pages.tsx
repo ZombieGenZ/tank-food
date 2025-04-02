@@ -7,6 +7,7 @@ import MapPicker from "../components/Mapicket.components";
 import Verify from "../components/VerifyToken.components";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import { useNavigate } from "react-router-dom";
+import Loading from "../components/loading.components";
 
 // interface Products {
 //   id: string;
@@ -37,12 +38,14 @@ import { useNavigate } from "react-router-dom";
 
 
 interface CartItem {
-    id: string;
-    quantity: number;
-    name: string;
-    price: number;
-    image: string;
-  }
+  id: string;
+  quantity: number;
+  name: string;
+  price: number;
+  image: string;
+  priceAfterdiscount: number; 
+  discount: number
+}
 
   interface OrderData {
     language?: string|null;
@@ -87,6 +90,7 @@ interface MyCardProps {
     user_infor: UserInfo | null;
   }
 const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const navigate = useNavigate(); 
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
@@ -97,9 +101,9 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
       const newData: ProductView[] = cart.map((cart) => ({
         title: cart.name,
         quantity: cart.quantity,
-        total_price: formatPrice(cart.price * cart.quantity),
+        total_price: formatPrice(cart.priceAfterdiscount * cart.quantity),
       })) 
-
+      console.log(cart)
       setDatabill(newData)
     }, [cart])
 
@@ -137,53 +141,62 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
     };
 
     const handlePayment = () => {
-      const checkToken = async () => {
-        const isValid = await Verify(refresh_token, access_token);
-        if (isValid) {
-          const product: Product[] = cart.map((carts) => ({
-            product_id: carts.id,
-            quantity: carts.quantity
-          }))
-          const body: OrderData = {
-            language: null,
-            refresh_token: refresh_token,
-            products: product,
-            name: nameUser,
-            email: emailUser,
-            phone: phoneUser,
-            receiving_longitude: location?.lng,
-            receiving_latitude: location?.lat,
-            note: note,
-            voucher: voucher,
-          }
-          console.log(body)
-
-          fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-online`, {
-            method: 'POST',
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-          }).then(response => {
-            return response.json()
-          }).then((data) => {
-            if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
-              console.log(data);
-              // navigate('/payment', { state: data })
-              navigate('/payment', { replace: true, state: data })
-              // setBill(data)
-            } else {
-              messageApi.error(data.message)
-              return
+      try {
+        setIsLoading(true)
+        const checkToken = async () => {
+          const isValid = await Verify(refresh_token, access_token);
+          if (isValid) {
+            const product: Product[] = cart.map((carts) => ({
+              product_id: carts.id,
+              quantity: carts.quantity
+            }))
+            const body: OrderData = {
+              language: null,
+              refresh_token: refresh_token,
+              products: product,
+              name: nameUser,
+              email: emailUser,
+              phone: phoneUser,
+              receiving_longitude: location?.lng,
+              receiving_latitude: location?.lat,
+              note: note,
+              voucher: voucher,
             }
-          })
-        } else {
-            messageApi.error("Token không hợp lệ!");
-            return
-        }
-      };
-    checkToken();
+            console.log(body)
+  
+            fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-online`, {
+              method: 'POST',
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then(response => {
+              return response.json()
+            }).then((data) => {
+              if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
+                console.log(data);
+                // navigate('/payment', { state: data })
+                navigate('/payment', { replace: true, state: data })
+                // setBill(data)
+              } else {
+                messageApi.error(data.message)
+                return
+              }
+            })
+          } else {
+              messageApi.error("Token không hợp lệ!");
+              return
+          }
+        };
+        checkToken();
+      } catch (error) {
+        messageApi.error(String(error))
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 3000)
+      }
     }
 
     // useEffect(() => {
@@ -216,7 +229,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
     };
   
     const totalPrice = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
+      (total, item) => total + item.priceAfterdiscount * item.quantity,
       0
     );
   
@@ -282,10 +295,10 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
                       {item.name}
                     </h3>
                     <p className="text-gray-600">
-                      Đơn giá: {formatPrice(item.price)}
+                      Đơn giá: {formatPrice(item.priceAfterdiscount)}
                     </p>
                     <p className="text-gray-600">
-                      Tổng: {formatPrice(item.price * item.quantity)}
+                      Tổng: {formatPrice(item.priceAfterdiscount * item.quantity)}
                     </p>
                     <div className="flex items-center mt-2">
                       <button
@@ -324,6 +337,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
           )}
         </div>
         <Modal title={language() == "Tiếng Việt" ? "Xác nhận thông tin thanh toán sản phẩm" : "Confirm product payment information"} open={showPaymentModal} okText={language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"} onOk={() => handlePayment()} onCancel={() => setShowPaymentModal(false)} onClose={() => setShowPaymentModal(false)}>
+            <Loading isLoading={isLoading}/>
             <div className="w-full flex flex-col gap-4">
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tên người dùng:" : "Display name:"}</p>

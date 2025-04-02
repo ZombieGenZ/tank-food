@@ -3,7 +3,7 @@ import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { Drawer, Select } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useRef, JSX } from 'react';
+import { useState, useEffect, useRef, JSX,Dispatch, SetStateAction } from 'react';
 import Signup from './signup.pages.tsx';
 import { Divider } from '@mantine/core';
 import Menu from './category.management.pages.tsx';
@@ -38,6 +38,7 @@ import "aos/dist/aos.css";
 import { FaUserAlt } from "react-icons/fa";
 import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
 import Verify from '../components/VerifyToken.components.tsx';
+import { MdManageAccounts } from "react-icons/md";
 
 interface MenuItem {
   id: number;
@@ -79,6 +80,8 @@ interface CartItem {
   name: string;
   price: number;
   image: string;
+  priceAfterdiscount: number; 
+  discount: number
 }
 
 const FormMain = (): JSX.Element => {
@@ -86,7 +89,7 @@ const FormMain = (): JSX.Element => {
     const cartlocal = localStorage.getItem('my_cart')
     return cartlocal ? JSON.parse(cartlocal) : []
   });
-  const addToCart = (item: { id: string; name: string; price: number; image: string }) => {
+  const addToCart = (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => {
     if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu món vào giỏ hàng !"); return};
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
@@ -106,10 +109,8 @@ const FormMain = (): JSX.Element => {
   }, [cart])
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const language = () => {
-    const savedLanguage = localStorage.getItem('language');
-    return savedLanguage ? JSON.parse(savedLanguage) : "Tiếng Việt";
-  };
+  const [isAdminView, setIsAdminView] = useState<boolean>(true); // Mặc định là Admin view
+
   const [messageApi, contextHolder] = message.useMessage();
 
   function NavAdmin({ display_name, userInfo }: { display_name: string; userInfo: UserInfo }) {
@@ -141,6 +142,14 @@ const FormMain = (): JSX.Element => {
       },
       {
         key: '2',
+        label: (
+          <button className="flex gap-2 items-center" onClick={() => {setIsAdminView(false); navigate('/')}}>
+            <FaHome /> {language === "Tiếng Việt" ? "Trang chủ người dùng" : "Main User"}
+          </button>
+        ),
+      },
+      {
+        key: '3',
         label: (
           <button className='flex gap-2 items-center' onClick={() => Logout()}>
             <IoLogOutOutline /> Đăng xuất
@@ -192,15 +201,24 @@ const FormMain = (): JSX.Element => {
       checkToken();
     };
 
+    const date = new Date().toISOString()
+
+    function formatDateFromISO(isoDateString: string): string {
+      const date = new Date(isoDateString);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
 
     return (
       <div className="bg-white sticky top-0 z-50 shadow-sm p-4 flex justify-between items-center">
         {contextHolder}
         <h1 className="text-xl font-bold text-slate-900">{display_name}</h1>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 pr-2">
           <div className="flex items-center space-x-2">
             <Calendar size={20} className="text-gray-500" />
-            <span className="text-sm text-gray-500">{"01/04/2025"}</span>
+            <span className="text-sm text-gray-500">{formatDateFromISO(date)}</span>
           </div>
           <Select
             defaultValue={language}
@@ -212,7 +230,7 @@ const FormMain = (): JSX.Element => {
             onChange={handleChange}
           />
           <Dropdown menu={{ items }} placement="bottom">
-            <div className='text-[black] bg-white p-2 rounded-2xl hover:text-white hover:bg-[#FF7846] transition duration-300'>
+            <div className='p-2 rounded-2xl cursor-pointer'>
               <IoSettings />
             </div>
           </Dropdown>
@@ -292,42 +310,61 @@ const FormMain = (): JSX.Element => {
   return (
     <>
       {loading ? (
-        <Loading />
-      ) : user && user.role === 3 ? (
-        <div className='flex relative'>
-          {contextHolder}
-          <NavigationAdmin displayname={user.display_name}/>
-          <div className='w-full flex flex-col'>
-            <NavAdmin display_name={`${language() === "Tiếng Việt" ? "Bảng thống kê" : "Dash board"}`} userInfo={user}/>
+      <Loading />
+    ) : user && user.role === 3 ? (
+      <div className={isAdminView ? "flex relative" : "flex gap-5 flex-col"}>
+        {contextHolder}
+        {isAdminView ? (
+          <>
+            <NavigationAdmin displayname={user.display_name} />
+            <div className="w-full flex flex-col">
+              <NavAdmin display_name="Bảng thống kê" userInfo={user} />
+              <Routes>
+                <Route path="/" element={<MainManage />} />
+                <Route path="/Account" element={<Account />} />
+                <Route path='/category' element={<CategoryManagement />} />
+                <Route path='/order' element={<OrderManagement />} />
+                <Route path='/product' element={<ProductManagement />} />
+                <Route path='/ship' element={<ShipManagement />} />
+                <Route path='/discount' element={<DiscountCodeManagement />} />
+                <Route path='/profile' element={<ProfilePage />} />
+              </Routes>
+            </div>
+          </>
+        ) : (
+          <>
+            <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
             <Routes>
-              <Route path="/*" element={<MainManage />} />
-              <Route path="/Account" element={<Account />} />
-              <Route path='/category' element={<CategoryManagement />} />
-              <Route path='/order' element={<OrderManagement />} />
-              <Route path='/product' element={<ProductManagement />} />
-              <Route path='/ship' element={<ShipManagement />} />
-              <Route path='/discount' element={<DiscountCodeManagement />} />
+              <Route path="/" element={<Main />} />
+              <Route path="/aboutus" element={<Aboutus />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
+              <Route path='/deal' element={<SealPage />} />
+              <Route path='/contact' element={<ContactUs />} />
+              <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} />} />
+              <Route path='/payment' element={<OrderPageWithPayment />} />
               <Route path='/profile' element={<ProfilePage />} />
             </Routes>
-          </div>
-        </div>
-      ) : (
-        <div className='flex gap-5 flex-col' ref={pageRef}>
-          {contextHolder}
-          <NavigationButtons role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null}/>
-          <Routes>
-            <Route path="/*" element={<Main />} />
-            <Route path="/aboutus" element={<Aboutus />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-            <Route path='/deal' element={<SealPage />} />
-            <Route path='/contact' element={<ContactUs />} />
-            <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user}/>} />
-            <Route path='/payment' element={<OrderPageWithPayment />} />
-            <Route path='/profile' element={<ProfilePage />} />
-          </Routes>
-        </div>
-      )}
+          </>
+        )}
+      </div>
+    ) : (
+      <div className="flex gap-5 flex-col" ref={pageRef}>
+        {contextHolder}
+        <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/aboutus" element={<Aboutus />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
+          <Route path='/deal' element={<SealPage />} />
+          <Route path='/contact' element={<ContactUs />} />
+          <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} />} />
+          <Route path='/payment' element={<OrderPageWithPayment />} />
+          <Route path='/profile' element={<ProfilePage />} />
+        </Routes>
+      </div>
+    )}
     </>
   );
 };
@@ -335,7 +372,7 @@ const FormMain = (): JSX.Element => {
 function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
   const navigate = useNavigate();
   const [navbar, setNavbar] = useState<MenuItem[]>([
-    { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: FaHome, active: true },
+    { id: 1, title: 'Trang chủ', english: 'Home', path: '/main', icon: FaHome, active: true },
     { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: RiUser3Line, active: false },
     { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: RiHome5Line, active: false },
     { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: RiShoppingBag3Line, active: false },
@@ -366,7 +403,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
         item.path === window.location.pathname ? { ...item, active: true } : { ...item, active: false }
       )
     );
-  }, [window.location.pathname]);
+  }, []);
 
   return (
     <div className='w-1/5 z-[999] sticky left-0 top-0 bg-slate-800 text-white h-screen'>
@@ -414,7 +451,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   );
 }
 
-function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null }): JSX.Element {
+function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null, toggleView: Dispatch<SetStateAction<boolean>> }): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -521,6 +558,33 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|nul
     },
   ]);
 
+  const itemAdmins: MenuProps['items'] = ([
+    {
+      key: '1',
+      label: (
+        <button className='flex gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
+          <FaRegUserCircle /> Thông tin tài khoản
+        </button>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <button className="flex gap-2 items-center" onClick={() => {toggleView(true); navigate('/')}}>
+          <MdManageAccounts /> {language === "Tiếng Việt" ? "Quản lý và thống kê" : "Manage and statistical"}
+        </button>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <button className='flex gap-2 items-center' onClick={() => Logout()}>
+          <IoLogOutOutline /> Đăng xuất
+        </button>
+      ),
+    },
+  ]);
+
   const style = {
     background: 'rgba(245, 245, 245, 0.2)',
     borderRadius: '16px',
@@ -543,7 +607,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|nul
           </div>
           <div className='hidden xl:block px-6 py-2'>
             <ul className='flex items-center gap-5'>
-              {(role === 0 || role === null) && (
+              {(role === 0 || role === null || role === 3) && (
                 NavbarUser.map((item: NavbarItem) => (
                   <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                     <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
@@ -569,7 +633,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|nul
             </div>
             {refresh_token !== null ? (
               <div className='flex gap-5 justify-center items-center'>
-                {role === 0 && (
+                {(role === 0 || role === 3) && (
                   <div className="text-orange-600 p-4 rounded-full shadow-lg cursor-pointer transition-colors" onClick={() => navigate("/mycard")} >
                     <div className="relative">
                       <RiShoppingCart2Line className="w-4 h-4"/>
@@ -581,7 +645,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|nul
                     </div>
                   </div>
                 )}
-                <Dropdown menu={{ items }} placement="bottom" arrow>
+                <Dropdown menu={{ items: role === 3 ? itemAdmins : items}} placement="bottom" arrow>
                   <Button className='p-10'>
                     <FaUserAlt />
                   </Button>
@@ -595,7 +659,7 @@ function NavigationButtons({ role, cartItemCount, userInfo }: { role: number|nul
                 <IoIosLogIn />{language === "Tiếng Việt" ? "Đăng nhập" : "Login"}
               </button>
             )}
-            {(role === 0 || role === null) && (
+            {(role === 0 || role === null || role === 3) && (
             <>
               <div className='xl:hidden px-4 py-2 bg-[#FF6B35] rounded-full text-[#ffffff]'>
                 <button onClick={openDrawer}><IoMenu /></button>
@@ -778,6 +842,19 @@ function Main(): JSX.Element {
           }
         }
       `}</style>
+      <style>{`
+        @keyframes wave {
+          0% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(-25%);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
       <Slideshow />
       <div className="bg-gradient-to-b from-[#FFE5B4] to-[#92e2fb] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxsaW5lIHgxPSIwIiB5PSIwIiB4Mj0iMCIgeTI9IjQwIiBzdHJva2U9IiNGRkI4MDAiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=')]"></div>
@@ -812,10 +889,10 @@ function Main(): JSX.Element {
               Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
+              <button onClick={() => navigate('/menu')} className="bg-[#FF7846] cursor-pointer hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
                 Đặt hàng ngay
               </button>
-              <button onClick={() => navigate('/menu')} className="border-2 border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px]">
+              <button onClick={() => navigate('/menu')} className="border-2 cursor-pointer border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px]">
                 Xem thực đơn
               </button>
             </div>
@@ -979,7 +1056,7 @@ function Main(): JSX.Element {
           <h3 className="text-4xl font-bold text-[#654321] mb-2 font-stretch-semi-condensed blur-text" data-aos="fade-up" data-aos-delay="200">Vẫn còn đói?</h3>
           <h2 className="text-6xl font-bold text-[#FF7846] mb-12 font-roboto blur-text" data-aos="zoom-in" data-aos-delay="400">ĐẶT THÊM NGAY</h2>
 
-          <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-roboto shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
+          <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] cursor-pointer text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-roboto shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
             Đặt hàng ngay
           </button>
 
@@ -989,6 +1066,120 @@ function Main(): JSX.Element {
             </svg>
           </div>
         </div>
+        <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  fontSize: `${Math.random() * 2 + 1}rem`,
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                  opacity: 0.3,
+                }}
+              >
+                🍔
+              </div>
+            ))}
+            {Array.from({ length: 15 }).map((_, i) => (
+              <div
+                key={i + 20}
+                className="absolute"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  fontSize: `${Math.random() * 2 + 1}rem`,
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                  opacity: 0.3,
+                }}
+              >
+                🍟
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div
+            className="max-w-3xl mx-auto text-center"
+            data-aos="zoom-in-up"
+            data-aos-duration="1000"
+            data-aos-delay="100"
+            data-aos-anchor-placement="top-bottom"
+          >
+            <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
+              <h2
+                className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
+                style={{
+                  textShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                  fontFamily: "system-ui, -apple-system, sans-serif",
+                }}
+              >
+                TankFood
+              </h2>
+              <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
+            </div>
+
+            <p className="text-xl text-white/90 mb-8 drop-shadow-md">
+              Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
+              <input
+                type="email"
+                placeholder="Địa Chỉ Email Của Bạn"
+                className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
+              />
+              <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+                Đặt Hàng Ngay
+              </button>
+            </div>
+
+            <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
+              {["Burger", "Gà Rán", "Pizza", "Đồ Uống"].map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Animated elements */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+          <div className="relative h-16">
+            <div
+              className="absolute bottom-0 left-0 w-[200%] h-16"
+              style={{
+                background:
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%23FFFFFF'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%23FFFFFF'/%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%23FFFFFF'/%3E%3C/svg%3E\")",
+                backgroundSize: "100% 100%",
+                animation: "wave 15s linear infinite",
+              }}
+            ></div>
+          </div>
+        </div>
+      </div>
+      <style>{`
+        @keyframes wave {
+          0% {
+            transform: translateX(0);
+          }
+          50% {
+            transform: translateX(-25%);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+      `}</style>
       </div>
     </>
   );

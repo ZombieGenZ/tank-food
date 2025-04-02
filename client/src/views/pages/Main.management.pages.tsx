@@ -210,6 +210,14 @@ function MainManage (): JSX.Element {
       return formatter.format(amount);
     }
 
+    function formatDateFromISO(isoDateString: string): string {
+      const date = new Date(isoDateString);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
     return(
       <div className="flex-1 overflow-auto">
       {/* Dashboard Header */}
@@ -287,8 +295,7 @@ function MainManage (): JSX.Element {
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-baseline">
-                  <span className="text-xl font-bold text-slate-900 mr-1">{list?.totalRevenue}</span>
-                  <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "VNĐ" : "VNĐ"}</span>
+                  <span className="text-xl font-bold text-slate-900 mr-1">{formatCurrency(list?.totalRevenue ?? 0)}</span>
                 </div>
                 <div className={`mt-1 text-xs ${list?.comparison.totalRevenueChange ? 'text-green-600' : 'text-red-600'}`}>
                   {list?.comparison.totalRevenueChange} {list?.comparison.totalRevenueChange ? '↑' : '↓'}
@@ -321,6 +328,7 @@ function MainManage (): JSX.Element {
               <Select 
                 value={selectValue}
                 onChange={handleChange}
+                style={{ width: 150 }}
                 options={[
                   { value: 'revenue' , label: 'Doanh thu',},
                   { value: 'newCustomers' , label: 'Khách hàng mới',},
@@ -383,7 +391,7 @@ function MainManage (): JSX.Element {
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#3b82f6" }}></div>
                 </div>
                 <div className="flex justify-between mt-2">
-                  <span className="text-sm text-gray-500">{order.created_at}</span>
+                  <span className="text-sm text-gray-500">{formatDateFromISO(order.created_at)}</span>
                   <span className="text-sm font-medium">{formatCurrency(order.total_bill)}</span>
                 </div>
               </div>

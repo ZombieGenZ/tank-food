@@ -418,6 +418,22 @@ const ShipManagement: React.FC = () => {
   const filterOptions: string[] = ["Tất cả", "đơn mới nhất", "đơn cũ nhất"];
   const [activeFilter, setActiveFilter] = useState<string>("Tất cả");
 
+  function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+    const formatter = new Intl.NumberFormat(currencyCode, {
+      style: 'currency',
+      currency: currency,
+    });
+    return formatter.format(amount);
+  }
+
+  function formatDateFromISO(isoDateString: string): string {
+    const date = new Date(isoDateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   return (
     <div className="bg-gray-50 p-4 w-full mx-auto">
       {/* Tabs */}
@@ -425,23 +441,23 @@ const ShipManagement: React.FC = () => {
       <div className="flex mb-4">
         <button 
           onClick={() => setActiveTab('waiting')}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 cursor-pointer py-2 font-medium ${
             activeTab === 'waiting' 
               ? 'bg-orange-500 text-white' 
               : 'bg-gray-200'
           } rounded-tl rounded-bl`}
         >
-          Chờ giao
+          Chờ giao ({waitingOrders.length})
         </button>
         <button 
           onClick={() => setActiveTab('received')}
-          className={`px-4 py-2 font-medium ${
+          className={`px-4 cursor-pointer py-2 font-medium ${
             activeTab === 'received' 
               ? 'bg-orange-500 text-white' 
               : 'bg-gray-200'
           } rounded-tr rounded-br`}
         >
-          Đã nhận
+          Đã nhận ({receivedOrders.length})
         </button>
       </div>
 
@@ -484,14 +500,15 @@ const ShipManagement: React.FC = () => {
                     </svg>
                   </span>
                   <span className="font-medium">Đơn: {order.product.map((name: Product, index: number) => {
-                    if(index == order.product.length) {
+                    if(index < order.product.length) {
                       return `${language() == "Tiếng Việt" ? name.title_translate_1 : name.description_translate_2}, `
                     }
+                    if(index == order.product.length)
                     return `${language() == "Tiếng Việt" ? name.title_translate_1 : name.description_translate_2}`
                   })}</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="text-gray-600 mr-4">{order.created_at}</span>
+                  <span className="text-gray-600 mr-4">{formatDateFromISO(order.created_at)}</span>
                   {/* Only show delete button in received tab */}
                   {activeTab === 'received' && order.order_status !== 4 && (
                     <button 
@@ -536,7 +553,7 @@ const ShipManagement: React.FC = () => {
                           </div>
                           <div>
                             <p className="font-medium">{item.title_translate_1}</p>
-                            <p className="text-sm text-gray-600">{item.price.toLocaleString()}vnđ</p>
+                            <p className="text-sm text-gray-600">{formatCurrency(Number(item.price))}</p>
                           </div>
                         </div>
                         {/* Removed the delete button for products */}
@@ -584,7 +601,7 @@ const ShipManagement: React.FC = () => {
                   <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                     <div className="text-right">
                       <p className="text-sm text-gray-600">Phí giao hàng: {order.fee.toLocaleString()}vnđ</p>
-                      <p className="text-xl font-bold text-orange-500">{order.total_bill.toLocaleString()}vnđ</p>
+                      <p className="text-xl font-bold text-orange-500">{formatCurrency(order.total_bill)}</p>
                     </div>
                     {activeTab === 'waiting' ? (
                       <button 

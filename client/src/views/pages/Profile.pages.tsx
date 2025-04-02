@@ -36,6 +36,7 @@ interface HistoryOrder {
   delivery_nation: string | null;
   delivery_type: number | null;
   discount_code: string | null;
+  discount: number|null;
   distance: number | null;
   email: string | null;
   estimated_time: string | null;
@@ -72,7 +73,8 @@ interface Product {
   description_translate_2: string;
   description_translate_2_language: string;
   preview: Preview;
-  price: string;
+  discount: number;
+  price: number;
   product_id: string;
   quantity: number;
   title_translate_1: string;
@@ -144,6 +146,7 @@ const ProfilePage: React.FC = () => {
       if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL){
         messageApi.success(data.message)
         setHistoryBill(data.order)
+        console.log(data)
       } else {
         messageApi.error(data.message)
         return
@@ -255,6 +258,21 @@ const ProfilePage: React.FC = () => {
       transition: { duration: 0.5 },
     },
   }
+
+  function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+    const formatter = new Intl.NumberFormat(currencyCode, {
+      style: 'currency',
+      currency: currency,
+    });
+    return formatter.format(amount);
+  }
+
+  const statusColors: Record<string, string> = {
+    "Thành công": "bg-green-100 text-green-600",
+    "Duyệt thành công": "bg-green-100 text-green-600",
+    "Đang giao": "bg-blue-100 text-blue-600",
+    "Thất bại": "bg-red-100 text-red-600"
+  };
 
   return (
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
@@ -559,7 +577,11 @@ const ProfilePage: React.FC = () => {
                       <p className="text-sm text-gray-500">Ngày đặt: {order.created_at}</p>
                     </div>
                     <motion.div
-                      className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
+                      className={`bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm ${statusColors[order.order_status === 0 ? "Đang chờ duyệt" : 
+                                                                                                                order.order_status === 1 ? "Duyệt thành công" : 
+                                                                                                                order.order_status === 2 ? "Đang giao" : 
+                                                                                                                order.order_status === 3 ? "Giao đơn thành công" : 
+                                                                                                                order.order_status === 4 ? "Thành công" : "Thất bại"]}`}
                       whileHover={{
                         scale: 1.05,
                         backgroundColor: "#DEF7EC",
@@ -586,10 +608,48 @@ const ProfilePage: React.FC = () => {
                           transition: { duration: 0.2 },
                         }}
                       >
-                        <span>1x {item.title_translate_1}</span>
-                        <span>{item.price.toLocaleString()}đ</span>
+                        <span>{item.quantity}x {item.title_translate_1}</span>
+                        <span>{formatCurrency(Number(item.price - (item.price * item.discount/100)) * item.quantity)}</span>
                       </motion.div>
                     ))}
+                      <motion.div
+                        className="flex justify-between text-sm"
+                        whileHover={{
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          padding: "2px 4px",
+                          borderRadius: "4px",
+                          transition: { duration: 0.2 },
+                        }}
+                      >
+                        <span>Phí ship: </span>
+                        <span>{formatCurrency(Number(order.fee))}</span>
+                      </motion.div>
+                      <motion.div
+                        className="flex justify-between text-sm"
+                        whileHover={{
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          padding: "2px 4px",
+                          borderRadius: "4px",
+                          transition: { duration: 0.2 },
+                        }}
+                      >
+                        <span>Phí vat: </span>
+                        <span>{formatCurrency(Number(order.vat))}</span>
+                      </motion.div>
+                      {order.order_status == 5 && 
+                        <motion.div
+                        className="flex justify-between text-sm"
+                        whileHover={{
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          padding: "2px 4px",
+                          borderRadius: "4px",
+                          transition: { duration: 0.2 },
+                        }}
+                        >
+                          <span>Đơn hàng bị từ chối vì lý do: </span>
+                          <span>{order.cancellation_reason}</span>
+                        </motion.div>
+                      }
                   </div>
 
                   <motion.div
@@ -599,7 +659,7 @@ const ProfilePage: React.FC = () => {
                       transition: { duration: 0.2 },
                     }}
                   >
-                    <span>Tổng tiền: {order.total_bill.toLocaleString()}đ</span>
+                    <span>Tổng tiền: {formatCurrency(order.total_bill)}</span>
                   </motion.div>
                 </motion.div>
               ))}

@@ -501,12 +501,14 @@ function ProductManagement(): JSX.Element {
           key: 'price',
           dataIndex: 'price',
           width: 350,
+          render: (text) => <p>{formatCurrency(text)}</p>
         },
         {
           title: 'Giảm giá',
           key: 'discount',
           dataIndex: 'discount',
           width: 350,
+          render: (text) => <p>{text}%</p>
         },
         {
           title: 'Tags',
@@ -530,6 +532,13 @@ function ProductManagement(): JSX.Element {
       ];
 
     const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} />;
+    function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+      const formatter = new Intl.NumberFormat(currencyCode, {
+        style: 'currency',
+        currency: currency,
+      });
+      return formatter.format(amount);
+    }
     return(
         <div className="p-10">
             {contextHolder}

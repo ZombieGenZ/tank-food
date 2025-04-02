@@ -1,6 +1,7 @@
-import React, { FormEvent, useState } from "react"
+import React, { FormEvent, useEffect, useState } from "react"
 import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
+import Loading from "../components/loading.components";
 
 // interface đăng ký
 
@@ -21,6 +22,7 @@ interface Login {
 
 const Signup: React.FC = () => {
     const navigate = useNavigate();
+    const [loadingCP, setLoadingCP] = useState<boolean>(false)
     const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
     const [formData, setFormData] = useState<Signup>({
@@ -176,6 +178,8 @@ const Signup: React.FC = () => {
 
     // Nút đăng nhập
     const handleLoginSubmit = (e: FormEvent) => {
+      try {
+        setLoadingCP(true)
         e.preventDefault();
         if(valiteLoginform()) {
           const body = {
@@ -196,7 +200,6 @@ const Signup: React.FC = () => {
             if(data.message == "Đăng nhập tài khoản thành công") {
               localStorage.setItem('access_token', data.authenticate.access_token)
               localStorage.setItem('refresh_token', data.authenticate.refresh_token)
-              console.log(data.authenticate.refresh_token)
               messageApi.open({
                 type: 'success',
                 content: 'Đăng nhập thành công',
@@ -229,7 +232,18 @@ const Signup: React.FC = () => {
             },
           });
         }
-      };
+      } catch (error) {
+        messageApi.error(String(error))
+      } finally {
+        setTimeout(() => {
+          setLoadingCP(false)
+        }, 2000)
+      }
+    };
+
+    useEffect(() => {
+      console.log(loadingCP)
+    }, [loadingCP])
 
     const showForm = (type: string) => {
         setFormType(type);
@@ -239,7 +253,8 @@ const Signup: React.FC = () => {
         <div style={styles.body}>
           {contextHolder}
             <div style={styles.container}>
-                <div style={styles.infoSide}>
+              <div style={styles.infoSide}>
+                <Loading isLoading={loadingCP}/>
                 <div>
                     <div style={styles.logo}>Tank<span style={{ color: '#ffcc00' }}>Food</span></div>
                     <h1 style={styles.infoTitle}>Thưởng thức ẩm thực nhanh chóng!</h1>
