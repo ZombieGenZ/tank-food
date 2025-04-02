@@ -32,8 +32,8 @@ router.post(
 /*
  * Description: Lấy thông tin thống kê số lượt truy cập
  * Path: /api/statistical/analytics-total-requests
- * Method: POST
+ * Method: GET
  */
-router.post('/analytics-total-requests', wrapRequestHandler(analyticsTotalRequestsController))
+router.get('/analytics-total-requests', wrapRequestHandler(analyticsTotalRequestsController))
 
 export default router
