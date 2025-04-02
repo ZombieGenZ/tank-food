@@ -23,6 +23,11 @@ export interface VerifyAccountRequestsBody {
   refresh_token: string
 }
 
+export interface SendForgotPasswordRequestsBody {
+  language?: string
+  refresh_token: string
+}
+
 export interface ForgotPasswordRequestsBody {
   language?: string
   token: string

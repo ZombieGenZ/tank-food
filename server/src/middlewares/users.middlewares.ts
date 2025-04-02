@@ -645,14 +645,14 @@ export const sendEmailForgotPasswordValidator = async (req: Request, res: Respon
         if (language == LANGUAGE.VIETNAMESE) {
           res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
             code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
             errors: errors.mapped()
           })
           return
         } else {
           res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
             code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
             errors: errors.mapped()
           })
           return
