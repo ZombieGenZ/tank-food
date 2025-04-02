@@ -1,6 +1,10 @@
 import { JSX, useEffect, useState } from "react";
 import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
 import type { TableProps } from 'antd';
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
+
 
 interface DataType {
     key: string;
@@ -23,6 +27,10 @@ interface Category {
 
 
 const CategoryManagement = (): JSX.Element => {
+  socket.emit('connect-guest-realtime')
+  socket.on('create-category', (res) => {
+    setCategory([...category, res])
+  })
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [category, setCategory] = useState<Category[]>([])
@@ -40,6 +48,10 @@ const CategoryManagement = (): JSX.Element => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
+
+  useEffect(() => {
+    setCategory(category.sort((a, b) => a.index - b.index))
+  }, [category])
 
   const handleChangePriorityEdit = (e: number|null) => {
     if(e == null) return;

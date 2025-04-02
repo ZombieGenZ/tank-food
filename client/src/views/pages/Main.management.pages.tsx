@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import Verify from '../components/VerifyToken.components';
 import { message, Select } from "antd";
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface Order {
     _id: string;
@@ -115,6 +118,11 @@ function MainManage (): JSX.Element {
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
     const [selectValue, setSelectValue] = useState<string>("revenue")
     const [selectDate, setSelectDate] = useState<number>(7)
+
+    socket.emit('connect-statistical-realtime', refresh_token)
+    socket.on('update-order-complete', (res) => {
+      messageApi.info(res)
+    })
 
     const handleChange = (value: string) => {
       setSelectValue(value)

@@ -1,4 +1,7 @@
 import { useLocation } from "react-router-dom";
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface Products {
   id: string;
@@ -93,6 +96,11 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ userBill }) => {
 const OrderPageWithPayment = () => {
     const location = useLocation();
     const userBill: ApiResponse = location.state;
+
+    socket.emit('connect-payment-realtime', userBill.infomation.order_id)
+    socket.on('payment_notification', (message) => {
+      console.log(message)
+    })
     
     return (
       <div className="p-8 bg-gray-100 min-h-[100vh] flex flex-col items-center justify-center">
