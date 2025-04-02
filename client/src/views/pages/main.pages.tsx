@@ -17,6 +17,7 @@ import OrderManagement from './Order.psges.tsx';
 import MainManage from './Main.management.pages.tsx';
 import MyCard from './MyCard.pages.tsx';
 import OrderPageWithPayment from './Payment.pages.tsx';
+import ChangePassword from './ChangePassword.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message, Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -344,6 +345,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} />} />
               <Route path='/payment' element={<OrderPageWithPayment />} />
               <Route path='/profile' element={<ProfilePage />} />
+              <Route path='/changepass' element={<ChangePassword />}/>
             </Routes>
           </>
         )}
@@ -362,6 +364,7 @@ const FormMain = (): JSX.Element => {
           <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} />} />
           <Route path='/payment' element={<OrderPageWithPayment />} />
           <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/changepass' element={<ChangePassword />}/>
         </Routes>
       </div>
     )}
