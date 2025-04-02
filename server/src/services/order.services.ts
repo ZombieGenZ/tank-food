@@ -2895,7 +2895,11 @@ class OrderService {
     await Promise.all([notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)])
   }
   async getOrderOverview() {
-    return await databaseService.order.find().sort({ created_at: -1 }).limit(5).toArray()
+    return await databaseService.order
+      .find({ order_status: OrderStatusEnum.COMPLETED })
+      .sort({ created_at: -1 })
+      .limit(5)
+      .toArray()
   }
 }
 
