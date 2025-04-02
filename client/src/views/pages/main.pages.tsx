@@ -109,7 +109,7 @@ const FormMain = (): JSX.Element => {
   }, [cart])
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const [isAdminView, setIsAdminView] = useState<boolean>(true); // Mặc định là Admin view
+  const [isAdminView, setIsAdminView] = useState<boolean>(false); // Mặc định là Admin view
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -372,7 +372,7 @@ const FormMain = (): JSX.Element => {
 function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
   const navigate = useNavigate();
   const [navbar, setNavbar] = useState<MenuItem[]>([
-    { id: 1, title: 'Trang chủ', english: 'Home', path: '/main', icon: FaHome, active: true },
+    { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: FaHome, active: true },
     { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: RiUser3Line, active: false },
     { id: 3, title: 'Quản lý danh mục', english: 'Category Management', path: '/category', icon: RiHome5Line, active: false },
     { id: 4, title: 'Quản lý sản phẩm', english: 'Product Management', path: '/product', icon: RiShoppingBag3Line, active: false },

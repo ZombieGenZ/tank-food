@@ -2,6 +2,7 @@ import React, { FormEvent, useEffect, useState } from "react"
 import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/loading.components";
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 
 // interface đăng ký
 
@@ -118,10 +119,53 @@ const Signup: React.FC = () => {
           [fieldName]: value
         });
     };
-  
+
+    const ForgotPass = (email: string|null) => {
+      if(email == null) {
+        messageApi.error("Vui lòng nhập email !")
+        return
+      }
+      if(!validateEmail(email))
+      {
+        messageApi.error("Vui lòng ghi đúng định dạng email !")
+        return;
+      }
+
+      try {
+        setLoadingCP(true)
+        const body = {
+          language: null,
+          email: email
+        }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/users/send-email-forgot-password`, {
+          method: 'PUT',
+          body: JSON.stringify(body)
+        }).then(response => {
+          return response.json()
+        }).then((data) => {
+          if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
+            console.log(data)
+            messageApi.error(data.errors.email.msg)
+            return
+          }
+          messageApi.success("Gửi email xác thực thành công. Vui lòng kiểm tra hòm thư của bạn !")
+          console.log(data)
+        })
+      } catch (error) {
+        messageApi.error(String(error))
+      } finally {
+        setTimeout(() => {
+          setLoadingCP(false)
+        }, 2000)
+      }
+
+    }
 
     // Nút đăng ký
     const handleSubmit = (e: React.FormEvent) => {
+      try {
+        setLoadingCP(true)
         e.preventDefault();
         if (validateForm()) {
             const bodyResignter = {
@@ -142,17 +186,16 @@ const Signup: React.FC = () => {
             }).then((response) => {
               return response.json()
             }).then((data) => {
-              console.log(data)
-              if(data.message == "Đăng ký tài khoản thành công") {
+              if(data.code == RESPONSE_CODE.VERIFY_ACCOUNT_SUCCESSFUL) {
                 messageApi.open({
                   type: 'success',
-                  content: 'Đăng ký thành công',
+                  content: 'Đăng ký thành công, Vui lòng đăng nhập vơi staif khoản mới !',
                   style: {
                     marginTop: '10vh',
                   },
                 }).then(() => {
                   setTimeout(() => {
-                    navigate("/*");
+                    navigate("/");
                   }, 1500);
                 });
               } else {
@@ -168,12 +211,19 @@ const Signup: React.FC = () => {
         } else {
             messageApi.open({
               type: 'error',
-              content: `Đăng ký thất bại vui lòng thử lại sau`,
+              content: `Đăng ký thất bại vui lòng thử lại sau !`,
               style: {
                 marginTop: '10vh',
               },
             });
         }
+      } catch (error) {
+        messageApi.error(String(error))
+      } finally {
+        setTimeout(() => {
+          setLoadingCP(false)
+        }, 2000)
+      }
     };
 
     // Nút đăng nhập
@@ -307,7 +357,7 @@ const Signup: React.FC = () => {
                             style={styles.input}
                             placeholder="Nhập địa chỉ email của bạn" 
                             value={loginData.email}
-                            onChange={handleLoginChange} 
+                            onChange={(e: FormEvent<HTMLInputElement>) => {handleLoginChange(e)}} 
                             />
                             {errorLogin.email && <p className="text-red-500 mt-2.5">{errorLogin.email}</p>}
                         </div>
@@ -326,7 +376,7 @@ const Signup: React.FC = () => {
                         </div>
                         
                         <div style={styles.forgotPassword}>
-                            <a href="#" style={styles.forgotPasswordLink}>Quên mật khẩu?</a>
+                            <a href="#" onClick={() => ForgotPass(loginData.email)} style={styles.forgotPasswordLink}>Quên mật khẩu?</a>
                         </div>
                         
                         <button type="submit" style={styles.btn}>Đăng nhập</button>
