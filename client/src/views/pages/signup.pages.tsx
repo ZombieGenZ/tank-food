@@ -140,11 +140,14 @@ const Signup: React.FC = () => {
 
         fetch(`${import.meta.env.VITE_API_URL}/api/users/send-email-forgot-password`, {
           method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(body)
         }).then(response => {
           return response.json()
         }).then((data) => {
-          if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
+          if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED || data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
             console.log(data)
             messageApi.error(data.errors.email.msg)
             return
@@ -357,7 +360,7 @@ const Signup: React.FC = () => {
                             style={styles.input}
                             placeholder="Nhập địa chỉ email của bạn" 
                             value={loginData.email}
-                            onChange={(e: FormEvent<HTMLInputElement>) => {handleLoginChange(e)}} 
+                            onChange={handleLoginChange} 
                             />
                             {errorLogin.email && <p className="text-red-500 mt-2.5">{errorLogin.email}</p>}
                         </div>
