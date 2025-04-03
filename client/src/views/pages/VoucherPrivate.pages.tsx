@@ -37,6 +37,7 @@ const VoucherPrivate: React.FC = () => {
       description: "Free large fries with any burger purchase",
       type: "freeItem",
       used: false,
+      minOrder: 20,
     },
     {
       id: "v3",
@@ -56,6 +57,7 @@ const VoucherPrivate: React.FC = () => {
       description: "25% off on all fried chicken items",
       type: "percentage",
       used: false,
+      minOrder: 35,
     },
     {
       id: "v5",
@@ -65,6 +67,7 @@ const VoucherPrivate: React.FC = () => {
       description: "15% off on your first order",
       type: "percentage",
       used: true,
+      minOrder: 20,
     },
     // 5 voucher mới
     {
@@ -85,6 +88,7 @@ const VoucherPrivate: React.FC = () => {
       description: "30% off on all desserts",
       type: "percentage",
       used: false,
+      minOrder: 10,
     },
     {
       id: "v8",
@@ -94,6 +98,7 @@ const VoucherPrivate: React.FC = () => {
       description: "Free soft drink with any meal purchase",
       type: "freeItem",
       used: false,
+      minOrder: 12,
     },
     {
       id: "v9",
@@ -113,6 +118,7 @@ const VoucherPrivate: React.FC = () => {
       description: "15% off on family box orders",
       type: "percentage",
       used: true,
+      minOrder: 30,
     },
   ])
 
