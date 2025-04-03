@@ -33,7 +33,6 @@ import { sendMail } from '~/utils/mail.utils'
 import voucherPrivateService from './voucherPrivate.services'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import { UserRoleEnum } from '~/constants/users.constants'
-import { io } from '..'
 
 class OrderService {
   async orderOnline(
@@ -2509,11 +2508,10 @@ class OrderService {
       ])
       .next()
 
-    console.log('Gọi notificationRealtime với data:', orderWithDetails)
-    await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)
-
-    const clients = io.sockets.adapter.rooms.get('freshSync-employee')?.size || 0
-    console.log(`Số client trong phòng freshSync-employee: ${clients}`)
+    await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', {
+      ...orderWithDetails,
+      _id: order_id.toString()
+    })
 
     if (payload.payment_type == PaymentTypeEnum.BANK) {
       return {
