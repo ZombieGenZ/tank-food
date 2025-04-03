@@ -2503,7 +2503,7 @@ class OrderService {
       ])
       .next()
 
-    await Promise.all([notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)])
+    await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)
 
     if (payload.payment_type == PaymentTypeEnum.BANK) {
       return {
