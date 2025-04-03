@@ -2508,10 +2508,7 @@ class OrderService {
       ])
       .next()
 
-    await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', {
-      ...orderWithDetails,
-      _id: order_id.toString()
-    })
+    await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)
 
     if (payload.payment_type == PaymentTypeEnum.BANK) {
       return {

@@ -31,3 +31,5 @@ server/backups
 client/public/images/upload/products/**
 !client/public/images/upload/products/temporary/
 !client/public/images/upload/products/temporary/note.txt
+
+test/
