@@ -213,7 +213,12 @@ class OrderService {
 
     await Promise.all([
       notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails),
-      notificationRealtime(`freshSync-user-${user._id}`, 'create-order', `order/${user._id}/create`, orderWithDetails)
+      notificationRealtime(
+        `freshSync-user-${user._id}`,
+        'create-order-booking',
+        `order/${user._id}/create`,
+        orderWithDetails
+      )
     ])
 
     return {
