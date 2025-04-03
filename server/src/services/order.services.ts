@@ -2509,6 +2509,7 @@ class OrderService {
       ])
       .next()
 
+    console.log('Gọi notificationRealtime với data:', orderWithDetails)
     await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)
 
     const clients = io.sockets.adapter.rooms.get('freshSync-employee')?.size || 0
