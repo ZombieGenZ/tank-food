@@ -4,6 +4,11 @@ import type { TableProps } from 'antd';
 import { DatePicker } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface DataType {
     key: string,
     _id: string,

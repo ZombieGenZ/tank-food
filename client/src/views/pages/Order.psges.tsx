@@ -6,6 +6,11 @@ import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_API_URL)
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface Order {
     _id: string;
     canceled_at: string;
@@ -95,6 +100,20 @@ const OrderManagement: React.FC = () => {
   }
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []); 
+  
   const [waitData, setWaitData] = useState<Order[]>([])
   const [doneData, setDoneData] = useState<Order[]>([])
   const [messageApi, contextHolder] = message.useMessage();
@@ -106,14 +125,40 @@ const OrderManagement: React.FC = () => {
   const [showCancelmodal, setShowcancelmodal] = useState<boolean>(false);
   const [reasonCancelation, setReasonCancel] = useState<string>("")
 
-  socket.emit('connect-employee-realtime', refresh_token)
-  socket.on('create-order', (data) => {
-    messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
-    setWaitData((prevData) => [
-      ...prevData,
-      { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
-    ]);
-  });
+
+  useEffect(() => {
+    socket.emit('connect-employee-realtime', refresh_token)
+    socket.on('create-order', (data) => {
+      messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
+      setWaitData((prevData) => [
+        ...prevData,
+        { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
+      ]);
+    });
+    socket.on('update-order', (data) => {
+      messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
+      setWaitData((prevData) => [
+        ...prevData,
+        { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
+      ]);
+    })
+    return () => {
+      socket.off('create-order', (data) => {
+        messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
+        setWaitData((prevData) => [
+          ...prevData,
+          { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
+        ]);
+      });
+      socket.off('update-order', (data) => {
+        messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
+        setWaitData((prevData) => [
+          ...prevData,
+          { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
+        ]);
+      })
+    };
+  }, [refresh_token, messageApi])
 
   const showModalReject = (orderID: string) => {
     setShowreasonmodal(true)
@@ -527,20 +572,6 @@ const handleReject = (orderID: string) => {
     };
     checkToken();
 }
-
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setRefreshToken(localStorage.getItem("refresh_token"));
-      setAccessToken(localStorage.getItem("access_token"));
-    };
-  
-    window.addEventListener("storage", handleStorageChange);
-  
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []); 
 
   useEffect(() => {
     const body = {

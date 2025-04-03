@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
-import { message } from "antd"
+import { message, Modal, Input } from "antd"
 import "aos/dist/aos.css"
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
@@ -89,6 +89,8 @@ const OrderAtStore: React.FC = () => {
   }
   const [product, setProduct] = useState<Product[]>([]);
   const [Category, setCategory] = useState<Category[]>([]);
+  const [voucher, setVoucher] = useState<string|null>(null)
+  const [showModalVoucher, setShowModalVoucher] = useState<boolean>(false)
   useEffect(() => {
     AOS.init({
       duration: 800,
@@ -110,6 +112,7 @@ const OrderAtStore: React.FC = () => {
           return response.json()
         }).then((data) => {
           setProduct(data.products)
+          console.log(data.products)
         })
   
         fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
@@ -151,13 +154,21 @@ const OrderAtStore: React.FC = () => {
     return () => clearTimeout(timer)
   }, [paymentMethod, paymentCompleted])
 
+  const ShowModalVoucher = () => {
+    setShowModalVoucher(true)
+  }
+
+  const handleChangeVoucher = (e: string|null) =>{
+    setVoucher(e)
+  }
+
   const addToCart = (item: Product) => {
     const existingItem = cart.find((cartItem) => cartItem._id === item._id)
 
     if (existingItem) {
       setCart(
         cart.map((cartItem) =>
-          cartItem._id === item._id ? { ...cartItem, quantity: (cartItem.quantity || 0) + 1 } : cartItem,
+          cartItem._id === item._id ? { ...cartItem, price: cartItem.price - cartItem.price * cartItem.discount/100, quantity: (cartItem.quantity || 0) + 1 } : cartItem,
         ),
       )
     } else {
@@ -182,8 +193,12 @@ const OrderAtStore: React.FC = () => {
     return cart.reduce((total, item) => total + item.price * (item.quantity || 0), 0)
   }
 
-  const formatPrice = (price: number) => {
-    return `${price.toLocaleString()}đ`
+  function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+    const formatter = new Intl.NumberFormat(currencyCode, {
+      style: 'currency',
+      currency: currency,
+    });
+    return formatter.format(amount);
   }
 
   const handelByMoney = () => {
@@ -224,12 +239,14 @@ const OrderAtStore: React.FC = () => {
       messageApi.error("Vui lòng chọn ít nhất 1 món !");
       return;
     }
+    setShowModalVoucher(false)
     setIsModalOpen(true)
     setPaymentMethod(null)
     setPaymentCompleted(false)
   }
 
   const closeModal = () => {
+    setShowModalVoucher(false)
     setIsModalOpen(false)
     setPaymentMethod(null)
     setPaymentCompleted(false)
@@ -307,7 +324,7 @@ const OrderAtStore: React.FC = () => {
                   >
                     <div>
                       <p className="font-medium">{item.title_translate_1}</p>
-                      <p className="text-gray-600">{formatPrice(item.price)}</p>
+                      <p className="text-gray-600">{formatCurrency(item.price)}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
@@ -332,14 +349,14 @@ const OrderAtStore: React.FC = () => {
             <div className="mt-6 border-t pt-4">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-bold">Tổng tiền:</span>
-                <span className="text-lg font-bold">{formatPrice(calculateTotal())}</span>
+                <span className="text-lg font-bold">{formatCurrency(calculateTotal())}</span>
               </div>
 
               <button
                 className="relative w-full py-3 bg-green-500 text-white rounded-lg font-medium overflow-hidden group transition-all duration-300 ease-out hover:bg-green-600 active:scale-95"
                 data-aos="zoom-in"
                 data-aos-delay="400"
-                onClick={openModal}
+                onClick={ShowModalVoucher}
               >
                 <div className="absolute inset-0 w-full h-full transition-all duration-300 scale-0 group-hover:scale-100 group-hover:bg-green-600/30 rounded-lg"></div>
                 <div className="relative flex items-center justify-center gap-2">
@@ -380,7 +397,6 @@ const OrderAtStore: React.FC = () => {
               <>
                 {/* Burgers */}
                 <div data-aos="fade-up" data-aos-delay="400">
-                  <h3 className="text-lg font-bold mb-4">Burger</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     {filteredProducts.map((item, index) => (
                       <div
@@ -399,7 +415,10 @@ const OrderAtStore: React.FC = () => {
                         </div>
                         <div className="p-3 text-center">
                           <h4 className="font-medium">{item.title_translate_1}</h4>
-                          <p className="text-red-500 font-bold">{formatPrice(item.price)}</p>
+                          <div className="flex justify-center items-center space-x-2 mt-2">
+                            <p className={`font-bold ${item.discount > 0 ? "line-through text-gray-500" : "text-red-500"}`}>{formatCurrency(item.price)}</p>
+                            {item.discount > 0 && (<p className="text-red-500 font-bold">{formatCurrency(item.price - item.price * item.discount/100)}</p>)}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -480,7 +499,7 @@ const OrderAtStore: React.FC = () => {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Số tiền:</span>
-                            <span className="font-medium">{formatPrice(calculateTotal())}</span>
+                            <span className="font-medium">{formatCurrency(bill?.infomation.total_bill ?? 0)}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Nội dung CK:</span>
@@ -519,6 +538,11 @@ const OrderAtStore: React.FC = () => {
           </div>
         </div>
       )}
+      <Modal title="Nhập mã giảm giá (nếu có)" open={showModalVoucher} okText="Áp dụng" onOk={openModal} onCancel={() => setShowModalVoucher(false)} onClose={() => setShowModalVoucher(false)} className="w-full max-w-md mx-auto">
+        <div className="flex flex-col gap-4">
+          <Input placeholder="Nhập mã giảm giá" onChange={(e) => handleChangeVoucher(e.target.value)} value={voucher ?? ""} />
+        </div>
+      </Modal>
     </div>
   )
 }

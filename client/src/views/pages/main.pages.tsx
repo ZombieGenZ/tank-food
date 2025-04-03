@@ -25,7 +25,8 @@ import { gsap } from 'gsap';
 import type { MenuProps } from 'antd';
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
-import Loading from '../components/loading_page_components.tsx';
+import Loadings from '../components/loading_page_components.tsx';
+import Loading from '../components/loading.components.tsx';
 import ProfilePage from './Profile.pages.tsx';
 import Aboutus from './aboutus.pages.tsx';
 import Account from './Account.management.pages.tsx';
@@ -40,7 +41,6 @@ import { FaUserAlt } from "react-icons/fa";
 import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
 import Verify from '../components/VerifyToken.components.tsx';
 import { MdManageAccounts } from "react-icons/md";
-
 interface MenuItem {
   id: number;
   title: string;
@@ -86,6 +86,10 @@ interface CartItem {
 }
 
 const FormMain = (): JSX.Element => {
+  const [loadingCP, setLoadingCP] = useState<boolean>(false)
+  useEffect(() => {
+    console.log("loadingCP", loadingCP)
+  }, [loadingCP])
   const [cart, setCart] = useState<CartItem[]>(() => {
     const cartlocal = localStorage.getItem('my_cart')
     return cartlocal ? JSON.parse(cartlocal) : []
@@ -136,7 +140,7 @@ const FormMain = (): JSX.Element => {
       {
         key: '1',
         label: (
-          <button className='flex gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
+          <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
             <FaRegUserCircle /> Thông tin tài khoản
           </button>
         ),
@@ -144,7 +148,7 @@ const FormMain = (): JSX.Element => {
       {
         key: '2',
         label: (
-          <button className="flex gap-2 items-center" onClick={() => {setIsAdminView(false); navigate('/')}}>
+          <button className="flex cursor-pointer gap-2 items-center" onClick={() => {setIsAdminView(false); navigate('/')}}>
             <FaHome /> {language === "Tiếng Việt" ? "Trang chủ người dùng" : "Main User"}
           </button>
         ),
@@ -152,7 +156,7 @@ const FormMain = (): JSX.Element => {
       {
         key: '3',
         label: (
-          <button className='flex gap-2 items-center' onClick={() => Logout()}>
+          <button className='flex cursor-pointer gap-2 items-center' onClick={() => Logout()}>
             <IoLogOutOutline /> Đăng xuất
           </button>
         ),
@@ -311,10 +315,11 @@ const FormMain = (): JSX.Element => {
   return (
     <>
       {loading ? (
-      <Loading />
+      <Loadings />
     ) : user && user.role === 3 ? (
       <div className={isAdminView ? "flex relative" : "flex gap-5 flex-col"}>
         {contextHolder}
+        {loadingCP && <Loading />}
         {isAdminView ? (
           <>
             <NavigationAdmin displayname={user.display_name} />
@@ -338,7 +343,7 @@ const FormMain = (): JSX.Element => {
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/aboutus" element={<Aboutus />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
               <Route path='/deal' element={<SealPage />} />
               <Route path='/contact' element={<ContactUs />} />
@@ -351,13 +356,14 @@ const FormMain = (): JSX.Element => {
         )}
       </div>
     ) : (
-      <div className="flex gap-5 flex-col" ref={pageRef}>
+      <div className="flex relative gap-5 flex-col " ref={pageRef}>
         {contextHolder}
+        {loadingCP && <Loading />}
         <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/aboutus" element={<Aboutus />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
           <Route path='/deal' element={<SealPage />} />
           <Route path='/contact' element={<ContactUs />} />
@@ -546,7 +552,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '1',
       label: (
-        <button className='flex gap-2 items-center' onClick={() => navigate("/profile", { replace: true, state: userInfo })}>
+        <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate("/profile", { replace: true, state: userInfo })}>
           <FaRegUserCircle /> Thông tin tài khoản
         </button>
       ),
@@ -554,7 +560,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '2',
       label: (
-        <button onClick={() => Logout()} className='flex gap-2 items-center'>
+        <button onClick={() => Logout()} className='flex cursor-pointer gap-2 items-center'>
           <IoLogOutOutline /> Đăng xuất
         </button>
       ),
@@ -565,7 +571,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '1',
       label: (
-        <button className='flex gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
+        <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
           <FaRegUserCircle /> Thông tin tài khoản
         </button>
       ),
@@ -573,7 +579,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '2',
       label: (
-        <button className="flex gap-2 items-center" onClick={() => {toggleView(true); navigate('/')}}>
+        <button className="flex cursor-pointer gap-2 items-center" onClick={() => {toggleView(true); navigate('/')}}>
           <MdManageAccounts /> {language === "Tiếng Việt" ? "Quản lý và thống kê" : "Manage and statistical"}
         </button>
       ),
@@ -581,7 +587,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '3',
       label: (
-        <button className='flex gap-2 items-center' onClick={() => Logout()}>
+        <button className='flex cursor-pointer gap-2 items-center' onClick={() => Logout()}>
           <IoLogOutOutline /> Đăng xuất
         </button>
       ),

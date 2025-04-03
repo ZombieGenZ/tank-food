@@ -2,6 +2,11 @@ import { JSX, useEffect, useState } from "react";
 import { Table, Input, Modal, InputNumber, Select, Button, message } from 'antd';
 import type { TableProps } from 'antd';
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface DataType {
     key: string;
     _id: string;

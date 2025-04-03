@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom"
 import AOS from "aos"
 import "aos/dist/aos.css"
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 // Dữ liệu combo
 const comboDeals = [
   {

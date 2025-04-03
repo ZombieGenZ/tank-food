@@ -8,6 +8,11 @@ import Verify from "../components/VerifyToken.components";
 import { message } from "antd";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface User {
   _id: string;
   display_name: string;

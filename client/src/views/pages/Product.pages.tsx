@@ -8,6 +8,11 @@ import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_API_URL)
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface DropdownType {
   value: string;
   label: string;

@@ -1,7 +1,6 @@
 import React, { FormEvent, useEffect, useState } from "react"
 import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
-import Loading from "../components/loading.components";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 
 // interface đăng ký
@@ -21,9 +20,13 @@ interface Login {
     password: string,
 }
 
-const Signup: React.FC = () => {
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Signup: React.FC<Props> = (props) => {
     const navigate = useNavigate();
-    const [loadingCP, setLoadingCP] = useState<boolean>(false)
     const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
     const [formData, setFormData] = useState<Signup>({
@@ -132,7 +135,7 @@ const Signup: React.FC = () => {
       }
 
       try {
-        setLoadingCP(true)
+        props.setLoading(true)
         const body = {
           language: null,
           email: email
@@ -159,16 +162,20 @@ const Signup: React.FC = () => {
         messageApi.error(String(error))
       } finally {
         setTimeout(() => {
-          setLoadingCP(false)
+          props.setLoading(false)
         }, 2000)
       }
 
     }
 
+    useEffect(() => {
+      console.log("isLoading", props.isLoading)
+    }, [props.isLoading])
+
     // Nút đăng ký
     const handleSubmit = (e: React.FormEvent) => {
       try {
-        setLoadingCP(true)
+        props.setLoading(true)
         e.preventDefault();
         if (validateForm()) {
             const bodyResignter = {
@@ -224,7 +231,7 @@ const Signup: React.FC = () => {
         messageApi.error(String(error))
       } finally {
         setTimeout(() => {
-          setLoadingCP(false)
+          props.setLoading(false)
         }, 2000)
       }
     };
@@ -232,7 +239,7 @@ const Signup: React.FC = () => {
     // Nút đăng nhập
     const handleLoginSubmit = (e: FormEvent) => {
       try {
-        setLoadingCP(true)
+        props.setLoading(true)
         e.preventDefault();
         if(valiteLoginform()) {
           const body = {
@@ -289,14 +296,11 @@ const Signup: React.FC = () => {
         messageApi.error(String(error))
       } finally {
         setTimeout(() => {
-          setLoadingCP(false)
+          props.setLoading(false)
         }, 2000)
       }
     };
 
-    useEffect(() => {
-      console.log(loadingCP)
-    }, [loadingCP])
 
     const showForm = (type: string) => {
         setFormType(type);
@@ -307,7 +311,7 @@ const Signup: React.FC = () => {
           {contextHolder}
             <div style={styles.container}>
               <div style={styles.infoSide}>
-                <Loading isLoading={loadingCP}/>
+                
                 <div>
                     <div style={styles.logo}>Tank<span style={{ color: '#ffcc00' }}>Food</span></div>
                     <h1 style={styles.infoTitle}>Thưởng thức ẩm thực nhanh chóng!</h1>

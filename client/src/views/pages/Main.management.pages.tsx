@@ -7,6 +7,11 @@ import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_API_URL)
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 interface Order {
     _id: string;
     canceled_at: string;

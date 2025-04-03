@@ -3,6 +3,11 @@
 import { useState, useEffect } from "react"
 import type { FormEvent } from "react"
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export default function ChangePassword() {
   // Form state
   const [currentPassword, setCurrentPassword] = useState("")

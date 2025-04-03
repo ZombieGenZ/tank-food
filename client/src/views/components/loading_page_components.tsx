@@ -1,4 +1,4 @@
-const Loading = () => {
+const Loadings = () => {
   return (
     <div
       style={{
@@ -257,4 +257,4 @@ const Loading = () => {
   )
 }
 
-export default Loading
+export default Loadings

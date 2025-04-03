@@ -35,7 +35,10 @@ import Loading from "../components/loading.components";
 //   information: OrderInformation;
 //   message: string;
 // }
-
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 interface CartItem {
   id: string;
@@ -90,7 +93,6 @@ interface MyCardProps {
     user_infor: UserInfo | null;
   }
 const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
     const navigate = useNavigate(); 
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
@@ -142,7 +144,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
 
     const handlePayment = () => {
       try {
-        setIsLoading(true)
+        // setIsLoading(true)
         const checkToken = async () => {
           const isValid = await Verify(refresh_token, access_token);
           if (isValid) {
@@ -194,7 +196,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
         messageApi.error(String(error))
       } finally {
         setTimeout(() => {
-          setIsLoading(false)
+          // setIsLoading(false)
         }, 3000)
       }
     }
@@ -337,7 +339,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
           )}
         </div>
         <Modal title={language() == "Tiếng Việt" ? "Xác nhận thông tin thanh toán sản phẩm" : "Confirm product payment information"} open={showPaymentModal} okText={language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"} onOk={() => handlePayment()} onCancel={() => setShowPaymentModal(false)} onClose={() => setShowPaymentModal(false)}>
-            <Loading isLoading={isLoading}/>
+            <Loading />
             <div className="w-full flex flex-col gap-4">
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tên người dùng:" : "Display name:"}</p>

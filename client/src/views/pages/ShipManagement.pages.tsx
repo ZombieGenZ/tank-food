@@ -86,6 +86,11 @@ interface Preview {
   url: string;
 }
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const ShipManagement: React.FC = () => {
   const language = (): string => {
     const Language = localStorage.getItem('language')
