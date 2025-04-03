@@ -88,12 +88,12 @@ interface Product {
   updated_by: string;
 }
 
-function ProductManagement(): JSX.Element {
+function ProductManagement(props: Props): JSX.Element {
   socket.emit('connect-guest-realtime')
   socket.on('create-product', (res) => {
     setProduct((prev) => [...prev, res])
   })
-
+  
   socket.on('delete-product', (res) => {
     setProduct(product.filter((item) => item._id !== res._id))
   })

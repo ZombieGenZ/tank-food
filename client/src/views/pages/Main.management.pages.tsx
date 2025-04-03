@@ -115,7 +115,7 @@ interface StatisticalData {
   totalRevenue: number;
 }
 
-function MainManage (): JSX.Element {
+function MainManage(props: Props): JSX.Element{
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [list, setList] = useState<StatisticalData|null>(null)

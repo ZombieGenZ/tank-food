@@ -30,7 +30,7 @@ interface Category {
 }
 
 
-const CategoryManagement = (): JSX.Element => {
+const CategoryManagement: React.FC<Props> = (props) => {
   socket.emit('connect-guest-realtime')
   socket.on('create-category', (res) => {
     setCategory([...category, res])

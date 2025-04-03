@@ -93,7 +93,7 @@ interface Preview {
     url: string;
 }
 
-const OrderManagement: React.FC = () => {
+const OrderManagement: React.FC<Props> = (props) => {
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"

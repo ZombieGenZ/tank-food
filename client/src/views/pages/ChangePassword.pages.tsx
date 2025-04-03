@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { JSX, useState, useEffect } from "react"
 import type { FormEvent } from "react"
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ChangePassword() {
+export default function ChangePassword(props: Props): JSX.Element {
   // Form state
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")

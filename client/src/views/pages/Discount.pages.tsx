@@ -1,4 +1,4 @@
-import { JSX, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
 import type { TableProps } from 'antd';
 import { DatePicker } from 'antd';
@@ -32,7 +32,7 @@ interface Voucher {
     _id: string;
 }
 
-const DiscountCodeManagement = (): JSX.Element => {
+const DiscountCodeManagement: React.FC<Props> = (props) => {
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
     const [voucher, setVoucher] = useState<Voucher[]>([])

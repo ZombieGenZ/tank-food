@@ -91,7 +91,7 @@ interface Props {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ShipManagement: React.FC = () => {
+const ShipManagement: React.FC<Props> = (props) => {
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"

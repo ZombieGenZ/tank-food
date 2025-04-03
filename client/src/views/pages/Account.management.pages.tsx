@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Input, Modal, InputNumber, Select, Button, message } from 'antd';
 import type { TableProps } from 'antd';
 
@@ -38,7 +38,7 @@ interface DataType {
   }
   
 
-const Account = (): JSX.Element => {
+const Account: React.FC<Props> = (props) => {
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [listuser, setListuser] = useState<User[]>([]);

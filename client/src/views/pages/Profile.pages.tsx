@@ -108,7 +108,7 @@ interface Preview {
   url: string;
 }
 
-const ProfilePage: React.FC = () => {
+const ProfilePage: React.FC<Props> = (props) => {
   const [activeTab, setActiveTab] = useState<"info" | "history">("info")
   const language = (): string => {
     const Language = localStorage.getItem('language')

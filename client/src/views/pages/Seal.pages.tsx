@@ -94,7 +94,7 @@ const popularItems = [
   },
 ]
 
-const SealPage = () => {
+const SealPage: React.FC<Props> = (props) => {
   const navigate = useNavigate()
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("weekday")

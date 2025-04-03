@@ -92,7 +92,7 @@ interface MyCardProps {
     setCart: Dispatch<SetStateAction<CartItem[]>>;
     user_infor: UserInfo | null;
   }
-const MyCard = ({ cart, setCart, user_infor }: MyCardProps): JSX.Element => {
+const MyCard = ({ cart, setCart, user_infor }: MyCardProps, props: Props): JSX.Element => {
     const navigate = useNavigate(); 
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
