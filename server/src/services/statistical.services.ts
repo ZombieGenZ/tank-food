@@ -203,12 +203,14 @@ class StatisticalService {
       })
 
       if (response.data.errors) {
+        console.log('Error:', response.data.errors)
         return 0
       }
 
       const analyticsData = response.data.data.viewer.zones[0].httpRequests1dGroups
       return analyticsData.reduce((sum: number, item: any) => sum + item.sum.requests, 0)
     } catch (error: any) {
+      console.error('Error fetching Cloudflare analytics:', error.message)
       return 0
     }
   }
