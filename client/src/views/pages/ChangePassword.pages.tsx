@@ -2,26 +2,18 @@
 
 import { useState, useEffect } from "react"
 import type { FormEvent } from "react"
-import { useLocation } from 'react-router-dom';
-import { RESPONSE_CODE } from "../../constants/responseCode.constants";
-import { message } from "antd";
 
 export default function ChangePassword() {
   // Form state
+  const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [messages, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const [passwordStrength, setPasswordStrength] = useState(0)
-  const [messageApi, contextHolder] = message.useMessage();
-
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-
-  // Lấy giá trị của một query parameter cụ thể
-  const paramValue = queryParams.get('token');
 
   // Initialize animations
   useEffect(() => {
@@ -81,34 +73,12 @@ export default function ChangePassword() {
 
     setIsLoading(true)
     setMessage(null)
-    const body = {
-      language: null,
-      token: paramValue,
-      new_password: newPassword,
-      confirm_new_password: confirmPassword
-    }
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    }).then((response) => {
-      return response.json()
-    }).then((data) => {
-      if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR){
-        messageApi.error(data.message)
-        return
-      }
-      message.success(data.message)
-      console.log(data)
-    })
 
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false)
       setMessage({ type: "success", text: "Password changed successfully!" })
+      setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
     }, 1500)
@@ -126,7 +96,6 @@ export default function ChangePassword() {
 
   return (
     <div className="password-change-container">
-      {contextHolder}
       <div className="background-pattern"></div>
 
       <div className="password-card" data-animate>
@@ -136,14 +105,42 @@ export default function ChangePassword() {
         </div>
 
         <form onSubmit={handleSubmit} className="card-form">
-          {messages && (
-            <div className={`alert ${messages.type === "success" ? "alert-success" : "alert-error"}`} data-animate>
-              <span className="alert-icon">{messages.type === "success" ? "✓" : "⚠"}</span>
-              <span className="alert-text">{messages.text}</span>
+          {message && (
+            <div className={`alert ${message.type === "success" ? "alert-success" : "alert-error"}`} data-animate>
+              <span className="alert-icon">{message.type === "success" ? "✓" : "⚠"}</span>
+              <span className="alert-text">{message.text}</span>
             </div>
           )}
 
           <div className="form-fields">
+            <div className="form-group" data-animate>
+              <label htmlFor="current-password" className="form-label">
+                Current Password
+              </label>
+              <div className="input-group">
+                <input
+                  id="current-password"
+                  type={showCurrentPassword ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  className="form-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="password-toggle"
+                  aria-label={showCurrentPassword ? "Hide password" : "Show password"}
+                >
+                  <div className={`eye-icon ${showCurrentPassword ? "eye-open" : "eye-closed"}`}>
+                    <div className="eye-outer">
+                      <div className="eye-inner"></div>
+                    </div>
+                    <div className="eye-lash"></div>
+                  </div>
+                </button>
+              </div>
+            </div>
 
             <div className="form-group" data-animate>
               <label htmlFor="new-password" className="form-label">
@@ -251,7 +248,7 @@ export default function ChangePassword() {
               </div>
             ) : (
               <div className="button-content">
-                <span>Change Password</span>
+                <span>Update Password</span>
                 <span className="arrow-icon">→</span>
               </div>
             )}

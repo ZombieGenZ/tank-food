@@ -4,6 +4,8 @@ import FormMain from "./views/pages/main.pages";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import { Transition } from "@mantine/core";
 import OrderAtStore from "./views/pages/OrderAtStore.pages";
+import ResultVerifyAccount from "./views/pages/ResultVerifyAccount.pages";
+import ChangePassword from "./views/pages/ChangePassword.pages";
 
 const App = () => {
   // const [scroll, scrollTo] = useWindowScroll();
@@ -24,6 +26,8 @@ const App = () => {
         <Routes>
           <Route path="/*" element={<FormMain />} />
           <Route path="/orderatstore" element={<OrderAtStore />} />
+          <Route path="/resultverifyaccount" element={<ResultVerifyAccount />} />
+          <Route path="/changepassword" element={<ChangePassword />} />
         </Routes>
       </BrowserRouter>
 
