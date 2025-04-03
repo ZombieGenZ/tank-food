@@ -66,8 +66,10 @@ export const setupProductImage = async (req: Request, res: Response, next: NextF
       throw new Error('Could not get image dimensions')
     }
 
-    const x = metadata.width - watermarkMetadata.width - 30
-    const y = metadata.height - watermarkMetadata.height - 30
+    // const x = metadata.width - watermarkMetadata.width - 30
+    // const y = metadata.height - watermarkMetadata.height - 30
+    const x = 30
+    const y = 30
 
     const buffer = await sharp(imgPath)
       .composite([
