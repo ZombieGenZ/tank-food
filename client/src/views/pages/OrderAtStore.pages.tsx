@@ -151,60 +151,6 @@ const OrderAtStore: React.FC = () => {
     return () => clearTimeout(timer)
   }, [paymentMethod, paymentCompleted])
 
-  // const menuItems: FoodItem[] = [
-  //   {
-  //     id: "1",
-  //     name: "Burger Bò Phô Mai",
-  //     price: 45000,
-  //     category: "food",
-  //     subcategory: "burger",
-  //     image: "/placeholder.svg?height=100&width=100",
-  //   },
-  //   {
-  //     id: "4",
-  //     name: "Burger Gà Chiên",
-  //     price: 40000,
-  //     category: "food",
-  //     subcategory: "burger",
-  //     image: "/placeholder.svg?height=100&width=100",
-  //   },
-  //   {
-  //     id: "5",
-  //     name: "Burger Cá Muối Ran",
-  //     price: 65000,
-  //     category: "food",
-  //     subcategory: "burger",
-  //     image: "/placeholder.svg?height=100&width=100",
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Khoai Tây Chiên",
-  //     price: 25000,
-  //     category: "food",
-  //     subcategory: "side",
-  //     image: "/placeholder.svg?height=100&width=100",
-  //   },
-  //   {
-  //     id: "6",
-  //     name: "Gà Rán (3 miếng)",
-  //     price: 55000,
-  //     category: "food",
-  //     subcategory: "side",
-  //     image: "/placeholder.svg?height=100&width=100",
-  //   },
-  //   {
-  //     id: "7",
-  //     name: "Hot Dog",
-  //     price: 20000,
-  //     category: "food",
-  //     subcategory: "side",
-  //     image: "/placeholder.svg?height=100&width=100",
-  //   },
-  //   { id: "3", name: "COCA-COLA", price: 15000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
-  //   { id: "8", name: "Pepsi", price: 15000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
-  //   { id: "9", name: "Trà Đào", price: 20000, category: "drinks", image: "/placeholder.svg?height=100&width=100" },
-  // ]
-
   const addToCart = (item: Product) => {
     const existingItem = cart.find((cartItem) => cartItem._id === item._id)
 
@@ -315,7 +261,6 @@ const OrderAtStore: React.FC = () => {
       if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
         messageApi.success(data.message)
         setBill(data)
-        setCart([])
       } else {
         messageApi.error(data.message)
         return;      }

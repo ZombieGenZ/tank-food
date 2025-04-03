@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Input, message ,Modal } from 'antd';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import Verify from '../components/VerifyToken.components';
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface Order {
     _id: string;
@@ -102,6 +105,15 @@ const OrderManagement: React.FC = () => {
 
   const [showCancelmodal, setShowcancelmodal] = useState<boolean>(false);
   const [reasonCancelation, setReasonCancel] = useState<string>("")
+
+  socket.emit('connect-employee-realtime', refresh_token)
+  socket.on('create-order', (data) => {
+    messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
+    setWaitData((prevData) => [
+      ...prevData,
+      { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
+    ]);
+  });
 
   const showModalReject = (orderID: string) => {
     setShowreasonmodal(true)

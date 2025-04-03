@@ -31,6 +31,15 @@ const CategoryManagement = (): JSX.Element => {
   socket.on('create-category', (res) => {
     setCategory([...category, res])
   })
+
+  socket.on('delete-category', (res) => {
+    setCategory(category.filter((item) => item._id !== res._id))
+  })
+
+  socket.on('update-category', (res) => {
+    setCategory(category.map((item) => item._id === res._id ? res : item))
+
+  })
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [category, setCategory] = useState<Category[]>([])
@@ -103,24 +112,8 @@ const CategoryManagement = (): JSX.Element => {
     }).then((data) => {
       console.log(data)
       if(data) {
-        messageApi.success(data.message).then(() => {
-          setShowEditModal(false)
-          const body = {
-            language: null,
-          } 
-          fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
-            setCategory(data.categories)
-            console.log(data)
-          })
-        })
+        messageApi.success(data.message)
+        setShowEditModal(false)
       }
     })
   }
@@ -146,21 +139,6 @@ const CategoryManagement = (): JSX.Element => {
       if(data) {
         setShowDeleteModal(false)
         messageApi.success(data.message)
-        const body = {
-          language: null,
-        } 
-        fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        }).then((response) => {
-          return response.json()
-        }).then((data) => {
-          setCategory(data.categories)
-          console.log(data)
-        })
       }
     })
   }
@@ -185,24 +163,8 @@ const CategoryManagement = (): JSX.Element => {
     }).then((data) => {
       console.log(data)
       if(data) {
-        messageApi.success(data.message).then(() => {
-          setShowCreateModal(false)
-          const body = {
-            language: null,
-          } 
-          fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
-            setCategory(data.categories)
-            console.log(data)
-          })
-        })
+        messageApi.success(data.message)
+        setShowCreateModal(false)
       }
     })
   }

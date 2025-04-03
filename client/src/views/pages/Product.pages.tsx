@@ -3,6 +3,10 @@ import { Table, Input, Button, Modal, InputNumber, Select, message, Upload ,Imag
 import type { TableProps } from 'antd';
 import { UploadOutlined } from "@ant-design/icons";
 import Verify from "../components/VerifyToken.components";
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface DropdownType {
   value: string;
@@ -80,6 +84,19 @@ interface Product {
 }
 
 function ProductManagement(): JSX.Element {
+  socket.emit('connect-guest-realtime')
+  socket.on('create-product', (res) => {
+    setProduct((prev) => [...prev, res])
+  })
+
+  socket.on('delete-product', (res) => {
+    setProduct(product.filter((item) => item._id !== res._id))
+  })
+
+  socket.on('update-product', (res) => {
+    setProduct(product.map((item) => item._id === res._id ? res : item))
+  })
+
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [product, setProduct] = useState<Product[]>([]);
@@ -132,6 +149,7 @@ function ProductManagement(): JSX.Element {
   const [imageUrlEdit, setImageUrlEdit] = useState<string | null>(selectProduct?.preview.url || null);
 
   useEffect(() => { setIsImageChanged(isImageChanged) }, [isImageChanged])
+  // useEffect(() => { setProduct(product) }, [product])
 
   const handleChangePrice = (e: number|null) => {
     if(e == null) return;
@@ -393,7 +411,11 @@ function ProductManagement(): JSX.Element {
       body: JSON.stringify(body)
     }).then((response) => { return response.json() }).then((data) => {
       console.log(data)
-      if (data.code == "DELETE_PRODUCT_SUCCESSFUL") {
+      if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+        messageApi.error(data.errors.product_id.msg)
+        return;
+      }
+      if (data.code == RESPONSE_CODE.DELETE_PRODUCT_SUCCESSFUL) {
         messageApi.success(data.message)
         setShowDeleteModal(false)
         const body = {

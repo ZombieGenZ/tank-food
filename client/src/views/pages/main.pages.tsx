@@ -110,7 +110,7 @@ const FormMain = (): JSX.Element => {
   }, [cart])
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const [isAdminView, setIsAdminView] = useState<boolean>(false); // Mặc định là Admin view
+  const [isAdminView, setIsAdminView] = useState<boolean>(true); // Mặc định là Admin view
 
   const [messageApi, contextHolder] = message.useMessage();
 
