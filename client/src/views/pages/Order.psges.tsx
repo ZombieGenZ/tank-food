@@ -135,28 +135,13 @@ const OrderManagement: React.FC<Props> = (props) => {
         { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
       ]);
     });
-    socket.on('update-order', (data) => {
-      messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
-      setWaitData((prevData) => [
-        ...prevData,
-        { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
-      ]);
+    socket.on('checkout-order', (data) => {
+      messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới cập nhật" : "New order updated")
+      setWaitData((prevData => prevData.map(order => order._id === data._id ? { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address } : order)));
     })
     return () => {
-      socket.off('create-order', (data) => {
-        messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
-        setWaitData((prevData) => [
-          ...prevData,
-          { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
-        ]);
-      });
-      socket.off('update-order', (data) => {
-        messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
-        setWaitData((prevData) => [
-          ...prevData,
-          { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
-        ]);
-      })
+      socket.off('create-order');
+      socket.off('checkout-order');
     };
   }, [refresh_token, messageApi])
 
@@ -174,74 +159,86 @@ const handleConfirmSuccess = (orderId: string) => {
   const checkToken = async () => {
     const isValid = await Verify(refresh_token, access_token);
     if (isValid) {
-      const body = {
-        language: null,
-        refresh_token: refresh_token,
-        order_id: orderId,
-        decision: true,
-        reason: null
-      }
-
-      fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-completion-confirmation`, {
-        method: 'PUT',
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify(body)
-      }).then((response) => {
-        return response.json()
-      }).then((data) => {
-        console.log(data)
-        if(data.code){
-            messageApi.success(data.message)
-            const body = {
-              language: null,
-              refresh_token: refresh_token,
-            }
-            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
-            }).then(response => {
-                return response.json()
-            }).then((data) => {
-                if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                    messageApi.success(data.message)
-                    setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                } else {
-                    messageApi.error(data.message)
-                    return;
-                }
-            })
-
-            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
-            }).then(response => {
-                return response.json()
-            }).then((data) => {
-                if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                    messageApi.success(data.message)
-                    setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                } else {
-                    messageApi.error(data.message)
-                    return;
-                }
-            })
-        } else {
-            messageApi.error(data.errors.order_id.msg)
-            return
+      try { 
+        props.setLoading(true) 
+        const body = {
+          language: null,
+          refresh_token: refresh_token,
+          order_id: orderId,
+          decision: true,
+          reason: null
         }
-    })
-
+  
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-completion-confirmation`, {
+          method: 'PUT',
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+          },
+          body: JSON.stringify(body)
+        }).then((response) => {
+          return response.json()
+        }).then((data) => {
+          if(data.code){
+              messageApi.success(data.message)
+              const body = {
+                language: null,
+                refresh_token: refresh_token,
+              }
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                      setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                  } else {
+                      messageApi.error(data.message)
+                      return;
+                  }
+              })
+  
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                      setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                  } else {
+                      messageApi.error(data.message)
+                      return;
+                  }
+              })
+          } else {
+              messageApi.error(data.errors.order_id.msg)
+              return
+          }
+      })
+      } catch (error) {
+        messageApi.open({
+          type: 'error',
+          content: String(error),
+          style: {
+            marginTop: '10vh',
+          },
+        })
+        return;
+      } finally {
+        setTimeout(() => {
+          props.setLoading(false)
+        }, 2000)
+      }
     } else {
       messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
     }
@@ -254,74 +251,86 @@ const handleAproval = (orderId: string) => {
   const checkToken = async () => {
     const isValid = await Verify(refresh_token, access_token);
     if (isValid) {
-      const body = {
-        language: null,
-        refresh_token: refresh_token,
-        order_id: orderId,
-        decision: true,
-        reason: null
-      }
-
-      fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-approval`, {
-        method: 'PUT',
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify(body)
-      }).then((response) => {
-        return response.json()
-      }).then((data) => {
-        console.log(data)
-        if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
-            messageApi.success(data.message)
-            const body = {
-              language: null,
-              refresh_token: refresh_token,
-            }
-            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
-            }).then(response => {
-                return response.json()
-            }).then((data) => {
-                if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                    messageApi.success(data.message)
-                    setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                } else {
-                    messageApi.error(data.message)
-                    return;
-                }
-            })
-
-            fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
-            }).then(response => {
-                return response.json()
-            }).then((data) => {
-                if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                    messageApi.success(data.message)
-                    setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                } else {
-                    messageApi.error(data.message)
-                    return;
-                }
-            })
-        } else {
-            messageApi.error(data.errors.order_id.msg)
-            return
+      try {
+        props.setLoading(true)
+        const body = {
+          language: null,
+          refresh_token: refresh_token,
+          order_id: orderId,
+          decision: true,
+          reason: null
         }
-    })
-
+  
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-approval`, {
+          method: 'PUT',
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+          },
+          body: JSON.stringify(body)
+        }).then((response) => {
+          return response.json()
+        }).then((data) => {
+          if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
+              messageApi.success(data.message)
+              const body = {
+                language: null,
+                refresh_token: refresh_token,
+              }
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                      setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                  } else {
+                      messageApi.error(data.message)
+                      return;
+                  }
+              })
+  
+              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                  method: 'POST',
+                  headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${access_token}`,
+                  },
+                  body: JSON.stringify(body)
+              }).then(response => {
+                  return response.json()
+              }).then((data) => {
+                  if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                      setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                  } else {
+                      messageApi.error(data.message)
+                      return;
+                  }
+              })
+          } else {
+              messageApi.error(data.errors.order_id.msg)
+              return
+          }
+      })
+      } catch (error) {
+        messageApi.open({
+          type: 'error',
+          content: String(error),
+          style: {
+            marginTop: '10vh',
+          },
+        })
+        return;
+      } finally {
+        setTimeout(() => {
+          props.setLoading(false)
+        }, 2000)
+      }
     } else {
       messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
     }
@@ -334,71 +343,84 @@ const handleConfirm = (orderID: string) => {
     const checkToken = async () => {
         const isValid = await Verify(refresh_token, access_token);
         if (isValid) {
+          try {
+            props.setLoading(true)
             const body = {
-                language: null,
-                refresh_token: refresh_token,
-                order_id: orderID            
+              language: null,
+              refresh_token: refresh_token,
+              order_id: orderID            
             }
-        
+      
             fetch(`${import.meta.env.VITE_API_URL}/api/orders/payment-confirmation`, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
+              method: 'PUT',
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
             }).then((response) => {
-                return response.json()
+              return response.json()
             }).then((data) => {
-                console.log(data)
-                if(data.code == RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL) {
-                    messageApi.success(data.message)
-                    const body = {
-                        language: null,
-                        refresh_token: refresh_token,
-                    }
-                    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                        body: JSON.stringify(body)
-                    }).then(response => {
-                        return response.json()
-                    }).then((data) => {
-                        if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                            messageApi.success(data.message)
-                            setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                        } else {
-                            messageApi.error(data.message)
-                            return;
-                        }
-                    })
+              if(data.code == RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL) {
+                  messageApi.success(data.message)
+                  const body = {
+                      language: null,
+                      refresh_token: refresh_token,
+                  }
+                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                      method: 'POST',
+                      headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${access_token}`,
+                      },
+                      body: JSON.stringify(body)
+                  }).then(response => {
+                      return response.json()
+                  }).then((data) => {
+                      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                          setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                      } else {
+                          messageApi.error(data.message)
+                          return;
+                      }
+                  })
 
-                    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                        body: JSON.stringify(body)
-                    }).then(response => {
-                        return response.json()
-                    }).then((data) => {
-                        if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                            messageApi.success(data.message)
-                            setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                        } else {
-                            messageApi.error(data.message)
-                            return;
-                        }
-                    })
-                } else {
-                    messageApi.error(data.errors.order_id.msg)
-                    return
-                }
-            })  
+                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                      method: 'POST',
+                      headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${access_token}`,
+                      },
+                      body: JSON.stringify(body)
+                  }).then(response => {
+                      return response.json()
+                  }).then((data) => {
+                      if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                          setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                      } else {
+                          messageApi.error(data.message)
+                          return;
+                      }
+                  })
+              } else {
+                  messageApi.error(data.errors.order_id.msg)
+                  return
+              }
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }  
         } else {
             messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
         }
@@ -413,79 +435,95 @@ const handleCancel = (orderID: string) => {
         return;
     }
     const checkToken = async () => {
-          const isValid = await Verify(refresh_token, access_token);
-          if (isValid) {
-            const body = {
-                language: null,
-                refresh_token: refresh_token,
-                order_id: orderID,
-                reason: reasonCancelation,
-            }
-        
-            fetch(`${import.meta.env.VITE_API_URL}/api/orders/cancel-order-employee`, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
-            }).then(response => {
-                return response.json()
-            }).then((data) => {
-                console.log(data)
-                if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL){
-                    setShowcancelmodal(false)
-                    messageApi.success(data.message)
-                    const body = {
-                        language: null,
-                        refresh_token: refresh_token,
-                    }
-                    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                        body: JSON.stringify(body)
-                    }).then(response => {
-                        return response.json()
-                    }).then((data) => {
-                        if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                            messageApi.success(data.message)
-                            setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                        } else {
-                            messageApi.error(data.message)
-                            return;
-                        }
-                    })
-
-                    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                        body: JSON.stringify(body)
-                    }).then(response => {
-                        return response.json()
-                    }).then((data) => {
-                        if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                            messageApi.success(data.message)
-                            setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                        } else {
-                            messageApi.error(data.message)
-                            return;
-                        }
-                    })
-                } else {
-                    messageApi.error(data.errors.order_id.msg)
-                    return
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+        try {
+          props.setLoading(true)
+          setShowcancelmodal(false)
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            order_id: orderID,
+            reason: reasonCancelation,
+        }
+    
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders/cancel-order-employee`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json()
+        }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL){
+                setShowcancelmodal(false)
+                messageApi.success(data.message)
+                const body = {
+                    language: null,
+                    refresh_token: refresh_token,
                 }
-            })   
-          } else {
-              messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
-          }
-      };
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                        setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                    } else {
+                        messageApi.error(data.message)
+                        return;
+                    }
+                })
+
+                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${access_token}`,
+                    },
+                    body: JSON.stringify(body)
+                }).then(response => {
+                    return response.json()
+                }).then((data) => {
+                    if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+
+                        setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                    } else {
+                        messageApi.error(data.message)
+                        return;
+                    }
+                })
+            } else {
+                messageApi.error(data.errors.order_id.msg)
+                return
+            }
+        })
+        }  catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+              marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
+        }   
+      } else {
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+      }
+    };
     checkToken();
 }
 
@@ -498,74 +536,89 @@ const handleReject = (orderID: string) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
         if (isValid) {
+          try {
+            props.setLoading(true)
+            setShowreasonmodal(false)
             const body = {
-                language: null,
-                refresh_token: refresh_token,
-                order_id: orderID,
-                decision: false,
-                reason: reasonRejection,
+              language: null,
+              refresh_token: refresh_token,
+              order_id: orderID,
+              decision: false,
+              reason: reasonRejection,
             }
-        
+      
             fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-approval`, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body)
+              method: 'PUT',
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
             }).then(response => {
-                return response.json()
+              return response.json()
             }).then((data) => {
-                console.log(data)
-                if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
-                    messageApi.success(data.message)
-                    setShowreasonmodal(false)
-                    const body = {
-                        language: null,
-                        refresh_token: refresh_token,
-                    }
-                    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                        body: JSON.stringify(body)
-                    }).then(response => {
-                        return response.json()
-                    }).then((data) => {
-                        if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                            messageApi.success(data.message)
-                            setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                        } else {
-                            messageApi.error(data.message)
-                            return;
-                        }
-                    })
+              console.log(data)
+              if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
+                  messageApi.success(data.message)
+                  setShowreasonmodal(false)
+                  const body = {
+                      language: null,
+                      refresh_token: refresh_token,
+                  }
+                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
+                      method: 'POST',
+                      headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${access_token}`,
+                      },
+                      body: JSON.stringify(body)
+                  }).then(response => {
+                      return response.json()
+                  }).then((data) => {
+                      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                          setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                      } else {
+                          messageApi.error(data.message)
+                          return;
+                      }
+                  })
 
-                    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${access_token}`,
-                        },
-                        body: JSON.stringify(body)
-                    }).then(response => {
-                        return response.json()
-                    }).then((data) => {
-                        if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                            messageApi.success(data.message)
-                            setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                        } else {
-                            messageApi.error(data.message)
-                            return;
-                        }
-                    })
-                } else {
-                    messageApi.error(data.errors.order_id.msg)
-                    return
-                }
-            })  
+                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
+                      method: 'POST',
+                      headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${access_token}`,
+                      },
+                      body: JSON.stringify(body)
+                  }).then(response => {
+                      return response.json()
+                  }).then((data) => {
+                      if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+                          setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+                      } else {
+                          messageApi.error(data.message)
+                          return;
+                      }
+                  })
+              } else {
+                  messageApi.error(data.errors.order_id.msg)
+                  return
+              }
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }  
         } else {
             messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
         }
@@ -589,8 +642,6 @@ const handleReject = (orderID: string) => {
         return response.json()
     }).then((data) => {
         if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-          console.log(data)
-            messageApi.success(data.message)
             setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
         } else {
             messageApi.error(data.message)
@@ -609,8 +660,6 @@ const handleReject = (orderID: string) => {
         return response.json()
     }).then((data) => {
         if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-          console.log(data)
-            messageApi.success(data.message)
             setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
         } else {
             messageApi.error(data.message)

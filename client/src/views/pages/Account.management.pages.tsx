@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { Table, Input, Modal, InputNumber, Select, Button, message } from 'antd';
 import type { TableProps } from 'antd';
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+import Verify from "../components/VerifyToken.components";
+// import io from "socket.io-client";
+
+// const socket = io(import.meta.env.VITE_API_URL)
 
 interface Props {
   isLoading: boolean;
@@ -41,6 +46,20 @@ interface DataType {
 const Account: React.FC<Props> = (props) => {
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const [listuser, setListuser] = useState<User[]>([]);
   const [data, setDataUser] = useState<DataType[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
@@ -50,6 +69,10 @@ const Account: React.FC<Props> = (props) => {
   const [timeUnit, setTimeUnit] = useState("h");
   const [banReason, setBanReason] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
+
+  // useEffect(() => {
+  //   return () => {}
+  // }, [refresh_token, messageApi])
 
   const showModal = (value: DataType) => {
     setSelectedRecord(value);
@@ -67,53 +90,88 @@ const Account: React.FC<Props> = (props) => {
   }
 
   const handleActiveOk = (id: string) => {
-    const body = { 
-      language: null,
-      refresh_token: refresh_token,
-      user_id: id
-    };
-    
-    fetch(`${import.meta.env.VITE_API_URL}/api/account-management/unban-account`, {
-      method: 'PUT',
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body)
-    }).then((response) => {
-      return response.json()
-    }).then((data) => {
-      console.log(data)
-      if(data.message == "Mở khóa tài khoản thành công"){
-        messageApi.open({
-          type: 'success',
-          content: 'Mở khóa tài khoản thành công',
-          style: {
-            marginTop: '10vh',
-          },
-        }).then(() => {
-          setIsModalActiveOpen(false);
-          const body = {
-            language: null,
-            refresh_token: refresh_token
-          }
-      
-          fetch(`${import.meta.env.VITE_API_URL}/api/account-management/get-account`, {
-            method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          handleActiveCancel();
+          props.setLoading(true);
+          try {
+            const body = { 
+              language: null,
+              refresh_token: refresh_token,
+              user_id: id
+            };
+            
+            fetch(`${import.meta.env.VITE_API_URL}/api/account-management/unban-account`, {
+              method: 'PUT',
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then((response) => {
+              return response.json()
+            }).then((data) => {
+              if(data.code == RESPONSE_CODE.UNBAN_ACCOUNT_FAILED){
+                messageApi.open({
+                  type: 'error',
+                  content: data.message,
+                  style: {
+                    marginTop: '10vh',
                   },
-                  body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
-            setListuser(data.account)
-            console.log(data)
-          })
-        })
-      }
-    })
+                })
+                return;
+              }
+              // Nếu không có lỗi thì mở thông báo thành công
+              if(data.code == RESPONSE_CODE.UNBAN_ACCOUNT_SUCCESSFUL){
+                messageApi.open({
+                  type: 'success',
+                  content: 'Mở khóa tài khoản thành công',
+                  style: {
+                    marginTop: '10vh',
+                  },
+                }).then(() => {
+                  setIsModalActiveOpen(false);
+                  const body = {
+                    language: null,
+                    refresh_token: refresh_token
+                  }
+              
+                  fetch(`${import.meta.env.VITE_API_URL}/api/account-management/get-account`, {
+                    method: 'POST',
+                          headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${access_token}`,
+                          },
+                          body: JSON.stringify(body)
+                  }).then((response) => {
+                    return response.json()
+                  }).then((data) => {
+                    setListuser(data.account)
+                  })
+                })
+              }
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+      };
+    
+      checkToken();
   }
 
   const handleOk = (id: string) => {
@@ -138,62 +196,93 @@ const Account: React.FC<Props> = (props) => {
       return;
     }
 
-    // Xử lý dữ liệu nếu hợp lệ
-    console.log("Dữ liệu gửi đi:", { hours, timeUnit, banReason });
-
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-      user_id: id,
-      reason: banReason,
-      time: hours + timeUnit,
-    }
-    fetch(`${import.meta.env.VITE_API_URL}/api/account-management/ban-account`, {
-      method: 'PUT',
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body)
-    }).then((response) => {
-      return response.json()
-    }
-    ).then((data) => {  
-      console.log(data)
-      if(data.message == "Khóa tài khoản thành công"){
-        messageApi.open({
-          type: 'success',
-          content: 'Ban tài khoản thành công',
-          style: {
-            marginTop: '10vh',
-          },
-        }).then(() => {
-          setIsModalOpen(false);
-          const body = {
-            language: null,
-            refresh_token: refresh_token
-          }
-      
-          fetch(`${import.meta.env.VITE_API_URL}/api/account-management/get-account`, {
-            method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          handleCancel();
+          props.setLoading(true);
+          try {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              user_id: id,
+              reason: banReason,
+              time: hours + timeUnit,
+            }
+            fetch(`${import.meta.env.VITE_API_URL}/api/account-management/ban-account`, {
+              method: 'PUT',
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then((response) => {
+              return response.json()
+            }
+            ).then((data) => {  
+              if(data.code == RESPONSE_CODE.BAN_ACCOUNT_FAILED){
+                messageApi.open({
+                  type: 'error',
+                  content: data.message,
+                  style: {
+                    marginTop: '10vh',
                   },
-                  body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
-            setListuser(data.account)
-            console.log(data)
-          })
-        }) 
-      }
-    })
+                })
+                return;
+              }
+              if(data.code == RESPONSE_CODE.BAN_ACCOUNT_SUCCESSFUL){
+                messageApi.open({
+                  type: 'success',
+                  content: data.message,
+                  style: {
+                    marginTop: '10vh',
+                  },
+                }).then(() => {
+                  setIsModalOpen(false);
+                  const body = {
+                    language: null,
+                    refresh_token: refresh_token
+                  }
+              
+                  fetch(`${import.meta.env.VITE_API_URL}/api/account-management/get-account`, {
+                    method: 'POST',
+                          headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${access_token}`,
+                          },
+                          body: JSON.stringify(body)
+                  }).then((response) => {
+                    return response.json()
+                  }).then((data) => {
+                    setListuser(data.account)
+                  })
+                }) 
+              }
+            })
+          }
+          catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+      };
+      checkToken();
   };
 
   const handleActiveCancel = () => {
-    setIsModalOpen(false);
+    setIsModalActiveOpen(false);
   };
 
   const handleCancel = () => {
@@ -227,22 +316,8 @@ const Account: React.FC<Props> = (props) => {
       return response.json()
     }).then((data) => {
       setListuser(data.account)
-      console.log(data)
     })
   }, [refresh_token, access_token])
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setRefreshToken(localStorage.getItem("refresh_token"));
-      setAccessToken(localStorage.getItem("access_token"));
-    };
-  
-    window.addEventListener("storage", handleStorageChange);
-  
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
 
   useEffect(() => {
     const newData = listuser.map((user, index) => ({

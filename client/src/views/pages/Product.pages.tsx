@@ -89,18 +89,6 @@ interface Product {
 }
 
 function ProductManagement(props: Props): JSX.Element {
-  socket.emit('connect-guest-realtime')
-  socket.on('create-product', (res) => {
-    setProduct((prev) => [...prev, res])
-  })
-  
-  socket.on('delete-product', (res) => {
-    setProduct(product.filter((item) => item._id !== res._id))
-  })
-
-  socket.on('update-product', (res) => {
-    setProduct(product.map((item) => item._id === res._id ? res : item))
-  })
 
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
@@ -136,7 +124,7 @@ function ProductManagement(props: Props): JSX.Element {
 
   const [title, setTitle] = useState<string>("")
   const [description, setDescription] = useState<string>("")
-  const [price, setPrice] = useState<number>(0)
+  const [price, setPrice] = useState<number>(10000)
   const [availability, setAvailability] = useState<boolean>(false)
   const [discount, setDiscount] = useState<number>(0)
   const [category, setNewCategory] = useState<string>("Đồ ăn nhanh")
@@ -152,6 +140,30 @@ function ProductManagement(props: Props): JSX.Element {
   const [imageEdit, setImageEdit] = useState<File | null>(null);
   const [isImageChanged, setIsImageChanged] = useState<boolean>(false);
   const [imageUrlEdit, setImageUrlEdit] = useState<string | null>(selectProduct?.preview.url || null);
+
+  useEffect(() => {
+    socket.emit('connect-guest-realtime')
+    socket.on('create-product', (res) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới" : "New product")
+      setProduct((prev) => [...prev, res])
+    })
+  
+    socket.on('delete-product', (res) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới bị xoá" : "New product deleted")
+      setProduct(product.filter((item) => item._id !== res._id))
+    })
+
+    socket.on('update-product', (res) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới cập nhật" : "New product updated")
+      setProduct(product.map((item) => item._id === res._id ? res : item))
+    })
+
+    return () => {
+      socket.off('create-product')
+      socket.off('delete-product')
+      socket.off('update-product')
+    }
+  })
 
   useEffect(() => { setIsImageChanged(isImageChanged) }, [isImageChanged])
   // useEffect(() => { setProduct(product) }, [product])
@@ -185,8 +197,6 @@ function ProductManagement(props: Props): JSX.Element {
     const imageUrl = URL.createObjectURL(file);
     setImageUrl(imageUrl);
 
-    console.log(file)
-
     return false;
   };
 
@@ -215,58 +225,83 @@ function ProductManagement(props: Props): JSX.Element {
       return;
     }
 
-    console.log("Gửi ảnh lên server:", image);
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+        try {
+          setShowCreateModal(false)
+          props.setLoading(true)
+          const formData = new FormData();
+          formData.append("language", String(null));
+          formData.append("refresh_token", String(refresh_token));
+          formData.append("preview", image); 
+          formData.append("title", title);
+          formData.append("discount", String(discount));
+          formData.append("description", description);
+          formData.append("price", String(price));
+          formData.append("availability", String(availability));
+          formData.append("category_id", category);
+          formData.append("tag", tag);
 
-    const formData = new FormData();
-    formData.append("language", String(null));
-    formData.append("refresh_token", String(refresh_token));
-    formData.append("preview", image); 
-    formData.append("title", title);
-    formData.append("discount", String(discount));
-    formData.append("description", description);
-    formData.append("price", String(price));
-    formData.append("availability", String(availability));
-    formData.append("category_id", category);
-    formData.append("tag", tag);
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/products/create`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: formData
-    }).then((response) => { return response.json() }).then((data) => {
-      console.log(data)
-      if (data.code == "CREATE_PRODUCT_SUCCESSFUL") {
-        messageApi.success(data.message)
-        setTitle("")
-        setDescription("")
-        setPrice(0)
-        setDiscount(0)
-        setAvailability(false)
-        setShowCreateModal(false)
-        setNewCategory("Đồ ăn nhanh")
-        setTag("")
-        setImageUrl(null)
-        const body = {
-          language: null,
-        } 
-        fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        }).then((response) => {
-          return response.json()
-        }).then((data) => {
-          setProduct(data.products)
-        })
+          fetch(`${import.meta.env.VITE_API_URL}/api/products/create`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+            body: formData
+          }).then((response) => { return response.json() }).then((data) => {
+            console.log(data)
+            if (data.code == RESPONSE_CODE.CREATE_PRODUCT_SUCCESSFUL) {
+              messageApi.success(data.message)
+              setTitle("")
+              setDescription("")
+              setPrice(0)
+              setDiscount(0)
+              setAvailability(false)
+              setShowCreateModal(false)
+              setNewCategory("Đồ ăn nhanh")
+              setTag("")
+              setImageUrl(null)
+              const body = {
+                language: null,
+              } 
+              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              }).then((response) => {
+                return response.json()
+              }).then((data) => {
+                setProduct(data.products)
+              })
+            } 
+            if(data.code == RESPONSE_CODE.CREATE_PRODUCT_FAILED) {
+              messageApi.error(data.message)
+              return;
+            }
+          })
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+               marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
+        }
       } else {
-        messageApi.error(data.message)
-        return;
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
       }
-     })
+    };
+    
+    checkToken();
   }
 
   useEffect(() => {
@@ -289,102 +324,118 @@ function ProductManagement(props: Props): JSX.Element {
   const EditProduct = (id: string) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
-      console.log(isValid)
       if (isValid) {
-        const body = {
-          language: null,
-          refresh_token: refresh_token,
-          product_id: id,
-          title: titleEdit,
-          description: descriptionEdit,
-          price: Number(priceEdit),
-          availability: availabilityEdit,
-          category_id: categoryEdit,
-          tag: tagEdit,
-          discount: Number(discountEdit),
-        }
-    
-        const formData = new FormData();
-        formData.append("language", String(null));
-        formData.append("refresh_token", String(refresh_token));
-        formData.append("product_id", id);
-        formData.append("title", titleEdit);
-        formData.append("discount", discountEdit);
-        formData.append("description", descriptionEdit);
-        formData.append("price", priceEdit);
-        formData.append("availability", String(availabilityEdit));
-        formData.append("category_id", categoryEdit);
-        formData.append("tag", tagEdit);
-        if (isImageChanged && imageEdit) {
-          formData.append("preview", imageEdit);
-        }
-    
-        if(isImageChanged == true) {
-          fetch(`${import.meta.env.VITE_API_URL}/api/products/update-change-image`, {
-            method: 'PUT',
-            headers: {
-              Authorization: `Bearer ${access_token}`,
+        try {
+          setShowEditModal(false)
+          props.setLoading(true)
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            product_id: id,
+            title: titleEdit,
+            description: descriptionEdit,
+            price: Number(priceEdit),
+            availability: availabilityEdit,
+            category_id: categoryEdit,
+            tag: tagEdit,
+            discount: Number(discountEdit),
+          }
+      
+          const formData = new FormData();
+          formData.append("language", String(null));
+          formData.append("refresh_token", String(refresh_token));
+          formData.append("product_id", id);
+          formData.append("title", titleEdit);
+          formData.append("discount", discountEdit);
+          formData.append("description", descriptionEdit);
+          formData.append("price", priceEdit);
+          formData.append("availability", String(availabilityEdit));
+          formData.append("category_id", categoryEdit);
+          formData.append("tag", tagEdit);
+          if (isImageChanged && imageEdit) {
+            formData.append("preview", imageEdit);
+          }
+      
+          if(isImageChanged == true) {
+            fetch(`${import.meta.env.VITE_API_URL}/api/products/update-change-image`, {
+              method: 'PUT',
+              headers: {
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: formData
+            }).then((response) => { return response.json() }).then((data) => {
+              if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_FAILED) {
+                messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL) {
+                messageApi.success(data.message)
+                const body = {
+                  language: null,
+                } 
+                fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(body)
+                }).then((response) => {
+                  return response.json()
+                }).then((data) => {
+                  setProduct(data.products)
+                })
+              }
+            })
+          } else {
+            fetch(`${import.meta.env.VITE_API_URL}/api/products/update`, {
+              method: 'PUT',
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            })
+            .then((response) => { return response.json() }).then((data) => {
+              if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_FAILED) {
+                messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL) {
+                messageApi.success(data.message)
+                const body = {
+                  language: null,
+                } 
+                fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(body)
+                }).then((response) => {
+                  return response.json()
+                }).then((data) => {
+                  console.log(data)
+                  setProduct(data.products)
+                })
+              }
+            })
+          }
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+               marginTop: '10vh',
             },
-            body: formData
-          }).then((response) => { return response.json() }).then((data) => {
-            console.log(data)
-            if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
-              messageApi.success(data.message)
-              setShowEditModal(false)
-              const body = {
-                language: null,
-              } 
-              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-              }).then((response) => {
-                return response.json()
-              }).then((data) => {
-                console.log(data)
-                setProduct(data.products)
-              })
-            }
           })
-        } else {
-          fetch(`${import.meta.env.VITE_API_URL}/api/products/update`, {
-            method: 'PUT',
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-          })
-          .then((response) => { return response.json() }).then((data) => {
-            console.log(data)
-            if(data.code == "UPDATE_PRODUCT_SUCCESSFUL") {
-              messageApi.success(data.message)
-              setShowEditModal(false)
-              const body = {
-                language: null,
-              } 
-              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-              }).then((response) => {
-                return response.json()
-              }).then((data) => {
-                console.log(data)
-                setProduct(data.products)
-              })
-            } else {
-              messageApi.error(data.message)
-              return;
-            }
-          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
         }
       } else {
-          console.log("Token không hợp lệ!");
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
       }
     };
     
@@ -401,45 +452,68 @@ function ProductManagement(props: Props): JSX.Element {
   }
 
   const DeleteProduct = (id: string) => {
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-      product_id: id
-    }
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/products/delete`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    }).then((response) => { return response.json() }).then((data) => {
-      console.log(data)
-      if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-        messageApi.error(data.errors.product_id.msg)
-        return;
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+        try {
+          setShowDeleteModal(false)
+          props.setLoading(true)
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            product_id: id
+          }
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/products/delete`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }).then((response) => { return response.json() }).then((data) => {
+            if (data.code == RESPONSE_CODE.DELETE_PRODUCT_SUCCESSFUL) {
+              messageApi.success(data.message)
+              const body = {
+                language: null,
+              } 
+              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              }).then((response) => {
+                return response.json()
+              }).then((data) => {
+                setProduct(data.products)
+              })
+            } 
+            if(data.code == RESPONSE_CODE.DELETE_PRODUCT_FAILED) {
+              messageApi.error(data.message)
+              return;
+            }
+          })
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+               marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
+        }
+      } else {
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
       }
-      if (data.code == RESPONSE_CODE.DELETE_PRODUCT_SUCCESSFUL) {
-        messageApi.success(data.message)
-        setShowDeleteModal(false)
-        const body = {
-          language: null,
-        } 
-        fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body)
-        }).then((response) => {
-          return response.json()
-        }).then((data) => {
-          console.log(data)
-          setProduct(data.products)
-        })
-      }
-    })
+    }; 
+    checkToken();
   }
 
   useEffect(() => {
@@ -583,23 +657,23 @@ function ProductManagement(props: Props): JSX.Element {
             <div className="w-full flex flex-col gap-3">
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tên sản phẩm:" : "Product name:"}</p>
-                  <Input value={title} onChange={(e) => setTitle(e.target.value)}/>
+                  <Input value={title} placeholder="Nhập tên sản phẩm" onChange={(e) => setTitle(e.target.value)}/>
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Mô tả:" : "Description:"}</p>
-                  <Input value={description} onChange={(e) => setDescription(e.target.value)}/>
+                  <Input value={description} placeholder="Nhập mô tả sản phẩm" onChange={(e) => setDescription(e.target.value)}/>
               </div>
               <div className="flex gap-2">
                 <div className=" flex gap-2 flex-col">
                     <p>{language() == "Tiếng Việt" ? "Giá tiền:" : "Price:"}</p>
                     <div>
-                        <InputNumber placeholder="VNĐ" value={price} onChange={handleChangePrice}/>
+                        <InputNumber placeholder="VNĐ" min={10000} value={price} onChange={handleChangePrice}/>
                     </div>
                 </div>
                 <div className=" flex gap-2 flex-col">
                     <p>{language() == "Tiếng Việt" ? "Giảm giá:" : "Discount:"}</p>
                     <div>
-                        <InputNumber placeholder="VNĐ" value={discount} onChange={handleChangeDiscount}/>
+                        <InputNumber placeholder="VNĐ" min={0} max={100} value={discount} onChange={handleChangeDiscount}/>
                     </div>
                 </div>
                 <div className="w-full flex gap-2 flex-col">
@@ -632,7 +706,7 @@ function ProductManagement(props: Props): JSX.Element {
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tags:" : "Tags:"}</p>
-                  <Input value={tag} onChange={(e) => setTag(e.target.value)}/>
+                  <Input value={tag} placeholder="Nhập tag sản phẩm (không bắt buộc)" onChange={(e) => setTag(e.target.value)}/>
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "ẢNh hiển thị sản phẩm:" : "Images:"}</p>
@@ -642,8 +716,8 @@ function ProductManagement(props: Props): JSX.Element {
                     maxCount={1} // Chỉ cho phép chọn 1 ảnh
                     showUploadList={false} // Không hiển thị danh sách upload
                   >
-                    <button>
-                      <UploadOutlined /> Chọn ảnh
+                    <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                      <UploadOutlined className="mr-2" /> Chọn ảnh
                     </button>
                   </Upload>
                   {imageUrl && <Image src={imageUrl} alt="Uploaded Image" />}
@@ -655,11 +729,11 @@ function ProductManagement(props: Props): JSX.Element {
               <div className="w-full flex flex-col gap-3">
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tên sản phẩm:" : "Product name:"}</p>
-                  <Input value={titleEdit} onChange={(e) => setTitleEdit(e.target.value)}/>
+                  <Input value={titleEdit} placeholder="Nhập tên sản phẩm" onChange={(e) => setTitleEdit(e.target.value)}/>
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Mô tả:" : "Description:"}</p>
-                  <Input value={descriptionEdit} onChange={(e) => setDescriptionEdit(e.target.value)}/>
+                  <Input value={descriptionEdit} placeholder="Nhập mô tả sản phẩm" onChange={(e) => setDescriptionEdit(e.target.value)}/>
               </div>
               <div className="flex gap-2">
                 <div className=" flex gap-2 flex-col">
@@ -671,7 +745,7 @@ function ProductManagement(props: Props): JSX.Element {
                 <div className=" flex gap-2 flex-col">
                     <p>{language() == "Tiếng Việt" ? "Giảm giá:" : "Discount:"}</p>
                     <div>
-                        <InputNumber max={String(100)} placeholder="VNĐ" value={discountEdit} onChange={handleChangeDiscountEdit}/>
+                        <InputNumber min={String(0)} max={String(100)} placeholder="VNĐ" value={discountEdit} onChange={handleChangeDiscountEdit}/>
                     </div>
                 </div>
                 <div className="w-full flex gap-2 flex-col">
@@ -704,18 +778,18 @@ function ProductManagement(props: Props): JSX.Element {
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tags:" : "Tags:"}</p>
-                  <Input value={tagEdit} onChange={(e) => setTagEdit(e.target.value)}/>
+                  <Input value={tagEdit} placeholder="Nhập tag sản phẩm (không bắt buộc)" onChange={(e) => setTagEdit(e.target.value)}/>
               </div>
-              <div className="flex gap-2 flex-col">
-                  <p>{language() == "Tiếng Việt" ? "ẢNh hiển thị sản phẩm:" : "Images:"}</p>
+              <div className="flex gap-2 flex-col w-full">
+                  <p>{language() == "Tiếng Việt" ? "Ảnh hiển thị sản phẩm (tối đa chỉ 1 ảnh):" : "Images:"}</p>
                   <Upload
                     accept="image/*"
                     beforeUpload={beforeUploadEdit}
                     maxCount={1} // Chỉ cho phép chọn 1 ảnh
                     showUploadList={false} // Không hiển thị danh sách upload
                   >
-                    <button>
-                      <UploadOutlined /> Chọn ảnh
+                    <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+                      <UploadOutlined className="mr-2" /> Chọn ảnh
                     </button>
                   </Upload>
                   {imageUrlEdit && <Image src={imageUrlEdit} alt="Uploaded Image" />}

@@ -1,6 +1,8 @@
-import { JSX, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
 import type { TableProps } from 'antd';
+import Verify from "../components/VerifyToken.components";
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_API_URL)
@@ -31,19 +33,6 @@ interface Category {
 
 
 const CategoryManagement: React.FC<Props> = (props) => {
-  socket.emit('connect-guest-realtime')
-  socket.on('create-category', (res) => {
-    setCategory([...category, res])
-  })
-
-  socket.on('delete-category', (res) => {
-    setCategory(category.filter((item) => item._id !== res._id))
-  })
-
-  socket.on('update-category', (res) => {
-    setCategory(category.map((item) => item._id === res._id ? res : item))
-
-  })
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [category, setCategory] = useState<Category[]>([])
@@ -61,6 +50,30 @@ const CategoryManagement: React.FC<Props> = (props) => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
+
+  useEffect(() => {
+    socket.emit('connect-guest-realtime')
+    socket.on('create-category', (res) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có danh mục mới" : "New category")
+      setCategory((prevCategories) => [...prevCategories, res]);
+    })
+
+    socket.on('delete-category', (res) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có danh mục mới bị xoá" : "New category deleted")
+      setCategory(category.filter((item) => item._id !== res._id))
+    })
+
+    socket.on('update-category', (res) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có danh mục mới cập nhật" : "New category updated")
+      setCategory(category.map((item) => item._id === res._id ? res : item))
+    })
+
+    return () => {
+      socket.off('create-category')
+      socket.off('delete-category')
+      socket.off('update-category')
+    }
+  }, [refresh_token, category, messageApi])
 
   useEffect(() => {
     setCategory(category.sort((a, b) => a.index - b.index))
@@ -96,81 +109,207 @@ const CategoryManagement: React.FC<Props> = (props) => {
   }, [selectedRecord])
   
   const handleEdit = (id: string) => {
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-      category_id: id,
-      category_name: categoryNameEdit,
-      index: priorityEdit,
-    }
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/categories/update`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body)
-    }).then((response) => {
-      return response.json()
-    }).then((data) => {
-      console.log(data)
-      if(data) {
-        messageApi.success(data.message)
-        setShowEditModal(false)
-      }
-    })
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          setShowEditModal(false)
+          props.setLoading(true);
+          try {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              category_id: id,
+              category_name: categoryNameEdit,
+              index: priorityEdit,
+            }
+        
+            fetch(`${import.meta.env.VITE_API_URL}/api/categories/update`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then((response) => {
+              return response.json()
+            }).then((data) => {
+              if(data.code == RESPONSE_CODE.UPDATE_CATEGORY_FAILED) {
+                messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.UPDATE_CATEGORY_SUCCESSFUL) {
+                messageApi.success(data.message)
+                const body = {
+                  language: null,
+                } 
+                fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(body)
+                }).then((response) => {
+                  return response.json()
+                }).then((data) => {
+                  setCategory(data.categories)
+                })
+              }
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+      };
+    
+      checkToken();
   }
 
   const handleDelete = (id: string) => { 
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-      category_id: id,
-    }
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/categories/delete`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body)
-    }).then((response) => {
-      return response.json()
-    }).then((data) => {
-      console.log(data)
-      if(data) {
-        setShowDeleteModal(false)
-        messageApi.success(data.message)
-      }
-    })
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          setShowDeleteModal(false)
+          props.setLoading(true);
+          try {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              category_id: id,
+            }
+        
+            fetch(`${import.meta.env.VITE_API_URL}/api/categories/delete`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then((response) => {
+              return response.json()
+            }).then((data) => {
+              if(data.code == RESPONSE_CODE.DELETE_CATEGORY_FAILED) {
+                messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.DELETE_CATEGORY_SUCCESSFUL) {
+                messageApi.success(data.message)
+                const body = {
+                  language: null,
+                } 
+                fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(body)
+                }).then((response) => {
+                  return response.json()
+                }).then((data) => {
+                  setCategory(data.categories)
+                })
+              }
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+      };
+    
+      checkToken();
   }
 
-  const CreateCategory = () => { 
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-      category_name: categoryName,
-      index: priority
-    }
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/categories/create`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body)
-    }).then((response) => {
-      return response.json()
-    }).then((data) => {
-      console.log(data)
-      if(data) {
-        messageApi.success(data.message)
-        setShowCreateModal(false)
-      }
-    })
+  const CreateCategory = () => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          setShowCreateModal(false)
+          props.setLoading(true);
+          try {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              category_name: categoryName,
+              index: priority
+            }
+        
+            fetch(`${import.meta.env.VITE_API_URL}/api/categories/create`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then((response) => {
+              return response.json()
+            }).then((data) => {
+              if(data.code == RESPONSE_CODE.CREATE_CATEGORY_FAILED) {
+                messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.CREATE_CATEGORY_SUCCESSFUL) {
+                messageApi.success(data.message)
+                const body = {
+                  language: null,
+                } 
+                fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(body)
+                }).then((response) => {
+                  return response.json()
+                }).then((data) => {
+                  setCategory(data.categories)
+                })
+              }
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+      };
+    
+      checkToken();
   }
 
   useEffect(() => { 
@@ -187,7 +326,6 @@ const CategoryManagement: React.FC<Props> = (props) => {
       return response.json()
     }).then((data) => {
       setCategory(data.categories)
-      console.log(data)
     })
   }, [])
 

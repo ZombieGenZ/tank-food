@@ -7,7 +7,6 @@ import MapPicker from "../components/Mapicket.components";
 import Verify from "../components/VerifyToken.components";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import { useNavigate } from "react-router-dom";
-import Loading from "../components/loading.components";
 
 // interface Products {
 //   id: string;
@@ -91,8 +90,9 @@ interface MyCardProps {
     cart: CartItem[];
     setCart: Dispatch<SetStateAction<CartItem[]>>;
     user_infor: UserInfo | null;
+    props: Props;
   }
-const MyCard = ({ cart, setCart, user_infor }: MyCardProps, props: Props): JSX.Element => {
+const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element => {
     const navigate = useNavigate(); 
     const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
     const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
@@ -144,7 +144,8 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps, props: Props): JSX.E
 
     const handlePayment = () => {
       try {
-        // setIsLoading(true)
+        props.setLoading(true)
+        setShowPaymentModal(false)
         const checkToken = async () => {
           const isValid = await Verify(refresh_token, access_token);
           if (isValid) {
@@ -196,7 +197,7 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps, props: Props): JSX.E
         messageApi.error(String(error))
       } finally {
         setTimeout(() => {
-          // setIsLoading(false)
+          props.setLoading(false)
         }, 3000)
       }
     }
@@ -339,7 +340,6 @@ const MyCard = ({ cart, setCart, user_infor }: MyCardProps, props: Props): JSX.E
           )}
         </div>
         <Modal title={language() == "Tiếng Việt" ? "Xác nhận thông tin thanh toán sản phẩm" : "Confirm product payment information"} open={showPaymentModal} okText={language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Payment confirm"} onOk={() => handlePayment()} onCancel={() => setShowPaymentModal(false)} onClose={() => setShowPaymentModal(false)}>
-            <Loading />
             <div className="w-full flex flex-col gap-4">
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tên người dùng:" : "Display name:"}</p>

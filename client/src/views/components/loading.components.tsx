@@ -1,4 +1,9 @@
 
+interface LoadingProps {
+  isLoading: boolean; // Hoặc isAdminView, hoặc tên khác tùy vào component của bạn
+  // ... các props khác
+}
+
 const CircularLoadingControl = ({ overlayOpacity = 0.3 }) => {
   return (
     <div style={{ 
@@ -85,7 +90,7 @@ const CircularLoadingControl = ({ overlayOpacity = 0.3 }) => {
   );
 };
 
-const Loading = () => {
+const Loading: React.FC<LoadingProps> = (isAdminView) => {
   const isLoading = true;
   
   return (
@@ -95,7 +100,7 @@ const Loading = () => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      position: 'sticky',
+      position: `${isAdminView.isLoading ? "absolute" : "fixed"}`,
       top: 0,
       backgroundColor: 'black',
       borderRadius: '8px',

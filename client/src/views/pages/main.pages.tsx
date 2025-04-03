@@ -317,23 +317,23 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative" : "flex gap-5 flex-col"}>
+      <div className={isAdminView ? "flex relative" : " relative gap-5 flex-col"}>
         {contextHolder}
-        {loadingCP && <Loading />}
+        {loadingCP && <Loading isLoading={isAdminView}/>}
         {isAdminView ? (
           <>
             <NavigationAdmin displayname={user.display_name} />
             <div className="w-full flex flex-col">
               <NavAdmin display_name="Bảng thống kê" userInfo={user} />
               <Routes>
-                <Route path="/" element={<MainManage />} />
-                <Route path="/Account" element={<Account />} />
-                <Route path='/category' element={<CategoryManagement />} />
-                <Route path='/order' element={<OrderManagement />} />
-                <Route path='/product' element={<ProductManagement />} />
-                <Route path='/ship' element={<ShipManagement />} />
-                <Route path='/discount' element={<DiscountCodeManagement />} />
-                <Route path='/profile' element={<ProfilePage />} />
+                <Route path="/" element={<MainManage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path="/Account" element={<Account isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/category' element={<CategoryManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/order' element={<OrderManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/product' element={<ProductManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/ship' element={<ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/discount' element={<DiscountCodeManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               </Routes>
             </div>
           </>
@@ -345,12 +345,12 @@ const FormMain = (): JSX.Element => {
               <Route path="/aboutus" element={<Aboutus />} />
               <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-              <Route path='/deal' element={<SealPage />} />
+              <Route path='/deal' element={<SealPage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/contact' element={<ContactUs />} />
-              <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} />} />
+              <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
               <Route path='/payment' element={<OrderPageWithPayment />} />
-              <Route path='/profile' element={<ProfilePage />} />
-              <Route path='/changepass' element={<ChangePassword />}/>
+              <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+              <Route path='/changepass' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
             </Routes>
           </>
         )}
@@ -358,19 +358,19 @@ const FormMain = (): JSX.Element => {
     ) : (
       <div className="flex relative gap-5 flex-col " ref={pageRef}>
         {contextHolder}
-        {loadingCP && <Loading />}
+        {loadingCP && <Loading isLoading={isAdminView}/>}
         <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-          <Route path='/deal' element={<SealPage />} />
+          <Route path='/deal' element={<SealPage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/contact' element={<ContactUs />} />
-          <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} />} />
+          <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
           <Route path='/payment' element={<OrderPageWithPayment />} />
-          <Route path='/profile' element={<ProfilePage />} />
-          <Route path='/changepass' element={<ChangePassword />}/>
+          <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+          <Route path='/changepass' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
         </Routes>
       </div>
     )}
