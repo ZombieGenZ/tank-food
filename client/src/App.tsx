@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OrderAtStore from "./views/pages/OrderAtStore.pages";
 import ResultVerifyAccount from "./views/pages/ResultVerifyAccount.pages";
 import ChangePassword from "./views/pages/ChangePassword.pages";
+import VoucherPrivate from "./views/pages/VoucherPrivate.pages";
 
 const App = () => {
   // const [scroll, scrollTo] = useWindowScroll();
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/orderatstore" element={<OrderAtStore />} />
           <Route path="/resultverifyaccount" element={<ResultVerifyAccount />} />
           <Route path="/changepassword" element={<ChangePassword />} />
+          <Route path="/voucherprivate" element={<VoucherPrivate />} />
         </Routes>
       </BrowserRouter>
 
