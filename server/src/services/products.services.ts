@@ -59,10 +59,34 @@ class ProductService {
       updated_by: user._id
     })
 
-    Promise.all([
-      databaseService.products.insertOne(product),
-      notificationRealtime('freshSync', 'create-product', 'product/create', product)
-    ])
+    await databaseService.products.insertOne(product);
+
+    const products = await databaseService.products
+      .aggregate([
+        { $match: { _id: new ObjectId(product_id) } },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'tempCategory'
+          }
+        },
+        {
+          $addFields: {
+            categories: { $arrayElemAt: ['$tempCategory', 0] }
+          }
+        },
+        {
+          $project: {
+            category: 0,
+            tempCategory: 0
+          }
+        }
+      ])
+      .toArray()
+
+    await notificationRealtime('freshSync', 'create-product', 'product/create', products);
   }
   async update(payload: UpdateProductRequestsBody, product: Product, user: User) {
     let translateTagResult = null
@@ -81,60 +105,63 @@ class ProductService {
     const translateDescriptionResult = SplitTranslationString(translateDescription)
 
     const product_id = new ObjectId(payload.product_id)
-    const data = {
-      _id: product_id,
-      title_translate_1: payload.title.trim(),
-      title_translate_1_language: translateTitleResult.language_1,
-      title_translate_2: translateTitleResult.translate_string.trim(),
-      title_translate_2_language: translateTitleResult.language_2,
-      description_translate_1: payload.description.trim(),
-      description_translate_1_language: translateDescriptionResult.language_1,
-      description_translate_2: translateDescriptionResult.translate_string.trim(),
-      description_translate_2_language: translateDescriptionResult.language_2,
-      price: Number(payload.price),
-      availability: Boolean(payload.availability),
-      category: new ObjectId(payload.category_id),
-      tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
-      tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
-      tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
-      tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-      preview: product.preview,
-      discount: payload.discount ? Number(payload.discount) : 0,
-      updated_by: user._id
-    }
 
-    await Promise.all([
-      databaseService.products.updateOne(
-        {
-          _id: product_id
+    await databaseService.products.updateOne(
+      {
+        _id: product_id
+      },
+      {
+        $set: {
+          title_translate_1: payload.title.trim(),
+          title_translate_1_language: translateTitleResult.language_1,
+          title_translate_2: translateTitleResult.translate_string.trim(),
+          title_translate_2_language: translateTitleResult.language_2,
+          description_translate_1: payload.description.trim(),
+          description_translate_1_language: translateDescriptionResult.language_1,
+          description_translate_2: translateDescriptionResult.translate_string.trim(),
+          description_translate_2_language: translateDescriptionResult.language_2,
+          price: Number(payload.price),
+          availability: Boolean(payload.availability),
+          category: new ObjectId(payload.category_id),
+          tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
+          tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
+          tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
+          tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
+          discount: payload.discount ? Number(payload.discount) : 0,
+          updated_by: user._id
         },
-        {
-          $set: {
-            title_translate_1: payload.title.trim(),
-            title_translate_1_language: translateTitleResult.language_1,
-            title_translate_2: translateTitleResult.translate_string.trim(),
-            title_translate_2_language: translateTitleResult.language_2,
-            description_translate_1: payload.description.trim(),
-            description_translate_1_language: translateDescriptionResult.language_1,
-            description_translate_2: translateDescriptionResult.translate_string.trim(),
-            description_translate_2_language: translateDescriptionResult.language_2,
-            price: Number(payload.price),
-            availability: Boolean(payload.availability),
-            category: new ObjectId(payload.category_id),
-            tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
-            tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
-            tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
-            tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-            discount: payload.discount ? Number(payload.discount) : 0,
-            updated_by: user._id
-          },
-          $currentDate: {
-            updated_at: true
-          }
+        $currentDate: {
+          updated_at: true
         }
-      ),
-      notificationRealtime('freshSync', 'update-product', 'product/update', data)
+      }
+    )
+
+    const products = await databaseService.products
+    .aggregate([
+      { $match: { _id: new ObjectId(product_id) } },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'tempCategory'
+        }
+      },
+      {
+        $addFields: {
+          categories: { $arrayElemAt: ['$tempCategory', 0] }
+        }
+      },
+      {
+        $project: {
+          category: 0,
+          tempCategory: 0
+        }
+      }
     ])
+    .toArray()
+
+    await notificationRealtime('freshSync', 'update-product', 'product/update', products)
   }
   async updateChangeImage(payload: UpdateProductRequestsBody, image: ImageType, product: Product, user: User) {
     let translateTagResult = null
@@ -153,61 +180,64 @@ class ProductService {
     const translateDescriptionResult = SplitTranslationString(translateDescription)
 
     const product_id = new ObjectId(payload.product_id)
-    const data = {
-      _id: product_id,
-      title_translate_1: payload.title.trim(),
-      title_translate_1_language: translateTitleResult.language_1,
-      title_translate_2: translateTitleResult.translate_string.trim(),
-      title_translate_2_language: translateTitleResult.language_2,
-      description_translate_1: payload.description.trim(),
-      description_translate_1_language: translateDescriptionResult.language_1,
-      description_translate_2: translateDescriptionResult.translate_string.trim(),
-      description_translate_2_language: translateDescriptionResult.language_2,
-      price: Number(payload.price),
-      availability: Boolean(payload.availability),
-      category: new ObjectId(payload.category_id),
-      tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
-      tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
-      tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
-      tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-      preview: product.preview,
-      discount: payload.discount ? Number(payload.discount) : 0,
-      updated_by: user._id
-    }
 
-    await Promise.all([
-      databaseService.products.updateOne(
-        {
-          _id: new ObjectId(payload.product_id)
+    await databaseService.products.updateOne(
+      {
+        _id: new ObjectId(payload.product_id)
+      },
+      {
+        $set: {
+          title_translate_1: payload.title.trim(),
+          title_translate_1_language: translateTitleResult.language_1,
+          title_translate_2: translateTitleResult.translate_string.trim(),
+          title_translate_2_language: translateTitleResult.language_2,
+          description_translate_1: payload.description.trim(),
+          description_translate_1_language: translateDescriptionResult.language_1,
+          description_translate_2: translateDescriptionResult.translate_string.trim(),
+          description_translate_2_language: translateDescriptionResult.language_2,
+          price: Number(payload.price),
+          availability: Boolean(payload.availability),
+          category: new ObjectId(payload.category_id),
+          tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
+          tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
+          tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
+          tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
+          preview: image,
+          discount: payload.discount ? Number(payload.discount) : 0,
+          updated_by: user._id
         },
-        {
-          $set: {
-            title_translate_1: payload.title.trim(),
-            title_translate_1_language: translateTitleResult.language_1,
-            title_translate_2: translateTitleResult.translate_string.trim(),
-            title_translate_2_language: translateTitleResult.language_2,
-            description_translate_1: payload.description.trim(),
-            description_translate_1_language: translateDescriptionResult.language_1,
-            description_translate_2: translateDescriptionResult.translate_string.trim(),
-            description_translate_2_language: translateDescriptionResult.language_2,
-            price: Number(payload.price),
-            availability: Boolean(payload.availability),
-            category: new ObjectId(payload.category_id),
-            tag_translate_1: !payload.tag ? '' : payload.tag.trim(),
-            tag_translate_1_language: !translateTagResult ? '' : translateTagResult.language_1,
-            tag_translate_2: !translateTagResult ? '' : translateTagResult.translate_string.trim(),
-            tag_translate_2_language: !translateTagResult ? '' : translateTagResult.language_2,
-            preview: image,
-            discount: payload.discount ? Number(payload.discount) : 0,
-            updated_by: user._id
-          },
-          $currentDate: {
-            updated_at: true
-          }
+        $currentDate: {
+          updated_at: true
         }
-      ),
-      notificationRealtime('freshSync', 'update-product', 'product/update', data)
+      }
+    )
+
+    const products = await databaseService.products
+    .aggregate([
+      { $match: { _id: new ObjectId(payload.product_id) } },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'tempCategory'
+        }
+      },
+      {
+        $addFields: {
+          categories: { $arrayElemAt: ['$tempCategory', 0] }
+        }
+      },
+      {
+        $project: {
+          category: 0,
+          tempCategory: 0
+        }
+      }
     ])
+    .toArray()
+
+    await notificationRealtime('freshSync', 'update-product', 'product/update', products)
   }
   async delete(payload: DeleteProductRequestsBody, product: Product) {
     const data = {
