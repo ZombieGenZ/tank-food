@@ -374,15 +374,15 @@ io.on('connection', (socket: Socket) => {
         return
       }
 
-      socket.join('freshSync-admin')
+      socket.join('freshSync-statistical')
       if (serverLanguage == LANGUAGE.VIETNAMESE) {
         console.log(
-          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
+          `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-statistical\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-admin`)
+        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-statistical`)
       } else {
-        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-admin\x1b[0m`)
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-admin`)
+        console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-statistical\x1b[0m`)
+        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-statistical`)
       }
     } catch {
       return
