@@ -13,7 +13,7 @@
     "prettier:fix": "prettier --write ."
   },
   "author": "TANK Groups",
-  "license": "ISC",
+  "license": "MIT",
   "description": "Máy chủ của dự án TANK-Travel food",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
