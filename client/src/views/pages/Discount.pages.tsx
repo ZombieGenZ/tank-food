@@ -3,6 +3,11 @@ import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
 import type { TableProps } from 'antd';
 import { DatePicker } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+import Verify from "../components/VerifyToken.components";
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface Props {
   isLoading: boolean;
@@ -57,6 +62,47 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
     const [requirementEdit, setRequirementEdit] = useState<number>(0);
     const [expiration_dateEdit, setExpirationDateEdit] = useState<Dayjs|null>(null);
 
+    useEffect(() => {
+        const body = {
+            language: null,
+            refresh_token: refresh_token,
+        }
+        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+        }).then((response) => {
+            return response.json()
+        }).then((data) => {
+            setVoucher(data.voucher)
+        })
+    }, [refresh_token, access_token])
+
+    useEffect(() => {
+        socket.emit('connect-admin-realtime', refresh_token)
+        socket.on('create-public-voucher', (data) => {
+            messageApi.info(language() === "Tiếng Việt" ? "Có voucher mới" : "New voucher");
+            setVoucher((prev) => [...prev, data])
+        })
+
+        socket.on('update-public-voucher', (data) => {
+            messageApi.info(language() === "Tiếng Việt" ? "Có voucher mới được cập nhật" : "New voucher updated");
+            setVoucher((prev) => prev.map((item) => item._id === data._id ? data : item))
+        })
+
+        socket.on('delete-public-voucher', (data) => {
+            messageApi.info(language() === "Tiếng Việt" ? "Có voucher mới bị xoá" : "New voucher deleted");
+            setVoucher((prev) => prev.filter((item) => item._id !== data._id))
+        })
+        return () => {
+            socket.off('create-public-voucher');
+            socket.off('update-public-voucher');
+            socket.off('delete-public-voucher');
+        }
+    },[refresh_token, messageApi])
     const showCreateModal = () => {
         setShowCreateCode(true)
     }
@@ -121,146 +167,223 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
     }
 
     const CreateCode = () => {
-        const body = {
-            language: null,
-            code: code,
-            quantity: quantity,
-            discount: discount,
-            requirement: requirement,
-            expiration_date: expiration_date?.toISOString(),
-            refresh_token: refresh_token,
-        }
-        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/create`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-        }).then((response) => {
-            return response.json()
-        }).then((data) => {
-            console.log(data)
-            if(data.code == "CREATE_VOUCHER_SUCCESSFUL") {
-                messageApi.success(data.message)
-                setShowCreateCode(false)
-                const body = {
+        const checkToken = async () => {
+            const isValid = await Verify(refresh_token, access_token);
+              if (isValid) {
+                try {
+                  setShowCreateCode(false)
+                  props.setLoading(true)
+                  const body = {
                     language: null,
+                    code: code,
+                    quantity: quantity,
+                    discount: discount,
+                    requirement: requirement,
+                    expiration_date: expiration_date?.toISOString(),
                     refresh_token: refresh_token,
-                }
-                fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                  }
+                  fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/create`, {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${access_token}`,
                     },
                     body: JSON.stringify(body)
-                }).then((response) => {
+                  }).then((response) => {
                     return response.json()
-                }).then((data) => {
-                    setVoucher(data.voucher)
-                    console.log(data)
-                })
-            } else {
-                messageApi.error(data.message)
-                return
-            }
-        })
+                  }).then((data) => {
+                    if(data.code == RESPONSE_CODE.CREATE_VOUCHER_FAILED) {
+                        messageApi.error(data.message)
+                        return;
+                    }
+                    if(data.code == RESPONSE_CODE.CREATE_VOUCHER_SUCCESSFUL) {
+                        messageApi.success(data.message)
+                        const body = {
+                            language: null,
+                            refresh_token: refresh_token,
+                        }
+                        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${access_token}`,
+                            },
+                            body: JSON.stringify(body)
+                        }).then((response) => {
+                            return response.json()
+                        }).then((data) => {
+                            setVoucher(data.voucher)
+                        })
+                    } 
+                    if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                        messageApi.error(data.errors.code.msg)
+                        return;
+                    }
+                  })
+                } catch (error) {
+                  messageApi.open({
+                    type: 'error',
+                    content: String(error),
+                    style: {
+                       marginTop: '10vh',
+                    },
+                  })
+                  return;
+                } finally {
+                  setTimeout(() => {
+                    props.setLoading(false)
+                  }, 2000)
+                }
+              } else {
+                messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+              }
+            };    
+        checkToken();
     }
 
     const UpdateCode = (id: string) => {
-        const body = {
-            language: null,
-            refresh_token: refresh_token,
-            voucher_id: id,
-            code: codeEdit,
-            quantity: quantityEdit,
-            discount: discountEdit,
-            requirement: requirementEdit,
-            expiration_date: expiration_dateEdit ? expiration_dateEdit.toISOString() : null,
-        }
-
-        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/update`, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-        }).then(response => {
-            return response.json()
-        }).then((data) => {
-            console.log(data)
-            if(data.code == "UPDATE_VOUCHER_SUCCESSFUL") {
-                messageApi.success(data.message)
-                setShowUpdateCode(false)
-                const body = {
+        const checkToken = async () => {
+            const isValid = await Verify(refresh_token, access_token);
+              if (isValid) {
+                try {
+                  setShowUpdateCode(false)
+                  props.setLoading(true)
+                  const body = {
                     language: null,
                     refresh_token: refresh_token,
-                }
-                fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
-                    method: 'POST',
+                    voucher_id: id,
+                    code: codeEdit,
+                    quantity: quantityEdit,
+                    discount: discountEdit,
+                    requirement: requirementEdit,
+                    expiration_date: expiration_dateEdit ? expiration_dateEdit.toISOString() : null,
+                  }
+        
+                  fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/update`, {
+                    method: 'PUT',
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${access_token}`,
                     },
                     body: JSON.stringify(body)
-                }).then((response) => {
+                  }).then(response => {
                     return response.json()
-                }).then((data) => {
-                    setVoucher(data.voucher)
-                    console.log(data)
-                })
-            } else {
-                messageApi.error(data.message)
-                return;
-            }
-        })
+                  }).then((data) => {
+                    if(data.code == RESPONSE_CODE.UPDATE_VOUCHER_FAILED) {
+                        messageApi.error(data.message)
+                        return;
+                    }
+                    if(data.code == RESPONSE_CODE.UPDATE_VOUCHER_SUCCESSFUL) {
+                        messageApi.success(data.message)
+                        const body = {
+                            language: null,
+                            refresh_token: refresh_token,
+                        }
+                        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${access_token}`,
+                            },
+                            body: JSON.stringify(body)
+                        }).then((response) => {
+                            return response.json()
+                        }).then((data) => {
+                            setVoucher(data.voucher)
+                        })
+                    }
+                    if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                        messageApi.error(data.errors.code.msg)
+                        return;
+                    }
+                  })
+                } catch (error) {
+                  messageApi.open({
+                    type: 'error',
+                    content: String(error),
+                    style: {
+                       marginTop: '10vh',
+                    },
+                  })
+                  return;
+                } finally {
+                  setTimeout(() => {
+                    props.setLoading(false)
+                  }, 2000)
+                }
+              } else {
+                messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+              }
+            };    
+        checkToken();
     }
     
-    const DeleteCode = (id: string) => { 
-        const body = {
-            language: null,
-            refresh_token: refresh_token,
-            voucher_id: id,
-        }
-
-        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/delete`, {
-            method: 'DELETE',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-        }).then(response => {
-            return response.json()
-        }).then((data) => {
-            console.log(data)
-            if(data.code == "DELETE_VOUCHER_SUCCESSFUL") {
-                messageApi.success(data.message)
-                setShowUpdateCode(false)
-                const body = {
+    const DeleteCode = (id: string) => {
+        const checkToken = async () => {
+            const isValid = await Verify(refresh_token, access_token);
+              if (isValid) {
+                try {
+                  setShowDeleteCode(false)
+                  props.setLoading(true)
+                  const body = {
                     language: null,
                     refresh_token: refresh_token,
-                }
-                fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
-                    method: 'POST',
+                    voucher_id: id,
+                  }
+        
+                  fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/delete`, {
+                    method: 'DELETE',
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${access_token}`,
                     },
                     body: JSON.stringify(body)
-                }).then((response) => {
+                  }).then(response => {
                     return response.json()
-                }).then((data) => {
-                    setVoucher(data.voucher)
-                    console.log(data)
-                })
-            } else {
-                messageApi.error(data.message)
-                return;
-            }
-        })
+                  }).then((data) => {
+                    if(data.code == RESPONSE_CODE.DELETE_VOUCHER_FAILED) {
+                        messageApi.error(data.message)
+                        return;
+                    }
+                    if(data.code == RESPONSE_CODE.DELETE_VOUCHER_SUCCESSFUL) {
+                        messageApi.success(data.message)
+                        const body = {
+                            language: null,
+                            refresh_token: refresh_token,
+                        }
+                        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+                            method: 'POST',
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${access_token}`,
+                            },
+                            body: JSON.stringify(body)
+                        }).then((response) => {
+                            return response.json()
+                        }).then((data) => {
+                            setVoucher(data.voucher)
+                        })
+                    }
+                  })
+                } catch (error) {
+                  messageApi.open({
+                    type: 'error',
+                    content: String(error),
+                    style: {
+                       marginTop: '10vh',
+                    },
+                  })
+                  return;
+                } finally {
+                  setTimeout(() => {
+                    props.setLoading(false)
+                  }, 2000)
+                }
+              } else {
+                messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+              }
+            };    
+        checkToken(); 
     }
 
     const PickDate: React.FC = () => <DatePicker readOnly value={expiration_date} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateCreate} needConfirm />;
@@ -278,26 +401,6 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
         setDiscountEdit(selectCode ? selectCode.discount : 0)
         setExpirationDateEdit(selectCode ? dayjs(selectCode.expiration_date) : null)
     }, [selectCode])
-
-    useEffect(() => {
-        const body = {
-            language: null,
-            refresh_token: refresh_token,
-        }
-        fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-        }).then((response) => {
-            return response.json()
-        }).then((data) => {
-            setVoucher(data.voucher)
-            console.log(data)
-        })
-    }, [refresh_token, access_token])
 
     useEffect(() => {
         const newData: DataType[] = voucher.map((voucherV, index) =>
@@ -463,7 +566,7 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                 )}
             </Modal>
             <Modal title={language() == "Tiếng Việt" ? "Xoá mã giảm giá" : "Delete discount code"} open={showDeleteCode} onOk={() => DeleteCode(selectDeleteCode ? selectDeleteCode : "")} onCancel={() => setShowDeleteCode(false)}>
-
+                <p>Bạn có chắc chắn muốn xoá mã giảm giá này không?</p>
             </Modal>
         </div>
     )

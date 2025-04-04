@@ -1,6 +1,6 @@
 
 interface LoadingProps {
-  isLoading: boolean; // Hoặc isAdminView, hoặc tên khác tùy vào component của bạn
+  isLoading: boolean|null; // Hoặc isAdminView, hoặc tên khác tùy vào component của bạn
   // ... các props khác
 }
 
@@ -100,7 +100,7 @@ const Loading: React.FC<LoadingProps> = (isAdminView) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      position: `${isAdminView.isLoading ? "absolute" : "fixed"}`,
+      position: `${isAdminView.isLoading == true ? "fixed" : "fixed"}`,
       top: 0,
       backgroundColor: 'black',
       borderRadius: '8px',

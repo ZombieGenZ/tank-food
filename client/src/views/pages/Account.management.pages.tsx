@@ -60,6 +60,28 @@ const Account: React.FC<Props> = (props) => {
     };
   }, []);
 
+  // useEffect(() => {
+  //   socket.emit('connect-user-realtime', refresh_token)
+  //   socket.on('ban', (data) => {
+  //     console.log(data)
+  //     setListuser(prevList => {
+  //       return prevList.map(user => {
+  //         if(user._id === data.user_id) {
+  //           return {
+  //             ...user,
+  //             penalty: {
+  //               created_by: data.created_by,
+  //               expired_at: data.expired_at,
+  //               reason: data.reason
+  //             }
+  //           };
+  //         }
+  //         return user;
+  //       });
+  //     });
+  //   })
+  // })
+
   const [listuser, setListuser] = useState<User[]>([]);
   const [data, setDataUser] = useState<DataType[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);

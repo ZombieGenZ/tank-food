@@ -124,10 +124,25 @@ function MainManage(props: Props): JSX.Element{
     const [selectValue, setSelectValue] = useState<string>("revenue")
     const [selectDate, setSelectDate] = useState<number>(7)
 
-    socket.emit('connect-statistical-realtime', refresh_token)
-    socket.on('update-order-complete', (res) => {
-      messageApi.info(res)
-    })
+    const handletoOrder = () => {
+      try {
+        props.setLoading(true)
+        navigate('/order')
+      } catch (error) {
+        messageApi.open({
+          type: 'error',
+          content: String(error),
+          style: {
+            marginTop: '10vh',
+          },
+        })
+        return;
+      } finally {
+        setTimeout(() => {
+          props.setLoading(false)
+        }, 2000)
+      } 
+    }
 
     const handleChange = (value: string) => {
       setSelectValue(value)
@@ -144,58 +159,82 @@ function MainManage(props: Props): JSX.Element{
 
     const [recentOrders, setRecentOrder] = useState<Order[]>([])
 
+    useEffect(() => {
+      socket.emit('connect-statistical-realtime', refresh_token)
+      socket.on('update-order-complete', (res) => {
+        messageApi.info("Đơn hàng đã được cập nhật")
+        setRecentOrder((prevOrders) => [...prevOrders, res])
+        update()
+      })
+
+      socket.on('update-chart', (res) => {
+        messageApi.info("Bảng thống kê có sự thay đổi")
+        console.log(res)
+        update()
+      })
+      return () => {
+        socket.off('update-order-complete')
+        socket.off('update-chart')
+      }
+    }, [refresh_token, messageApi])
+
     // const recentOrders = [
     //   { id: '12345', date: '21/03/2025', amount: '2.350.000₫', status: 'completed' },
     //   { id: '12344', date: '20/03/2025', amount: '1.750.000₫', status: 'processing' },
     //   { id: '12343', date: '19/03/2025', amount: '3.120.000₫', status: 'pending' }
     // ];
 
+    const update = () => {
+      const body = {
+        language: null,
+        refresh_token: refresh_token,
+        time: selectDate,
+      }
+      fetch(`${import.meta.env.VITE_API_URL}/api/statistical/overview`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(body),
+      }).then(response => {
+        return response.json()
+      }).then((data) => {
+        setList(data.statistical)
+      })
+
+      const body1 = {
+        language: null, 
+        refresh_token: refresh_token
+      }
+
+      fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-order-overview`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(body1),
+      }).then(response => {
+        return response.json()
+      }).then(data => {
+        console.log(data)
+        setRecentOrder(data.order)
+      })
+    }
+
     useEffect(() => {
       const checkToken = async () => {
         const isValid = await Verify(refresh_token, access_token);
         if (isValid) {
-          const body = {
-            language: null,
-            refresh_token: refresh_token,
-            time: selectDate,
-          }
-          fetch(`${import.meta.env.VITE_API_URL}/api/statistical/overview`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body),
-          }).then(response => {
-            return response.json()
-          }).then((data) => {
-            setList(data.statistical)
-          })
-    
-          const body1 = {
-            language: null, 
-            refresh_token: refresh_token
-          }
-    
-          fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-order-overview`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body1),
-          }).then(response => {
-            return response.json()
-          }).then(data => {
-            setRecentOrder(data.order)
-          })
+          update()
         } else {
           messageApi.error("Token không hợp lệ!");
         }
-    };
-    
-    checkToken();
-    }, [refresh_token, access_token, messageApi, selectDate])
+      };
+      
+      checkToken();
+    }, [refresh_token, access_token, messageApi]);
 
     useEffect(() => {
       const handleStorageChange = () => {
@@ -411,7 +450,7 @@ function MainManage(props: Props): JSX.Element{
             ))}
           </div>
           
-          <button onClick={() => navigate('/order')} className="mt-6 w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm">
+          <button onClick={() => handletoOrder()} className="mt-6 w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm">
             Xem tất cả đơn hàng
           </button>
         </div>

@@ -127,23 +127,60 @@ const OrderManagement: React.FC<Props> = (props) => {
 
 
   useEffect(() => {
-    socket.emit('connect-employee-realtime', refresh_token)
+    socket.emit('connect-employee-realtime', refresh_token);
+
     socket.on('create-order', (data) => {
-      messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
+      messageApi.info(language() === "Tiếng Việt" ? "Có đơn hàng mới" : "New order");
       setWaitData((prevData) => [
         ...prevData,
-        { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address }
+        { ...data, address: data.delivery_type === 0 ? "Tại quầy" : data.receiving_address },
       ]);
     });
+
     socket.on('checkout-order', (data) => {
-      messageApi.success(language() == "Tiếng Việt" ? "Có đơn hàng mới cập nhật" : "New order updated")
-      setWaitData((prevData => prevData.map(order => order._id === data._id ? { ...data, address: data.delivery_type == 0 ? "Tại quầy" : data.receiving_address } : order)));
-    })
+      messageApi.info(language() === "Tiếng Việt" ? "Có đơn hàng mới thanh toán thành công" : "New order payment");
+      setWaitData((prevData) =>
+        prevData.map((order) => (order._id === data._id ?  data  : order))
+      );
+    });
+
+    socket.on('payment-confirmation', (data) => {
+      messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được xác nhận thanh toán" : "Order has been confirmed");
+      setWaitData((prevData) =>
+        prevData.map((order) => (order._id === data._id ? data : order))
+      );
+    });
+
+    socket.on('approval-order', (data) => {
+      messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được duyệt" : "Order has been approved");
+      setWaitData((prevData) => prevData.filter((order) => order._id !== data._id));
+      setDoneData((prevData) => [...prevData, data]); // Thêm đơn hàng vào doneData
+    });
+
+    socket.on('cancel-order', (data) => {
+      messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled");
+      setWaitData((prevData) => prevData.filter((order) => order._id !== data._id));
+      setDoneData((prevData) =>
+          prevData.map((order) => (order._id === data._id ? data : order))
+      );
+    });
+
+    socket.on('complete-order', (data) => {
+      messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã hoàn thành" : "Order completed");
+      setDoneData((prevData) =>
+        prevData.map((order) => (order._id === data._id ? data : order))
+      );
+    });
+
     return () => {
       socket.off('create-order');
       socket.off('checkout-order');
+      socket.off('approval-order');
+      socket.off('cancel-order');
+      socket.off('payment-confirmation');
+      socket.off('complete-order');
     };
-  }, [refresh_token, messageApi])
+  }, [refresh_token, messageApi]);
 
   const showModalReject = (orderID: string) => {
     setShowreasonmodal(true)
@@ -179,52 +216,13 @@ const handleConfirmSuccess = (orderId: string) => {
         }).then((response) => {
           return response.json()
         }).then((data) => {
-          if(data.code){
+          if(data.code == RESPONSE_CODE.ORDER_COMPLETION_CONFIRMATION_SUCCESSFUL){
               messageApi.success(data.message)
-              const body = {
-                language: null,
-                refresh_token: refresh_token,
-              }
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                      setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                  } else {
-                      messageApi.error(data.message)
-                      return;
-                  }
-              })
-  
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                      setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                  } else {
-                      messageApi.error(data.message)
-                      return;
-                  }
-              })
           } else {
               messageApi.error(data.errors.order_id.msg)
               return
           }
-      })
+       })
       } catch (error) {
         messageApi.open({
           type: 'error',
@@ -271,50 +269,12 @@ const handleAproval = (orderId: string) => {
         }).then((response) => {
           return response.json()
         }).then((data) => {
+          if(data.code == RESPONSE_CODE.ORDER_APPROVAL_FAILED){
+            messageApi.error(data.message)
+            return
+          }
           if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
               messageApi.success(data.message)
-              const body = {
-                language: null,
-                refresh_token: refresh_token,
-              }
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                      setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                  } else {
-                      messageApi.error(data.message)
-                      return;
-                  }
-              })
-  
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                      setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                  } else {
-                      messageApi.error(data.message)
-                      return;
-                  }
-              })
-          } else {
-              messageApi.error(data.errors.order_id.msg)
-              return
           }
       })
       } catch (error) {
@@ -363,45 +323,6 @@ const handleConfirm = (orderID: string) => {
             }).then((data) => {
               if(data.code == RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL) {
                   messageApi.success(data.message)
-                  const body = {
-                      language: null,
-                      refresh_token: refresh_token,
-                  }
-                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                      method: 'POST',
-                      headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${access_token}`,
-                      },
-                      body: JSON.stringify(body)
-                  }).then(response => {
-                      return response.json()
-                  }).then((data) => {
-                      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                          setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                      } else {
-                          messageApi.error(data.message)
-                          return;
-                      }
-                  })
-
-                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                      method: 'POST',
-                      headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${access_token}`,
-                      },
-                      body: JSON.stringify(body)
-                  }).then(response => {
-                      return response.json()
-                  }).then((data) => {
-                      if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                          setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                      } else {
-                          messageApi.error(data.message)
-                          return;
-                      }
-                  })
               } else {
                   messageApi.error(data.errors.order_id.msg)
                   return
@@ -457,50 +378,9 @@ const handleCancel = (orderID: string) => {
         }).then(response => {
             return response.json()
         }).then((data) => {
-            console.log(data)
             if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL){
                 setShowcancelmodal(false)
                 messageApi.success(data.message)
-                const body = {
-                    language: null,
-                    refresh_token: refresh_token,
-                }
-                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                    body: JSON.stringify(body)
-                }).then(response => {
-                    return response.json()
-                }).then((data) => {
-                    if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                        setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                    } else {
-                        messageApi.error(data.message)
-                        return;
-                    }
-                })
-
-                fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${access_token}`,
-                    },
-                    body: JSON.stringify(body)
-                }).then(response => {
-                    return response.json()
-                }).then((data) => {
-                    if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-
-                        setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                    } else {
-                        messageApi.error(data.message)
-                        return;
-                    }
-                })
             } else {
                 messageApi.error(data.errors.order_id.msg)
                 return
@@ -557,52 +437,12 @@ const handleReject = (orderID: string) => {
             }).then(response => {
               return response.json()
             }).then((data) => {
-              console.log(data)
+              if(data.code == RESPONSE_CODE.ORDER_APPROVAL_FAILED){
+                messageApi.error(data.message)
+                return
+              }
               if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
                   messageApi.success(data.message)
-                  setShowreasonmodal(false)
-                  const body = {
-                      language: null,
-                      refresh_token: refresh_token,
-                  }
-                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-employee`, {
-                      method: 'POST',
-                      headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${access_token}`,
-                      },
-                      body: JSON.stringify(body)
-                  }).then(response => {
-                      return response.json()
-                  }).then((data) => {
-                      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                          setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                      } else {
-                          messageApi.error(data.message)
-                          return;
-                      }
-                  })
-
-                  fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-employee`, {
-                      method: 'POST',
-                      headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${access_token}`,
-                      },
-                      body: JSON.stringify(body)
-                  }).then(response => {
-                      return response.json()
-                  }).then((data) => {
-                      if(data.code  == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
-                          setDoneData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
-                      } else {
-                          messageApi.error(data.message)
-                          return;
-                      }
-                  })
-              } else {
-                  messageApi.error(data.errors.order_id.msg)
-                  return
               }
             })
           } catch (error) {
@@ -809,21 +649,21 @@ const handleReject = (orderID: string) => {
                 {(order.delivery_type == 0 && order.payment_type == 0 && order.payment_status == 0) ? (
                   <button
                     onClick={() => handleConfirm(order._id)}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     Xác nhận thanh toán
                   </button>
                 ) : (
                   <button
                     onClick={() => handleAproval(order._id)}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     Duyệt
                   </button>
                 )}
                 <button
                   onClick={() => showModalReject(order._id)}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Từ chối
                 </button>
@@ -832,13 +672,13 @@ const handleReject = (orderID: string) => {
               <>
                 <button
                     onClick={() => handleAproval(order._id)}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                   >
                     Duyệt
                 </button>
                 <button
                   onClick={() => showModalReject(order._id)}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Từ chối
                 </button>
@@ -955,11 +795,11 @@ const handleReject = (orderID: string) => {
               </div>
             ))}
           </div>
-          <div className="flex gap-3 mt-6 justify-end">
+          <div className="flex cursor-pointer gap-3 mt-6 justify-end">
             {(isPickup && order.order_status !== 5 && order.payment_type == 0) && 
                 <button
                   onClick={() => handleConfirmSuccess(order._id)}
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   Xác nhận đơn hàng thành công
                 </button>
@@ -969,7 +809,7 @@ const handleReject = (orderID: string) => {
              order.order_status == 4 ? <p className='text-green-500 font-bold'>Hoàn thành đơn hàng</p> : 
               <button
                 onClick={() => showModalCancel(order._id)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 Huỷ đơn hàng
               </button>}

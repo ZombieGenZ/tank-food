@@ -141,21 +141,60 @@ function ProductManagement(props: Props): JSX.Element {
   const [isImageChanged, setIsImageChanged] = useState<boolean>(false);
   const [imageUrlEdit, setImageUrlEdit] = useState<string | null>(selectProduct?.preview.url || null);
 
-  useEffect(() => {
-    socket.emit('connect-guest-realtime')
-    socket.on('create-product', (res) => {
-      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới" : "New product")
-      setProduct((prev) => [...prev, res])
-    })
-  
-    socket.on('delete-product', (res) => {
-      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới bị xoá" : "New product deleted")
-      setProduct(product.filter((item) => item._id !== res._id))
+  const takeProduct = () => {
+    const body = {
+      language: null,
+    } 
+    fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }).then((response) => {
+      return response.json()
+    }).then((data) => {
+      setProduct(data.products)
     })
 
-    socket.on('update-product', (res) => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    }).then((response) => {
+      return response.json()
+    }).then((data) => {
+      setCategory(data.categories)
+    })
+  }
+
+  useEffect(() => {
+    takeProduct()
+  }, [])
+
+  useEffect(() => {
+    socket.emit('connect-guest-realtime')
+
+    // còn lỗi 
+    socket.on('create-product', (res: Product) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới" : "New product")
+      setProduct((prev) =>[...prev, res])
+      takeProduct()
+    })
+    
+    socket.on('delete-product', (res: Product) => {
+      messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới bị xoá" : "New product deleted")
+      setProduct(product.filter((item) => item._id !== res._id))
+      takeProduct()
+    })
+
+    // còn lỗi
+    socket.on('update-product', (res: Product) => {
       messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới cập nhật" : "New product updated")
       setProduct(product.map((item) => item._id === res._id ? res : item))
+      takeProduct()
     })
 
     return () => {
@@ -163,7 +202,7 @@ function ProductManagement(props: Props): JSX.Element {
       socket.off('delete-product')
       socket.off('update-product')
     }
-  })
+  }, [product, messageApi])
 
   useEffect(() => { setIsImageChanged(isImageChanged) }, [isImageChanged])
   // useEffect(() => { setProduct(product) }, [product])
@@ -262,20 +301,6 @@ function ProductManagement(props: Props): JSX.Element {
               setNewCategory("Đồ ăn nhanh")
               setTag("")
               setImageUrl(null)
-              const body = {
-                language: null,
-              } 
-              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-              }).then((response) => {
-                return response.json()
-              }).then((data) => {
-                setProduct(data.products)
-              })
             } 
             if(data.code == RESPONSE_CODE.CREATE_PRODUCT_FAILED) {
               messageApi.error(data.message)
@@ -370,20 +395,6 @@ function ProductManagement(props: Props): JSX.Element {
               }
               if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL) {
                 messageApi.success(data.message)
-                const body = {
-                  language: null,
-                } 
-                fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(body)
-                }).then((response) => {
-                  return response.json()
-                }).then((data) => {
-                  setProduct(data.products)
-                })
               }
             })
           } else {
@@ -402,21 +413,6 @@ function ProductManagement(props: Props): JSX.Element {
               }
               if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL) {
                 messageApi.success(data.message)
-                const body = {
-                  language: null,
-                } 
-                fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(body)
-                }).then((response) => {
-                  return response.json()
-                }).then((data) => {
-                  console.log(data)
-                  setProduct(data.products)
-                })
               }
             })
           }
@@ -475,20 +471,6 @@ function ProductManagement(props: Props): JSX.Element {
           }).then((response) => { return response.json() }).then((data) => {
             if (data.code == RESPONSE_CODE.DELETE_PRODUCT_SUCCESSFUL) {
               messageApi.success(data.message)
-              const body = {
-                language: null,
-              } 
-              fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-              }).then((response) => {
-                return response.json()
-              }).then((data) => {
-                setProduct(data.products)
-              })
             } 
             if(data.code == RESPONSE_CODE.DELETE_PRODUCT_FAILED) {
               messageApi.error(data.message)
@@ -524,41 +506,11 @@ function ProductManagement(props: Props): JSX.Element {
     setCategoryMenu(newCategory)
   }, [Category])
 
-  useEffect(() => {
-      const body = {
-        language: null,
-      } 
-      fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      }).then((response) => {
-        return response.json()
-      }).then((data) => {
-        console.log(data)
-        setProduct(data.products)
-      })
-
-      fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      }).then((response) => {
-        return response.json()
-      }).then((data) => {
-        setCategory(data.categories)
-      })
-  }, [])
-
     useEffect(() => {
       const newData: DataType[] = product.map((product, index) => ({
         key: String(index + 1),
         preview: {
-          url: product.preview.url,
+          url: product.preview?.url,
         },
         _id: product._id,
         availability: product.availability,

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Verify from '../components/VerifyToken.components';
 import { message } from 'antd';
 import { RESPONSE_CODE } from '../../constants/responseCode.constants';
-// Define types for our data
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface Order {
   _id: string;
@@ -116,10 +118,42 @@ const ShipManagement: React.FC<Props> = (props) => {
     };
   }, []);
 
+  useEffect(() => {
+    socket.emit('connect-shipper-realtime', refresh_token)
+    socket.on('create-delivery', (data) => {
+      messageApi.info(language() === "Tiếng Việt" ? "Có đơn giao hàng mới" : "New delivery order available");
+        setWaitingOrders((prev) => [
+          ...prev, { ...data, expanded: false }
+        ]);
+        setReceivedOrders((prev) => prev.filter((item) => item._id !== data._id))
+    })
+
+    // socket chưa đúng
+    socket.on('remove-delivery', (data) => {
+      setWaitingOrders((prev) => prev.filter((item) => item._id !== data._id))
+      setReceivedOrders((prev) => [...prev, { ...data, expanded: false }])
+      messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được nhận giao" : "Order has been received for delivery");
+    })
+
+    socket.on('cancel-delivery', (data) => {
+      setWaitingOrders((prev) => prev.filter((item) => item._id !== data._id))
+      setReceivedOrders((prev) => prev.filter((item) => item._id !== data._id))
+      messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled");
+    })
+
+    return () => {
+      socket.off('create-delivery');
+      socket.off('remove-delivery');
+      socket.off('cancel-delivery');
+    }
+  })
+
   const TakeBill = (orderID: string) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
       if (isValid) {
+        try {
+          props.setLoading(true)
           const body = {
             language: null,
             refresh_token: refresh_token,
@@ -136,52 +170,30 @@ const ShipManagement: React.FC<Props> = (props) => {
           }).then((response) => {
             return response.json()
           }).then((data) => {
-            console.log(data)
-            if(data.code == RESPONSE_CODE.RECEIVE_DELIVERY_SUCCESSFUL) {
-              messageApi.success(data.message)
-              const body = {
-                language: null,
-                refresh_token: refresh_token
-              } 
-          
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  console.log(data)
-                  if(data.code == "GET_ORDER_SUCCESSFUL") {
-                    setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-                  }
-              })
-          
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  console.log(data)
-                  if(data.code == "GET_ORDER_SUCCESSFUL") {
-                    setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-                  }
-              })
-            } else {
-              messageApi.error(data.errors.order_id.msg)
+            if(data.code == RESPONSE_CODE.RECEIVE_DELIVERY_FAILED) {
+              messageApi.error(data.message)
               return
             }
-          })    
+            if(data.code == RESPONSE_CODE.RECEIVE_DELIVERY_SUCCESSFUL) {
+              messageApi.success(data.message)
+            }
+          })
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+              marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
+        }    
       } else {
-          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
       }
   };
     checkToken();
@@ -191,6 +203,8 @@ const ShipManagement: React.FC<Props> = (props) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
       if (isValid) {
+        try {
+          props.setLoading(true)
           const body = {
             language: null,
             refresh_token: refresh_token,
@@ -207,50 +221,28 @@ const ShipManagement: React.FC<Props> = (props) => {
           }).then((response) => {
             return response.json()
           }).then((data) => {
-            console.log(data)
-            if(data.code == RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_SUCCESSFUL) {
-              messageApi.success(data.message)
-              const body = {
-                language: null,
-                refresh_token: refresh_token
-              } 
-          
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  console.log(data)
-                  if(data.code == "GET_ORDER_SUCCESSFUL") {
-                    setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-                  }
-              })
-          
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  console.log(data)
-                  if(data.code == "GET_ORDER_SUCCESSFUL") {
-                    setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-                  }
-              })
-            } else {
+            if(data.code == RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_FAILED) { 
               messageApi.error(data.message)
               return
             }
-          })    
+            if(data.code == RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_SUCCESSFUL) {
+              messageApi.success(data.message)
+            }
+          })
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+              marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
+        }    
       } else {
           messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
       }
@@ -262,66 +254,46 @@ const ShipManagement: React.FC<Props> = (props) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
       if (isValid) {
-          const body = {
-            language: null,
-            refresh_token: refresh_token,
-            order_id: orderID
-          }
-
-          fetch(`${import.meta.env.VITE_API_URL}/api/orders/cancel-order-shipper`, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-          }).then((response) => {
-            return response.json()
-          }).then((data) => {
-            console.log(data)
-            if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL) {
-              messageApi.success(data.message)
-              const body = {
-                language: null,
-                refresh_token: refresh_token
-              } 
-          
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  console.log(data)
-                  if(data.code == "GET_ORDER_SUCCESSFUL") {
-                    setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-                  }
-              })
-          
-              fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${access_token}`,
-                  },
-                  body: JSON.stringify(body)
-              }).then(response => {
-                  return response.json()
-              }).then((data) => {
-                  console.log(data)
-                  if(data.code == "GET_ORDER_SUCCESSFUL") {
-                    setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-                  }
-              })
-            } else {
-              messageApi.error(data.message)
-              return
+          props.setLoading(true)
+          try {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              order_id: orderID
             }
-          })    
+  
+            fetch(`${import.meta.env.VITE_API_URL}/api/orders/cancel-order-shipper`, {
+              method: 'PUT',
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+            }).then((response) => {
+              return response.json()
+            }).then((data) => {
+              if(data.code == RESPONSE_CODE.CANCEL_ORDER_FAILED) { 
+                messageApi.error(data.message)
+                return
+              }
+              if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL) {
+                messageApi.success(data.message)
+              } 
+            })
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2000)
+          }      
       } else {
           messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
       }
@@ -329,23 +301,35 @@ const ShipManagement: React.FC<Props> = (props) => {
     checkToken();
   } 
 
-  const takeLocation = (longtitude: number|null, lattitude: number|null) => {
+  const takeLocation = (longitude: number | null, latitude: number | null) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
       if (isValid) {
-        if(longtitude !== null && lattitude !== null) {
-          messageApi.info(`${longtitude} | ${lattitude}`)
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const originLatitude = position.coords.latitude;
+              const originLongitude = position.coords.longitude;
+      
+              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${originLatitude},${originLongitude}&destination=${latitude},${longitude}`;
+              window.open(googleMapsUrl, '_blank');
+            },
+            (error) => {
+              messageApi.error(language() === "Tiếng Việt" ? "Không thể lấy vị trí hiện tại" : "Unable to get current location");
+              console.error("Lỗi lấy vị trí:", error);
+            }
+          );
+        } else {
+          messageApi.error(language() === "Tiếng Việt" ? "Trình duyệt không hỗ trợ Geolocation" : "Geolocation not supported by browser");
         }
-        else {
-          messageApi.error(language() == "Tiếng Việt" ? "Lỗi khi lấy vị trí" : "Error getting location")
-          return
-        };
       } else {
-        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        messageApi.error(
+          language() === 'Tiếng Việt' ? 'Người dùng không hợp lệ' : 'Invalid User'
+        );
       }
     };
     checkToken();
-  }
+  };
   useEffect(() => {
     const body = {
       language: null,

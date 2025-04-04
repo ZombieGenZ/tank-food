@@ -134,7 +134,7 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
     const [nameUser, setNameUser] = useState<string|undefined>(user_infor?.display_name)
     const [emailUser, setEmailUser] = useState<string|undefined>(user_infor?.email)
     const [phoneUser, setPhoneUser] = useState<string|undefined>(user_infor?.phone)
-    const [note,setNote] = useState<string|null>("")
+    const [note, setNote] = useState<string|null>("")
     const [voucher, setVoucher] = useState<string|null>("")
 
     // Hàm xử lý khi chọn vị trí trên bản đồ
@@ -178,10 +178,7 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
               return response.json()
             }).then((data) => {
               if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
-                console.log(data);
-                // navigate('/payment', { state: data })
                 navigate('/payment', { replace: true, state: data })
-                // setBill(data)
               } else {
                 messageApi.error(data.message)
                 return
@@ -195,6 +192,7 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
         checkToken();
       } catch (error) {
         messageApi.error(String(error))
+        return;
       } finally {
         setTimeout(() => {
           props.setLoading(false)

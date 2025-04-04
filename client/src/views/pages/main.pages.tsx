@@ -317,7 +317,7 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative" : " relative gap-5 flex-col"}>
+      <div className={isAdminView ? "flex relative" : "relative gap-5 flex-col"}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
         {isAdminView ? (
@@ -358,7 +358,7 @@ const FormMain = (): JSX.Element => {
     ) : (
       <div className="flex relative gap-5 flex-col " ref={pageRef}>
         {contextHolder}
-        {loadingCP && <Loading isLoading={isAdminView}/>}
+        {loadingCP && <Loading isLoading={null}/>}
         <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
@@ -415,7 +415,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
   }, []);
 
   return (
-    <div className='w-1/5 z-[999] sticky left-0 top-0 bg-slate-800 text-white h-screen'>
+    <div className='w-1/5 z-50 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
       <div className='p-4 flex items-center space-x-3'>
         <div className='w-10 h-10 rounded-full bg-[#1890ff] flex items-center justify-center text-white font-bold'>A</div>
         <span className='text-lg font-bold'>ADMINISTRATOR</span>
