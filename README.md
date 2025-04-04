@@ -73,7 +73,9 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
    cd tank-food
    ```
 
-2. Cài đặt dependencies:
+2. Tạo ``.env`` và dựa vào tệp ``.env.example`` để điền các thông tin cần thiết
+
+3. Cài đặt dependencies:
    ```bash
    cd client
    npm install
@@ -81,7 +83,7 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
    npm install
    ```
 
-3. Chạy dự án:
+4. Chạy dự án:
    ```bash
    cd client
    npm run dev
@@ -108,6 +110,3 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 | Bùi Đăng Khoa              | 💻 Lập Trình Backend    |
 
 ---
-
-
-
