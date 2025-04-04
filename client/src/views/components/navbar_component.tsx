@@ -29,6 +29,12 @@ export const NavbarUser = [
         english: "Contact",
         path: "/contact"
     },
+    {
+        id: 6,
+        title: "Voucher",
+        english: "Voucher",
+        path: "/voucher"
+    },
 ];
 
 export const NavbarAdmin = [

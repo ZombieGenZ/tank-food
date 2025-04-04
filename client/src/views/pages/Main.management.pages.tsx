@@ -176,7 +176,7 @@ function MainManage(props: Props): JSX.Element{
         socket.off('update-order-complete')
         socket.off('update-chart')
       }
-    }, [refresh_token, messageApi])
+    })
 
     // const recentOrders = [
     //   { id: '12345', date: '21/03/2025', amount: '2.350.000₫', status: 'completed' },

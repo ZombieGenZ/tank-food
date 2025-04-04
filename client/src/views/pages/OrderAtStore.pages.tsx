@@ -1,7 +1,14 @@
 "use client"
 
+// Extend the Window interface to include clickspark
+declare global {
+  interface Window {
+    clickspark: (element: HTMLElement | null) => void;
+  }
+}
+
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
 import { message, Modal, Input } from "antd"
@@ -82,6 +89,7 @@ interface Product {
 }
 
 const OrderAtStore: React.FC = () => {
+  const clickref = useRef<HTMLDivElement>(null)
   const [messageApi, contextHolder] = message.useMessage();
   const language = (): string => {
     const Language = localStorage.getItem('language')
@@ -142,6 +150,10 @@ const OrderAtStore: React.FC = () => {
       setOrderId(`DH${Math.floor(1000 + Math.random() * 9000)}`)
     }
   }, [isModalOpen])
+
+  const clicktoeffect = () => {
+    window.clickspark(clickref.current);
+  }
 
   // Simulate payment completion after 5 seconds when in QR mode
   useEffect(() => {
@@ -295,7 +307,7 @@ const OrderAtStore: React.FC = () => {
   : product;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
+    <div ref={clickref} onClick={clicktoeffect} className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
       {contextHolder}
       <div className="max-w-7xl mx-auto" data-aos="fade-up" data-aos-delay="100">
         <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">

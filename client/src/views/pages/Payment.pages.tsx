@@ -1,5 +1,7 @@
 import { useLocation } from "react-router-dom";
+import { message } from "antd";
 import io from "socket.io-client";
+import { useEffect } from "react";
 
 const socket = io(import.meta.env.VITE_API_URL)
 
@@ -96,14 +98,25 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ userBill }) => {
 const OrderPageWithPayment = () => {
     const location = useLocation();
     const userBill: ApiResponse = location.state;
+    const [messageApi, contextHolder] = message.useMessage();
 
-    socket.emit('connect-payment-realtime', userBill.infomation.order_id)
-    socket.on('payment_notification', (message) => {
-      console.log(message)
+    useEffect(() => {
+      socket.emit('connect-payment-realtime', userBill.infomation.order_id)
+      socket.on('payment_notification', (message) => {
+        messageApi.open({
+          type: 'info',
+          content: message,
+          duration: 5,
+        });
+      })
+      return () => {
+        socket.off('payment_notification');
+      };
     })
     
     return (
       <div className="p-8 bg-gray-100 min-h-[100vh] flex flex-col items-center justify-center">
+        {contextHolder}
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Xem thông tin chuyển khoản và thanh toán dưới đây</h1>
         
         {userBill && <PaymentPopup userBill={userBill}/>}

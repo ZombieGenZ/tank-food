@@ -3,9 +3,9 @@ import { Table, Input, Modal, InputNumber, Select, Button, message } from 'antd'
 import type { TableProps } from 'antd';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import Verify from "../components/VerifyToken.components";
-// import io from "socket.io-client";
+import io from "socket.io-client";
 
-// const socket = io(import.meta.env.VITE_API_URL)
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface Props {
   isLoading: boolean;
@@ -60,28 +60,6 @@ const Account: React.FC<Props> = (props) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   socket.emit('connect-user-realtime', refresh_token)
-  //   socket.on('ban', (data) => {
-  //     console.log(data)
-  //     setListuser(prevList => {
-  //       return prevList.map(user => {
-  //         if(user._id === data.user_id) {
-  //           return {
-  //             ...user,
-  //             penalty: {
-  //               created_by: data.created_by,
-  //               expired_at: data.expired_at,
-  //               reason: data.reason
-  //             }
-  //           };
-  //         }
-  //         return user;
-  //       });
-  //     });
-  //   })
-  // })
-
   const [listuser, setListuser] = useState<User[]>([]);
   const [data, setDataUser] = useState<DataType[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
@@ -95,6 +73,35 @@ const Account: React.FC<Props> = (props) => {
   // useEffect(() => {
   //   return () => {}
   // }, [refresh_token, messageApi])
+
+  useEffect(() => {
+    socket.emit('connect-user-realtime', refresh_token)
+    socket.on('ban', (data) => {
+      console.log(data)
+      messageApi.open({
+        type: 'error',
+        content: `${data.created_by} đã ban tài khoản ${data.user_id} với lý do ${data.reason}`,
+        style: {
+          marginTop: '10vh',
+        },
+      })
+      setListuser(prevList => {
+        return prevList.map(user => {
+          if(user._id === data.user_id) {
+            return {
+              ...user,
+              penalty: {
+                created_by: data.created_by,
+                expired_at: data.expired_at,
+                reason: data.reason
+              }
+            };
+          }
+          return user;
+        });
+      });
+    })
+  }, [refresh_token, listuser, messageApi])
 
   const showModal = (value: DataType) => {
     setSelectedRecord(value);
@@ -431,7 +438,7 @@ const Account: React.FC<Props> = (props) => {
     return language ? JSON.parse(language) : "Tiếng Việt"
   }
   
-  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 5 }} />;
+  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} />;
     
     return(
         <div className="p-10">

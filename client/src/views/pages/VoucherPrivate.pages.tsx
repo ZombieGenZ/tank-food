@@ -17,7 +17,12 @@ interface Voucher {
   minOrder?: number
 }
 
-const VoucherPrivate: React.FC = () => {
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const VoucherPrivate: React.FC<Props> = (props) => {
   const [vouchers, setVouchers] = useState<Voucher[]>([
     {
       id: "v1",

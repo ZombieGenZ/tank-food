@@ -18,6 +18,8 @@ import MainManage from './Main.management.pages.tsx';
 import MyCard from './MyCard.pages.tsx';
 import OrderPageWithPayment from './Payment.pages.tsx';
 import ChangePassword from './ChangePassword.pages.tsx';
+import VoucherPrivate from './VoucherPrivate.pages.tsx';
+import AlertBanner from '../components/Banner.components.tsx';
 import { Dropdown, Button } from "antd";
 import { message, Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -86,10 +88,8 @@ interface CartItem {
 }
 
 const FormMain = (): JSX.Element => {
+  const navigate = useNavigate()
   const [loadingCP, setLoadingCP] = useState<boolean>(false)
-  useEffect(() => {
-    console.log("loadingCP", loadingCP)
-  }, [loadingCP])
   const [cart, setCart] = useState<CartItem[]>(() => {
     const cartlocal = localStorage.getItem('my_cart')
     return cartlocal ? JSON.parse(cartlocal) : []
@@ -114,7 +114,7 @@ const FormMain = (): JSX.Element => {
   }, [cart])
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const [isAdminView, setIsAdminView] = useState<boolean>(true); // Mặc định là Admin view
+  const [isAdminView, setIsAdminView] = useState<boolean>(false); // Mặc định là Admin view
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -286,6 +286,14 @@ const FormMain = (): JSX.Element => {
   }, [refresh_token, access_token]);
 
   useEffect(() => {
+    if(isAdminView) {
+      navigate('/'); 
+    } else { 
+      navigate('/'); 
+    }
+  }, [isAdminView]);
+
+  useEffect(() => {
     const handleStorageChange = () => {
       setRefreshToken(localStorage.getItem("refresh_token"));
       setAccessToken(localStorage.getItem("access_token"));
@@ -317,9 +325,10 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative" : "relative gap-5 flex-col"}>
+      <div className={isAdminView ? "flex relative" : "flex relative gap-5 flex-col "} ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
+        {isAdminView == false && <AlertBanner />}
         {isAdminView ? (
           <>
             <NavigationAdmin displayname={user.display_name} />
@@ -351,6 +360,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/payment' element={<OrderPageWithPayment />} />
               <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/changepass' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+              <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
             </Routes>
           </>
         )}
@@ -358,7 +368,8 @@ const FormMain = (): JSX.Element => {
     ) : (
       <div className="flex relative gap-5 flex-col " ref={pageRef}>
         {contextHolder}
-        {loadingCP && <Loading isLoading={null}/>}
+        {loadingCP && <Loading isLoading={false}/>}
+        <AlertBanner />
         <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
@@ -371,6 +382,7 @@ const FormMain = (): JSX.Element => {
           <Route path='/payment' element={<OrderPageWithPayment />} />
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/changepass' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
         </Routes>
       </div>
     )}

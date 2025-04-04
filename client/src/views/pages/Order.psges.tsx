@@ -147,7 +147,7 @@ const OrderManagement: React.FC<Props> = (props) => {
     socket.on('payment-confirmation', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được xác nhận thanh toán" : "Order has been confirmed");
       setWaitData((prevData) =>
-        prevData.map((order) => (order._id === data._id ? data : order))
+        prevData.map((order) => (order._id === data._id ? { ...data, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address } : order))
       );
     });
 
@@ -161,14 +161,14 @@ const OrderManagement: React.FC<Props> = (props) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled");
       setWaitData((prevData) => prevData.filter((order) => order._id !== data._id));
       setDoneData((prevData) =>
-          prevData.map((order) => (order._id === data._id ? data : order))
+          prevData.map((order) => (order._id === data._id ? { ...data, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address } : order))
       );
     });
 
     socket.on('complete-order', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã hoàn thành" : "Order completed");
       setDoneData((prevData) =>
-        prevData.map((order) => (order._id === data._id ? data : order))
+        prevData.map((order) => (order._id === data._id ? { ...data, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address } : order))
       );
     });
 
@@ -517,7 +517,6 @@ const handleReject = (orderID: string) => {
       [orderId]: !prev[orderId]
     }));
   };
-
   function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
     const formatter = new Intl.NumberFormat(currencyCode, {
       style: 'currency',
