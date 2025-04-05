@@ -28,7 +28,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v1",
       code: "BURGER50",
       discount: "50%",
-      validUntil: "2025-05-30",
+      validUntil: "indefinite",
       description: "50% off on all burgers",
       type: "percentage",
       used: false,
@@ -38,7 +38,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v2",
       code: "FREEFRIES",
       discount: "Free Fries",
-      validUntil: "2025-04-15",
+      validUntil: "indefinite",
       description: "Free large fries with any burger purchase",
       type: "freeItem",
       used: false,
@@ -48,7 +48,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v3",
       code: "TANK10",
       discount: "$10",
-      validUntil: "2025-06-01",
+      validUntil: "indefinite",
       description: "$10 off on orders above $30",
       type: "fixed",
       used: false,
@@ -58,7 +58,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v4",
       code: "CHICKEN25",
       discount: "25%",
-      validUntil: "2025-05-10",
+      validUntil: "indefinite",
       description: "25% off on all fried chicken items",
       type: "percentage",
       used: false,
@@ -68,7 +68,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v5",
       code: "WELCOME15",
       discount: "15%",
-      validUntil: "2025-04-20",
+      validUntil: "indefinite",
       description: "15% off on your first order",
       type: "percentage",
       used: true,
@@ -79,7 +79,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v6",
       code: "COMBO2OFF",
       discount: "$2",
-      validUntil: "2025-07-15",
+      validUntil: "indefinite",
       description: "$2 off on any combo meal",
       type: "fixed",
       used: false,
@@ -89,7 +89,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v7",
       code: "DESSERT30",
       discount: "30%",
-      validUntil: "2025-06-30",
+      validUntil: "indefinite",
       description: "30% off on all desserts",
       type: "percentage",
       used: false,
@@ -99,7 +99,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v8",
       code: "FREECOKE",
       discount: "Free Drink",
-      validUntil: "2025-05-25",
+      validUntil: "indefinite",
       description: "Free soft drink with any meal purchase",
       type: "freeItem",
       used: false,
@@ -109,7 +109,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v9",
       code: "WEEKEND20",
       discount: "20%",
-      validUntil: "2025-07-01",
+      validUntil: "indefinite",
       description: "20% off on weekend orders",
       type: "percentage",
       used: false,
@@ -119,7 +119,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
       id: "v10",
       code: "FAMILYBOX",
       discount: "15%",
-      validUntil: "2025-06-15",
+      validUntil: "indefinite",
       description: "15% off on family box orders",
       type: "percentage",
       used: true,
@@ -152,7 +152,10 @@ const VoucherPrivate: React.FC<Props> = (props) => {
   }
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    if (dateString === "indefinite") {
+      return "No expiration date";
+    }
+    const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -161,9 +164,12 @@ const VoucherPrivate: React.FC<Props> = (props) => {
   }
 
   const isExpired = (dateString: string) => {
-    const today = new Date()
-    const expiryDate = new Date(dateString)
-    return today > expiryDate
+    if (dateString === "indefinite") {
+      return false;
+    }
+    const today = new Date();
+    const expiryDate = new Date(dateString);
+    return today > expiryDate;
   }
 
   const handleCopyCode = (code: string) => {
