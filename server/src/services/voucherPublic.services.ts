@@ -79,39 +79,29 @@ class VoucherPublicService {
   }
   async useVoucher(voucher: VoucherPublic) {
     const used = voucher.quantity - 1
-    if (used <= 0) {
-      const data = {
-        ...voucher,
-        _id: voucher._id
-      }
-      await Promise.all([
-        databaseService.voucherPublic.deleteOne({
-          _id: voucher._id
-        }),
-        notificationRealtime('freshSync-admin', 'delete-public-voucher', 'voucher/public/delete', data)
-      ])
-    } else {
-      const data = {
-        ...voucher,
-        _id: voucher._id,
-        quantity: used,
-        used: voucher.used + 1
-      }
-      await Promise.all([
-        databaseService.voucherPublic.updateOne(
-          {
-            _id: voucher._id
-          },
-          {
-            $set: {
-              quantity: used,
-              used: voucher.used + 1
-            }
-          }
-        ),
-        notificationRealtime('freshSync-admin', 'update-public-voucher', 'voucher/public/update', data)
-      ])
+    const data = {
+      ...voucher,
+      _id: voucher._id,
+      quantity: used,
+      used: voucher.used + 1
     }
+    await Promise.all([
+      databaseService.voucherPublic.updateOne(
+        {
+          _id: voucher._id
+        },
+        {
+          $set: {
+            quantity: used,
+            used: voucher.used + 1
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime('freshSync-admin', 'update-public-voucher', 'voucher/public/update', data)
+    ])
   }
 }
 

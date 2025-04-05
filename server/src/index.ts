@@ -116,7 +116,7 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-user-<user_id>
     // sự kiện:
     // new-voucher-private: Cập nhật thông tin voucher private vừa được thêm
-    // remove-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
+    // use-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
     // create-order-booking: Cập nhật thông tin đặt hàng vừa được đặt
     // checkout-order: Cập nhật thông tin đặt hàng vừa được thanh toán
     // approval-order: Cập nhật thông tin đặt hàng vừa được xử lý

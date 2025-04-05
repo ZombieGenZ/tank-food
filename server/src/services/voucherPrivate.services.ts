@@ -3,12 +3,22 @@ import databaseService from './database.services'
 import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
 import User from '~/models/schemas/users.schemas'
 import { notificationRealtime } from '~/utils/realtime.utils'
+import { VoucherStatusEnum } from '~/constants/voucher.constants'
 
 class VoucherPrivateService {
-  async getVoucher(user: User) {
+  async getVoucherUnUsed(user: User) {
     return await databaseService.voucherPrivate
       .find({
-        user: user._id
+        user: user._id,
+        status: VoucherStatusEnum.UNUSED
+      })
+      .toArray()
+  }
+  async getVoucherUsed(user: User) {
+    return await databaseService.voucherPrivate
+      .find({
+        user: user._id,
+        status: VoucherStatusEnum.USED
       })
       .toArray()
   }
@@ -31,10 +41,20 @@ class VoucherPrivateService {
       _id: voucher._id
     }
     await Promise.all([
-      databaseService.voucherPrivate.deleteOne({
-        _id: voucher._id
-      }),
-      notificationRealtime(`freshSync-user-${voucher.user}`, 'remove-voucher-private', 'voucher/private/remove', data)
+      databaseService.voucherPrivate.updateOne(
+        {
+          _id: voucher._id
+        },
+        {
+          $set: {
+            status: VoucherStatusEnum.USED
+          },
+          $currentDate: {
+            updated_at: true
+          }
+        }
+      ),
+      notificationRealtime(`freshSync-user-${voucher.user}`, 'use-voucher-private', 'voucher/private/remove', data)
     ])
   }
 }

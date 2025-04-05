@@ -13,6 +13,7 @@ import voucherPublicService from '~/services/voucherPublic.services'
 import User from '~/models/schemas/users.schemas'
 import { UserRoleEnum } from '~/constants/users.constants'
 import { DeliveryTypeEnum, OrderStatusEnum, PaymentStatusEnum, PaymentTypeEnum } from '~/constants/orders.constants'
+import { VoucherStatusEnum } from '~/constants/voucher.constants'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -304,6 +305,17 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
   }
 
   if (voucherPrivate) {
+    if (voucherPrivate.status !== VoucherStatusEnum.UNUSED) {
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.VOUCHER_INVALID,
+        message:
+        language == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+        : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+      })
+      return
+    }
+
     const total_price = req.total_price as number
 
     const new_bill = total_price - voucherPrivate.discount
@@ -317,6 +329,28 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
   }
 
   if (voucherPublic) {
+    if (voucherPublic.expiration_date < new Date()) {
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.VOUCHER_INVALID,
+        message:
+          language == LANGUAGE.VIETNAMESE
+            ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+            : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+      })
+      return
+    }
+
+    if (voucherPublic.quantity <= 0) {
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.VOUCHER_INVALID,
+        message:
+          language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+      })
+      return
+    }
+
     const total_price = req.total_price as number
 
     if (voucherPublic.requirement > total_price) {
@@ -1292,6 +1326,28 @@ export const voucherPublicValidator = async (req: Request, res: Response, next: 
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+    })
+    return
+  }
+
+  if (voucherPublic.expiration_date < new Date()) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.VOUCHER_INVALID,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+    })
+    return
+  }
+
+  if (voucherPublic.quantity <= 0) {
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.VOUCHER_INVALID,
+      message:
+        language == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
+        : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.VOUCHER_IS_NOT_FOUND
     })
     return
   }
