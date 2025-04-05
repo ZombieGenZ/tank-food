@@ -38,7 +38,7 @@ const Aboutus = (): JSX.Element => {
             </div>
           </div>
           <div className="md:w-1/2 relative" data-aos="fade-left" data-aos-delay="300">
-            <div className="overflow-hidden rounded-lg shadow-xl group">
+            <div className="overflow-hidden rounded-lg group">
               <img
                 src="/images/system/logo tank food.png"
                 alt="McDonald's Products"
