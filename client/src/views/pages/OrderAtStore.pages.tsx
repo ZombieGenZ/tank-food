@@ -103,6 +103,8 @@ const OrderAtStore: React.FC = () => {
     AOS.init({
       duration: 800,
       once: false,
+      mirror: true,
+      offset:10
     })
   }, [])
 
