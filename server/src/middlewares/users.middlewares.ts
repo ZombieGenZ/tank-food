@@ -23,6 +23,7 @@ import accountManagementService from '~/services/accountManagement.services'
 import User from '~/models/schemas/users.schemas'
 import { UserTypeEnum } from '~/constants/users.constants'
 import { ObjectId } from 'mongodb'
+import { TokenType } from '~/constants/jwt.constants'
 
 export const registerUserValidator = async (
   req: Request<ParamsDictionary, any, RegisterUserRequestsBody>,
@@ -531,37 +532,37 @@ export const verifyEmailVerifyTokenValidator = async (req: Request, res: Respons
     },
     ['body']
   )
-    .run(req)
-    .then(() => {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        if (language == LANGUAGE.VIETNAMESE) {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
-            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
-            errors: errors.mapped()
-          })
-          return
-        } else {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
-            errors: errors.mapped()
-          })
-          return
-        }
+  .run(req)
+  .then(() => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      if (language == LANGUAGE.VIETNAMESE) {
+        res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+          code: RESPONSE_CODE.INPUT_DATA_ERROR,
+          message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+          errors: errors.mapped()
+        })
+        return
+      } else {
+        res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+          code: RESPONSE_CODE.INPUT_DATA_ERROR,
+          message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+          errors: errors.mapped()
+        })
+        return
       }
-      next()
-      return
+    }
+    next()
+    return
+  })
+  .catch((err) => {
+    writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+      message: err
     })
-    .catch((err) => {
-      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
-      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
-        message: err
-      })
-      return
-    })
+    return
+  })
 }
 
 export const verifyAccountValidator = async (req: Request, res: Response, next: NextFunction) => {
@@ -591,6 +592,14 @@ export const verifyAccountValidator = async (req: Request, res: Response, next: 
                 publicKey: process.env.SECURITY_JWT_SECRET_EMAIL_VERIFY_TOKEN as string
               })) as TokenPayload
 
+              if (!decoded_email_verify_token || decoded_email_verify_token.token_type !== TokenType.EmailVerifyToken) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                )
+              }
+
               const user = await databaseService.users.findOne({
                 _id: new ObjectId(decoded_email_verify_token.user_id),
                 email_verify_token: value
@@ -619,7 +628,7 @@ export const verifyAccountValidator = async (req: Request, res: Response, next: 
         }
       }
     },
-    ['query']
+    ['body']
   )
     .run(req)
     .then(() => {
@@ -627,15 +636,15 @@ export const verifyAccountValidator = async (req: Request, res: Response, next: 
       if (!errors.isEmpty()) {
         if (language == LANGUAGE.VIETNAMESE) {
           res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
-            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
             errors: errors.mapped()
           })
           return
         } else {
           res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
             code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
             errors: errors.mapped()
           })
           return
@@ -647,7 +656,7 @@ export const verifyAccountValidator = async (req: Request, res: Response, next: 
     .catch((err) => {
       writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
       res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
         message: err
       })
       return
@@ -750,37 +759,37 @@ export const verifyForgotPasswordTokenValidator = async (req: Request, res: Resp
     },
     ['body']
   )
-    .run(req)
-    .then(() => {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        if (language == LANGUAGE.VIETNAMESE) {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
-            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
-            errors: errors.mapped()
-          })
-          return
-        } else {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
-            errors: errors.mapped()
-          })
-          return
-        }
+  .run(req)
+  .then(() => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      if (language == LANGUAGE.VIETNAMESE) {
+        res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+          code: RESPONSE_CODE.INPUT_DATA_ERROR,
+          message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+          errors: errors.mapped()
+        })
+        return
+      } else {
+        res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+          code: RESPONSE_CODE.INPUT_DATA_ERROR,
+          message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+          errors: errors.mapped()
+        })
+        return
       }
-      next()
-      return
+    }
+    next()
+    return
+  })
+  .catch((err) => {
+    writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+      message: err
     })
-    .catch((err) => {
-      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
-      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
-        message: err
-      })
-      return
-    })
+    return
+  })
 }
 
 export const forgotPasswordValidator = async (req: Request, res: Response, next: NextFunction) => {
@@ -809,6 +818,14 @@ export const forgotPasswordValidator = async (req: Request, res: Response, next:
                 token: value,
                 publicKey: process.env.SECURITY_JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
               })) as TokenPayload
+
+              if (!decoded_forgot_password_token || decoded_forgot_password_token.token_type !== TokenType.ForgotPasswordToken) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.TOKEN_INVALID
+                )
+              }
 
               const user = await databaseService.users.findOne({
                 _id: new ObjectId(decoded_forgot_password_token.user_id),
@@ -915,37 +932,37 @@ export const forgotPasswordValidator = async (req: Request, res: Response, next:
     },
     ['body']
   )
-    .run(req)
-    .then(() => {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        if (language == LANGUAGE.VIETNAMESE) {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.AUTHENTICATION_FAILED,
-            message: VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
-            errors: errors.mapped()
-          })
-          return
-        } else {
-          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-            code: RESPONSE_CODE.INPUT_DATA_ERROR,
-            message: ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.AUTHENTICATION_FAILED,
-            errors: errors.mapped()
-          })
-          return
-        }
+  .run(req)
+  .then(() => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      if (language == LANGUAGE.VIETNAMESE) {
+        res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+          code: RESPONSE_CODE.INPUT_DATA_ERROR,
+          message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+          errors: errors.mapped()
+        })
+        return
+      } else {
+        res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+          code: RESPONSE_CODE.INPUT_DATA_ERROR,
+          message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+          errors: errors.mapped()
+        })
+        return
       }
-      next()
-      return
+    }
+    next()
+    return
+  })
+  .catch((err) => {
+    writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+    res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+      code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+      message: err
     })
-    .catch((err) => {
-      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
-      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
-        code: RESPONSE_CODE.FATAL_AUTHENTICATION_FAILURE,
-        message: err
-      })
-      return
-    })
+    return
+  })
 }
 
 export const changeInformationValidator = async (req: Request, res: Response, next: NextFunction) => {

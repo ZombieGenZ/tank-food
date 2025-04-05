@@ -13,6 +13,7 @@ import { writeWarnLog } from '~/utils/log.utils'
 import User from '~/models/schemas/users.schemas'
 import { UserRoleEnum, UserTypeEnum } from '~/constants/users.constants'
 import { deleteTemporaryFile } from '~/utils/image.utils'
+import { TokenType } from '~/constants/jwt.constants'
 
 export const authenticateValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -58,6 +59,14 @@ export const authenticateValidator = async (req: Request, res: Response, next: N
                 token: authorization[1],
                 publicKey: process.env.SECURITY_JWT_SECRET_ACCESS_TOKEN as string
               })) as TokenPayload
+
+              if (!decoded_access_token || decoded_access_token.token_type !== TokenType.AccessToken) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.ACCESS_TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.ACCESS_TOKEN_INVALID
+                )
+              }
 
               ;(req as Request).decoded_access_token = decoded_access_token
 
@@ -107,6 +116,14 @@ export const authenticateValidator = async (req: Request, res: Response, next: N
                 token: value,
                 publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
               })) as TokenPayload
+
+              if (!decoded_refresh_token || decoded_refresh_token.token_type !== TokenType.RefreshToken) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                )
+              }
 
               ;(req as Request).decoded_refresh_token = decoded_refresh_token
 
@@ -300,6 +317,14 @@ export const authenticateUploadImageValidator = async (req: Request, res: Respon
                 publicKey: process.env.SECURITY_JWT_SECRET_ACCESS_TOKEN as string
               })) as TokenPayload
 
+              if (!decoded_access_token || decoded_access_token.token_type !== TokenType.AccessToken) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.ACCESS_TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.ACCESS_TOKEN_INVALID
+                )
+              }
+
               ;(req as Request).decoded_access_token = decoded_access_token
 
               const user = await databaseService.users.findOne({
@@ -348,6 +373,14 @@ export const authenticateUploadImageValidator = async (req: Request, res: Respon
                 token: value,
                 publicKey: process.env.SECURITY_JWT_SECRET_REFRESH_TOKEN as string
               })) as TokenPayload
+
+              if (!decoded_refresh_token || decoded_refresh_token.token_type !== TokenType.RefreshToken) {
+                throw new Error(
+                  language == LANGUAGE.VIETNAMESE
+                    ? VIETNAMESE_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                    : ENGLISH_STATIC_MESSAGE.AUTHENTICATE_MESSAGE.REFRESH_TOKEN_INVALID
+                )
+              }
 
               ;(req as Request).decoded_refresh_token = decoded_refresh_token
 

@@ -6,6 +6,7 @@ import {
   verifyTokenUserController,
   getUserInfomationController,
   sendEmailVerifyController,
+  verifyEmailVerifyTokenController,
   verifyAccountController,
   sendEmailForgotPasswordController,
   verifyForgotPasswordTokenController,
@@ -127,18 +128,18 @@ router.put(
  *    token: string
  * }
  */
-router.post('/verify-email-verify-token', verifyEmailVerifyTokenValidator, wrapRequestHandler(verifyForgotPasswordTokenController))
+router.post('/verify-email-verify-token', verifyEmailVerifyTokenValidator, wrapRequestHandler(verifyEmailVerifyTokenController))
 
 /*
  * Description: Xác thực tài khoản
  * Path: /api/users/verify-account
- * Method: GET
- * query: {
- *    token: string,
- *    language?: string
+ * Method: POST
+ * body: {
+ *    language?: string,
+ *    token: string
  * }
  */
-router.get('/verify-account', verifyAccountValidator, wrapRequestHandler(verifyAccountController))
+router.post('/verify-account', verifyAccountValidator, wrapRequestHandler(verifyAccountController))
 
 /*
  * Description: Gửi email quên mật khẩu
