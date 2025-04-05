@@ -291,20 +291,28 @@ class UserService {
     ])
   }
   async changeInfomation(payload: ChangeInfomationRequestsBody, user: User) {
-    await databaseService.users.updateOne(
-      {
-        _id: user._id
-      },
-      {
-        $set: {
-          display_name: payload.display_name,
-          phone: payload.phone
+    const data = {
+      display_name: payload.display_name,
+      phone: payload.phone
+    }
+
+    await Promise.all([
+      databaseService.users.updateOne(
+        {
+          _id: user._id
         },
-        $currentDate: {
-          updated_at: true
+        {
+          $set: {
+            display_name: payload.display_name,
+            phone: payload.phone
+          },
+          $currentDate: {
+            updated_at: true
+          }
         }
-      }
-    )
+      ),
+      notificationRealtime(`freshSync-admin`, 'change-infomation', `account-management/change-infomation`, data)
+    ])
   }
   async changePassword(
     payload: ChangePasswordRequestsBody,
