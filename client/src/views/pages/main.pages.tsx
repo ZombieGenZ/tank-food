@@ -1201,6 +1201,11 @@ function Main(): JSX.Element {
           }
         }
       `}</style>
+      <footer className="py-8 bg-orange-800 text-white">
+                <div className="container mx-auto px-4 text-center">
+                <p className="font-['Roboto_Slab']">© 2025 TankFood. Đã đăng ký bản quyền.</p>
+                </div>
+            </footer>
       </div>
     </>
   );
