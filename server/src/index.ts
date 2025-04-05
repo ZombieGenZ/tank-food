@@ -68,6 +68,7 @@ import api_order_online from '~/routes/orders.routes'
 import api_statistical from '~/routes/statistical.routes'
 import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
+import { uploadPuclicFolder } from './utils/drive.utils'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)

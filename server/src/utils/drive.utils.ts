@@ -55,12 +55,8 @@ export const uploadPuclicFolder = async (date: Date) => {
               console.log(`\x1b[33mDeleting old backup file on Google Drive: \x1b[36m${file.name}\x1b[0m`)
             }
 
-            await Promise.all([
-              drive.files.delete({
-                fileId: file.id!
-              }),
-              databaseService.backupLog.deleteOne({ file_id: file.id! })
-            ])
+            await drive.files.delete({ fileId: file.id! })
+            await databaseService.backupLog.deleteOne({ file_id: file.id! })
 
             if (serverLanguage === LANGUAGE.VIETNAMESE) {
               console.log(`\x1b[33mĐã xóa file backup cũ trên Google Drive: \x1b[36m${file.name}\x1b[0m`)
