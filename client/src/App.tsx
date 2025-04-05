@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OrderAtStore from "./views/pages/OrderAtStore.pages";
 import ResultVerifyAccount from "./views/pages/ResultVerifyAccount.pages";
 
-
 const App = () => {
   // const [scroll, scrollTo] = useWindowScroll();
   // const isMountedRef = useRef(false);
