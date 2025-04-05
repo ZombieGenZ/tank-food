@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from "react"
+import React, { FormEvent, useState } from "react"
 import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
@@ -124,14 +124,13 @@ const Signup: React.FC<Props> = (props) => {
     };
 
     const ForgotPass = (email: string|null) => {
-      if(email == null) {
+      if(email == null || email == "") {
         messageApi.error("Vui lòng nhập email !")
         return
       }
       if(!validateEmail(email))
       {
         messageApi.error("Vui lòng ghi đúng định dạng email !")
-        return;
       }
 
       try {
@@ -151,7 +150,6 @@ const Signup: React.FC<Props> = (props) => {
           return response.json()
         }).then((data) => {
           if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED || data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-            console.log(data)
             messageApi.error(data.errors.email.msg)
             return
           }
@@ -167,10 +165,6 @@ const Signup: React.FC<Props> = (props) => {
       }
 
     }
-
-    useEffect(() => {
-      console.log("isLoading", props.isLoading)
-    }, [props.isLoading])
 
     // Nút đăng ký
     const handleSubmit = (e: React.FormEvent) => {
@@ -196,10 +190,19 @@ const Signup: React.FC<Props> = (props) => {
             }).then((response) => {
               return response.json()
             }).then((data) => {
+              if(data.code == RESPONSE_CODE.USER_REGISTRATION_FAILED) {
+                messageApi.open({
+                  type: 'error',
+                  content: data.message,
+                  style: {
+                    marginTop: '10vh',
+                  },
+                })
+              }
               if(data.code == RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL) {
                 messageApi.open({
                   type: 'success',
-                  content: 'Đăng ký thành công, Vui lòng đăng nhập với tài khoản mới !',
+                  content: 'Đăng ký thành công, Vui lòng đăng nhập lại với tài khoản mới !',
                   style: {
                     marginTop: '10vh',
                   },
@@ -208,14 +211,6 @@ const Signup: React.FC<Props> = (props) => {
                     navigate("/");
                   }, 1500);
                 });
-              } else {
-                messageApi.open({
-                  type: 'error',
-                  content: data.message,
-                  style: {
-                    marginTop: '10vh',
-                  },
-                })
               }
             })
         } else {

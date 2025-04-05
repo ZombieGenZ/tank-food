@@ -1,7 +1,9 @@
 "use client"
 
 import { JSX, useState, useEffect } from "react"
+import { useLocation } from 'react-router-dom';
 import type { FormEvent } from "react"
+import { message } from "antd"
 
 interface Props {
   isLoading: boolean;
@@ -10,15 +12,18 @@ interface Props {
 
 export default function ChangePassword(props: Props): JSX.Element {
   // Form state
-  const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [messages, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const [passwordStrength, setPasswordStrength] = useState(0)
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const paramValue = queryParams.get('token');
 
   // Initialize animations
   useEffect(() => {
@@ -64,29 +69,55 @@ export default function ChangePassword(props: Props): JSX.Element {
   }, [newPassword])
 
   const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
+    try {
+      e.preventDefault()
 
-    if (newPassword !== confirmPassword) {
-      setMessage({ type: "error", text: "New passwords don't match" })
-      return
+      if (newPassword !== confirmPassword) {
+        setMessage({ type: "error", text: "Xác nhận mật khẩu không trùng khớp" })
+        return
+      }
+
+      if (passwordStrength < 3) {
+        setMessage({ type: "error", text: "Mật khẩu không đủ mạnh" })
+        return
+      }
+
+      const body = {
+        language: null,
+        token: paramValue,
+        new_password: newPassword,
+        confirm_new_password: confirmPassword
+      }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }).then((res) => {
+          if (!res.ok) {
+            throw new Error("Có lỗi xảy ra")
+          }
+          return res.json()
+        }).then((data) => {
+          if (data.statusCode === 200) {
+            setMessage({ type: "success", text: data.message })
+          } else {
+            setMessage({ type: "error", text: data.message })
+          }
+        })
+    } catch (error) {
+      messageApi.error(String(error))
+    } finally {
+      setTimeout(() => {
+        props.setLoading(false)
+        setIsLoading(false)
+        setMessage({ type: "success", text: "Thay đổi mật khẩu thành công !" })
+        setNewPassword("")
+        setConfirmPassword("")
+      }, 2000)
     }
-
-    if (passwordStrength < 3) {
-      setMessage({ type: "error", text: "Password is not strong enough" })
-      return
-    }
-
-    setIsLoading(true)
-    setMessage(null)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      setMessage({ type: "success", text: "Password changed successfully!" })
-      setCurrentPassword("")
-      setNewPassword("")
-      setConfirmPassword("")
-    }, 1500)
   }
 
   const getStrengthColor = () => {
@@ -101,51 +132,24 @@ export default function ChangePassword(props: Props): JSX.Element {
 
   return (
     <div className="password-change-container">
+      {contextHolder}
       <div className="background-pattern"></div>
 
       <div className="password-card" data-animate>
         <div className="card-header">
-          <h1 className="card-title">Change Your Password</h1>
-          <p className="card-description">Keep your TankFood account secure</p>
+          <h1 className="card-title">Thay đổi mật khẩu mới</h1>
+          <p className="card-description">Giữ cho tài khoản của bạn được bảo mật.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="card-form">
           {message && (
-            <div className={`alert ${message.type === "success" ? "alert-success" : "alert-error"}`} data-animate>
-              <span className="alert-icon">{message.type === "success" ? "✓" : "⚠"}</span>
-              <span className="alert-text">{message.text}</span>
+            <div className={`alert ${messages?.type === "success" ? "alert-success" : "alert-error"}`} data-animate>
+              <span className="alert-icon">{messages?.type === "success" ? "✓" : "⚠"}</span>
+              <span className="alert-text">{messages?.text}</span>
             </div>
           )}
 
           <div className="form-fields">
-            <div className="form-group" data-animate>
-              <label htmlFor="current-password" className="form-label">
-                Current Password
-              </label>
-              <div className="input-group">
-                <input
-                  id="current-password"
-                  type={showCurrentPassword ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  required
-                  className="form-input"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="password-toggle"
-                  aria-label={showCurrentPassword ? "Hide password" : "Show password"}
-                >
-                  <div className={`eye-icon ${showCurrentPassword ? "eye-open" : "eye-closed"}`}>
-                    <div className="eye-outer">
-                      <div className="eye-inner"></div>
-                    </div>
-                    <div className="eye-lash"></div>
-                  </div>
-                </button>
-              </div>
-            </div>
 
             <div className="form-group" data-animate>
               <label htmlFor="new-password" className="form-label">

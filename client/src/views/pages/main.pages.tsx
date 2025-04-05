@@ -286,6 +286,10 @@ const FormMain = (): JSX.Element => {
                     },
                   }).then(() => {
                     window.location.reload();
+                  }).then(() => {
+                    if(isAdminView == false) {
+                      navigate('/')
+                    }
                   });
                 } else {
                   messageApi.error(data.message)
@@ -381,6 +385,8 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     if(isAdminView) {
       navigate('/'); 
+    } else {
+      navigate(window.location.pathname); 
     }
   }, [isAdminView]);
 
@@ -449,7 +455,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
               <Route path='/payment' element={<OrderPageWithPayment />} />
               <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-              <Route path='/changepass' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+              <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
             </Routes>
           </>
@@ -471,7 +477,7 @@ const FormMain = (): JSX.Element => {
           <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
           <Route path='/payment' element={<OrderPageWithPayment />} />
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-          <Route path='/changepass' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
         </Routes>
       </div>
@@ -636,6 +642,8 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
                       },
                     }).then(() => {
                       window.location.reload();
+                    }).then(() => {
+                      navigate('/')
                     });
                   } else {
                     messageApi.error(data.message)
