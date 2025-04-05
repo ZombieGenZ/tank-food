@@ -38,7 +38,7 @@ const Aboutus = (): JSX.Element => {
             </div>
           </div>
           <div className="md:w-1/2 relative" data-aos="fade-left" data-aos-delay="300">
-            <div className="overflow-hidden rounded-lg shadow-xl group">
+            <div className="overflow-hidden rounded-lg group">
               <img
                 src="/images/system/logo tank food.png"
                 alt="McDonald's Products"
@@ -271,6 +271,11 @@ const Aboutus = (): JSX.Element => {
           }
         }
       `}</style>
+      <footer className="py-8 bg-orange-800 text-white">
+                <div className="container mx-auto px-4 text-center">
+                <p className="font-['Roboto_Slab']">© 2025 TankFood. Đã đăng ký bản quyền.</p>
+                </div>
+        </footer>
     </div>
   );
 };
