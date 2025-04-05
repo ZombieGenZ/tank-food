@@ -57,7 +57,11 @@ export class VIETNAMESE_STATIC_MESSAGE {
     CHANGE_PASSWORD_FAILURE: 'Cập nhật mật khẩu thất bại',
     CHANGE_INFORMATION_SUCCESS: 'Cập nhật thông tin tài khoản thành công',
     CHANGE_INFORMATION_FAILURE: 'Cập nhật thông tin tài khoản thất bại',
-    INCORRECT_PASSWORD: 'Mật khẩu không chính xác'
+    INCORRECT_PASSWORD: 'Mật khẩu không chính xác',
+    VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS: 'Xác thực token yêu cầu đặt lại mật khẩu thành công',
+    VERIFY_FORGOT_PASSWORD_TOKEN_FAILURE: 'Xác thực token yêu cầu đặt lại mật khẩu thất bại',
+    VERIFY_EMAIL_VERIFY_TOKEN_SUCCESS: 'Xác thực token xác thực tài khoản thành công',
+    VERIFY_EMAIL_VERIFY_TOKEN_FAILURE: 'Xác thực token xác thực tài khoản thất bại'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -348,7 +352,11 @@ export class ENGLISH_STATIC_MESSAGE {
     CHANGE_PASSWORD_FAILURE: 'Password update failed',
     CHANGE_INFORMATION_SUCCESS: 'Account information updated successfully',
     CHANGE_INFORMATION_FAILURE: 'Failed to update account information',
-    INCORRECT_PASSWORD: 'Incorrect password'
+    INCORRECT_PASSWORD: 'Incorrect password',
+    VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS: 'Xác thực token yêu cầu đặt lại mật khẩu thành công',
+    VERIFY_FORGOT_PASSWORD_TOKEN_FAILURE: 'Xác thực token yêu cầu đặt lại mật khẩu thất bại',
+    VERIFY_EMAIL_VERIFY_TOKEN_SUCCESS: 'Xác thực token xác thực tài khoản thành công',
+    VERIFY_EMAIL_VERIFY_TOKEN_FAILURE: 'Xác thực token xác thực tài khoản thất bại'
   } as const
 
   static AUTHENTICATE_MESSAGE = {
@@ -779,6 +787,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static SendEmailVerifyFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện gửi email xác nhận tài khoản thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static VerifyEmailVerifyTokenSuccessfully(ip: string) {
+    return `Thực hiện xác thực token xác thực tài khoản thành công (IP: ${ip})`
+  }
+  static VerifyEmailVerifyTokenFailed(ip: string, err: unknown) {
+    return `Thực hiện xác thực token xác thực tài khoản thất bại (IP: ${ip}) | Lỗi: ${err}`
+  }
   static VerifyAccountSuccessfully(user_id: string, ip: string) {
     return `Thực hiện xác nhận tài khoản thành công (User: ${user_id}) (IP: ${ip})`
   }
@@ -790,6 +804,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static SendMailForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện gửi yêu cầu đặt mật khẩu thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static VerifyForgotPasswordTokenSuccessfully(ip: string) {
+    return `Thực hiện xác thực token yêu cầu đặt lại mật khẩu thành công (IP: ${ip})`
+  }
+  static VerifyForgotPasswordTokenFailed(ip: string, err: unknown) {
+    return `Thực hiện xác thực token yêu cầu đặt lại mật khẩu thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
   static ChangePasswordSuccessfully(user_id: string, ip: string) {
     return `Thực hiện cập nhật mật khẩu thành công (User: ${user_id}) (IP: ${ip})`
@@ -1013,6 +1033,12 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static SendEmailVerifyFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to send account verification email (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
+  static VerifyEmailVerifyTokenSuccessfully(ip: string) {
+    return `Email verification token verification successful (IP: ${ip})`
+  }
+  static VerifyEmailVerifyTokenFailed(ip: string, err: unknown) {
+    return `Email verification token verification failed (IP: ${ip}) | Error: ${err}`
+  }
   static VerifyAccountSuccessfully(user_id: string, ip: string) {
     return `Successfully verified account (User: ${user_id}) (IP: ${ip})`
   }
@@ -1024,6 +1050,12 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static SendMailForgotPasswordFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to send password reset request (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static VerifyForgotPasswordTokenSuccessfully(ip: string) {
+    return `Password reset token verification successful (IP: ${ip})`
+  }
+  static VerifyForgotPasswordTokenFailed(ip: string, err: unknown) {
+    return `Password reset token verification failed (IP: ${ip}) | Error: ${err}`
   }
   static ChangePasswordSuccessfully(user_id: string, ip: string) {
     return `Password update successful (User: ${user_id}) (IP: ${ip})`

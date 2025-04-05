@@ -4,8 +4,10 @@ import {
   RegisterUserRequestsBody,
   LoginUserRequestsBody,
   LogoutUserRequestsBody,
+  VerifyEmailVerifyTokenRequestsBody,
   VerifyAccountRequestsBody,
   ForgotPasswordRequestsBody,
+  VerifyForgotPasswordTokenRequestsBody,
   ChangeInfomationRequestsBody,
   ChangePasswordRequestsBody,
   SendForgotPasswordRequestsBody
@@ -346,6 +348,47 @@ export const sendEmailVerifyController = async (
   }
 }
 
+export const verifyEmailVerifyTokenController = async (
+  req: Request<ParamsDictionary, any, VerifyEmailVerifyTokenRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const language = req.body.language || serverLanguage
+
+  try {
+    const result = await userService.verifyEmailVerifyToken(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VerifyEmailVerifyTokenSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.VerifyEmailVerifyTokenSuccessfully(ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_EMAIL_VERIFY_TOKEN_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_EMAIL_VERIFY_TOKEN_SUCCESS,
+      result
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VerifyEmailVerifyTokenFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.VerifyEmailVerifyTokenFailed(ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_EMAIL_VERIFY_TOKEN_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_EMAIL_VERIFY_TOKEN_FAILURE
+    })
+  }
+}
+
 export const verifyAccountController = async (
   req: Request<ParamsDictionary, any, VerifyAccountRequestsBody>,
   res: Response
@@ -424,6 +467,47 @@ export const sendEmailForgotPasswordController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.SEND_MAIL_FORGOT_PASSWORD_FAILURE
           : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.SEND_MAIL_FORGOT_PASSWORD_FAILURE
+    })
+  }
+}
+
+export const verifyForgotPasswordTokenController = async (
+  req: Request<ParamsDictionary, any, VerifyForgotPasswordTokenRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const language = req.body.language || serverLanguage
+
+  try {
+    const result = await userService.verifyForgotPasswordToken(req.body)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VerifyForgotPasswordTokenSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.VerifyForgotPasswordTokenSuccessfully(ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS,
+      result
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.VerifyForgotPasswordTokenFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.VerifyForgotPasswordTokenFailed(ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.VERIFY_FORGOT_PASSWORD_TOKEN_FAILURE
+          : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.VERIFY_FORGOT_PASSWORD_TOKEN_FAILURE
     })
   }
 }

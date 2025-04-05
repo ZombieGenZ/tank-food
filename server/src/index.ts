@@ -116,7 +116,7 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-user-<user_id>
     // sự kiện:
     // new-voucher-private: Cập nhật thông tin voucher private vừa được thêm
-    // remove-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
+    // use-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
     // create-order-booking: Cập nhật thông tin đặt hàng vừa được đặt
     // checkout-order: Cập nhật thông tin đặt hàng vừa được thanh toán
     // approval-order: Cập nhật thông tin đặt hàng vừa được xử lý
@@ -124,7 +124,6 @@ io.on('connection', (socket: Socket) => {
     // complete-order: Cập nhật thông tin đặt hàng vừa được hoàn thành
     // delivery-order: Cập nhật thông tin đặt hàng vừa được nhận giao hàng
     // cancel-delivery: Cập nhật thông tin đặt hàng vừa bị hủy giao hàng
-    // complete-delivery: Cập nhật thông tin đặt hàng vừa được hoàn thành giao hàng
     // ban: Cập nhật thông tin khóa tài khoản
     // unBan: Cập nhật thông tin mở tài khoản
     // verify-account: Cập nhật thông tin xác minh tài khoản
@@ -156,12 +155,10 @@ io.on('connection', (socket: Socket) => {
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-user-${user._id}\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-user-${user._id}`)
       } else {
         console.log(
           `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-user-${user._id}\x1b[0m`
         )
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-user-${user._id}`)
       }
     } catch {
       return
@@ -208,10 +205,8 @@ io.on('connection', (socket: Socket) => {
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-employee\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-employee`)
       } else {
         console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-employee\x1b[0m`)
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-employee`)
       }
     } catch {
       return
@@ -258,18 +253,14 @@ io.on('connection', (socket: Socket) => {
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-shipper\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-shipper`)
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-shipper-${user._id}\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-shipper-${user._id}`)
       } else {
         console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-shipper\x1b[0m`)
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-shipper`)
         console.log(
           `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-shipper-${user._id}\x1b[0m`
         )
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-shipper-${user._id}`)
       }
     } catch {
       return
@@ -313,10 +304,8 @@ io.on('connection', (socket: Socket) => {
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-admin\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-admin`)
       } else {
         console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-admin\x1b[0m`)
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-admin`)
       }
     } catch {
       return
@@ -334,12 +323,10 @@ io.on('connection', (socket: Socket) => {
       console.log(
         `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-payment-${order_id}\x1b[0m`
       )
-      writeInfoLog(`Người dùng ${socket.id} đã kết nối đến phòng freshSync-user-${order_id}`)
     } else {
       console.log(
         `\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-payment-${order_id}\x1b[0m`
       )
-      writeInfoLog(`User ${socket.id} connected to room freshSync-user-${order_id}`)
     }
   })
 
@@ -379,10 +366,8 @@ io.on('connection', (socket: Socket) => {
         console.log(
           `\x1b[33mNgười dùng \x1b[36m${socket.id}\x1b[33m đã kết nối đến phòng \x1b[36mfreshSync-statistical\x1b[0m`
         )
-        writeInfoLog(`Người dùng ${socket.id} (User: ${user._id}) đã kết nối đến phòng freshSync-statistical`)
       } else {
         console.log(`\x1b[33mUser \x1b[36m${socket.id}\x1b[33m connected to room \x1b[36mfreshSync-statistical\x1b[0m`)
-        writeInfoLog(`User ${socket.id} (User: ${user._id}) connected to room freshSync-statistical`)
       }
     } catch {
       return

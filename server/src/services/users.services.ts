@@ -1,11 +1,13 @@
 import {
   RegisterUserRequestsBody,
+  VerifyEmailVerifyTokenRequestsBody,
+  VerifyForgotPasswordTokenRequestsBody,
   ForgotPasswordRequestsBody,
   ChangeInfomationRequestsBody,
   ChangePasswordRequestsBody
 } from '~/models/requests/users.requests'
 import databaseService from './database.services'
-import { signToken } from '~/utils/jwt.utils'
+import { signToken, verifyToken } from '~/utils/jwt.utils'
 import { TokenType } from '~/constants/jwt.constants'
 import RefreshToken from '~/models/schemas/refreshtoken.schemas'
 import { ObjectId } from 'mongodb'
@@ -17,6 +19,7 @@ import { sendMail } from '~/utils/mail.utils'
 import { UserTypeEnum } from '~/constants/users.constants'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import { formatDateFull2 } from '~/utils/date.utils'
+import { TokenPayload } from '~/models/requests/authentication.requests'
 
 class UserService {
   async checkEmailExits(email: string) {
@@ -189,6 +192,32 @@ class UserService {
       sendMail(user.email, email_verify_subject, email_verify_html)
     ])
   }
+  async verifyEmailVerifyToken(payload: VerifyEmailVerifyTokenRequestsBody) {
+    try {
+      const decoded_email_verify_token = (await verifyToken({
+        token: payload.token,
+        publicKey: process.env.SECURITY_JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_email_verify_token || decoded_email_verify_token.token_type !== TokenType.EmailVerifyToken) {
+        return false
+      }
+
+      const user = await databaseService.users.findOne({
+        _id: new ObjectId(decoded_email_verify_token.user_id),
+        email_verify_token: payload.token,
+        user_type: UserTypeEnum.UNVERIFIED
+      })
+
+      if (!user) {
+        return false
+      }
+
+      return true
+    } catch {
+      return false
+    }
+  }
   async verifyAccount(user: User) {
     const data = {
       user_id: user._id.toString()
@@ -242,6 +271,31 @@ class UserService {
       ),
       sendMail(user.email, forgot_password_subject, forgot_password_html)
     ])
+  }
+  async verifyForgotPasswordToken(payload: VerifyForgotPasswordTokenRequestsBody) {
+    try {
+      const decoded_forgot_password_token = (await verifyToken({
+        token: payload.token,
+        publicKey: process.env.SECURITY_JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+      })) as TokenPayload
+
+      if (!decoded_forgot_password_token || decoded_forgot_password_token.token_type !== TokenType.ForgotPasswordToken) {
+        return false
+      }
+
+      const user = await databaseService.users.findOne({
+        _id: new ObjectId(decoded_forgot_password_token.user_id),
+        forgot_password_token: payload.token
+      })
+
+      if (!user) {
+        return false
+      }
+
+      return true
+    } catch {
+      return false
+    }
   }
   async forgotPassword(
     user: User,

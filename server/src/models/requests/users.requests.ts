@@ -18,6 +18,11 @@ export interface LogoutUserRequestsBody {
   refresh_token: string
 }
 
+export interface VerifyEmailVerifyTokenRequestsBody {
+  language?: string
+  token: string
+}
+
 export interface VerifyAccountRequestsBody {
   language?: string
   refresh_token: string
@@ -26,6 +31,11 @@ export interface VerifyAccountRequestsBody {
 export interface SendForgotPasswordRequestsBody {
   language?: string
   refresh_token: string
+}
+
+export interface VerifyForgotPasswordTokenRequestsBody {
+  language?: string
+  token: string
 }
 
 export interface ForgotPasswordRequestsBody {

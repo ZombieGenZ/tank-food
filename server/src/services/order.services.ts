@@ -2369,8 +2369,8 @@ class OrderService {
     await Promise.all([
       notificationRealtime(
         `freshSync-user-${order.user}`,
-        'complete-delivery',
-        `order/${order.user}/complete-delivery`,
+        'complete-order',
+        `order/${order.user}/complete-order`,
         data
       ),
       notificationRealtime('freshSync-statistical', 'update-chart', 'statistical/chart', dataStatistical),
