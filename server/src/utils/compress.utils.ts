@@ -24,10 +24,15 @@ export const compressPuclicFolder = async (date: Date) => {
 
     return new Promise<void>((resolve, reject) => {
       archive
-        .directory(source, false)
+        .directory(source, false, (entry) => {
+          if (entry.name === '.gitkeep') {
+            return false
+          }
+          return entry
+        })
         .on('error', (err) => reject(err))
         .pipe(stream)
-
+  
       stream.on('close', () => resolve())
       archive.finalize()
     })
