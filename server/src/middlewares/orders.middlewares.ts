@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkSchema, validationResult } from 'express-validator'
-import { serverLanguage } from '..'
+import { serverLanguage } from '~/index'
 import { LANGUAGE } from '~/constants/language.constants'
 import { VIETNAMESE_STATIC_MESSAGE, ENGLISH_STATIC_MESSAGE } from '~/constants/message.constants'
 import databaseService from '~/services/database.services'
@@ -13,7 +13,7 @@ import voucherPublicService from '~/services/voucherPublic.services'
 import User from '~/models/schemas/users.schemas'
 import { UserRoleEnum } from '~/constants/users.constants'
 import { DeliveryTypeEnum, OrderStatusEnum, PaymentStatusEnum, PaymentTypeEnum } from '~/constants/orders.constants'
-import { VoucherStatusEnum } from '~/constants/voucher.constants'
+import { VoucherPrivateStatusEnum, VoucherPublicStatusEnum } from '~/constants/voucher.constants'
 
 export const orderOnlineValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
@@ -305,7 +305,7 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
   }
 
   if (voucherPrivate) {
-    if (voucherPrivate.status !== VoucherStatusEnum.UNUSED) {
+    if (voucherPrivate.status !== VoucherPrivateStatusEnum.UNUSED) {
       res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
         code: RESPONSE_CODE.VOUCHER_INVALID,
         message:
@@ -340,7 +340,7 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
       return
     }
 
-    if (voucherPublic.quantity <= 0) {
+    if (voucherPublic.quantity <= 0 || voucherPublic.status !== VoucherPublicStatusEnum.AVAILABLE) {
       res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
         code: RESPONSE_CODE.VOUCHER_INVALID,
         message:
@@ -1341,7 +1341,7 @@ export const voucherPublicValidator = async (req: Request, res: Response, next: 
     return
   }
 
-  if (voucherPublic.quantity <= 0) {
+  if (voucherPublic.quantity <= 0 || voucherPublic.status !== VoucherPublicStatusEnum.AVAILABLE) {
     res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
       code: RESPONSE_CODE.VOUCHER_INVALID,
       message:

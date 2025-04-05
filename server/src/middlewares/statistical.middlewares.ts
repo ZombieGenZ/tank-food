@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { serverLanguage } from '..'
+import { serverLanguage } from '~/index'
 import { checkSchema } from 'express-validator'
 import { LANGUAGE } from '~/constants/language.constants'
 import { ENGLISH_STATIC_MESSAGE, VIETNAMESE_STATIC_MESSAGE } from '~/constants/message.constants'

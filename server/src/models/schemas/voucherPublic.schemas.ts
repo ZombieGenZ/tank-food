@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { VoucherPublicStatusEnum } from '~/constants/voucher.constants'
 
 interface VoucherPublicType {
   _id?: ObjectId
@@ -8,6 +9,7 @@ interface VoucherPublicType {
   discount: number
   requirement: number
   used?: number
+  status?: VoucherPublicStatusEnum
   created_by: ObjectId
   updated_by: ObjectId
   created_at?: Date
@@ -22,6 +24,7 @@ export default class VoucherPublic {
   discount: number
   requirement: number
   used: number
+  status: VoucherPublicStatusEnum
   created_by: ObjectId
   updated_by: ObjectId
   created_at: Date
@@ -37,6 +40,7 @@ export default class VoucherPublic {
     this.discount = voucher.discount
     this.requirement = voucher.requirement
     this.used = voucher.used || 0
+    this.status = voucher.status || VoucherPublicStatusEnum.AVAILABLE
     this.created_by = voucher.created_by
     this.updated_by = voucher.updated_by
     this.created_at = voucher.created_at || date

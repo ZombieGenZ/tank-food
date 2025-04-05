@@ -11,7 +11,7 @@ import {
   VIETNAMESE_DYNAMIC_MESSAGE,
   ENGLIS_DYNAMIC_MESSAGE
 } from '~/constants/message.constants'
-import { serverLanguage } from '..'
+import { serverLanguage } from '~/index'
 import userService from '~/services/users.services'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import databaseService from '~/services/database.services'

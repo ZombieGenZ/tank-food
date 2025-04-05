@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { serverLanguage } from '..'
+import { serverLanguage } from '~/index'
 import { writeErrorLog, writeInfoLog } from '~/utils/log.utils'
 import { StatisticalOverviewRequestsBody } from '~/models/requests/statistical.requests'
 import { LANGUAGE } from '~/constants/language.constants'

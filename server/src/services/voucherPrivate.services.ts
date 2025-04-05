@@ -3,14 +3,14 @@ import databaseService from './database.services'
 import VoucherPrivate from '~/models/schemas/voucherPrivate.schemas'
 import User from '~/models/schemas/users.schemas'
 import { notificationRealtime } from '~/utils/realtime.utils'
-import { VoucherStatusEnum } from '~/constants/voucher.constants'
+import { VoucherPrivateStatusEnum } from '~/constants/voucher.constants'
 
 class VoucherPrivateService {
   async getVoucherUnUsed(user: User) {
     return await databaseService.voucherPrivate
       .find({
         user: user._id,
-        status: VoucherStatusEnum.UNUSED
+        status: VoucherPrivateStatusEnum.UNUSED
       })
       .toArray()
   }
@@ -18,7 +18,7 @@ class VoucherPrivateService {
     return await databaseService.voucherPrivate
       .find({
         user: user._id,
-        status: VoucherStatusEnum.USED
+        status: VoucherPrivateStatusEnum.USED
       })
       .toArray()
   }
@@ -47,7 +47,7 @@ class VoucherPrivateService {
         },
         {
           $set: {
-            status: VoucherStatusEnum.USED
+            status: VoucherPrivateStatusEnum.USED
           },
           $currentDate: {
             updated_at: true
