@@ -140,9 +140,69 @@ const FormMain = (): JSX.Element => {
       })
     })
 
+    socket.on('checkout-order', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đã được thanh toán thành công !`,
+      });
+    })
+
+    socket.on('approval-order', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đã được duyệt thành công !`,
+      });
+    })
+
+    socket.on('complete-order', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đã được hoàn thành !`,
+      });
+    })
+
+    socket.on('cancel-order', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'error',
+        content: `Đơn hàng ${res._id} đã bị hủy !`,
+      });
+    })
+
+    socket.on('delivery-order', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn !`,
+      });
+    })
+
+    socket.on('cancel-delivery', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'error',
+        content: `Đơn hàng ${res._id} đã bị hủy giao hàng !`,
+      });
+    })
+
+    socket.on('complete-delivery', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đã được giao thành công !`,
+      });
+    })
+
+
+
     return () => {
       socket.off('create-order-booking')
       socket.off('ban')
+      socket.off('checkout-order')
+      socket.off('approval-order')
     }
   })
 
@@ -321,8 +381,6 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     if(isAdminView) {
       navigate('/'); 
-    } else { 
-      navigate('/'); 
     }
   }, [isAdminView]);
 
@@ -358,11 +416,11 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative" : "flex relative gap-5 flex-col"} ref={pageRef}>
+      <div className={isAdminView ? "flex relative flex-col" : "flex relative gap-5 flex-col"} ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
         {isAdminView ? (
-          <>
+          <div className='flex'>
             <NavigationAdmin displayname={user.display_name} />
             <div className="w-full flex flex-col">
               <NavAdmin display_name="Bảng thống kê" userInfo={user} />
@@ -377,7 +435,7 @@ const FormMain = (): JSX.Element => {
                 <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               </Routes>
             </div>
-          </>
+          </div>
         ) : (
           <>
             <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
@@ -549,7 +607,6 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
   }, []);
 
   const Logout = () => {
-    
     const checkToken = async () => {
           const isValid = await Verify(refresh_token, access_token);
             if (isValid) {

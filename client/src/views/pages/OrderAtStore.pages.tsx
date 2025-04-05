@@ -347,7 +347,8 @@ const OrderAtStore: React.FC = () => {
                       >
                         <Minus size={16} />
                       </button>
-                      <span className="w-6 text-center">{item.quantity}</span>
+                      <span className=
+                      "w-6 text-center">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item._id, (item.quantity || 0) + 1)}
                         className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"

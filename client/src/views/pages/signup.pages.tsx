@@ -196,10 +196,10 @@ const Signup: React.FC<Props> = (props) => {
             }).then((response) => {
               return response.json()
             }).then((data) => {
-              if(data.code == RESPONSE_CODE.VERIFY_ACCOUNT_SUCCESSFUL) {
+              if(data.code == RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL) {
                 messageApi.open({
                   type: 'success',
-                  content: 'Đăng ký thành công, Vui lòng đăng nhập vơi staif khoản mới !',
+                  content: 'Đăng ký thành công, Vui lòng đăng nhập với tài khoản mới !',
                   style: {
                     marginTop: '10vh',
                   },
@@ -211,7 +211,7 @@ const Signup: React.FC<Props> = (props) => {
               } else {
                 messageApi.open({
                   type: 'error',
-                  content: 'Lỗi khi đăng ký tài khoản',
+                  content: data.message,
                   style: {
                     marginTop: '10vh',
                   },
