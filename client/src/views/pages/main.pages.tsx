@@ -43,6 +43,10 @@ import { FaUserAlt } from "react-icons/fa";
 import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
 import Verify from '../components/VerifyToken.components.tsx';
 import { MdManageAccounts } from "react-icons/md";
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
+
 interface MenuItem {
   id: number;
   title: string;
@@ -112,6 +116,35 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     localStorage.setItem('my_cart', JSON.stringify(cart))
   }, [cart])
+
+  useEffect(() => {
+    socket.emit('connect-user-realtime', refresh_token)
+    socket.on('create-order-booking', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đã được đặt thành công !`,
+      });
+    })
+
+    socket.on('ban' , (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'error',
+        content: `Tài khoản của bạn đã bị ban vì lý do "${res.reason}" !`,
+      }).then(() => {
+        localStorage.removeItem('refresh_token')
+        localStorage.removeItem('access_token')
+      }).then(() => {
+        window.location.reload()
+      })
+    })
+
+    return () => {
+      socket.off('create-order-booking')
+      socket.off('ban')
+    }
+  })
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const [isAdminView, setIsAdminView] = useState<boolean>(false); // Mặc định là Admin view
@@ -325,10 +358,9 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative" : "flex relative gap-5 flex-col "} ref={pageRef}>
+      <div className={isAdminView ? "flex relative" : "flex relative gap-5 flex-col"} ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
-        {isAdminView == false && <AlertBanner />}
         {isAdminView ? (
           <>
             <NavigationAdmin displayname={user.display_name} />
@@ -666,7 +698,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
                     </div>
                   </div>
                 )}
-                <Dropdown menu={{ items: role === 3 ? itemAdmins : items}} placement="bottom" arrow>
+                <Dropdown menu={{ items: role === 3 ? itemAdmins : items}} arrow>
                   <Button className='p-10'>
                     <FaUserAlt />
                   </Button>

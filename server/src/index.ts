@@ -282,6 +282,9 @@ io.on('connection', (socket: Socket) => {
     // create-public-voucher: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
     // update-public-voucer: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
     // delete-public-voucher: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
+    // ban-account: Cập nhật thông tin tài khoản bị khóa
+    // unBan-account: Cập nhật thông tin tài khoản được mở khỏa
+    // change-infomation: Cập nhật thông tin tài khoản vừa được thay đổi
     //
 
     if (!refresh_token) {
