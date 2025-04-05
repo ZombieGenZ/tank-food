@@ -116,7 +116,7 @@ io.on('connection', (socket: Socket) => {
     // Phòng: freshSync-user-<user_id>
     // sự kiện:
     // new-voucher-private: Cập nhật thông tin voucher private vừa được thêm
-    // remove-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
+    // use-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
     // create-order-booking: Cập nhật thông tin đặt hàng vừa được đặt
     // checkout-order: Cập nhật thông tin đặt hàng vừa được thanh toán
     // approval-order: Cập nhật thông tin đặt hàng vừa được xử lý
@@ -282,6 +282,9 @@ io.on('connection', (socket: Socket) => {
     // create-public-voucher: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
     // update-public-voucer: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
     // delete-public-voucher: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
+    // ban-account: Cập nhật thông tin tài khoản bị khóa
+    // unBan-account: Cập nhật thông tin tài khoản được mở khỏa
+    // change-infomation: Cập nhật thông tin tài khoản vừa được thay đổi
     //
 
     if (!refresh_token) {

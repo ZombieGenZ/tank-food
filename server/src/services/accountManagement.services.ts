@@ -32,7 +32,8 @@ class AccountManagementService {
           }
         }
       ),
-      notificationRealtime(`freshSync-user-${payload.user_id}`, 'ban', `user/${payload.user_id}/ban`, penalty)
+      notificationRealtime(`freshSync-user-${payload.user_id}`, 'ban', `user/${payload.user_id}/ban`, penalty),
+      notificationRealtime(`freshSync-admin`, 'ban-account', `account-management/ban`, penalty)
     ])
   }
   async unBan(user_id: string) {
@@ -54,7 +55,8 @@ class AccountManagementService {
           }
         }
       ),
-      notificationRealtime(`freshSync-user-${user_id}`, 'unBan', `user/${user_id}/unBan`, data)
+      notificationRealtime(`freshSync-user-${user_id}`, 'unBan', `user/${user_id}/unBan`, data),
+      notificationRealtime(`freshSync-admin`, 'ban-account', `account-management/unBan`, data)
     ])
   }
 }
