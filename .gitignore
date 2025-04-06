@@ -45,4 +45,4 @@ service/sysinfo-client/sysinfo-client/obj
 service/sysinfo-server/target
 service/sysinfo-server/Cargo.lock
 
-
+service/
