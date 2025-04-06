@@ -102,6 +102,8 @@ export default function ChangePassword(props: Props): JSX.Element {
     }
   }, [newPassword])
 
+  
+
   const handleSubmit = (e: FormEvent) => {
     try {
       props.setLoading(true)
@@ -133,10 +135,11 @@ export default function ChangePassword(props: Props): JSX.Element {
       }).then((res) => {
         return res.json()
       }).then((data) => {
-        console.log(data)
         if (data.code === RESPONSE_CODE.FORGOT_PASSWORD_SUCCESSFUL) {
           setMessage({ type: "success", text: data.message })
-          messageApi.success(data.message)
+          messageApi.success(data.message).then(() => {
+            navigate("/signup")
+          })
         } 
         if(data.code == RESPONSE_CODE.FORGOT_PASSWORD_FAILED) {
           setMessage({ type: "error", text: data.message })
@@ -152,7 +155,7 @@ export default function ChangePassword(props: Props): JSX.Element {
         setIsLoading(false)
         setNewPassword("")
         setConfirmPassword("")
-        navigate("/signup")
+        // navigate("/signup")
       }, 2000)
     }
   }
@@ -190,7 +193,7 @@ export default function ChangePassword(props: Props): JSX.Element {
 
             <div className="form-group" data-animate>
               <label htmlFor="new-password" className="form-label">
-                New Password
+               Mật khẩu mới
               </label>
               <div className="input-group">
                 <input
@@ -219,7 +222,7 @@ export default function ChangePassword(props: Props): JSX.Element {
               {newPassword && (
                 <div className="password-strength visible-strength" data-animate>
                   <div className="strength-header">
-                    <span className="strength-label">Password strength:</span>
+                    <span className="strength-label">Độ mạnh của mật khẩu:</span>
                     <span className={`strength-text strength-${passwordStrength}`}>{getStrengthText()}</span>
                   </div>
                   <div className="strength-meter">
@@ -234,19 +237,19 @@ export default function ChangePassword(props: Props): JSX.Element {
                   <ul className="password-requirements">
                     <li className={newPassword.length >= 8 ? "requirement-met" : ""}>
                       <span>{newPassword.length >= 8 ? "✓" : "○"}</span>
-                      At least 8 characters
+                      Ít nhất 8 ký tự
                     </li>
                     <li className={/[A-Z]/.test(newPassword) ? "requirement-met" : ""}>
                       <span>{/[A-Z]/.test(newPassword) ? "✓" : "○"}</span>
-                      Contains uppercase letter
+                      Bao gồm kỹ tự viết hoa
                     </li>
                     <li className={/[0-9]/.test(newPassword) ? "requirement-met" : ""}>
                       <span>{/[0-9]/.test(newPassword) ? "✓" : "○"}</span>
-                      Contains number
+                      Bao gồm số
                     </li>
                     <li className={/[^A-Za-z0-9]/.test(newPassword) ? "requirement-met" : ""}>
                       <span>{/[^A-Za-z0-9]/.test(newPassword) ? "✓" : "○"}</span>
-                      Contains special character
+                      Bao gồm ký tự đặc biệt
                     </li>
                   </ul>
                 </div>
@@ -255,7 +258,7 @@ export default function ChangePassword(props: Props): JSX.Element {
 
             <div className="form-group" data-animate>
               <label htmlFor="confirm-password" className="form-label">
-                Confirm New Password
+                Xác nhận mật khẩu mới
               </label>
               <div className="input-group">
                 <input
@@ -281,7 +284,7 @@ export default function ChangePassword(props: Props): JSX.Element {
                 </button>
               </div>
               {confirmPassword && newPassword && confirmPassword !== newPassword && (
-                <p className="password-mismatch">Passwords don't match</p>
+                <p className="password-mismatch">Mật khẩu không trùng khớp</p>
               )}
             </div>
           </div>
@@ -290,11 +293,11 @@ export default function ChangePassword(props: Props): JSX.Element {
             {isLoading ? (
               <div className="button-content">
                 <div className="spinner"></div>
-                <span>Processing...</span>
+                <span>Đang cập nhật...</span>
               </div>
             ) : (
               <div className="button-content">
-                <span>Update Password</span>
+                <span>Đặt lại mật khẩu</span>
                 <span className="arrow-icon">→</span>
               </div>
             )}

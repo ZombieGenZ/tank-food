@@ -22,6 +22,7 @@ interface MenuCategory {
   id: string;
   name: string;
   items: MenuItem[];
+  hasProduct: boolean
 }
 //Giữ nguyên 
 interface CategoryItem {
@@ -160,10 +161,10 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
           id: categorys._id,
           name: language() == "Tiếng Việt" ? categorys.category_name_translate_1 : categorys.category_name_translate_2,
           items: newProduct,
+          hasProduct: newProduct.length > 0
         })
       })
       setShowProduct(newData)
-      console.log(product)
     }, [product, category])
 
     useEffect(() => {
@@ -252,59 +253,66 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                 <div className="container mx-auto px-4">
                     <h2 className="text-6xl font-bold font-['Yeseva_One'] text-center text-orange-800 mb-12 " data-aos="fade-down">Thực Đơn TankFood</h2>
     
-                    {showProduct.map((category) => (
-                        <div key={category.id} className="mb-12" data-aos="fade-up">
-                        <div
-                            className="flex justify-between items-center cursor-pointer mb-6 group"
-                            onClick={() => toggleCategory(category.id)}
-                        >
-                            <h2 className="text-4xl font-bold font-['Yeseva_One'] text-orange-800 group-hover:text-orange-700 transition-colors">
-                            {category.name}
-                            </h2>
+                    {showProduct.map((category) => {
+                      // Kiểm tra xem category có sản phẩm hay không
+                      if (category.hasProduct) {
+                        return (
+                          <div key={category.id} className="mb-12" data-aos="fade-up">
+                            <div
+                              className="flex justify-between items-center cursor-pointer mb-6 group"
+                              onClick={() => toggleCategory(category.id)}
+                            >
+                              <h2 className="text-4xl font-bold font-['Yeseva_One'] text-orange-800 group-hover:text-orange-700 transition-colors">
+                                {category.name}
+                              </h2>
                               <ChevronUp
-                              className={`w-8 h-8 text-orange-800 transition-transform duration-300 ${
+                                className={`w-8 h-8 text-orange-800 transition-transform duration-300 ${
                                   collapsedCategories.includes(category.id) ? "rotate-180" : ""
-                              }`}
-                            />
-                        </div>
-    
-                        {!collapsedCategories.includes(category.id) && (
-                            <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                            {category.items.length !== 0 ? category.items.map((item, index) => (
-                                 <div
-                                 key={index}
-                                 className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl"
-                                 data-aos="fade-up"
-                                 data-aos-delay={index * 100}
-                               >
-                                 <div className="relative">
-                                   <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
-                                   <span className="absolute top-2 right-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                     {item.tag}
-                                   </span>
-                                 </div>
-                                 <div className="p-4">
-                                   <h3 className="font-bold text-xl mb-1">{item.name}</h3>
-                                   <p className="text-gray-600 text-sm mb-4">{item.description}</p>
-                                   <div className="flex items-center gap-2 mb-4">
-                                     <span className="text-lg text-gray-500 line-through">{formatCurrency(item.price)}</span>
-                                     <span className="text-2xl font-bold text-orange-600">{formatCurrency(item.price - (item.price * item.discount/100))}</span>
-                                     <span className="ml-auto text-xs font-medium text-green-600 border border-green-600 rounded px-2 py-1">
-                                       Tiết kiệm {formatCurrency(item.price - (item.price - (item.price * item.discount/100)))}
-                                     </span>
-                                   </div>
-                                 </div>
-                                 <div className="px-4 pb-4">
-                                   <button onClick={() => addToCart(item)} className="w-full flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
-                                     <Plus /> Thêm vào giỏ hàng
-                                   </button>
-                                 </div>
-                               </div>
-                            )) : <p></p>}
+                                }`}
+                              />
                             </div>
-                        )}
-                        </div>
-                    ))}
+
+                            {!collapsedCategories.includes(category.id) && (
+                              <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                                {category.items.map((item, index) => (
+                                  <div
+                                    key={index}
+                                    className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl"
+                                    data-aos="fade-up"
+                                    data-aos-delay={index * 100}
+                                  >
+                                    <div className="relative">
+                                      <img src={item.image || "/placeholder.svg"} alt={item.name} className="w-full h-48 object-cover" />
+                                      <span className="absolute top-2 right-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                        {item.tag}
+                                      </span>
+                                    </div>
+                                    <div className="p-4">
+                                      <h3 className="font-bold text-xl mb-1">{item.name}</h3>
+                                      <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+                                      <div className="flex items-center gap-2 mb-4">
+                                        <span className="text-lg text-gray-500 line-through">{formatCurrency(item.price)}</span>
+                                        <span className="text-2xl font-bold text-orange-600">{formatCurrency(item.price - (item.price * item.discount/100))}</span>
+                                        <span className="ml-auto text-xs font-medium text-green-600 border border-green-600 rounded px-2 py-1">
+                                          Tiết kiệm {formatCurrency(item.price - (item.price - (item.price * item.discount/100)))}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="px-4 pb-4">
+                                      <button onClick={() => addToCart(item)} className="w-full flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
+                                        <Plus /> Thêm vào giỏ hàng
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                      // Nếu category không có sản phẩm, không render gì cả (null)
+                      return null;
+                    })}
                 </div>
             </section>
             <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">

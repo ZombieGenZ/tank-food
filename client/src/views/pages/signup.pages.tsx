@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react"
+import React, { FormEvent, useState, useEffect } from "react"
 import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
@@ -29,6 +29,7 @@ const Signup: React.FC<Props> = (props) => {
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
+    const [people, setPeople] = useState<string>("")
     const [formData, setFormData] = useState<Signup>({
         display_name: "",
         phone: "",
@@ -153,7 +154,7 @@ const Signup: React.FC<Props> = (props) => {
             messageApi.error(data.errors.email.msg)
             return
           }
-          messageApi.success("Gửi email xác thực thành công. Vui lòng kiểm tra hòm thư của bạn !")
+          messageApi.success("Gửi email yêu cầu đặt lại mật khẩu thành công. Vui lòng kiểm tra hòm thư của bạn !")
           console.log(data)
         })
       } catch (error) {
@@ -306,8 +307,20 @@ const Signup: React.FC<Props> = (props) => {
 
 
     const showForm = (type: string) => {
-        setFormType(type);
-      };
+      setFormType(type);
+    };
+
+    useEffect(() => {
+      fetch(`${import.meta.env.VITE_API_URL}/api/statistical/analytics-total-requests`, {
+        method: 'GET'
+      }).then(response => {
+        return response.json()
+      }).then((data) => {
+        if(data.code == RESPONSE_CODE.ANALYTICS_TOTAL_REQUESTS_SUCCESSFUL) {
+          setPeople(data.total)
+        }
+      })
+    }, [])
 
     return (
         <div style={styles.body}>
@@ -337,7 +350,7 @@ const Signup: React.FC<Props> = (props) => {
                 </div>
                 
                 <div>
-                    <p>Đã có hơn 10,000+ khách hàng hài lòng</p>
+                    <p>Đã có hơn {people} khách hàng hài lòng</p>
                 </div>
                 </div>
                 

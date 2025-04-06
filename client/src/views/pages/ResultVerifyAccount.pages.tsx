@@ -71,8 +71,24 @@ const ResultVerifyAccount = () => {
       if(data.code == RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_FAILED) {
         checkTokenRouter('/errorpage')
       }
-      if (data.code === RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_SUCCESSFUL && data.result == true) {
-         messageApi.success(data.message)
+      if (data.code === RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_SUCCESSFUL) {
+        messageApi.success(data.message)
+        const body = {
+          language: null,
+          token: paramValue
+        }
+
+        fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-account`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }).then((response) => {
+          return response.json()
+        }).then((data) => {
+          console.log(data)
+        })
       }
     })
   }, [paramValue, messageApi])
@@ -92,6 +108,7 @@ const ResultVerifyAccount = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
+          window.location.reload()
           checkTokenRouter("/")
           return 0
         }

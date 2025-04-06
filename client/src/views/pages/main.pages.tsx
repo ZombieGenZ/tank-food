@@ -96,6 +96,10 @@ interface CartItem {
 }
 
 const FormMain = (): JSX.Element => {
+  const language = (): string => {
+    const language = localStorage.getItem('language')
+    return language ? JSON.parse(language) : "Tiếng Việt"
+  }
   const navigate = useNavigate()
   const [loadingCP, setLoadingCP] = useState<boolean>(false)
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -417,6 +421,22 @@ const FormMain = (): JSX.Element => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  useEffect(() => {
+    if(refresh_token !== null && access_token !== null) {
+      setInterval(() => {
+        const checkToken = async () => {
+          const isValid = await Verify(refresh_token, access_token);
+            if (isValid) {
+              console.log("Người dùng hợp lệ")
+            } else {
+              messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+            }
+        };
+        checkToken()
+      }, 30000)
+    }
+  }, [refresh_token, access_token, messageApi])
 
   useEffect(() => {
     gsap.from(pageRef.current, {

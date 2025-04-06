@@ -22,7 +22,6 @@ const Verify = async (refresh_token: string|null, access_token: string|null): Pr
         }
 
         const data = await response.json();
-        console.log("Dữ liệu nhận được:", data);
         
         // Kiểm tra phản hồi từ server để xác thực
         return data.code == RESPONSE_CODE.TOKEN_VERIFICATION_SUCCESSFUL;
