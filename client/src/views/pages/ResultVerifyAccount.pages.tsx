@@ -1,12 +1,82 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import AOS from "aos"
 import "aos/dist/aos.css"
 import { CheckCircle } from "lucide-react"
+import Verify from "../components/VerifyToken.components"
+import { message } from "antd"
+import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
 const ResultVerifyAccount = () => {
+  const language = (): string => {
+    const language = localStorage.getItem('language')
+    return language ? JSON.parse(language) : "Tiếng Việt"
+  }
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const paramValue = queryParams.get('token');
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+  
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const checkTokenRouter = (router: string) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          navigate(router)
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken()
+  }
+
+  useEffect(() => {
+    if(paramValue == null)
+    {
+      checkTokenRouter('/errorpage')
+    }
+
+    const body = {
+      language: null,
+      token: paramValue
+    }
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-email-verify-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }).then((response) => {
+      return response.json()
+    }).then(data => {
+      console.log(data)
+      if(data.code == RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_FAILED) {
+        checkTokenRouter('/errorpage')
+      }
+      if (data.code === RESPONSE_CODE.VERIFY_EMAIL_VERIFY_TOKEN_SUCCESSFUL && data.result == true) {
+         messageApi.success(data.message)
+      }
+    })
+  })
+
   const navigate = useNavigate()
   const [countdown, setCountdown] = useState(5)
 
@@ -22,7 +92,7 @@ const ResultVerifyAccount = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          navigate("/")
+          checkTokenRouter("/")
           return 0
         }
         return prev - 1
@@ -34,11 +104,12 @@ const ResultVerifyAccount = () => {
   }, [navigate])
 
   const handleReturnHome = () => {
-    navigate("/")
+    checkTokenRouter("/")
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-orange-400 via-red-500 to-purple-600">
+      {contextHolder}
       <div
         className="max-w-md w-full bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden transform transition-all hover:scale-[1.02] duration-300"
         data-aos="zoom-in"

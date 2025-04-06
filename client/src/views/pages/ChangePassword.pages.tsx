@@ -51,11 +51,10 @@ export default function ChangePassword(props: Props): JSX.Element {
     }).then((data) => {
       console.log(data)
       if(data.code == RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_FAILED) {
-        console.log("Thất bại")
         navigate('/errorpage')
       }
       if (data.code === RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESSFUL && data.result == true) {
-        messageApi.success('Xác thực token thành công !')
+        messageApi.success(data.message)
       }
     })
   }, [paramValue, messageApi])
@@ -132,16 +131,14 @@ export default function ChangePassword(props: Props): JSX.Element {
         },
         body: JSON.stringify(body),
       }).then((res) => {
-        if (!res.ok) {
-          throw new Error("Có lỗi xảy ra")
-        }
         return res.json()
       }).then((data) => {
-        if (data.code === RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL) {
+        console.log(data)
+        if (data.code === RESPONSE_CODE.FORGOT_PASSWORD_SUCCESSFUL) {
           setMessage({ type: "success", text: data.message })
           messageApi.success(data.message)
         } 
-        if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_FAILED) {
+        if(data.code == RESPONSE_CODE.FORGOT_PASSWORD_FAILED) {
           setMessage({ type: "error", text: data.message })
           messageApi.error(data.message)
         }
@@ -155,7 +152,7 @@ export default function ChangePassword(props: Props): JSX.Element {
         setIsLoading(false)
         setNewPassword("")
         setConfirmPassword("")
-        // navigate("/signup")
+        navigate("/signup")
       }, 2000)
     }
   }

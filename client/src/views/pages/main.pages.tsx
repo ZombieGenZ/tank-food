@@ -23,6 +23,7 @@ import AlertBanner from '../components/Banner.components.tsx';
 import EmployeePage from './Employee.pages.tsx';
 import ShipperPages from './Shipper.pages.tsx';
 import NotFoundPage from './NotFound.pages.tsx';
+import ResultVerifyAccount from './ResultVerifyAccount.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message, Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -401,8 +402,6 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     if(isAdminView) {
       navigate('/'); 
-    } else {
-      navigate(window.location.pathname); 
     }
   }, [isAdminView]);
 
@@ -441,6 +440,7 @@ const FormMain = (): JSX.Element => {
       <div className={isAdminView ? "flex relative flex-col" : "flex relative gap-5 flex-col"} ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
+        {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
         {isAdminView ? (
           <div className='flex'>
             <NavigationAdmin displayname={user.display_name} />
@@ -475,6 +475,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/errorpage' element={<NotFoundPage />}/>
+              <Route path='/verify-account' element={<ResultVerifyAccount />}/>
             </Routes>
           </>
         )}
@@ -483,7 +484,7 @@ const FormMain = (): JSX.Element => {
       <div className="flex relative gap-5 flex-col " ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
-        {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""}/>}
+        {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
         <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
@@ -498,6 +499,7 @@ const FormMain = (): JSX.Element => {
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
             <Route path='/payment' element={<OrderPageWithPayment />} />
             <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+            <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           </>}
           {user?.role === 1 && <Route path='/employeer' element={<EmployeePage isLoading={loadingCP} setLoading={setLoadingCP}/>}/>}
           {user?.role === 2 && <Route path='/shipper' element={<ShipperPages isLoading={loadingCP} setLoading={setLoadingCP}/>}/>}

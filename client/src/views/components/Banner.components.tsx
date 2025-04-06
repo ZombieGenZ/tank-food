@@ -6,6 +6,8 @@ import { RESPONSE_CODE } from '../../constants/responseCode.constants';
 interface AlertBannerProps {
   refresh_token: string;
   access_token: string;
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AlertBanner: React.FC<AlertBannerProps> = (token) => {
@@ -18,6 +20,7 @@ const AlertBanner: React.FC<AlertBannerProps> = (token) => {
 
   const handleSendVerification = (): void => {
     try {
+      token.setLoading(true)
       setIsSending(true);
       const checkToken = async () => {
         const isValid = await Verify(token.refresh_token, token.access_token);
@@ -62,6 +65,7 @@ const AlertBanner: React.FC<AlertBannerProps> = (token) => {
     } finally {
       setTimeout(() => {
         setIsSending(false);
+        token.setLoading(false)
       }, 5000)
     }
   };
