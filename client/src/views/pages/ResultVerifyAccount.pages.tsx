@@ -75,7 +75,7 @@ const ResultVerifyAccount = () => {
          messageApi.success(data.message)
       }
     })
-  })
+  }, [paramValue, messageApi])
 
   const navigate = useNavigate()
   const [countdown, setCountdown] = useState(5)
