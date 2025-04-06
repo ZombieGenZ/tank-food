@@ -11,7 +11,7 @@ namespace sysinfo_client
 {
     public partial class MainWindow : Window
     {
-        private readonly string _socketUrl = "ws://localhost:8080/stats";
+        private readonly string _socketUrl = "wss://service-stats.tank-food.io.vn/stats";
         private WebSocket ws;
         private ObservableCollection<PortItem> ports = new ObservableCollection<PortItem>();
         private bool isClosing = false;

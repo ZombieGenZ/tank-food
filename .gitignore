@@ -42,7 +42,8 @@ service/sysinfo-client/.vs
 service/sysinfo-client/sysinfo-client/bin
 service/sysinfo-client/sysinfo-client/obj
 
+service/sysinfo-client-build/
+
 service/sysinfo-server-rust/target/
 service/sysinfo-server-rust/Cargo.lock
 
-# service/

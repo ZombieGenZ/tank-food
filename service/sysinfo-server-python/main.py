@@ -100,7 +100,7 @@ async def xu_ly_websocket(websocket: WebSocketServerProtocol):
 
 async def chinh():
     async with websockets.serve(xu_ly_websocket, "localhost", 8080):
-        print("✅ Máy chủ WebSocket đang chạy tại ws://localhost:8080")
+        print("✅ Máy chủ WebSocket đang chạy tại wss://service-stats.tank-food.io.vn/stats")
         await asyncio.Future()
 
 if __name__ == "__main__":
