@@ -27,6 +27,39 @@ export default function ChangePassword(props: Props): JSX.Element {
   const queryParams = new URLSearchParams(location.search);
   const paramValue = queryParams.get('token');
 
+  useEffect(() => {
+    if(paramValue == null) {
+      navigate('/errorpage')
+    }
+
+    const body1 = {
+      language: null,
+      token: paramValue,
+    }
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-forgot-password-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body1),
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error("Có lỗi xảy ra")
+      }
+      return res.json()
+    }).then((data) => {
+      console.log(data)
+      if(data.code == RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_FAILED) {
+        console.log("Thất bại")
+        navigate('/errorpage')
+      }
+      if (data.code === RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESSFUL && data.result == true) {
+        messageApi.success('Xác thực token thành công !')
+      }
+    })
+  }, [paramValue, messageApi])
+
   // Initialize animations
   useEffect(() => {
     // Simple fade-in animation for elements with data-animate attribute
@@ -85,65 +118,44 @@ export default function ChangePassword(props: Props): JSX.Element {
         return
       }
 
-      const body1 = {
+      const body = {
         language: null,
         token: paramValue,
+        new_password: newPassword,
+        confirm_new_password: confirmPassword
       }
 
-      fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-forgot-password-token`, {
-        method: "POST",
+      fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body1),
+        body: JSON.stringify(body),
       }).then((res) => {
         if (!res.ok) {
           throw new Error("Có lỗi xảy ra")
         }
         return res.json()
       }).then((data) => {
-        console.log(data)
-        if (data.code === RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESSFUL) {
-          const body = {
-            language: null,
-            token: paramValue,
-            new_password: newPassword,
-            confirm_new_password: confirmPassword
-          }
-    
-          fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          }).then((res) => {
-            if (!res.ok) {
-              throw new Error("Có lỗi xảy ra")
-            }
-            return res.json()
-          }).then((data) => {
-            if (data.code === RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL) {
-              setMessage({ type: "success", text: data.message })
-              messageApi.success(data.message)
-            } 
-            if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_FAILED) {
-              setMessage({ type: "error", text: data.message })
-              messageApi.error(data.message)
-            }
-          })
+        if (data.code === RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL) {
+          setMessage({ type: "success", text: data.message })
+          messageApi.success(data.message)
+        } 
+        if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_FAILED) {
+          setMessage({ type: "error", text: data.message })
+          messageApi.error(data.message)
         }
       })
+
     } catch (error) {
       messageApi.error(String(error))
     } finally {
       setTimeout(() => {
         props.setLoading(false)
         setIsLoading(false)
-        setMessage({ type: "success", text: "Thay đổi mật khẩu thành công !" })
         setNewPassword("")
         setConfirmPassword("")
-        navigate("/signup")
+        // navigate("/signup")
       }, 2000)
     }
   }

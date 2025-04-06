@@ -22,6 +22,7 @@ import VoucherPrivate from './VoucherPrivate.pages.tsx';
 import AlertBanner from '../components/Banner.components.tsx';
 import EmployeePage from './Employee.pages.tsx';
 import ShipperPages from './Shipper.pages.tsx';
+import NotFoundPage from './NotFound.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message, Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -454,6 +455,7 @@ const FormMain = (): JSX.Element => {
                 <Route path='/ship' element={<ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/discount' element={<DiscountCodeManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/errorpage' element={<NotFoundPage />}/>
               </Routes>
             </div>
           </div>
@@ -472,6 +474,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+              <Route path='/errorpage' element={<NotFoundPage />}/>
             </Routes>
           </>
         )}
@@ -498,6 +501,7 @@ const FormMain = (): JSX.Element => {
           </>}
           {user?.role === 1 && <Route path='/employeer' element={<EmployeePage isLoading={loadingCP} setLoading={setLoadingCP}/>}/>}
           {user?.role === 2 && <Route path='/shipper' element={<ShipperPages isLoading={loadingCP} setLoading={setLoadingCP}/>}/>}
+          <Route path='/errorpage' element={<NotFoundPage />}/>
         </Routes>
       </div>
     )}
