@@ -870,13 +870,13 @@ export const forgotPasswordValidator = async (req: Request, res: Response, next:
         },
         isLength: {
           options: {
-            min: 10,
-            max: 11
+            min: 8,
+            max: 100
           },
           errorMessage:
             language == LANGUAGE.VIETNAMESE
-              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PHONE_LENGTH_MUST_BE_FROM_10_TO_11
-              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PHONE_LENGTH_MUST_BE_FROM_10_TO_11
+              ? VIETNAMESE_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_LENGTH_MUST_BE_FROM_8_TO_100
+              : ENGLISH_STATIC_MESSAGE.USER_MESSAGE.PASSWORD_LENGTH_MUST_BE_FROM_8_TO_100
         },
         isStrongPassword: {
           errorMessage:
