@@ -1,7 +1,9 @@
-import { JSX } from "react";
+interface Props {
+    isLoading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-
-function ShipperPages(): JSX.Element {
+const ShipperPages: React.FC<Props> = (props) => {
     return(
         <>
         </>

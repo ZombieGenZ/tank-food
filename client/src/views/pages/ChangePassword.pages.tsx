@@ -4,6 +4,7 @@ import { JSX, useState, useEffect } from "react"
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { FormEvent } from "react"
 import { message } from "antd"
+import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 
 interface Props {
   isLoading: boolean;
@@ -101,7 +102,8 @@ export default function ChangePassword(props: Props): JSX.Element {
         }
         return res.json()
       }).then((data) => {
-        if (data.code === 200) {
+        console.log(data)
+        if (data.code === RESPONSE_CODE.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESSFUL) {
           const body = {
             language: null,
             token: paramValue,
@@ -121,10 +123,13 @@ export default function ChangePassword(props: Props): JSX.Element {
             }
             return res.json()
           }).then((data) => {
-            if (data.statusCode === 200) {
+            if (data.code === RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL) {
               setMessage({ type: "success", text: data.message })
-            } else {
+              messageApi.success(data.message)
+            } 
+            if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_FAILED) {
               setMessage({ type: "error", text: data.message })
+              messageApi.error(data.message)
             }
           })
         }

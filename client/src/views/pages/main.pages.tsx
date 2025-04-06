@@ -496,8 +496,8 @@ const FormMain = (): JSX.Element => {
             <Route path='/payment' element={<OrderPageWithPayment />} />
             <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           </>}
-          {user?.role === 1 && <Route path='/employeer' element={<EmployeePage />}/>}
-          {user?.role === 2 && <Route path='/shipper' element={<ShipperPages />}/>}
+          {user?.role === 1 && <Route path='/employeer' element={<EmployeePage isLoading={loadingCP} setLoading={setLoadingCP}/>}/>}
+          {user?.role === 2 && <Route path='/shipper' element={<ShipperPages isLoading={loadingCP} setLoading={setLoadingCP}/>}/>}
         </Routes>
       </div>
     )}

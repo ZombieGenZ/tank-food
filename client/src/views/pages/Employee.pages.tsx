@@ -1,6 +1,11 @@
 import React from 'react';
 
-const EmployeePage: React.FC = () => {
+interface Props {
+    isLoading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  }
+
+const EmployeePage: React.FC<Props> = (props) => {
     return (
         <div>
             <h1>Employee Page</h1>
