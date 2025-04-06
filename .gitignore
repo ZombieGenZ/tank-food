@@ -36,3 +36,13 @@ client/public/images/upload/products/**
 test/
 
 .idea
+
+service/sysinfo-client/.vs
+!service/sysinfo-client/sysinfo-client.sln
+service/sysinfo-client/sysinfo-client/bin
+service/sysinfo-client/sysinfo-client/obj
+
+service/sysinfo-server/target
+service/sysinfo-server/Cargo.lock
+
+
