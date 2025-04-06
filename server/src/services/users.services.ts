@@ -162,7 +162,7 @@ class UserService {
   }
   async sendEmailVerify(user: User, language: string) {
     const emailVerifyToken = await this.signEmailVerify(user._id.toString())
-    const emailVerifyUrl = `${process.env.API_URL}/api/users/verify-account?token=${emailVerifyToken}&language=${language}`
+    const emailVerifyUrl = `${process.env.APP_URL}/verify-account?token=${emailVerifyToken}&language=${language}`
 
     let email_verify_subject
     let email_verify_html
