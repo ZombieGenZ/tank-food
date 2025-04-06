@@ -34,3 +34,5 @@ client/public/images/upload/products/**
 !client/public/images/upload/products/temporary/note.txt
 
 test/
+
+.idea
