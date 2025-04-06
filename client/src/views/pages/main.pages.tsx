@@ -1,4 +1,4 @@
-import { NavbarUser } from '../components/navbar_component.tsx';
+import { NavbarUser, NavbarEmployee, NavbarShipper } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { Drawer, Select } from "antd";
@@ -20,6 +20,8 @@ import OrderPageWithPayment from './Payment.pages.tsx';
 import ChangePassword from './ChangePassword.pages.tsx';
 import VoucherPrivate from './VoucherPrivate.pages.tsx';
 import AlertBanner from '../components/Banner.components.tsx';
+import EmployeePage from './Employee.pages.tsx';
+import ShipperPages from './Shipper.pages.tsx';
 import { Dropdown, Button } from "antd";
 import { message, Avatar } from 'antd';
 import { AntDesignOutlined } from '@ant-design/icons';
@@ -218,6 +220,18 @@ const FormMain = (): JSX.Element => {
       return savedLanguage ? JSON.parse(savedLanguage) : "Tiếng Việt";
     });
 
+    const checkTokenRouter = (router: string) => {
+      const checkToken = async () => {
+        const isValid = await Verify(refresh_token, access_token);
+          if (isValid) {
+            navigate(router)
+          } else {
+            messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+          }
+      };
+      checkToken()
+    }
+
     const handleChange = (value: string) => {
       setLanguage(value);
       localStorage.setItem('language', JSON.stringify(value));
@@ -241,7 +255,7 @@ const FormMain = (): JSX.Element => {
       {
         key: '2',
         label: (
-          <button className="flex cursor-pointer gap-2 items-center" onClick={() => {setIsAdminView(false); navigate('/')}}>
+          <button className="flex cursor-pointer gap-2 items-center" onClick={() => {setIsAdminView(false); checkTokenRouter('/')}}>
             <FaHome /> {language === "Tiếng Việt" ? "Trang chủ người dùng" : "Main User"}
           </button>
         ),
@@ -377,6 +391,7 @@ const FormMain = (): JSX.Element => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         setUser(data.infomation);
       })
       .catch((error) => console.error("Lỗi khi lấy thông tin người dùng:", error));
@@ -465,20 +480,24 @@ const FormMain = (): JSX.Element => {
       <div className="flex relative gap-5 flex-col " ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
-        <AlertBanner />
+        {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""}/>}
         <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
-          <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+          <Route path="/aboutus" element={<Aboutus />} />
           <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
           <Route path='/deal' element={<SealPage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/contact' element={<ContactUs />} />
-          <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
-          <Route path='/payment' element={<OrderPageWithPayment />} />
-          <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-          <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          {refresh_token !== null && <>
+            <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
+            <Route path='/payment' element={<OrderPageWithPayment />} />
+            <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+          </>}
+          {user?.role === 1 && <Route path='/employeer' element={<EmployeePage />}/>}
+          {user?.role === 2 && <Route path='/shipper' element={<ShipperPages />}/>}
         </Routes>
       </div>
     )}
@@ -612,6 +631,18 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     };
   }, []);
 
+  const checkTokenRouter = (router: string) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          navigate(router)
+        } else {
+          messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken()
+  }
+
   const Logout = () => {
     const checkToken = async () => {
           const isValid = await Verify(refresh_token, access_token);
@@ -688,7 +719,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '2',
       label: (
-        <button className="flex cursor-pointer gap-2 items-center" onClick={() => {toggleView(true); navigate('/')}}>
+        <button className="flex cursor-pointer gap-2 items-center" onClick={() => {toggleView(true); checkTokenRouter('/')}}>
           <MdManageAccounts /> {language === "Tiếng Việt" ? "Quản lý và thống kê" : "Manage and statistical"}
         </button>
       ),
@@ -727,6 +758,24 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
             <ul className='flex items-center gap-5'>
               {(role === 0 || role === null || role === 3) && (
                 NavbarUser.map((item: NavbarItem) => (
+                  <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
+                    <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                      {language === "Tiếng Việt" ? item.title : item.english}
+                    </button>
+                  </li>
+                ))
+              )}
+              {role === 1 && (
+                NavbarEmployee.map((item: NavbarItem) => (
+                  <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
+                    <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
+                      {language === "Tiếng Việt" ? item.title : item.english}
+                    </button>
+                  </li>
+                ))
+              )}
+              {role === 2 && (
+                NavbarShipper.map((item: NavbarItem) => (
                   <li key={item.id} className="text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                     <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] p-2 rounded-md transition duration-300">
                       {language === "Tiếng Việt" ? item.title : item.english}

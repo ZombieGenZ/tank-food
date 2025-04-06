@@ -251,8 +251,25 @@ const Signup: React.FC<Props> = (props) => {
           }).then((response) => {
             return response.json()
           }).then((data) => {
-            console.log(data)
-            if(data.message == "Đăng nhập tài khoản thành công") {
+            if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
+              messageApi.open({
+                type: 'error',
+                content: data.message,
+                style: {
+                  marginTop: '10vh',
+                },
+              })
+            }
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.open({
+                type: 'error',
+                content: data.errors.email.msg,
+                style: {
+                  marginTop: '10vh',
+                },
+              })
+            }
+            if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
               localStorage.setItem('access_token', data.authenticate.access_token)
               localStorage.setItem('refresh_token', data.authenticate.refresh_token)
               messageApi.open({
@@ -267,15 +284,6 @@ const Signup: React.FC<Props> = (props) => {
                   window.location.reload();
                 }, 1000);
               });
-            }
-            else {
-              messageApi.open({
-                type: 'error',
-                content: 'Đăng nhập thất bại | Vui lòng kiểm tra lại thông tin',
-                style: {
-                  marginTop: '10vh',
-                },
-              })
             }
           })
         } else {

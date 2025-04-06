@@ -1,23 +1,74 @@
 import React, { useState } from 'react';
+import { message } from 'antd';
+import Verify from './VerifyToken.components';
+import { RESPONSE_CODE } from '../../constants/responseCode.constants';
 
-const AlertBanner: React.FC = () => {
-  const [isVisible, setIsVisible] = useState<boolean>(true);
+interface AlertBannerProps {
+  refresh_token: string;
+  access_token: string;
+}
+
+const AlertBanner: React.FC<AlertBannerProps> = (token) => {
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const language = (): string => {
+    const language = localStorage.getItem('language')
+    return language ? JSON.parse(language) : "Tiếng Việt"
+  }
 
   const handleSendVerification = (): void => {
-    setIsSending(true);
-    // Simulating email sending process
-    setTimeout(() => {
-      setIsSending(false);
-    }, 2000);
-  };
+    try {
+      setIsSending(true);
+      const checkToken = async () => {
+        const isValid = await Verify(token.refresh_token, token.access_token);
+        if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: token.refresh_token
+          }
 
-  if (!isVisible) {
-    return null;
-  }
+          fetch(`${import.meta.env.VITE_API_URL}/api/users/send-email-verify`, {
+            method: 'PUT',
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token.access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            if(data.code == RESPONSE_CODE.SEND_EMAIL_VERIFY_FAILED) {
+              messageApi.error(data.message)
+            }
+            if(data.code == RESPONSE_CODE.SEND_EMAIL_VERIFY_SUCCESSFUL) {
+              messageApi.success(`${data.message}, vui lòng kiểm tra hòm thư của bạn !`)
+            }
+          })
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+      };
+          
+      checkToken();
+    } catch (error) {
+      messageApi.open({
+        type: 'error',
+        content: String(error),
+        style: {
+          marginTop: '10vh',
+        },
+      })
+      return;
+    } finally {
+      setTimeout(() => {
+        setIsSending(false);
+      }, 5000)
+    }
+  };
 
   return (
     <div className="relative bg-gradient-to-r from-orange-100 m-0 to-amber-100 border-l-4 border-orange-500 p-4 flex items-center justify-between w-full shadow-md">
+      {contextHolder}
       <div className="flex-1 text-center text-gray-800">
         <span className="font-medium text-orange-700">Xác thực tài khoản của bạn</span>
         <span className="text-gray-700"> | Vui lòng xác thực email để sử dụng đầy đủ tính năng của hệ thống. </span>

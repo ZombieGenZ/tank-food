@@ -81,3 +81,21 @@ export const NavbarAdmin = [
         path: "/discount"
     },
 ]
+
+export const NavbarShipper = [
+    {
+        id: 1,
+        title: "Đơn đặt hàng",
+        english: "Orders",
+        path: "/shipper"
+    }
+]
+
+export const NavbarEmployee = [
+    {
+        id: 1,
+        title: "Đơn tại quầy",
+        english: "Orders",
+        path: "/employeer"
+    }
+]

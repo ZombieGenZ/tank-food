@@ -1,7 +1,7 @@
 "use client"
 
 import { JSX, useState, useEffect } from "react"
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { FormEvent } from "react"
 import { message } from "antd"
 
@@ -12,6 +12,7 @@ interface Props {
 
 export default function ChangePassword(props: Props): JSX.Element {
   // Form state
+  const navigate = useNavigate()
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showNewPassword, setShowNewPassword] = useState(false)
@@ -70,6 +71,7 @@ export default function ChangePassword(props: Props): JSX.Element {
 
   const handleSubmit = (e: FormEvent) => {
     try {
+      props.setLoading(true)
       e.preventDefault()
 
       if (newPassword !== confirmPassword) {
@@ -82,31 +84,51 @@ export default function ChangePassword(props: Props): JSX.Element {
         return
       }
 
-      const body = {
+      const body1 = {
         language: null,
         token: paramValue,
-        new_password: newPassword,
-        confirm_new_password: confirmPassword
       }
 
-        fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }).then((res) => {
-          if (!res.ok) {
-            throw new Error("Có lỗi xảy ra")
+      fetch(`${import.meta.env.VITE_API_URL}/api/users/verify-forgot-password-token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body1),
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error("Có lỗi xảy ra")
+        }
+        return res.json()
+      }).then((data) => {
+        if (data.code === 200) {
+          const body = {
+            language: null,
+            token: paramValue,
+            new_password: newPassword,
+            confirm_new_password: confirmPassword
           }
-          return res.json()
-        }).then((data) => {
-          if (data.statusCode === 200) {
-            setMessage({ type: "success", text: data.message })
-          } else {
-            setMessage({ type: "error", text: data.message })
-          }
-        })
+    
+          fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          }).then((res) => {
+            if (!res.ok) {
+              throw new Error("Có lỗi xảy ra")
+            }
+            return res.json()
+          }).then((data) => {
+            if (data.statusCode === 200) {
+              setMessage({ type: "success", text: data.message })
+            } else {
+              setMessage({ type: "error", text: data.message })
+            }
+          })
+        }
+      })
     } catch (error) {
       messageApi.error(String(error))
     } finally {
@@ -116,6 +138,7 @@ export default function ChangePassword(props: Props): JSX.Element {
         setMessage({ type: "success", text: "Thay đổi mật khẩu thành công !" })
         setNewPassword("")
         setConfirmPassword("")
+        navigate("/signup")
       }, 2000)
     }
   }
