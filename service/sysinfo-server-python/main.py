@@ -53,7 +53,7 @@ async def kiem_tra_cong(cong: int) -> bool:
         return False
 
 async def xu_ly_websocket(websocket: WebSocketServerProtocol):
-    cac_cong_can_kiem_tra = [80, 3000]
+    cac_cong_can_kiem_tra = [80, 3000, 8080]
     
     while True:
         try:

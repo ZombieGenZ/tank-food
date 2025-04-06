@@ -106,7 +106,7 @@ async fn handle_websocket(ws: WebSocket, sys: Arc<Mutex<System>>, ports_to_check
 async fn main() {
     let refresh_kind = RefreshKind::everything();
     let system = Arc::new(Mutex::new(System::new_with_specifics(refresh_kind)));
-    let ports_to_check = Arc::new(vec![80, 3000]);
+    let ports_to_check = Arc::new(vec![80, 3000, 8080]);
 
     let sys = system.clone();
     let ports = ports_to_check.clone();
