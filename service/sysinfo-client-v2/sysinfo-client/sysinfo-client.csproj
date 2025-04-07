@@ -15,7 +15,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\pc\Desktop\document\PRO231\Project\TANK-Food\service\sysinfo-client-build\</PublishUrl>
+    <PublishUrl>C:\Users\pc\Desktop\document\PRO231\Project\TANK-Food\service\sysinfo-client-v2-build\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>

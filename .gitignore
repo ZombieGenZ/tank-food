@@ -48,11 +48,7 @@ service/sysinfo-client-v1/.vs
 service/sysinfo-client-v1/sysinfo-client/bin
 service/sysinfo-client-v1/sysinfo-client/obj
 
-service/sysinfo-client-v2-build/
-
 service/sysinfo-client-v2/.vs
 !service/sysinfo-client-v2/sysinfo-client.sln
 service/sysinfo-client-v2/sysinfo-client/bin
 service/sysinfo-client-v2/sysinfo-client/obj
-
-service/sysinfo-client-v2-build/
