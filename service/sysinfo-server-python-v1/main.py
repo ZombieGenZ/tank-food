@@ -96,7 +96,7 @@ async def handle_websocket(websocket, ports_to_check):
 
 async def main():
     ports_to_check = [80, 3000, 8080]
-    async with websockets.serve(lambda ws: handle_websocket(ws, ports_to_check), "127.0.0.1", 8080):
+    async with websockets.serve(lambda ws: handle_websocket(ws, ports_to_check), "0.0.0.0", 8080):
         print("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn")
         await asyncio.Future()
 

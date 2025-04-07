@@ -152,8 +152,8 @@ async def ws_handler(websocket):
         print(f"❌ Lỗi không mong đợi: {e}")
 
 async def main():
-    server = await websockets.serve(ws_handler, "127.0.0.1", 8080)
-    print("✅ Máy chủ SysInfo đang chạy tại ws://127.0.0.1:8080")
+    server = await websockets.serve(ws_handler, "0.0.0.0", 8080)
+    print("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn")
     await server.wait_closed()
 
 if __name__ == "__main__":

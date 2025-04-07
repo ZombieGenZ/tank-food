@@ -175,5 +175,5 @@ async fn main() {
         });
 
     println!("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn");
-    warp::serve(ws_route).run(([127, 0, 0, 1], 8080)).await;
+    warp::serve(ws_route).run(([0, 0, 0, 0], 8080)).await;
 }
