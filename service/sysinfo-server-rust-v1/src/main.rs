@@ -111,14 +111,13 @@ async fn main() {
     let sys = system.clone();
     let ports = ports_to_check.clone();
 
-    let ws_route = warp::path("stats")
-        .and(warp::ws())
+    let ws_route = warp::ws()
         .map(move |ws: warp::ws::Ws| {
             let sys = sys.clone();
             let ports = ports.clone();
             ws.on_upgrade(move |websocket| handle_websocket(websocket, sys, ports))
         });
 
-    println!("✅ Máy chủ WebSocket đang chạy tại ws://localhost:8080/stats");
+    println!("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn");
     warp::serve(ws_route).run(([127, 0, 0, 1], 8080)).await;
 }

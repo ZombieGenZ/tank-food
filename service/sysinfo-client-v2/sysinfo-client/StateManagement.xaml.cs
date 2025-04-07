@@ -14,7 +14,7 @@ namespace sysinfo_client
     /// </summary>
     public partial class StateManagement : Window
     {
-        private readonly string _socketUrl = "wss://service-stats.tank-food.io.vn/stats";
+        private readonly string _socketUrl = "wss://service-stats.tank-food.io.vn/";
         private WebSocket ws;
         private ObservableCollection<PortItem> ports = new ObservableCollection<PortItem>();
         private bool isClosing = false;

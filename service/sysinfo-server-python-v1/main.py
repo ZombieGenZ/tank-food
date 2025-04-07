@@ -1,107 +1,104 @@
 import asyncio
+import websockets
 import json
 import psutil
 import socket
-from dataclasses import dataclass
-from typing import List
-import websockets
-from websockets.server import WebSocketServerProtocol
+from collections import deque
+import time
 
-@dataclass
-class TrangThaiCong:
-    cong: int
-    hoat_dong: bool
+class PortStatus:
+    def __init__(self, port, is_active):
+        self.port = port
+        self.is_active = is_active
 
-    def thanh_dict(self):
-        return {"port": self.cong, "is_active": self.hoat_dong}
+    def to_json(self):
+        return {"port": self.port, "is_active": self.is_active}
 
-@dataclass
-class ThongTinHeThong:
-    cpu_su_dung_toi_thieu: float
-    cpu_su_dung_toi_da: float
-    cpu_su_dung: float
-    ram_su_dung_toi_thieu: int
-    ram_su_dung_toi_da: int
-    ram_phan_tram_su_dung: float
-    dia_su_dung_toi_thieu: int
-    dia_su_dung_toi_da: int
-    dia_phan_tram_su_dung: float
-    cac_cong: List[TrangThaiCong]
+class SystemInfo:
+    def __init__(self, cpu_min_usage, cpu_max_usage, cpu_usage, ram_min_usage, ram_max_usage, ram_usage_percent, disk_min_usage, disk_max_usage, disk_usage_percent, ports):
+        self.cpu_min_usage = cpu_min_usage
+        self.cpu_max_usage = cpu_max_usage
+        self.cpu_usage = cpu_usage
+        self.ram_min_usage = ram_min_usage
+        self.ram_max_usage = ram_max_usage
+        self.ram_usage_percent = ram_usage_percent
+        self.disk_min_usage = disk_min_usage
+        self.disk_max_usage = disk_max_usage
+        self.disk_usage_percent = disk_usage_percent
+        self.ports = ports
 
-    def thanh_dict(self):
+    def to_json(self):
         return {
-            "cpu_min_usage": self.cpu_su_dung_toi_thieu,
-            "cpu_max_usage": self.cpu_su_dung_toi_da,
-            "cpu_usage": self.cpu_su_dung,
-            "ram_min_usage": self.ram_su_dung_toi_thieu,
-            "ram_max_usage": self.ram_su_dung_toi_da,
-            "ram_usage_percent": self.ram_phan_tram_su_dung,
-            "disk_min_usage": self.dia_su_dung_toi_thieu,
-            "disk_max_usage": self.dia_su_dung_toi_da,
-            "disk_usage_percent": self.dia_phan_tram_su_dung,
-            "ports": [cong.thanh_dict() for cong in self.cac_cong]
+            "cpu_min_usage": self.cpu_min_usage,
+            "cpu_max_usage": self.cpu_max_usage,
+            "cpu_usage": self.cpu_usage,
+            "ram_min_usage": self.ram_min_usage,
+            "ram_max_usage": self.ram_max_usage,
+            "ram_usage_percent": self.ram_usage_percent,
+            "disk_min_usage": self.disk_min_usage,
+            "disk_max_usage": self.disk_max_usage,
+            "disk_usage_percent": self.disk_usage_percent,
+            "ports": [port.to_json() for port in self.ports]
         }
 
-async def kiem_tra_cong(cong: int) -> bool:
+async def check_port(port):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(1)
-        ket_qua = sock.connect_ex(('127.0.0.1', cong))
+        result = sock.connect_ex(("127.0.0.1", port))
         sock.close()
-        return ket_qua == 0
-    except Exception:
+        return result == 0
+    except:
         return False
 
-async def xu_ly_websocket(websocket: WebSocketServerProtocol):
-    cac_cong_can_kiem_tra = [80, 3000, 8080]
-    
+async def handle_websocket(websocket, ports_to_check):
     while True:
+        await asyncio.sleep(1)
+
+        cpu_usage = psutil.cpu_percent(percpu=True)
+        cpu_min_usage = min(cpu_usage)
+        cpu_max_usage = max(cpu_usage)
+        cpu_avg_usage = sum(cpu_usage) / len(cpu_usage)
+
+        ram = psutil.virtual_memory()
+        ram_used = ram.used // 1024
+        ram_total = ram.total // 1024
+        ram_usage_percent = ram.percent
+
+        disk = psutil.disk_usage('/')
+        disk_used_mb = disk.used // 1024 // 1024
+        disk_total_mb = disk.total // 1024 // 1024
+        disk_usage_percent = disk.percent
+
+        port_statuses = []
+        for port in ports_to_check:
+            is_active = await check_port(port)
+            port_statuses.append(PortStatus(port, is_active))
+
+        info = SystemInfo(
+            cpu_min_usage,
+            cpu_max_usage,
+            cpu_avg_usage,
+            ram_used,
+            ram_total,
+            ram_usage_percent,
+            disk_used_mb,
+            disk_total_mb,
+            disk_usage_percent,
+            port_statuses
+        )
+
         try:
-            cpu_phan_tram = psutil.cpu_percent(percpu=True)
-            cpu_su_dung_toi_thieu = min(cpu_phan_tram)
-            cpu_su_dung_toi_da = max(cpu_phan_tram)
-            cpu_su_dung_trung_binh = sum(cpu_phan_tram) / len(cpu_phan_tram)
-
-            bo_nho = psutil.virtual_memory()
-            ram_da_dung = bo_nho.used // (1024 * 1024)
-            ram_tong = bo_nho.total // (1024 * 1024)
-            ram_phan_tram_su_dung = bo_nho.percent
-
-            dia = psutil.disk_usage('/')
-            dia_da_dung_mb = (dia.total - dia.free) // (1024 * 1024)
-            dia_tong_mb = dia.total // (1024 * 1024)
-            dia_phan_tram_su_dung = dia.percent
-
-            trang_thai_cong = [
-                TrangThaiCong(cong=cong, hoat_dong=await kiem_tra_cong(cong))
-                for cong in cac_cong_can_kiem_tra
-            ]
-
-            thong_tin = ThongTinHeThong(
-                cpu_su_dung_toi_thieu=cpu_su_dung_toi_thieu,
-                cpu_su_dung_toi_da=cpu_su_dung_toi_da,
-                cpu_su_dung=cpu_su_dung_trung_binh,
-                ram_su_dung_toi_thieu=ram_da_dung,
-                ram_su_dung_toi_da=ram_tong,
-                ram_phan_tram_su_dung=ram_phan_tram_su_dung,
-                dia_su_dung_toi_thieu=dia_da_dung_mb,
-                dia_su_dung_toi_da=dia_tong_mb,
-                dia_phan_tram_su_dung=dia_phan_tram_su_dung,
-                cac_cong=trang_thai_cong
-            )
-
-            await websocket.send(json.dumps(thong_tin.thanh_dict()))
-            
-            await asyncio.sleep(1)
-
+            await websocket.send(json.dumps(info.to_json()))
         except Exception as e:
-            print(f"❌ Lỗi: {e}")
+            print(f"❌ Lỗi gửi WebSocket: {e}")
             break
 
-async def chinh():
-    async with websockets.serve(xu_ly_websocket, "localhost", 8080):
-        print("✅ Máy chủ WebSocket đang chạy tại wss://service-stats.tank-food.io.vn/stats")
+async def main():
+    ports_to_check = [80, 3000, 8080]
+    async with websockets.serve(lambda ws: handle_websocket(ws, ports_to_check), "127.0.0.1", 8080):
+        print("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn")
         await asyncio.Future()
 
 if __name__ == "__main__":
-    asyncio.run(chinh())
+    asyncio.run(main())

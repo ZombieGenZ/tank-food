@@ -9160,6 +9160,11 @@
               </para>
             </exception>
         </member>
+        <member name="P:WebSocketSharp.WebSocket.CustomHeaders">
+            <summary>
+            Gets or sets the custom headers
+            </summary>
+        </member>
         <member name="P:WebSocketSharp.WebSocket.Compression">
             <summary>
             Gets or sets the compression method used to compress a message.
