@@ -362,8 +362,10 @@ const CategoryManagement: React.FC<Props> = (props) => {
       render: (_text, record) => {
         return (
           <div className="flex gap-2">
-            <Button style={{ background:"blue", color:"white" }} onClick={() => showEditModalFunc(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
-            <Button style={{ background:"red", color:"white" }} onClick={() => showDeleteModalFunc(record)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
+            <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
+                    onClick={() => showEditModalFunc(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
+            <button className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
+                    onClick={() => showDeleteModalFunc(record)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
           </div>
         )
       },

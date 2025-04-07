@@ -164,9 +164,9 @@ const ProfilePage: React.FC<Props> = (props) => {
   const data: User = location.state;
   const [user, setUser] = useState<User>(data)
   const [formData, setFormData] = useState({
-    name: user.display_name,
-    email: user.email,
-    phone: user.phone,
+    name: user?.display_name,
+    email: user?.email,
+    phone: user?.phone,
   })
 
   const [formPass, setFormPass] = useState({

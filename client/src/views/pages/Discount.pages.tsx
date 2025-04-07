@@ -52,13 +52,13 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
 
     const [code, setCode] = useState<string>("");
     const [quantity, setQuantity] = useState<number>(1);
-    const [discount, setDiscount] = useState<number>(5000);
+    const [discount, setDiscount] = useState<number>(1000);
     const [requirement, setRequirement] = useState<number>(0);
     const [expiration_date, setExpirationDate] = useState<Dayjs|null>(null);
 
     const [codeEdit, setCodeEdit] = useState<string>("");
     const [quantityEdit, setQuantityEdit] = useState<number>(1);
-    const [discountEdit, setDiscountEdit] = useState<number>(5000);
+    const [discountEdit, setDiscountEdit] = useState<number>(1000);
     const [requirementEdit, setRequirementEdit] = useState<number>(0);
     const [expiration_dateEdit, setExpirationDateEdit] = useState<Dayjs|null>(null);
 
@@ -466,7 +466,7 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
               dataIndex: 'discount',
               width: 350,
               key: 'discount',
-              render: (text) => <p>{text}%</p>
+              render: (text) => <p>{formatCurrency(text)}</p>
             },
             {
                 title: 'Yêu cầu tối thiểu đơn hàng từ',
@@ -489,8 +489,10 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                 render: (_text, record) => {
                     return (
                       <div className="flex gap-2">
-                        <Button style={{ background:"blue", color:"white" }} onClick={() => showEditModal(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</Button>
-                        <Button style={{ background:"red", color:"white" }} onClick={() => showDeleteModal(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</Button>
+                        <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
+                                onClick={() => showEditModal(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
+                        <button className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
+                                onClick={() => showDeleteModal(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
                       </div>
                     )
                 },
@@ -524,7 +526,7 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                         </div>
                         <div className="flex gap-2 flex-col">
                             <p className="text-sm">{language() == "Tiếng Việt" ? "Phần trăm giảm giá:" : "Enter discount:"}</p>
-                            <InputNumber min={0} max={100} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
+                            <InputNumber min={1000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
                         </div>
                         <div className="flex gap-2 flex-col">
                             <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
@@ -550,8 +552,8 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                             <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantityEdit} onChange={handlechangQuantityEdit}/>
                         </div>
                         <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Phần trăm giảm giá:" : "Enter discount:"}</p>
-                            <InputNumber min={0} max={100} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
+                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
+                            <InputNumber min={1000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
                         </div>
                         <div className="flex gap-2 flex-col">
                             <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>

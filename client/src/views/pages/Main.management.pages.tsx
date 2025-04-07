@@ -234,7 +234,7 @@ function MainManage(props: Props): JSX.Element{
       };
       
       checkToken();
-    }, [refresh_token, access_token, messageApi]);
+    }, [refresh_token, access_token, messageApi, selectDate]);
 
     useEffect(() => {
       const handleStorageChange = () => {
@@ -402,22 +402,22 @@ function MainManage(props: Props): JSX.Element{
           <AreaChart width={750} height={500} data={list?.dailyBreakdown}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <defs>
-                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ff6347" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#1e90ff" stopOpacity={0.2} />
-                </linearGradient>
-                <linearGradient id="customersGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#90ee90" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#f0e68c" stopOpacity={0.2} />
-                </linearGradient>
-                <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ffa500" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#ffe4b5" stopOpacity={0.2} />
-                </linearGradient>
-                <linearGradient id="productsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#800080" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#dda0dd" stopOpacity={0.2} />
-                </linearGradient>
+              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ff6347" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#ffb3a7" stopOpacity={0.2} /> {/* Màu nhạt hơn của #ff6347 */}
+              </linearGradient>
+              <linearGradient id="customersGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#90ee90" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#c1facc" stopOpacity={0.2} /> {/* Màu nhạt hơn của #90ee90 */}
+              </linearGradient>
+              <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ffa500" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#ffcda3" stopOpacity={0.2} /> {/* Màu nhạt hơn của #ffa500 */}
+              </linearGradient>
+              <linearGradient id="productsGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#800080" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#d4a0d4" stopOpacity={0.2} /> {/* Màu nhạt hơn của #800080 */}
+              </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />

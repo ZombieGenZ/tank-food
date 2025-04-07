@@ -108,7 +108,6 @@ const ResultVerifyAccount = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          window.location.reload()
           checkTokenRouter("/")
           return 0
         }

@@ -399,13 +399,14 @@ const ShipManagement: React.FC<Props> = (props) => {
   // };
 
   // Get orders based on active tab
+
+
+  const filterOptions: string[] = ["Tất cả", "Phí ship cao nhất", "Phí ship thấp nhất"];
+  const [activeFilter, setActiveFilter] = useState<string>("Tất cả");
+
   const getActiveOrders = (): Order[] => {
     return activeTab === 'waiting' ? waitingOrders : receivedOrders;
   };
-
-
-  const filterOptions: string[] = ["Tất cả", "đơn mới nhất", "đơn cũ nhất"];
-  const [activeFilter, setActiveFilter] = useState<string>("Tất cả");
 
   function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
     const formatter = new Intl.NumberFormat(currencyCode, {
@@ -453,7 +454,7 @@ const ShipManagement: React.FC<Props> = (props) => {
       {/* Orders container */}
       <div className="bg-white rounded-lg shadow-sm p-4">
         <h2 className="text-lg font-medium mb-3">
-          {activeTab === 'waiting' ? 'Đơn hàng đã nhận:' : 'Đơn hàng đã giao:'}
+          {activeTab === 'waiting' ? 'Đơn hàng đang chờ nhận giao:' : 'Đơn hàng đã giao:'}
         </h2>
         
         {/* Filters */}
@@ -535,9 +536,9 @@ const ShipManagement: React.FC<Props> = (props) => {
                     {order.product.map(item => (
                       <div key={item._id} className="flex justify-between items-center border border-gray-200 rounded-md p-3 hover:bg-gray-50 transition">
                         <div className="flex items-center">
-                          <div className="bg-gray-100 rounded-md p-1 mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          <div className="w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center mr-3 text-orange-600">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                              <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
                             </svg>
                           </div>
                           <div>
@@ -564,7 +565,7 @@ const ShipManagement: React.FC<Props> = (props) => {
                           "text-red-500"
                         }`}>
                           {order.order_status === 0 ? "Đang chờ duyệt" : 
-                          order.order_status === 1 ? "Duyệt thành công" : 
+                          order.order_status === 1 ? "Đang chờ nhận giao hàng" : 
                           order.order_status === 2 ? "Đang giao" : 
                           order.order_status === 3 ? "Giao đơn thành công" : 
                           order.order_status === 4 ? "Thành công" : "Thất bại"}
@@ -582,14 +583,15 @@ const ShipManagement: React.FC<Props> = (props) => {
 
                   {/* Delivery info */}
                   <div className="mb-4 space-y-1 text-sm">
+                    <p><span className="text-gray-600">Địa chỉ nhận hàng:</span> {order.delivery_address}</p>
                     <p><span className="text-gray-600">Địa chỉ giao hàng:</span> {order.receiving_address}</p>
-                    <p><span className="text-gray-600">Khoảng cách:</span> {order.distance}</p>
+                    <p><span className="text-gray-600">Khoảng cách:</span> {order.distance} km</p>
                   </div>
 
                   {/* Total */}
                   <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                     <div className="text-right">
-                      <p className="text-sm text-gray-600">Phí giao hàng: {order.fee.toLocaleString()}vnđ</p>
+                      <p className="text-sm text-gray-600">Phí giao hàng: {formatCurrency(order.fee - (order.fee * 15/100))}</p>
                       <p className="text-xl font-bold text-orange-500">{formatCurrency(order.total_bill)}</p>
                     </div>
                     {activeTab === 'waiting' ? (

@@ -127,8 +127,28 @@ const FormMain = (): JSX.Element => {
 
   useEffect(() => {
     socket.emit('connect-user-realtime', refresh_token)
-    socket.on('create-order-booking', (res) => {
+    socket.on('verify-account', (res: { user_id: string }) => {
+      messageApi.success("Tài khoản được xác thực thành công !")
+      setUser((prev) => {
+        if (prev) {
+          return { ...prev, _id: res.user_id, user_type: 1 };
+        } else {
+          return { _id: res.user_id, user_type: 1, created_at: "", display_name: "", email: "", penalty: null, phone: "", role: 0, updated_at: "" };
+        }
+        });
+      })
+
+    socket.on('logout', (res) => {
+      // localStorage.removeItem('refresh_token')
+      // localStorage.removeItem('access_token')
       console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Tài khoản ${res._id} đã đăng xuất thành công !`,
+      });
+    })
+
+    socket.on('create-order-booking', (res) => {
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được đặt thành công !`,
@@ -136,20 +156,17 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('ban' , (res) => {
-      console.log(res)
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('access_token')
       messageApi.open({
         type: 'error',
         content: `Tài khoản của bạn đã bị ban vì lý do "${res.reason}" !`,
-      }).then(() => {
-        localStorage.removeItem('refresh_token')
-        localStorage.removeItem('access_token')
       }).then(() => {
         window.location.reload()
       })
     })
 
     socket.on('checkout-order', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được thanh toán thành công !`,
@@ -157,7 +174,6 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('approval-order', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được duyệt thành công !`,
@@ -165,7 +181,6 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('complete-order', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được hoàn thành !`,
@@ -173,7 +188,6 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('cancel-order', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'error',
         content: `Đơn hàng ${res._id} đã bị hủy !`,
@@ -181,7 +195,6 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('delivery-order', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn !`,
@@ -189,7 +202,6 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('cancel-delivery', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'error',
         content: `Đơn hàng ${res._id} đã bị hủy giao hàng !`,
@@ -197,7 +209,6 @@ const FormMain = (): JSX.Element => {
     })
 
     socket.on('complete-delivery', (res) => {
-      console.log(res)
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được giao thành công !`,
@@ -207,10 +218,17 @@ const FormMain = (): JSX.Element => {
 
 
     return () => {
+      socket.off('verify-account')
+      socket.off('logout')
       socket.off('create-order-booking')
       socket.off('ban')
       socket.off('checkout-order')
       socket.off('approval-order')
+      socket.off('complete-order')
+      socket.off('cancel-order')
+      socket.off('delivery-order')
+      socket.off('cancel-delivery')
+      socket.off('complete-delivery')
     }
   })
 
@@ -457,13 +475,13 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative flex-col" : "flex relative gap-5 flex-col"} ref={pageRef}>
+      <div className={isAdminView ? "flex relative flex-col" : "flex relative flex-col"} ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
         {isAdminView ? (
           <div className='flex'>
-            <NavigationAdmin displayname={user.display_name} />
+            <NavigationAdmin displayname={user.display_name} user={user}/>
             <div className="w-full flex flex-col">
               <NavAdmin display_name="Bảng thống kê" userInfo={user} />
               <Routes>
@@ -501,7 +519,7 @@ const FormMain = (): JSX.Element => {
         )}
       </div>
     ) : (
-      <div className="flex relative gap-5 flex-col " ref={pageRef}>
+      <div className="flex relative flex-col " ref={pageRef}>
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
@@ -531,8 +549,34 @@ const FormMain = (): JSX.Element => {
   );
 };
 
-function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element {
+function NavigationAdmin({ displayname, user }: { displayname: string, user: UserInfo }): JSX.Element {
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+  const [messageApi, contextHolder] = message.useMessage();
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
   const navigate = useNavigate();
+  const checkTokenRouter = (router: string) => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          navigate(router, { replace: true, state: user })
+        } else {
+          messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken()
+  }
   const [navbar, setNavbar] = useState<MenuItem[]>([
     { id: 1, title: 'Trang chủ', english: 'Home', path: '/', icon: FaHome, active: true },
     { id: 2, title: 'Quản lý tài khoản', english: 'Account Management', path: 'Account', icon: RiUser3Line, active: false },
@@ -569,6 +613,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
 
   return (
     <div className='w-1/5 z-50 sticky left-0 top-0 bg-slate-800 text-white h-screen'>
+      {contextHolder}
       <div className='p-4 flex items-center space-x-3'>
         <div className='w-10 h-10 rounded-full bg-[#1890ff] flex items-center justify-center text-white font-bold'>A</div>
         <span className='text-lg font-bold'>ADMINISTRATOR</span>
@@ -593,7 +638,7 @@ function NavigationAdmin({ displayname }: { displayname: string }): JSX.Element 
         })}
       </div>
 
-      <div className='absolute bottom-0 left-0 w-full p-4 border-t border-slate-700'>
+      <div className='absolute cursor-pointer bottom-0 left-0 w-full p-4 border-t border-slate-700' onClick={() => checkTokenRouter('/profile')}>
         <div className='flex items-center space-x-3 gap-2'>
           <Avatar
             size={32}
@@ -746,7 +791,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
       key: '2',
       label: (
         <button className="flex cursor-pointer gap-2 items-center" onClick={() => {toggleView(true); checkTokenRouter('/')}}>
-          <MdManageAccounts /> {language === "Tiếng Việt" ? "Quản lý và thống kê" : "Manage and statistical"}
+          <MdManageAccounts /> {language === "Tiếng Việt" ? "Quản lý" : "Manage"}
         </button>
       ),
     },

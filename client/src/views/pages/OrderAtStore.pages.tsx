@@ -343,7 +343,7 @@ const OrderAtStore: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => updateQuantity(item._id, (item.quantity || 0) - 1)}
-                        className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                        className="w-7 cursor-pointer h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                       >
                         <Minus size={16} />
                       </button>
@@ -351,7 +351,7 @@ const OrderAtStore: React.FC = () => {
                       "w-6 text-center">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item._id, (item.quantity || 0) + 1)}
-                        className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                        className="w-7 cursor-pointer h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
                       >
                         <Plus size={16} />
                       </button>
@@ -368,7 +368,7 @@ const OrderAtStore: React.FC = () => {
               </div>
 
               <button
-                className="relative w-full py-3 bg-green-500 text-white rounded-lg font-medium overflow-hidden group transition-all duration-300 ease-out hover:bg-green-600 active:scale-95"
+                className="relative cursor-pointer w-full py-3 bg-green-500 text-white rounded-lg font-medium overflow-hidden group transition-all duration-300 ease-out hover:bg-green-600 active:scale-95"
                 data-aos="zoom-in"
                 data-aos-delay="400"
                 onClick={ShowModalVoucher}
@@ -410,7 +410,6 @@ const OrderAtStore: React.FC = () => {
               )}
             </div>
               <>
-                {/* Burgers */}
                 <div data-aos="fade-up" data-aos-delay="400">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     {filteredProducts.map((item, index) => (
@@ -553,7 +552,7 @@ const OrderAtStore: React.FC = () => {
           </div>
         </div>
       )}
-      <Modal title="Nhập mã giảm giá (nếu có)" open={showModalVoucher} okText="Áp dụng" onOk={openModal} onCancel={() => setShowModalVoucher(false)} onClose={() => setShowModalVoucher(false)} className="w-full max-w-md mx-auto">
+      <Modal title="Nhập mã giảm giá (nếu có)" open={showModalVoucher} okText={voucher ? "Áp dụng" : "Bỏ qua"} onOk={openModal} onCancel={() => setShowModalVoucher(false)} onClose={() => setShowModalVoucher(false)} className="w-full max-w-md mx-auto">
         <div className="flex flex-col gap-4">
           <Input placeholder="Nhập mã giảm giá" onChange={(e) => handleChangeVoucher(e.target.value)} value={voucher ?? ""} />
         </div>
