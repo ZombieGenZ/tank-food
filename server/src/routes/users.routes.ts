@@ -12,8 +12,7 @@ import {
   verifyForgotPasswordTokenController,
   forgotPasswordController,
   changeInformationController,
-  changePasswordController,
-  loginManageUserController
+  changePasswordController
 } from '~/controllers/users.controllers'
 import { authenticateAdministratorValidator, authenticateValidator, authenticateVerifyAccountValidator } from '~/middlewares/authenticate.middlewares'
 import {
@@ -223,18 +222,5 @@ router.put(
   changePasswordValidator,
   wrapRequestHandler(changePasswordController)
 )
-
-/*
- * Description: Đăng nhập vào một tài khoản quản lý có trong CSDL
- * Path: /api/users/login-manage
- * Method: POST
- * Body: {
- *    language?: string,
- *    email: string,
- *    password: string
- * }
- */
-router.post('/login-manage', loginUserValidator, authenticateVerifyAccountValidator, authenticateAdministratorValidator, wrapRequestHandler(router.post('/login-manage', loginUserValidator, authenticateVerifyAccountValidator, authenticateAdministratorValidator, wrapRequestHandler(loginManageUserController))
-))
 
 export default router

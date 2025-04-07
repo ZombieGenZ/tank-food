@@ -8,7 +8,8 @@
         Title="Giám Sát Hệ Thống" Height="550" Width="900"
         Background="#F2F2F2" Closing="Window_Closing"
         WindowStartupLocation="CenterScreen"
-        Icon="images/logo.ico">
+        Icon="images/logo.ico"
+        Closed="StateManagement_OnClosed">
     <Window.Resources>
         <DropShadowEffect x:Key="CardShadow" ShadowDepth="1" Direction="270" Opacity="0.2" BlurRadius="4"/>
     </Window.Resources>

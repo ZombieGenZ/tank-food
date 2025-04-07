@@ -72,6 +72,25 @@ if %errorlevel% neq 0 (
 
 echo.
 
+echo !ESC![1;33m[KIỂM TRA]!ESC![0m Đang kiểm tra package aiohttp...
+python -c "import aiohttp" 2>nul
+if %errorlevel% neq 0 (
+    echo !ESC![1;31m[CẢNH BÁO]!ESC![0m Package aiohttp chưa được cài đặt!
+    echo !ESC![1;34m[HÀNH ĐỘNG]!ESC![0m Đang cài đặt aiohttp...
+    pip install aiohttp
+    if %errorlevel% neq 0 (
+        echo !ESC![1;31m[LỖI]!ESC![0m Cài đặt aiohttp thất bại!
+        echo !ESC![1;31m[DỪNG]!ESC![0m Quy trình đã bị dừng do lỗi.
+        pause
+        exit /b 1
+    )
+    echo !ESC![1;32m[THÀNH CÔNG]!ESC![0m Cài đặt aiohttp hoàn tất!
+) else (
+    echo !ESC![1;32m[OK]!ESC![0m Package aiohttp đã được cài đặt.
+)
+
+echo.
+
 echo !ESC![1;34m[HÀNH ĐỘNG]!ESC![0m Đang chạy TANK-Food SysInfo Server...
 echo.
 python ./main.py

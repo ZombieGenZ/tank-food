@@ -219,6 +219,11 @@ namespace sysinfo_client
                 ws.Close();
             }
         }
+
+        private void StateManagement_OnClosed(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
+        }
     }
     public class SystemInfo
     {
