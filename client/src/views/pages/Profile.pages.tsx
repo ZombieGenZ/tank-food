@@ -7,7 +7,10 @@ import { useLocation } from "react-router-dom";
 import Verify from "../components/VerifyToken.components";
 import { message } from "antd";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
-
+import OrderTrackingSteps from "../components/OrderTrackingSteps.components"
+import AOS from "aos"
+import "aos/dist/aos.css"
+import { Package, Truck, User, Check } from 'lucide-react'
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -354,7 +357,13 @@ const ProfilePage: React.FC<Props> = (props) => {
     const texts = ["", "Weak", "Fair", "Good", "Strong"]
     return texts[passwordStrength]
   }
-
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+      mirror: false
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
       {contextHolder}
@@ -798,7 +807,20 @@ const ProfilePage: React.FC<Props> = (props) => {
                     className="absolute inset-0 bg-gradient-to-r from-amber-100 to-orange-100 opacity-0"
                     whileHover={{ opacity: 0.5, transition: { duration: 0.3 } }}
                   />
-
+                  {/* Order Tracking Steps */}
+                  <OrderTrackingSteps
+                    currentStatus={
+                      order.order_status === 0 ? 0 :
+                      order.order_status === 1 ? 1 :
+                      order.order_status === 2 ? 2 :
+                      order.order_status >= 3 ? 3 : 0
+                    }
+                    timestamps={{
+                      created: order.confirmmed_at || order.created_at,
+                      delivering: order.delivering_at,
+                      delivered: order.delivered_at
+                    }}
+                  />
                   <div className="flex justify-between items-start mb-2 relative z-10">
                     <div>
                       <h3 className="font-medium">Đơn hàng #{order._id}</h3>
