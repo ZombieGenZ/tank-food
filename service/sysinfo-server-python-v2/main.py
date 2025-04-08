@@ -70,6 +70,7 @@ async def check_port(port):
         return False
 
 async def handle_websocket(websocket, server_configs):
+    print("✅ Đã thiết lập kết nối WebSocket với client")
     async with ClientSession() as session:
         while True:
             try:
@@ -140,18 +141,30 @@ async def main():
         ServerConfig(port=8080, display_name="Stats Server"),
     ]
 
-    async def websocket_handler(websocket, path):
-        await handle_websocket(websocket, server_configs)
+    async def websocket_handler(websocket):
+        try:
+            await handle_websocket(websocket, server_configs)
+        except websockets.exceptions.InvalidMessage:
+            print("❌ Client gửi yêu cầu không hợp lệ, bỏ qua kết nối")
+        except websockets.ConnectionClosed:
+            print("❌ Kết nối bị đóng trước khi hoàn tất handshake")
+        except EOFError:
+            print("❌ Không nhận được dữ liệu từ client, kết nối bị ngắt")
+        except Exception as e:
+            print(f"❌ Lỗi trong quá trình xử lý kết nối: {e}")
 
-    print("✅ Máy chủ SysInfo đang chạy tại ws://0.0.0.0:8080")
-    server = await websockets.serve(
-        websocket_handler,
-        "0.0.0.0",
-        8080,
-        ping_interval=20,
-        ping_timeout=20
-    )
-    await server.wait_closed()
+    print("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn")
+    try:
+        server = await websockets.serve(
+            websocket_handler,
+            "0.0.0.0",
+            8080,
+            ping_interval=20,
+            ping_timeout=20
+        )
+        await server.wait_closed()
+    except Exception as e:
+        print(f"❌ Lỗi khi khởi động server: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())

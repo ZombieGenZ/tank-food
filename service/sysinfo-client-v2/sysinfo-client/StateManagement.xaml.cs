@@ -11,7 +11,8 @@ namespace sysinfo_client
 {
     public partial class StateManagement : Window
     {
-        private readonly string _socketUrl = "ws://157.66.101.178:8080";
+        //private readonly string _socketUrl = "ws://157.66.101.178:8080";
+        private readonly string _socketUrl = "ws://localhost:8080";
         private WebSocket ws;
         private ObservableCollection<PortItem> ports = new ObservableCollection<PortItem>();
         private bool isClosing = false;
