@@ -266,6 +266,7 @@ export class VIETNAMESE_STATIC_MESSAGE {
     ACCOUNT_HAS_BEEN_LOOKED: 'Tài khoản đã bị khóa',
     ACCOUNT_IS_NOT_LOOKED: 'Tài khoản này không bị khóa'
   } as const
+
   static CONTACT_MESSAGE = {
     NAME_IS_REQUIRED: 'Tên không được để trống',
     NAME_MUST_BE_A_STRING: 'Tên phải là một chuỗi ký tự',
@@ -292,6 +293,14 @@ export class VIETNAMESE_STATIC_MESSAGE {
     RESPONSE_CONTACT_SUCCESS: 'Phản hồi yêu cầu hỗ trợ thành công',
     RESPONSE_CONTACT_FAILURE: 'Phản hồi yêu cầu hỗ trợ thất bại'
   }
+
+  static NOTIFICATION_MESSAGE = {
+    QUANTITY_IS_REQUIRED: 'Không được bỏ trống số lượng thông báo',
+    QUANTITY_MUST_BE_A_NUMBER: 'Số lượng thông báo phải là một số',
+    QUANTITY_MUST_BE_GREATER_THAN_0: 'Số lượng thông báo phải lớn hơn 0',
+    GET_NOTIFICATION_SUCCESS: 'Lấy danh sách thông báo thành công',
+    GET_NOTIFICATION_FAILURE: 'Lấy danh sách thông báo thất bại'
+  } as const
 }
 
 export class ENGLISH_STATIC_MESSAGE {
@@ -589,6 +598,14 @@ export class ENGLISH_STATIC_MESSAGE {
     RESPONSE_CONTACT_SUCCESS: 'Support request responded successfully',
     RESPONSE_CONTACT_FAILURE: 'Failed to respond to support request'
   }
+
+  static NOTIFICATION_MESSAGE = {
+    QUANTITY_IS_REQUIRED: 'Notification quantity cannot be empty',
+    QUANTITY_MUST_BE_A_NUMBER: 'Notification quantity must be a number',
+    QUANTITY_MUST_BE_GREATER_THAN_0: 'Notification quantity must be greater than 0',
+    GET_NOTIFICATION_SUCCESS: 'Successfully retrieved notification list',
+    GET_NOTIFICATION_FAILURE: 'Failed to retrieve notification list',
+  } as const
 }
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
@@ -835,6 +852,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static responseContactFailed(ip: string, err: unknown) {
     return `Phản hồi yêu cầu hỗ trợ thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
+  static getNotificationSuccessful(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin thông báo thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static getNotificationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin thông báo thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -1080,5 +1103,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static responseContactFailed(ip: string, err: unknown) {
     return `Failed to respond to support request (IP: ${ip}) | Error: ${err}`
+  }
+  static getNotificationSuccessful(user_id: string, ip: string) {
+    return `Successfully retrieved notification information (User: ${user_id}) (IP: ${ip})`;
+  }
+  static getNotificationFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to retrieve notification information (User: ${user_id}) (IP: ${ip}) | Error: ${err}`;
   }
 }

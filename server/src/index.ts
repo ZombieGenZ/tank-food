@@ -68,7 +68,7 @@ import api_order_online from '~/routes/orders.routes'
 import api_statistical from '~/routes/statistical.routes'
 import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
-import { uploadPuclicFolder } from './utils/drive.utils'
+import api_notification from '~/routes/notification.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -79,6 +79,7 @@ app.use('/api/orders', api_order_online)
 app.use('/api/statistical', api_statistical)
 app.use('/api/account-management', api_account_management)
 app.use('/api/contact', api_contact)
+app.use('/api/notification', api_notification)
 
 app.use(defaultErrorHandler)
 
@@ -129,6 +130,7 @@ io.on('connection', (socket: Socket) => {
     // unBan: Cập nhật thông tin mở tài khoản
     // verify-account: Cập nhật thông tin xác minh tài khoản
     // logout: Cập nhật thông tin đang xuất tài khoản
+    // new-notification: Cập nhật thông tin thông báo mới
     //
 
     if (!refresh_token) {

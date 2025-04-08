@@ -14,6 +14,7 @@ import Order from '~/models/schemas/orders.schemas'
 import PaymentHistory from '~/models/schemas/paymentHistory.schemas'
 import Contact from '~/models/schemas/contact.shemas'
 import BackupLog from '~/models/schemas/backup_logs.shemas'
+import Notification from '~/models/schemas/notifications.shemas'
 
 dotenv.config()
 
@@ -92,6 +93,7 @@ class DatabaseService {
       { name: process.env.DATABASE_PRODUCT_COLLECTION as string, indexes: [] },
       { name: process.env.DATABASE_VOUCHER_PRIVATE_COLLECTION as string, indexes: [] },
       { name: process.env.DATABASE_CONTACT_COLLECTION as string, indexes: [] },
+      { name: process.env.DATABASE_NOTIFICATION_COLLECTION as string, indexes: [] },
       { name: process.env.DATABASE_PAYMENT_HISTORY_COLLECTION as string, indexes: [] },
       { name: process.env.DATABASE_PROMPT_COLLECTION as string, indexes: [] },
       { name: process.env.DATABASE_LOG_COLLECTION as string, indexes: [] }
@@ -163,6 +165,9 @@ class DatabaseService {
   }
   get contact(): Collection<Contact> {
     return this.db.collection(process.env.DATABASE_CONTACT_COLLECTION as string)
+  }
+  get notification(): Collection<Notification> {
+    return this.db.collection(process.env.DATABASE_NOTIFICATION_COLLECTION as string)
   }
   get paymentHistory(): Collection<PaymentHistory> {
     return this.db.collection(process.env.DATABASE_PAYMENT_HISTORY_COLLECTION as string)
