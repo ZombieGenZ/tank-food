@@ -12,7 +12,7 @@ import { LANGUAGE } from './constants/language.constants'
 import { ObjectId } from 'mongodb'
 import { verifyToken } from './utils/jwt.utils'
 import { TokenPayload } from './models/requests/authentication.requests'
-import { defaultErrorHandler } from './middlewares/errors.middlewares'
+import { defaultErrorHandler, notFoundHandler } from './middlewares/errors.middlewares'
 import { UserRoleEnum } from './constants/users.constants'
 import expressUserAgent from 'express-useragent'
 import runAllCrons from './jobs/global.jobs'
@@ -52,6 +52,7 @@ app.use(express.json())
 app.use(expressUserAgent.express())
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.set('view engine', 'ejs')
 app.set('trust proxy', true)
 
 app.get('/', (req, res) => {
@@ -80,6 +81,8 @@ app.use('/api/statistical', api_statistical)
 app.use('/api/account-management', api_account_management)
 app.use('/api/contact', api_contact)
 app.use('/api/notification', api_notification)
+
+app.use(notFoundHandler);
 
 app.use(defaultErrorHandler)
 

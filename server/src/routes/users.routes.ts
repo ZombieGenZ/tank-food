@@ -14,7 +14,7 @@ import {
   changeInformationController,
   changePasswordController
 } from '~/controllers/users.controllers'
-import { authenticateAdministratorValidator, authenticateValidator, authenticateVerifyAccountValidator } from '~/middlewares/authenticate.middlewares'
+import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
 import {
   registerUserValidator,
   loginUserValidator,
