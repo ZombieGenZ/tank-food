@@ -1,5 +1,7 @@
 import { formatDateOnlyMonthAndYear } from '~/utils/date.utils'
 import { OverviewResponseWithComparison } from './statistical.constants'
+import { ProductList } from './orders.constants'
+import { LANGUAGE } from './language.constants'
 
 export class VIETNAMESE_DYNAMIC_MAIL {
   static welcomeMail(display_name: string) {
@@ -471,6 +473,95 @@ export class VIETNAMESE_DYNAMIC_MAIL {
                 <tr>
                     <td style="background-color: #D62300; padding: 40px; text-align: center;">
                         <p style="color: #FFFFFF; font-size: 15px;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Mọi quyền được bảo lưu.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+      `
+    }
+  }
+  static electronicInvoice(
+    product_list: ProductList[],
+    total_price: number,
+    fee: number,
+    vat: number,
+    total_bill: number
+  ) {
+    let item_list = ``
+    for (const item of product_list) {
+      if (item.data.title_translate_1_language == LANGUAGE.VIETNAMESE) {
+        item_list += `
+          <tr style="border-bottom: 1px solid #FFFFFF;">
+              <td style="padding: 10px; font-size: 16px; color: #333333;">${item.data.title_translate_1}</td>
+              <td style="padding: 10px; text-align: center; font-size: 16px; color: #333333;">${item.quantity}</td>
+              <td style="padding: 10px; text-align: right; font-size: 16px; color: #333333;">${item.price?.toLocaleString('vi-VN')} VNĐ</td>
+          </tr>
+        `
+      } else {
+        item_list += `
+          <tr style="border-bottom: 1px solid #FFFFFF;">
+              <td style="padding: 10px; font-size: 16px; color: #333333;">${item.data.title_translate_2}</td>
+              <td style="padding: 10px; text-align: center; font-size: 16px; color: #333333;">${item.quantity}</td>
+              <td style="padding: 10px; text-align: right; font-size: 16px; color: #333333;">${item.price?.toLocaleString('vi-VN')} VNĐ</td>
+          </tr>
+        `
+      }
+
+    }
+
+    return {
+      subject: `Hóa Đơn Điện Tử - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Hóa Đơn Điện Tử</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Cảm ơn bạn đã chọn ${process.env.TRADEMARK_NAME}!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Xin chào,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Dưới đây là chi tiết hóa đơn của bạn từ ${process.env.TRADEMARK_NAME}:</p>
+                        
+                        <table style="width: 100%; background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-collapse: collapse;">
+                            <tr style="background-color: #FF9A3D; color: #FFFFFF;">
+                                <th style="padding: 10px; text-align: left; font-size: 16px;">Tên hàng</th>
+                                <th style="padding: 10px; text-align: center; font-size: 16px;">Số lượng</th>
+                                <th style="padding: 10px; text-align: right; font-size: 16px;">Tổng giá</th>
+                            </tr>
+                            ${item_list}
+                        </table>
+
+                        <div style="text-align: right; margin: 20px 0;">
+                            <p style="margin: 5px 0; font-size: 16px; color: #333333;"><strong>Tổng tiền hàng:</strong> ${total_price.toLocaleString('vi-VN')} VNĐ</p>
+                            <p style="margin: 5px 0; font-size: 16px; color: #333333;"><strong>Phí vận chuyển:</strong> ${fee.toLocaleString('vi-VN')} VNĐ</p>
+                            <p style="margin: 5px 0; font-size: 16px; color: #333333;"><strong>Thuế VAT (10%):</strong> ${vat.toLocaleString('vi-VN')} VNĐ</p>
+                            <p style="margin: 5px 0; font-size: 18px; color: #B01C00; font-weight: bold;"><strong>Tổng thanh toán:</strong> ${total_bill.toLocaleString('vi-VN')} VNĐ</p>
+                        </div>
+
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">Nếu bạn có thắc mắc, vui lòng liên hệ qua <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #FF9A3D; text-decoration: none; font-weight: bold;">${process.env.SUPPORT_EMAIL}</a>.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. Mọi quyền được bảo lưu.</p>
                         <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
                     </td>
                 </tr>
@@ -951,6 +1042,95 @@ export class ENGLIS_DYNAMIC_MAIL {
                 <tr>
                     <td style="background-color: #D62300; padding: 40px; text-align: center;">
                         <p style="color: #FFFFFF; font-size: 15px;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
+                        <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+      `
+    }
+  }
+  static electronicInvoice(
+    product_list: ProductList[],
+    total_price: number,
+    fee: number,
+    vat: number,
+    total_bill: number
+  ) {
+    let item_list = ``
+    for (const item of product_list) {
+      if (item.data.title_translate_1_language == LANGUAGE.ENGLISH) {
+        item_list += `
+          <tr style="border-bottom: 1px solid #FFFFFF;">
+              <td style="padding: 10px; font-size: 16px; color: #333333;">${item.data.title_translate_1}</td>
+              <td style="padding: 10px; text-align: center; font-size: 16px; color: #333333;">${item.quantity}</td>
+              <td style="padding: 10px; text-align: right; font-size: 16px; color: #333333;">${item.price?.toLocaleString('vi-VN')} VNĐ</td>
+          </tr>
+        `
+      } else {
+        item_list += `
+          <tr style="border-bottom: 1px solid #FFFFFF;">
+              <td style="padding: 10px; font-size: 16px; color: #333333;">${item.data.title_translate_2}</td>
+              <td style="padding: 10px; text-align: center; font-size: 16px; color: #333333;">${item.quantity}</td>
+              <td style="padding: 10px; text-align: right; font-size: 16px; color: #333333;">${item.price?.toLocaleString('vi-VN')} VNĐ</td>
+          </tr>
+        `
+      }
+
+    }
+
+    return {
+      subject: `Electronic Invoice - ${process.env.TRADEMARK_NAME}`,
+      html: `
+        <div style="margin: 0; padding: 0; font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFFFF; color: #333333; line-height: 1.6;">
+            <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 12px; overflow: hidden;">
+                <tr>
+                    <td style="background-color: #FF8000; padding: 40px; text-align: center; position: relative;">
+                        <div style="position: relative;">
+                            <h1 style="color: #FFFFFF; margin: 0; font-size: 42px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 2px 2px 8px rgba(0,0,0,0.3); font-weight: 800;">${process.env.TRADEMARK_NAME}</h1>
+                            <div style="width: 80px; height: 4px; background-color: #FFFFFF; margin: 15px auto; border-radius: 2px;"></div>
+                            <p style="color: #FFFFFF; margin: 10px 0 0 0; font-size: 18px; font-style: italic; text-shadow: 1px 1px 4px rgba(0,0,0,0.2);">${process.env.SLOGAN}</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 50px 40px; text-align: center; position: relative;">
+                        <h2 style="color: #FFFFFF; margin: 0; font-size: 32px; font-weight: 700; text-shadow: 1px 1px 5px rgba(0,0,0,0.2);">Electronic Invoice</h2>
+                        <div style="width: 60px; height: 3px; background-color: #FFFFFF; margin: 20px auto; opacity: 0.8; border-radius: 2px;"></div>
+                        <p style="color: #FFFFFF; margin: 15px 0 0 0; font-size: 20px; max-width: 450px; display: inline-block; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.15);">Thank you for choosing ${process.env.TRADEMARK_NAME}!</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 50px 40px; background-color: #FFFFFF; background-image: linear-gradient(rgba(242,242,242,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(242,242,242,0.5) 1px, transparent 1px); background-size: 20px 20px; background-position: -1px -1px;">
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; font-weight: 500;">Hello,</p>
+                        
+                        <p style="margin: 0 0 25px 0; font-size: 18px; color: #333333; line-height: 1.7;">Below are the details of your invoice from ${process.env.TRADEMARK_NAME}:</p>
+                        
+                        <table style="width: 100%; background-color: #F2F2F2; padding: 20px; margin: 20px 0; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-collapse: collapse;">
+                            <tr style="background-color: #FF9A3D; color: #FFFFFF;">
+                                <th style="padding: 10px; text-align: left; font-size: 16px;">Item Name</th>
+                                <th style="padding: 10px; text-align: center; font-size: 16px;">Quantity</th>
+                                <th style="padding: 10px; text-align: right; font-size: 16px;">Total Price</th>
+                            </tr>
+                            ${item_list}
+                        </table>
+
+                        <div style="text-align: right; margin: 20px 0;">
+                            <p style="margin: 5px 0; font-size: 16px; color: #333333;"><strong>Subtotal:</strong> ${total_price.toLocaleString('vi-VN')} VNĐ</p>
+                            <p style="margin: 5px 0; font-size: 16px; color: #333333;"><strong>Shipping Fee:</strong> ${fee.toLocaleString('vi-VN')} VNĐ</p>
+                            <p style="margin: 5px 0; font-size: 16px; color: #333333;"><strong>VAT (10%):</strong> ${vat.toLocaleString('vi-VN')} VNĐ</p>
+                            <p style="margin: 5px 0; font-size: 18px; color: #B01C00; font-weight: bold;"><strong>Total Payment:</strong> ${total_bill.toLocaleString('vi-VN')} VNĐ</p>
+                        </div>
+
+                        <p style="margin: 30px 0 15px 0; font-size: 18px; color: #333333; line-height: 1.7;">If you have any questions, please feel free to contact us at <a href="mailto:${process.env.SUPPORT_EMAIL}" style="color: #FF9A3D; text-decoration: none; font-weight: bold;">${process.env.SUPPORT_EMAIL}</a>.</p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background-color: #D62300; padding: 40px; text-align: center; position: relative;">
+                        <p style="color: #FFFFFF; margin: 0 0 15px 0; font-size: 15px; opacity: 0.9;">© ${new Date().getFullYear()} ${process.env.TRADEMARK_NAME}. All rights reserved.</p>
                         <a href="${process.env.APP_URL}" style="display: inline-block; color: #FFFFFF; font-weight: 500; text-decoration: none; font-size: 15px; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); border-radius: 30px; margin-top: 10px;">Website</a>
                     </td>
                 </tr>

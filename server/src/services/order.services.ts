@@ -33,6 +33,7 @@ import { sendMail } from '~/utils/mail.utils'
 import voucherPrivateService from './voucherPrivate.services'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import { UserRoleEnum } from '~/constants/users.constants'
+import { serverLanguage } from '~/index'
 
 class OrderService {
   async orderOnline(
@@ -211,6 +212,8 @@ class OrderService {
       ])
       .next()
 
+    const language = payload.language || serverLanguage
+
     await Promise.all([
       notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails),
       notificationRealtime(
@@ -218,7 +221,16 @@ class OrderService {
         'create-order-booking',
         `order/${user._id}/create`,
         orderWithDetails
-      )
+      ),
+      sendMail(
+        payload.email,
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).subject
+          : ENGLIS_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).subject,
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).html
+          : ENGLIS_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).html
+        )
     ])
 
     return {
