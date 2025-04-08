@@ -32,11 +32,11 @@ export default function NotificationButton() {
   }
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative cursor-pointer" ref={dropdownRef}>
       {/* Notification Button */}
       <button
         onClick={toggleDropdown}
-        className="relative flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group"
+        className="relative cursor-pointer flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg group"
         data-aos="zoom-in"
       >
         <Bell className="w-6 h-6 text-blue-500 group-hover:text-blue-600 transition-all duration-300" />
@@ -72,35 +72,6 @@ export default function NotificationButton() {
                 <p className="text-gray-500 text-sm mt-1">2 phút trước</p>
               </div>
               <div className="absolute right-4 top-4 w-2 h-2 bg-blue-500 rounded-full"></div>
-            </div>
-
-            <div
-              className="flex gap-3 p-4 border-b border-gray-100 hover:bg-blue-50 transition-all duration-300 cursor-pointer"
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
-              <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-500 text-lg">🎁</span>
-              </div>
-              <div>
-                <p className="text-gray-700 font-medium">Bạn nhận được mã giảm giá 20%</p>
-                <p className="text-gray-500 text-sm mt-1">1 giờ trước</p>
-              </div>
-              <div className="absolute right-4 top-4 w-2 h-2 bg-blue-500 rounded-full"></div>
-            </div>
-
-            <div
-              className="flex gap-3 p-4 hover:bg-blue-50 transition-all duration-300 cursor-pointer"
-              data-aos="fade-up"
-              data-aos-delay="250"
-            >
-              <div className="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-orange-500 text-lg">🔔</span>
-              </div>
-              <div>
-                <p className="text-gray-700 font-medium">Khuyến mãi đặc biệt cuối tuần</p>
-                <p className="text-gray-500 text-sm mt-1">1 ngày trước</p>
-              </div>
             </div>
           </div>
 

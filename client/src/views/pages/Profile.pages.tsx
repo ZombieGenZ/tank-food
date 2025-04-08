@@ -10,7 +10,6 @@ import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import OrderTrackingSteps from "../components/OrderTrackingSteps.components"
 import AOS from "aos"
 import "aos/dist/aos.css"
-import { Package, Truck, User, Check } from 'lucide-react'
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -113,6 +112,7 @@ interface Preview {
 
 const ProfilePage: React.FC<Props> = (props) => {
   const [activeTab, setActiveTab] = useState<"info" | "history">("info")
+  // const navigate = useNavigate()
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -151,14 +151,13 @@ const ProfilePage: React.FC<Props> = (props) => {
     }).then(response => {
       return response.json()
     }).then((data) => {
-      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL){
-        messageApi.success(data.message)
-        setHistoryBill(data.order)
-        console.log(data)
-      } else {
+      if(data.code == RESPONSE_CODE.GET_ORDER_FAILED) {
         messageApi.error(data.message)
         return
       }
+      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL){
+        setHistoryBill(data.order)
+      } 
     })
   }, [refresh_token, access_token])
 
@@ -177,6 +176,22 @@ const ProfilePage: React.FC<Props> = (props) => {
     new_password: "",
     confirm_new_password: "",
   })
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleNewPasswordVisibility = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   useEffect(() => {
     if (formPass.new_password.length === 0) {
@@ -221,30 +236,53 @@ const ProfilePage: React.FC<Props> = (props) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
       if (isValid) {
-        const body = {
-          language: null,
-          refresh_token: refresh_token,
-          password: formPass.password,
-          new_password: formPass.new_password,
-          confirm_new_password: formPass.confirm_new_password
-        }
-
-        fetch(`${import.meta.env.VITE_API_URL}/api/users/change-password`, {
-          method: 'PUT',
-          headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-          },
-          body: JSON.stringify(body)
-        }).then(response => {
-          return response.json()
-        }).then((data) => {
-          if(data.code == RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL) {
-            messageApi.success(data.message)
-          } else if(data.code == RESPONSE_CODE.CHANGE_PASSWORD_FAILED || data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-            messageApi.error(data.message)
+        try {
+          props.setLoading(true)
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            password: formPass.password,
+            new_password: formPass.new_password,
+            confirm_new_password: formPass.confirm_new_password
           }
-        })
+  
+          fetch(`${import.meta.env.VITE_API_URL}/api/users/change-password`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then(response => {
+            return response.json()
+          }).then((data) => {
+            if(data.code == RESPONSE_CODE.CHANGE_PASSWORD_SUCCESSFUL) {
+              messageApi.success(data.message).then(() => {
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('access_token');
+                window.location.reload();
+              })
+            } else if(data.code == RESPONSE_CODE.CHANGE_PASSWORD_FAILED || data.code == RESPONSE_CODE.INPUT_DATA_ERROR || data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
+              messageApi.open({
+                type: 'error',
+                content: `${data.errors.password ? data.errors.password.msg : data.errors.new_password ? data.errors.new_password.msg: data.errors.confirm_new_password ? data.errors.confirm_new_password.msg: ""}`,
+              })
+            }
+          })
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+              marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 4000)
+        }
       } else {
         messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
         return
@@ -265,45 +303,61 @@ const ProfilePage: React.FC<Props> = (props) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
       if (isValid) {
-        const body = {
-          language: null,
-          refresh_token: refresh_token,
-          display_name: formData.name,
-          phone: formData.phone,
-        }
-
-        fetch(`${import.meta.env.VITE_API_URL}/api/users/change-infomation`, {
-          method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-        }).then((response) => {
-          return response.json()
-        }).then((data) => {
-          console.log(data)
-          if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_SUCCESSFUL) {
-            const body = {
-              language: null,
-              refresh_token: refresh_token,
-            };
-        
-            fetch(`${import.meta.env.VITE_API_URL}/api/users/get-user-infomation`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-              },
-              body: JSON.stringify(body),
-            }).then((response) => response.json()).then((data) => {
-              setUser(data.infomation);
-            })
-            messageApi.success(language() == "Tiếng Việt" ? data.message : "Change profile successfully. ")
-          } else {
-            messageApi.error(language() == "Tiếng Việt" ? "Lỗi khi thay đổi thông tin người dùng" : "Change profile failed , please try again !")
+        try {
+          props.setLoading(true)
+          const body = {
+            language: null,
+            refresh_token: refresh_token,
+            display_name: formData.name,
+            phone: formData.phone,
           }
-        })
+  
+          fetch(`${import.meta.env.VITE_API_URL}/api/users/change-infomation`, {
+            method: 'PUT',
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body)
+          }).then((response) => {
+            return response.json()
+          }).then((data) => {
+            console.log(data)
+            if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_SUCCESSFUL) {
+              const body = {
+                language: null,
+                refresh_token: refresh_token,
+              };
+          
+              fetch(`${import.meta.env.VITE_API_URL}/api/users/get-user-infomation`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body),
+              }).then((response) => response.json()).then((data) => {
+                setUser(data.infomation);
+              })
+              messageApi.success(language() == "Tiếng Việt" ? data.message : "Change profile successfully. ")
+            } else {
+              messageApi.error(language() == "Tiếng Việt" ? "Lỗi khi thay đổi thông tin người dùng" : "Change profile failed , please try again !")
+            }
+          })
+        } catch (error) {
+          messageApi.open({
+            type: 'error',
+            content: String(error),
+            style: {
+              marginTop: '10vh',
+            },
+          })
+          return;
+        } finally {
+          setTimeout(() => {
+            props.setLoading(false)
+          }, 2000)
+        }
       } else {
         messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
         return
@@ -578,7 +632,7 @@ const ProfilePage: React.FC<Props> = (props) => {
                 </label>
                 <div className="relative">
                   <motion.input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
                     value={formPass.password}
@@ -599,6 +653,22 @@ const ProfilePage: React.FC<Props> = (props) => {
                       className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-500"
                     />
                   )}
+                  <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                      </svg>
+                    ) : (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                  </motion.button>
                 </div>
               </motion.div>
 
@@ -608,7 +678,7 @@ const ProfilePage: React.FC<Props> = (props) => {
                 </label>
                 <div className="relative">
                   <motion.input
-                    type="password"
+                    type={showNewPassword ? "text" : "password"}
                     id="new_password"
                     name="new_password"
                     value={formPass.new_password}
@@ -629,11 +699,27 @@ const ProfilePage: React.FC<Props> = (props) => {
                       className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-500"
                     />
                   )}
+                  <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
+                    type="button"
+                    onClick={toggleNewPasswordVisibility}
+                    className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                  >
+                    {showNewPassword ? (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                      </svg>
+                    ) : (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                  </motion.button>
                 </div>
                 {formPass.new_password && (
                 <div className="password-strength visible-strength" data-animate>
                   <div className="strength-header">
-                    <span className="strength-label">Password strength:</span>
+                    <span className="strength-label">Độ mạnh của mật khẩu:</span>
                     <span className={`strength-text strength-${passwordStrength}`}>{getStrengthText()}</span>
                   </div>
                   <div className="strength-meter">
@@ -648,19 +734,19 @@ const ProfilePage: React.FC<Props> = (props) => {
                   <ul className="password-requirements">
                     <li className={formPass.new_password.length >= 8 ? "requirement-met" : ""}>
                       <span>{formPass.new_password.length >= 8 ? "✓" : "○"}</span>
-                      At least 8 characters
+                      Ít nhất 8 ký tự
                     </li>
                     <li className={/[A-Z]/.test(formPass.new_password) ? "requirement-met" : ""}>
                       <span>{/[A-Z]/.test(formPass.new_password) ? "✓" : "○"}</span>
-                      Contains uppercase letter
+                      Bao gồm kỹ tự viết hoa
                     </li>
                     <li className={/[0-9]/.test(formPass.new_password) ? "requirement-met" : ""}>
                       <span>{/[0-9]/.test(formPass.new_password) ? "✓" : "○"}</span>
-                      Contains number
+                      Bao gồm số
                     </li>
                     <li className={/[^A-Za-z0-9]/.test(formPass.new_password) ? "requirement-met" : ""}>
                       <span>{/[^A-Za-z0-9]/.test(formPass.new_password) ? "✓" : "○"}</span>
-                      Contains special character
+                      Bao gồm ký tự đặc biệt
                     </li>
                   </ul>
                 </div>
@@ -673,7 +759,7 @@ const ProfilePage: React.FC<Props> = (props) => {
                 </label>
                 <div className="relative">
                   <motion.input
-                    type="tel"
+                    type={showConfirmPassword ? "text" : "password"}
                     id="confirm_new_password"
                     name="confirm_new_password"
                     value={formPass.confirm_new_password}
@@ -694,7 +780,26 @@ const ProfilePage: React.FC<Props> = (props) => {
                       className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-orange-500"
                     />
                   )}
+                  <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                  >
+                    {showConfirmPassword ? (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                      </svg>
+                    ) : (
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    )}
+                  </motion.button>
                 </div>
+                {formPass.confirm_new_password && formPass.new_password && formPass.confirm_new_password !== formPass.new_password && (
+                <p className="password-mismatch">Mật khẩu không trùng khớp</p>
+                )}
               </motion.div>
 
               <motion.div variants={itemVariants} className="flex space-x-4 pt-4">

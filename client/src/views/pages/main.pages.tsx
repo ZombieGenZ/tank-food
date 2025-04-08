@@ -100,7 +100,7 @@ const FormMain = (): JSX.Element => {
     const language = localStorage.getItem('language')
     return language ? JSON.parse(language) : "Tiếng Việt"
   }
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
   const [loadingCP, setLoadingCP] = useState<boolean>(false)
   const [cart, setCart] = useState<CartItem[]>(() => {
     const cartlocal = localStorage.getItem('my_cart')
@@ -363,22 +363,12 @@ const FormMain = (): JSX.Element => {
           </div>
           <div className='flex items-center gap-2'>
             <button
-              className={`p-2 cursor-pointer rounded-md ${
-                language === 'Tiếng Việt' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
-              }`}
-              onClick={() => handleChange('Tiếng Việt')}
+              className={`p-2 cursor-pointer rounded-md bg-orange-500 text-white`}
+              onClick={() => handleChange(language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt')}
             >
-              Tiếng Việt
+              {language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt'}
             </button>
             <div className="border-l border-2 border-gray-400 h-10" />
-            <button
-              className={`p-2 cursor-pointer rounded-md ${
-                language === 'English' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
-              }`}
-              onClick={() => handleChange('English')}
-            >
-              English
-            </button>
           </div>
           <Dropdown menu={{ items }} placement="bottom">
             <div className='p-2 rounded-2xl cursor-pointer'>
@@ -406,6 +396,7 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     if (!refresh_token) {
       console.log("Hãy đăng nhập để chúng tôi xác minh vai trò !");
+      navigate('/')
       return;
     }
 
@@ -863,22 +854,12 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
           <div className='flex items-center gap-10'>
             <div className='flex items-center gap-2'>
               <button
-                className={`p-2 cursor-pointer rounded-md ${
-                  language === 'Tiếng Việt' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => handleChange('Tiếng Việt')}
+                className={`p-2 cursor-pointer rounded-md bg-orange-500 text-white`}
+                onClick={() => handleChange(language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt')}
               >
-                Tiếng Việt
+                {language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt'}
               </button>
               <div className="border-l border-2 border-gray-400 h-10" />
-              <button
-                className={`p-2 cursor-pointer rounded-md ${
-                  language === 'English' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
-                }`}
-                onClick={() => handleChange('English')}
-              >
-                English
-              </button>
             </div>
             {refresh_token !== null ? (
               <div className='flex gap-5 justify-center items-center'>
@@ -895,7 +876,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
                     </div>
                   </div>
                 )}
-                <div className="flex flex-col items-center justify-center  bg-gradient-to-br from-gray-50 to-gray-100">
+                <div className="flex flex-col items-center justify-center cursor-pointer">
                   <div className="w-full max-w-5xl flex justify-end items-center p-4">
                     <div className="flex items-center gap-4">
                       <NotificationButton />
