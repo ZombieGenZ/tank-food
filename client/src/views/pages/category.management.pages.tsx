@@ -197,6 +197,8 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
         fetchData()
     }, [])
 
+    // const ortherProduct = product.filter(products => products.categories._id == null)
+
     function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
       const formatter = new Intl.NumberFormat(currencyCode, {
         style: 'currency',

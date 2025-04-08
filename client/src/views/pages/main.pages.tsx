@@ -475,7 +475,7 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative flex-col" : "flex relative flex-col"} ref={pageRef}>
+      <div className={isAdminView ? "flex relative flex-col" : "flex relative flex-col"}>
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
