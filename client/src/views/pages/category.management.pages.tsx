@@ -301,7 +301,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                                       </div>
                                     </div>
                                     <div className="px-4 pb-4">
-                                      <button onClick={() => addToCart(item)} className="w-full flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
+                                      <button onClick={() => addToCart(item)} className="w-full cursor-pointer flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
                                         <Plus /> Thêm vào giỏ hàng
                                       </button>
                                     </div>

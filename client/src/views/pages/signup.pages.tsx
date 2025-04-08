@@ -199,6 +199,17 @@ const Signup: React.FC<Props> = (props) => {
                     marginTop: '10vh',
                   },
                 })
+                return
+              }
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.open({
+                  type: 'error',
+                  content: `${data.errors.email ? data.errors.email.msg: ""}, ${data.errors.phone ? data.errors.phone.msg : ""}`,
+                  style: {
+                    marginTop: '10vh',
+                  },
+                })
+                return 
               }
               if(data.code == RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL) {
                 const body = {

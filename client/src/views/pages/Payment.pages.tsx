@@ -57,10 +57,6 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ userBill }) => {
             Thông tin đơn hàng
           </h2>
           <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
-            <p className="text-gray-500 text-sm mb-1">Nhà cung cấp</p>
-            <p className="font-medium">DPTCLOUD.VN</p>
-          </div>
-          <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
             <p className="text-gray-500 text-sm mb-1">Chủ tài khoản</p>
             <p className="font-medium uppercase">{userBill.infomation.account_name}</p>
           </div>

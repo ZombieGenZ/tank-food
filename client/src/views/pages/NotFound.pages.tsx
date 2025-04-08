@@ -1,6 +1,16 @@
-import { JSX } from 'react';
+import { JSX, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function NotFoundPage(): JSX.Element {
+  const navigate = useNavigate()
+  const [language, setLanguage] = useState<string>(() => {
+    const savedLanguage = localStorage.getItem('language');
+    return savedLanguage ? JSON.parse(savedLanguage) : "Tiếng Việt";
+  });
+  
+  useEffect(() => {
+    setLanguage(language);
+  }, [language]);
   return (
     <section className="bg-white font-arvo py-10">
       <div className="container mx-auto">
@@ -12,12 +22,12 @@ function NotFoundPage(): JSX.Element {
               </div>
 
               <div className="mt-[-50px]">
-                <h3 className="h2 text-[80px]">
-                  Look like you're lost
+                <h3 className="h2 text-[50px]">
+                  {language == "Tiếng Việt" ? "Có vẻ như bạn đã bị mất kết nối" : "Seem like you're lost"}
                 </h3>
-                <p>the page you are looking for not available!</p>
-                <a href="/" className="inline-block text-white py-2 px-5 bg-green-500 mt-5 no-underline hover:bg-green-600 focus:ring focus:ring-green-300">
-                  Go to Home
+                <p>{language == "Tiếng Việt" ? "Trang bạn tìm kiếm không tồn tại !" : "A page you're looking for is not available"}</p>
+                <a onClick={() => navigate('/')} className="inline-block cursor-pointer text-white py-2 px-5 bg-green-500 mt-5 no-underline hover:bg-green-600 focus:ring focus:ring-green-300">
+                  {language == "Tiếng Việt" ? "Về trang chủ" : "Back to home"}
                 </a>
               </div>
             </div>

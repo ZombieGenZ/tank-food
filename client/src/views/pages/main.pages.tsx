@@ -1,7 +1,7 @@
 import { NavbarUser, NavbarEmployee, NavbarShipper } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
-import { Drawer, Select } from "antd";
+import { Drawer } from "antd";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef, JSX,Dispatch, SetStateAction } from 'react';
 import Signup from './signup.pages.tsx';
@@ -233,7 +233,7 @@ const FormMain = (): JSX.Element => {
   })
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const [isAdminView, setIsAdminView] = useState<boolean>(false); // Mặc định là Admin view
+  const [isAdminView, setIsAdminView] = useState<boolean>(true); // Mặc định là Admin view
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -360,15 +360,25 @@ const FormMain = (): JSX.Element => {
             <Calendar size={20} className="text-gray-500" />
             <span className="text-sm text-gray-500">{formatDateFromISO(date)}</span>
           </div>
-          <Select
-            defaultValue={language}
-            size='small'
-            options={[
-              { value: 'Tiếng Việt', label: 'Tiếng Việt - VI' },
-              { value: 'English', label: 'English - EN' },
-            ]}
-            onChange={handleChange}
-          />
+          <div className='flex items-center gap-2'>
+            <button
+              className={`p-2 cursor-pointer rounded-md ${
+                language === 'Tiếng Việt' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
+              }`}
+              onClick={() => handleChange('Tiếng Việt')}
+            >
+              Tiếng Việt
+            </button>
+            <div className="border-l border-2 border-gray-400 h-10" />
+            <button
+              className={`p-2 cursor-pointer rounded-md ${
+                language === 'English' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
+              }`}
+              onClick={() => handleChange('English')}
+            >
+              English
+            </button>
+          </div>
           <Dropdown menu={{ items }} placement="bottom">
             <div className='p-2 rounded-2xl cursor-pointer'>
               <IoSettings />
@@ -458,15 +468,9 @@ const FormMain = (): JSX.Element => {
 
   useEffect(() => {
     gsap.from(pageRef.current, {
-      scale: 0.8,
-      duration: 0.3,
-      ease: 'back.out(1.7)',
-    });
-
-    gsap.to(pageRef.current, {
-      scale: 1,
-      duration: 0.3,
-      ease: 'back.out(1.7)',
+      opacity: 0, // Bắt đầu với độ mờ 0 (hoàn toàn trong suốt)
+      duration: 0.4,
+      ease: 'power2.inOut',
     });
   }, [location]);
 
@@ -857,17 +861,24 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
             </ul>
           </div>
           <div className='flex items-center gap-10'>
-            <div className='flex items-center'>
-              <Select
-                defaultValue={language}
-                size='large'
-                style={{ color: '#FF9A3D' }}
-                options={[
-                  { value: 'Tiếng Việt', label: 'Tiếng Việt' },
-                  { value: 'English', label: 'English' },
-                ]}
-                onChange={handleChange}
-              />
+            <div className='flex items-center gap-2'>
+              <button
+                className={`p-2 cursor-pointer rounded-md ${
+                  language === 'Tiếng Việt' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
+                }`}
+                onClick={() => handleChange('Tiếng Việt')}
+              >
+                Tiếng Việt
+              </button>
+              <div className="border-l border-2 border-gray-400 h-10" />
+              <button
+                className={`p-2 cursor-pointer rounded-md ${
+                  language === 'English' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'
+                }`}
+                onClick={() => handleChange('English')}
+              >
+                English
+              </button>
             </div>
             {refresh_token !== null ? (
               <div className='flex gap-5 justify-center items-center'>
