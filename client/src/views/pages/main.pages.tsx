@@ -48,7 +48,7 @@ import { RESPONSE_CODE } from '../../constants/responseCode.constants.ts';
 import Verify from '../components/VerifyToken.components.tsx';
 import { MdManageAccounts } from "react-icons/md";
 import io from "socket.io-client";
-
+import NotificationButton from '../components/notification-button.tsx';
 const socket = io(import.meta.env.VITE_API_URL)
 
 interface MenuItem {
@@ -894,6 +894,13 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
                     </div>
                   </div>
                 )}
+                <div className="flex flex-col items-center justify-center  bg-gradient-to-br from-gray-50 to-gray-100">
+                  <div className="w-full max-w-5xl flex justify-end items-center p-4">
+                    <div className="flex items-center gap-4">
+                      <NotificationButton />
+                    </div>
+                  </div>
+                </div>
                 <Dropdown menu={{ items: role === 3 ? itemAdmins : items}} arrow>
                   <Button className='p-10'>
                     <FaUserAlt />
