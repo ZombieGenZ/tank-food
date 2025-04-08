@@ -9,9 +9,6 @@ using WebSocketSharp;
 
 namespace sysinfo_client
 {
-    /// <summary>
-    /// Interaction logic for StateManagement.xaml
-    /// </summary>
     public partial class StateManagement : Window
     {
         private readonly string _socketUrl = "ws://157.66.101.178:8080";
@@ -73,6 +70,7 @@ namespace sysinfo_client
                             ConnectionStatusText.Text = $"Lỗi: {e.Message}";
                             ConnectionStatusIndicator.Fill = Brushes.Red;
                             ReconnectButton.IsEnabled = true;
+                            ResetUI();
                         });
                     }
                 };
@@ -86,6 +84,7 @@ namespace sysinfo_client
                             ConnectionStatusText.Text = "Ngoại tuyến";
                             ConnectionStatusIndicator.Fill = Brushes.Red;
                             ReconnectButton.IsEnabled = true;
+                            ResetUI();
                         });
                     }
                 };
@@ -98,6 +97,7 @@ namespace sysinfo_client
                 ConnectionStatusText.Text = "Không thể kết nối";
                 ConnectionStatusIndicator.Fill = Brushes.Red;
                 ReconnectButton.IsEnabled = true;
+                ResetUI();
             }
         }
 
@@ -114,20 +114,20 @@ namespace sysinfo_client
             {
                 AnimateValue(CpuProgress, CpuProgress.Value, data.CpuUsage);
                 AnimateTextValue(CpuUsageText, data.CpuUsage, "%");
-                CpuMinUsageText.Text = $"{data.CpuMinUsage:F1}%";
-                CpuMaxUsageText.Text = $"{data.CpuMaxUsage:F1}%";
+                CpuMinUsageText.Text = $"{data.CpuMinUsage:F1}%".Replace(".", ",");
+                CpuMaxUsageText.Text = $"{data.CpuMaxUsage:F1}%".Replace(".", ",");
                 CpuProgress.Foreground = GetBrush(data.CpuUsage);
 
                 AnimateValue(RamProgress, RamProgress.Value, data.RamUsagePercent);
                 AnimateTextValue(RamUsageText, data.RamUsagePercent, "%");
-                RamMinUsageText.Text = $"{data.RamMinUsage} MB";
-                RamMaxUsageText.Text = $"{data.RamMaxUsage} MB";
+                RamMinUsageText.Text = $"{data.RamMinUsage:N1} MB".Replace(".", ",");
+                RamMaxUsageText.Text = $"{data.RamMaxUsage:N1} MB".Replace(".", ",");
                 RamProgress.Foreground = GetBrush(data.RamUsagePercent);
 
                 AnimateValue(DiskProgress, DiskProgress.Value, data.DiskUsagePercent);
                 AnimateTextValue(DiskUsageText, data.DiskUsagePercent, "%");
-                DiskMinUsageText.Text = $"{data.DiskMinUsage} MB";
-                DiskMaxUsageText.Text = $"{data.DiskMaxUsage} MB";
+                DiskMinUsageText.Text = $"{data.DiskMinUsage:N1} MB".Replace(".", ",");
+                DiskMaxUsageText.Text = $"{data.DiskMaxUsage:N1} MB".Replace(".", ",");
                 DiskProgress.Foreground = GetBrush(data.DiskUsagePercent);
 
                 ports.Clear();
@@ -151,6 +151,29 @@ namespace sysinfo_client
             }
         }
 
+        private void ResetUI()
+        {
+            AnimateValue(CpuProgress, CpuProgress.Value, 0);
+            AnimateTextValue(CpuUsageText, 0, "%");
+            CpuMinUsageText.Text = "0,0%";
+            CpuMaxUsageText.Text = "0,0%";
+            CpuProgress.Foreground = Brushes.Gray;
+
+            AnimateValue(RamProgress, RamProgress.Value, 0);
+            AnimateTextValue(RamUsageText, 0, "%");
+            RamMinUsageText.Text = "0,0 MB";
+            RamMaxUsageText.Text = "0,0 MB";
+            RamProgress.Foreground = Brushes.Gray;
+
+            AnimateValue(DiskProgress, DiskProgress.Value, 0);
+            AnimateTextValue(DiskUsageText, 0, "%");
+            DiskMinUsageText.Text = "0,0 MB";
+            DiskMaxUsageText.Text = "0,0 MB";
+            DiskProgress.Foreground = Brushes.Gray;
+
+            ports.Clear();
+        }
+
         private void AnimateValue(System.Windows.Controls.ProgressBar progressBar, double oldValue, double newValue)
         {
             DoubleAnimation animation = new DoubleAnimation
@@ -165,9 +188,9 @@ namespace sysinfo_client
 
         private void AnimateTextValue(System.Windows.Controls.TextBlock textBlock, float newValue, string suffix)
         {
-            string currentText = textBlock.Text;
+            string currentText = textBlock.Text.Replace(",", ".").Replace("%", "").Replace("MB", "").Trim();
             float currentValue = 0;
-            float.TryParse(currentText.Replace("%", "").Replace("MB", "").Trim(), out currentValue);
+            float.TryParse(currentText, out currentValue);
 
             var duration = TimeSpan.FromMilliseconds(500);
             var frame = 20.0;
@@ -183,7 +206,7 @@ namespace sysinfo_client
 
             animation.Completed += (s, e) =>
             {
-                textBlock.Text = $"{newValue:F1}{suffix}";
+                textBlock.Text = $"{newValue:F1}{suffix}".Replace(".", ",");
             };
 
             int frameCount = 0;
@@ -199,7 +222,7 @@ namespace sysinfo_client
                 }
 
                 float animatedValue = currentValue + (valueIncrement * frameCount);
-                textBlock.Text = $"{animatedValue:F1}{suffix}";
+                textBlock.Text = $"{animatedValue:F1}{suffix}".Replace(".", ",");
                 frameCount++;
             }
         }
@@ -225,6 +248,7 @@ namespace sysinfo_client
             Environment.Exit(0);
         }
     }
+
     public class SystemInfo
     {
         [JsonProperty("cpu_min_usage")]

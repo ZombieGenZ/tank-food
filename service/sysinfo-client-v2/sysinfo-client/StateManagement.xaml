@@ -86,12 +86,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Tối thiểu" FontSize="11" Foreground="#666666"/>
-                            <TextBlock x:Name="CpuMinUsageText" Text="{Binding Value, ElementName=CpuProgress, StringFormat={}{0:N1}%, FallbackValue=0%}" FontSize="14" FontWeight="SemiBold" TextAlignment="Left"/>
+                            <TextBlock Text="Sử dụng" FontSize="11" Foreground="#666666"/>
+                            <TextBlock x:Name="CpuMinUsageText" Text="0,0%" FontSize="14" FontWeight="SemiBold" TextAlignment="Left"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
                             <TextBlock Text="Tối đa" FontSize="11" Foreground="#666666" HorizontalAlignment="Right"/>
-                            <TextBlock x:Name="CpuMaxUsageText" Text="{Binding Value, ElementName=CpuProgress, StringFormat={}{0:N1}%, FallbackValue=0%}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="CpuMaxUsageText" Text="0,0%" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -152,12 +152,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Tối thiểu" FontSize="11" Foreground="#666666"/>
-                            <TextBlock x:Name="RamMinUsageText" Text="{Binding Value, ElementName=RamProgress, StringFormat={}{0:N1} MB, FallbackValue=0 MB}" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="Sử dụng" FontSize="11" Foreground="#666666"/>
+                            <TextBlock x:Name="RamMinUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
                             <TextBlock Text="Tối đa" FontSize="11" Foreground="#666666" HorizontalAlignment="Right"/>
-                            <TextBlock x:Name="RamMaxUsageText" Text="{Binding Value, ElementName=RamProgress, StringFormat={}{0:N1} MB, FallbackValue=0 MB}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="RamMaxUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -218,12 +218,12 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Tối thiểu" FontSize="11" Foreground="#666666"/>
-                            <TextBlock x:Name="DiskMinUsageText" Text="{Binding Value, ElementName=DiskProgress, StringFormat={}{0:N1} MB, FallbackValue=0 MB}" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="Sử dụng" FontSize="11" Foreground="#666666"/>
+                            <TextBlock x:Name="DiskMinUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" HorizontalAlignment="Right">
                             <TextBlock Text="Tối đa" FontSize="11" Foreground="#666666" HorizontalAlignment="Right"/>
-                            <TextBlock x:Name="DiskMaxUsageText" Text="{Binding Value, ElementName=DiskProgress, StringFormat={}{0:N1} MB, FallbackValue=0 MB}" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="DiskMaxUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -274,7 +274,7 @@
                             </GridViewColumn.HeaderTemplate>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Port, StringFormat={}{0:N0}}" FontSize="14" FontWeight="Medium"/>
+                                    <TextBlock Text="{Binding Port}" FontSize="14" FontWeight="Medium"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

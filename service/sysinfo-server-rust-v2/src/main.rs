@@ -86,23 +86,20 @@ async fn handle_websocket(ws: WebSocket, sys: Arc<Mutex<System>>, server_configs
                 let port_statuses = future::join_all(
                     server_configs.iter().map(|config| async move {
                         let is_active = check_port(config.port).await;
-                        (config.port, config.display_name.clone(), is_active)
+                        let cpu_usage_percent = if is_active { cpu_avg_usage * (config.port as f32 / 10000.0) } else { 0.0 };
+                        let ram_usage_mb = if is_active { ram_used * (config.port as u64 / 10000) } else { 0 };
+                        let network_usage_mb = if is_active { (network_received + network_transmitted) * (config.port as u64 / 10000) } else { 0 };
+
+                        PortStatus {
+                            port: config.port,
+                            display_name: config.display_name.clone(),
+                            is_active,
+                            cpu_usage_percent,
+                            ram_usage_mb,
+                            network_usage_mb,
+                        }
                     })
                 ).await;
-
-                let active_ports_count = port_statuses.iter().filter(|&(_, _, is_active)| *is_active).count() as f32;
-                let active_ports_count = if active_ports_count == 0.0 { 1.0 } else { active_ports_count };
-
-                let port_statuses = port_statuses.into_iter().map(|(port, display_name, is_active)| {
-                    PortStatus {
-                        port,
-                        display_name,
-                        is_active,
-                        cpu_usage_percent: if is_active { cpu_avg_usage / active_ports_count } else { 0.0 },
-                        ram_usage_mb: if is_active { ram_used / active_ports_count as u64 } else { 0 },
-                        network_usage_mb: if is_active { (network_received + network_transmitted) / active_ports_count as u64 } else { 0 },
-                    }
-                }).collect::<Vec<_>>();
 
                 let info = SystemInfo {
                     cpu_min_usage,
@@ -122,24 +119,35 @@ async fn handle_websocket(ws: WebSocket, sys: Arc<Mutex<System>>, server_configs
                 let json = match serde_json::to_string(&info) {
                     Ok(json) => json,
                     Err(e) => {
-                        eprintln!("❌ Lỗi tuần tự hóa JSON: {}", e);
+                        println!("❌ Lỗi tuần tự hóa JSON: {}", e);
                         continue;
                     }
                 };
 
-                if let Err(e) = ws_tx.send(Message::text(json)).await {
-                    eprintln!("❌ Lỗi gửi WebSocket: {}. Có thể client đã ngắt kết nối.", e);
-                    break;
+                match ws_tx.send(Message::text(json)).await {
+                    Ok(()) => (),
+                    Err(e) => {
+                        println!("❌ Lỗi gửi WebSocket: {}. Thoát vòng lặp.", e);
+                        break;
+                    }
                 }
             }
-            Some(msg) = ws_rx.next() => {
-                if msg.is_err() {
-                    eprintln!("WebSocket đã đóng hoặc xảy ra lỗi: {:?}", msg);
-                    break;
+            Some(result) = ws_rx.next() => {
+                match result {
+                    Ok(msg) => {
+                        if msg.is_close() {
+                            println!("Nhận được tín hiệu đóng từ client, thoát vòng lặp");
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        println!("❌ Lỗi nhận tin nhắn từ WebSocket: {}. Thoát vòng lặp.", e);
+                        break;
+                    }
                 }
             }
             else => {
-                eprintln!("WebSocket đã đóng, thoát vòng lặp");
+                println!("Kết nối WebSocket đã đóng hoàn toàn, thoát vòng lặp");
                 break;
             }
         }

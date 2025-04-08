@@ -1,21 +1,20 @@
 import asyncio
-import websockets
 import json
+from dataclasses import dataclass
 import psutil
-import socket
-from collections import deque
-import time
+import websockets
+from aiohttp import ClientSession
 
+@dataclass
 class PortStatus:
-    def __init__(self, port, display_name, is_active, cpu_usage_percent, ram_usage_mb, network_usage_mb):
-        self.port = port
-        self.display_name = display_name
-        self.is_active = is_active
-        self.cpu_usage_percent = cpu_usage_percent
-        self.ram_usage_mb = ram_usage_mb
-        self.network_usage_mb = network_usage_mb
+    port: int
+    display_name: str
+    is_active: bool
+    cpu_usage_percent: float
+    ram_usage_mb: int
+    network_usage_mb: int
 
-    def to_json(self):
+    def to_dict(self):
         return {
             "port": self.port,
             "display_name": self.display_name,
@@ -25,22 +24,22 @@ class PortStatus:
             "network_usage_mb": self.network_usage_mb
         }
 
+@dataclass
 class SystemInfo:
-    def __init__(self, cpu_min_usage, cpu_max_usage, cpu_usage, ram_min_usage, ram_max_usage, ram_usage_percent, disk_min_usage, disk_max_usage, disk_usage_percent, network_received, network_transmitted, ports):
-        self.cpu_min_usage = cpu_min_usage
-        self.cpu_max_usage = cpu_max_usage
-        self.cpu_usage = cpu_usage
-        self.ram_min_usage = ram_min_usage
-        self.ram_max_usage = ram_max_usage
-        self.ram_usage_percent = ram_usage_percent
-        self.disk_min_usage = disk_min_usage
-        self.disk_max_usage = disk_max_usage
-        self.disk_usage_percent = disk_usage_percent
-        self.network_received = network_received
-        self.network_transmitted = network_transmitted
-        self.ports = ports
+    cpu_min_usage: float
+    cpu_max_usage: float
+    cpu_usage: float
+    ram_min_usage: int
+    ram_max_usage: int
+    ram_usage_percent: float
+    disk_min_usage: int
+    disk_max_usage: int
+    disk_usage_percent: float
+    network_received: int
+    network_transmitted: int
+    ports: list
 
-    def to_json(self):
+    def to_dict(self):
         return {
             "cpu_min_usage": self.cpu_min_usage,
             "cpu_max_usage": self.cpu_max_usage,
@@ -53,107 +52,105 @@ class SystemInfo:
             "disk_usage_percent": self.disk_usage_percent,
             "network_received": self.network_received,
             "network_transmitted": self.network_transmitted,
-            "ports": [port.to_json() for port in self.ports]
+            "ports": [port.to_dict() for port in self.ports]
         }
 
+@dataclass
 class ServerConfig:
-    def __init__(self, port, display_name):
-        self.port = port
-        self.display_name = display_name
+    port: int
+    display_name: str
 
 async def check_port(port):
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(1)
-        result = sock.connect_ex(("127.0.0.1", port))
-        sock.close()
-        return result == 0
+        reader, writer = await asyncio.open_connection("127.0.0.1", port)
+        writer.close()
+        await writer.wait_closed()
+        return True
     except:
         return False
 
-async def handle_websocket(websocket, sys, server_configs):
-    disks = psutil.disk_usage('/')
-    network_counters = psutil.net_io_counters()
-    while True:
-        await asyncio.sleep(1)
+async def handle_websocket(websocket, server_configs):
+    async with ClientSession() as session:
+        while True:
+            try:
+                cpu_usage = psutil.cpu_percent(percpu=True)
+                cpu_min_usage = min(cpu_usage)
+                cpu_max_usage = max(cpu_usage)
+                cpu_avg_usage = sum(cpu_usage) / len(cpu_usage)
 
-        cpu_usage = psutil.cpu_percent(percpu=True)
-        cpu_min_usage = min(cpu_usage)
-        cpu_max_usage = max(cpu_usage)
-        cpu_avg_usage = sum(cpu_usage) / len(cpu_usage)
+                ram = psutil.virtual_memory()
+                ram_used = ram.used // 1024 // 1024
+                ram_total = ram.total // 1024 // 1024
+                ram_usage_percent = ram.percent
 
-        ram = psutil.virtual_memory()
-        ram_used = ram.used // 1024 // 1024
-        ram_total = ram.total // 1024 // 1024
-        ram_usage_percent = ram.percent
+                disk = psutil.disk_usage('/')
+                disk_used_mb = disk.used // 1024 // 1024
+                disk_total_mb = disk.total // 1024 // 1024
+                disk_usage_percent = disk.percent
 
-        disks = psutil.disk_usage('/')
-        disk_used_mb = disks.used // 1024 // 1024
-        disk_total_mb = disks.total // 1024 // 1024
-        disk_usage_percent = disks.percent
+                net = psutil.net_io_counters()
+                network_received = net.bytes_recv // 1024 // 1024
+                network_transmitted = net.bytes_sent // 1024 // 1024
 
-        network_counters = psutil.net_io_counters()
-        network_received = network_counters.bytes_recv // 1024 // 1024
-        network_transmitted = network_counters.bytes_sent // 1024 // 1024
+                port_statuses = []
+                for config in server_configs:
+                    is_active = await check_port(config.port)
+                    cpu_usage_percent = cpu_avg_usage * (config.port / 10000.0) if is_active else 0.0
+                    ram_usage_mb = ram_used * (config.port // 10000) if is_active else 0
+                    network_usage_mb = (network_received + network_transmitted) * (config.port // 10000) if is_active else 0
 
-        port_statuses = []
-        for config in server_configs:
-            is_active = await check_port(config.port)
-            port_statuses.append((config.port, config.display_name, is_active))
+                    port_statuses.append(PortStatus(
+                        port=config.port,
+                        display_name=config.display_name,
+                        is_active=is_active,
+                        cpu_usage_percent=cpu_usage_percent,
+                        ram_usage_mb=ram_usage_mb,
+                        network_usage_mb=network_usage_mb
+                    ))
 
-        active_ports_count = sum(1 for _, _, is_active in port_statuses if is_active)
-        active_ports_count = 1 if active_ports_count == 0 else active_ports_count
+                info = SystemInfo(
+                    cpu_min_usage=cpu_min_usage,
+                    cpu_max_usage=cpu_max_usage,
+                    cpu_usage=cpu_avg_usage,
+                    ram_min_usage=ram_used,
+                    ram_max_usage=ram_total,
+                    ram_usage_percent=ram_usage_percent,
+                    disk_min_usage=disk_used_mb,
+                    disk_max_usage=disk_total_mb,
+                    disk_usage_percent=disk_usage_percent,
+                    network_received=network_received,
+                    network_transmitted=network_transmitted,
+                    ports=port_statuses
+                )
 
-        port_statuses = [
-            PortStatus(
-                port,
-                display_name,
-                is_active,
-                cpu_avg_usage / active_ports_count if is_active else 0.0,
-                ram_used // active_ports_count if is_active else 0,
-                (network_received + network_transmitted) // active_ports_count if is_active else 0
-            )
-            for port, display_name, is_active in port_statuses
-        ]
+                await websocket.send(json.dumps(info.to_dict()))
+                await asyncio.sleep(1)
 
-        info = SystemInfo(
-            cpu_min_usage,
-            cpu_max_usage,
-            cpu_avg_usage,
-            ram_used,
-            ram_total,
-            ram_usage_percent,
-            disk_used_mb,
-            disk_total_mb,
-            disk_usage_percent,
-            network_received,
-            network_transmitted,
-            port_statuses
-        )
-
-        try:
-            await websocket.send(json.dumps(info.to_json()))
-        except Exception as e:
-            print(f"❌ Lỗi gửi WebSocket: {e}. Có thể client đã ngắt kết nối.")
-            break
-
-async def ws_handler(websocket):
-    system = {}
-    server_configs = [
-        ServerConfig(80, "Web Server"),
-        ServerConfig(3000, "API Server"),
-        ServerConfig(8080, "Stats Server"),
-    ]
-    try:
-        await handle_websocket(websocket, system, server_configs)
-    except (websockets.exceptions.InvalidMessage, EOFError, ConnectionResetError):
-        pass
-    except Exception as e:
-        print(f"❌ Lỗi không mong đợi: {e}")
+            except websockets.ConnectionClosed:
+                print("Kết nối WebSocket đã đóng hoàn toàn, thoát vòng lặp")
+                break
+            except Exception as e:
+                print(f"Lỗi trong quá trình xử lý: {e}")
+                break
 
 async def main():
-    server = await websockets.serve(ws_handler, "0.0.0.0", 8080)
-    print("✅ Máy chủ SysInfo đang chạy tại wss://service-stats.tank-food.io.vn")
+    server_configs = [
+        ServerConfig(port=80, display_name="Web Server"),
+        ServerConfig(port=3000, display_name="API Server"),
+        ServerConfig(port=8080, display_name="Stats Server"),
+    ]
+
+    async def websocket_handler(websocket, path):
+        await handle_websocket(websocket, server_configs)
+
+    print("✅ Máy chủ SysInfo đang chạy tại ws://0.0.0.0:8080")
+    server = await websockets.serve(
+        websocket_handler,
+        "0.0.0.0",
+        8080,
+        ping_interval=20,
+        ping_timeout=20
+    )
     await server.wait_closed()
 
 if __name__ == "__main__":
