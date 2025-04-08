@@ -201,17 +201,55 @@ const Signup: React.FC<Props> = (props) => {
                 })
               }
               if(data.code == RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL) {
-                messageApi.open({
-                  type: 'success',
-                  content: 'Đăng ký thành công, Vui lòng đăng nhập lại với tài khoản mới !',
-                  style: {
-                    marginTop: '10vh',
+                const body = {
+                  language: null,
+                  email: formData.email.trim(),
+                  password: formData.password.trim()
+                }
+                fetch(`${import.meta.env.VITE_API_URL}/api/users/login` , {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
                   },
-                }).then(() => {
-                  setTimeout(() => {
-                    navigate("/");
-                  }, 1500);
-                });
+                  body: JSON.stringify(body)
+                }).then((response) => {
+                  return response.json()
+                }).then((data) => {
+                  if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
+                    messageApi.open({
+                      type: 'error',
+                      content: data.message,
+                      style: {
+                        marginTop: '10vh',
+                      },
+                    })
+                  }
+                  if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                    messageApi.open({
+                      type: 'error',
+                      content: data.errors.email.msg,
+                      style: {
+                        marginTop: '10vh',
+                      },
+                    })
+                  }
+                  if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
+                    localStorage.setItem('access_token', data.authenticate.access_token)
+                    localStorage.setItem('refresh_token', data.authenticate.refresh_token)
+                    messageApi.open({
+                      type: 'success',
+                      content: 'Đăng nhập thành công',
+                      style: {
+                        marginTop: '10vh',
+                      },
+                    }).then(() => {
+                      setTimeout(() => {
+                        navigate("/");
+                        window.location.reload();
+                      }, 1000);
+                    });
+                  }
+                })
               }
             })
         } else {
