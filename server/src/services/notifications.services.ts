@@ -4,20 +4,22 @@ import User from '~/models/schemas/users.schemas'
 import Notification from '~/models/schemas/notifications.shemas'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import { UserRoleEnum } from '~/constants/users.constants'
+import { OrderStatusEnum } from '~/constants/orders.constants'
+import { ObjectId } from 'mongodb'
 
 class NotificationService {
   async getNotification(payload: GetNotificationRequestsBody, user: User) {
     return await databaseService.notification.find({ receiver: user._id }).limit(payload.quantity).toArray()
   }
-  async sendNotification(message: string, receiver: User, sender?: string) {
+  async sendNotification(message: string, receiver: ObjectId, sender?: string) {
     const notification = new Notification({
       message,
       sender,
-      receiver: receiver._id
+      receiver: receiver
     })
     await Promise.all([
       databaseService.notification.insertOne(notification),
-      notificationRealtime(`freshSync-user-${receiver._id}`, 'new-notification', `notification/${receiver._id}/new-notification`, notification)
+      notificationRealtime(`freshSync-user-${receiver}`, 'new-notification', `notification/${receiver}/new-notification`, notification)
     ])
   }
   async sendNotificationAllUser(message: string, sender?: string) {
@@ -102,6 +104,11 @@ class NotificationService {
     const users = await databaseService.users.find({ role: UserRoleEnum.SHIPPER, penalty: { $ne: null } }).toArray()
     const promises = [] as Promise<void>[]
     for (const user of users) {
+      const count = await databaseService.order.countDocuments({ shipper: user._id, order_status: OrderStatusEnum.DELIVERING })
+      if (count > Number(process.env.MAX_SHIPPER_ORDER as string)) {
+        continue
+      }
+
       promises.push(
         new Promise((resolve, reject) => {
           try {

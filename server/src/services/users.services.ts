@@ -20,6 +20,7 @@ import { UserTypeEnum } from '~/constants/users.constants'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import { formatDateFull2 } from '~/utils/date.utils'
 import { TokenPayload } from '~/models/requests/authentication.requests'
+import notificationService from './notifications.services'
 
 class UserService {
   async checkEmailExits(email: string) {
@@ -70,7 +71,11 @@ class UserService {
 
     await Promise.all([
       sendMail(payload.email, email_welcome_subject, email_welcome_html),
-      sendMail(payload.email, email_verify_subject, email_verify_html)
+      sendMail(payload.email, email_verify_subject, email_verify_html),
+      notificationService.sendNotification(
+        '🎉 Đăng ký tài khoản thành công! Bắt đầu trải nghiệm ngay bằng cách đặt đơn đầu tiên nhé!',
+        user_id
+      )
     ])
 
     return authenticate

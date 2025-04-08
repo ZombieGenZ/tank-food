@@ -34,6 +34,7 @@ import voucherPrivateService from './voucherPrivate.services'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import { UserRoleEnum } from '~/constants/users.constants'
 import { serverLanguage } from '~/index'
+import notificationService from './notifications.services'
 
 class OrderService {
   async orderOnline(
@@ -393,7 +394,10 @@ class OrderService {
         }
       ),
       notificationRealtime(`freshSync-payment-DH${order._id}`, 'payment_notification', `payment/${order._id}`, data),
-      notificationRealtime(`freshSync-employee`, 'checkout-order', `order/checkout`, data)
+      notificationRealtime(`freshSync-employee`, 'checkout-order', `order/checkout`, data),
+      notificationService.sendNotificationAllEmployee(
+        ` 🔔 Đơn hàng #${order._id} đã được đặt và thanh toán thành công. Vui lòng kiểm tra và xác nhận đơn hàng!`
+      )
     ])
 
     if (order.user) {
@@ -1022,12 +1026,23 @@ class OrderService {
         ])
         .next()
 
+      if (order.delivery_type == DeliveryTypeEnum.DELIVERY) {
+        notificationService.sendNotificationAllShipper(
+          `📦 Đơn hàng #${order._id} chưa có người nhận. Nhận đơn ngay nếu bạn đã sẵn sàng!`
+        )
+      }
+
       await Promise.all([
         notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data),
         order.user &&
           notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data),
         order.delivery_type == DeliveryTypeEnum.DELIVERY &&
-          notificationRealtime(`freshSync-shipper`, 'create-delivery', `order/${user._id}/create-delivery`, data)
+          notificationRealtime(`freshSync-shipper`, 'create-delivery', `order/${user._id}/create-delivery`, data),
+        order.user &&
+          notificationService.sendNotification(
+            `✅ Đơn hàng #${order._id} của bạn đã được xác nhận. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!`,
+            user._id
+          )
       ])
       return
     } else {
@@ -1160,7 +1175,12 @@ class OrderService {
       await Promise.all([
         notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data),
         order.user &&
-          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data)
+          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data),
+        order.user &&
+          notificationService.sendNotification(
+          `❌ Đơn hàng #${order._id} của bạn đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ bộ phận hỗ trợ.`,
+          user._id
+          )
       ])
       return
     }
@@ -1326,6 +1346,11 @@ class OrderService {
           'cancel-delivery',
           `delivery/${order.shipper}/cancel`,
           data
+        ),
+      order.user &&
+        notificationService.sendNotification(
+          `❌ Đơn hàng #${order._id} của bạn đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ bộ phận hỗ trợ.`,
+          user._id
         )
     ])
   }
@@ -2090,7 +2115,11 @@ class OrderService {
         `delivery/${order.user}/delivery-order`,
         data
       ),
-      notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data)
+      notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data),
+      notificationService.sendNotification(
+        `Đơn hàng #${order._id} đang được giao.`,
+        order._id
+      )
     ])
   }
   async cancelOrderShipper(payload: CancelOrderShipperRequestsBody, order: Order) {
@@ -2224,6 +2253,13 @@ class OrderService {
         'cancel-delivery',
         `order/${order.user}/cancel-delivery`,
         data
+      ),
+      notificationService.sendNotification(
+        `📢 Đơn hàng #${order._id} hiện đang được xử lý lại do sự cố từ phía đơn vị vận chuyển. Chúng tôi sẽ cập nhật thời gian giao hàng sớm nhất cho bạn.`,
+        order._id
+      ),
+      notificationService.sendNotificationAllShipper(
+        `📦 Đơn hàng #${order._id} chưa có người nhận. Nhận đơn ngay nếu bạn đã sẵn sàng!`
       )
     ])
   }
@@ -2386,7 +2422,11 @@ class OrderService {
         data
       ),
       notificationRealtime('freshSync-statistical', 'update-chart', 'statistical/chart', dataStatistical),
-      notificationRealtime('freshSync-statistical', 'update-order-complete', 'statistical/complete', data)
+      notificationRealtime('freshSync-statistical', 'update-order-complete', 'statistical/complete', data),
+      notificationService.sendNotification(
+        `✅ Đơn hàng #${order._id} đã hoàn tất. Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi!`,
+        order._id
+      )
     ])
   }
   async orderOffline(
@@ -2520,7 +2560,7 @@ class OrderService {
       ])
       .next()
 
-    await notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)
+    await  notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails)
 
     if (payload.payment_type == PaymentTypeEnum.BANK) {
       return {
@@ -2536,6 +2576,10 @@ class OrderService {
         total_bill: total_bill
       }
     } else {
+      await notificationService.sendNotificationAllEmployee(
+        `🔔 Có đơn hàng mới được đặt tại quầy. Vui lòng kiểm tra và xử lý đơn hàng!`
+      )
+
       return {
         product: product_list
       }
