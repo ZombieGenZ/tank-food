@@ -87,8 +87,8 @@ async fn handle_websocket(ws: WebSocket, sys: Arc<Mutex<System>>, server_configs
                     server_configs.iter().map(|config| async move {
                         let is_active = check_port(config.port).await;
                         let cpu_usage_percent = if is_active { cpu_avg_usage * (config.port as f32 / 10000.0) } else { 0.0 };
-                        let ram_usage_mb = if is_active { ram_used * (config.port as u64 / 10000) } else { 0 };
-                        let network_usage_mb = if is_active { (network_received + network_transmitted) * (config.port as u64 / 10000) } else { 0 };
+                        let ram_usage_mb = if is_active { (ram_used as f32 * (config.port as f32 / 10000.0)) as u64 } else { 0 };
+                        let network_usage_mb = if is_active { ((network_received + network_transmitted) as f32 * (config.port as f32 / 10000.0)) as u64 } else { 0 };
 
                         PortStatus {
                             port: config.port,
