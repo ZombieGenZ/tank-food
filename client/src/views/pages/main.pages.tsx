@@ -100,7 +100,7 @@ const FormMain = (): JSX.Element => {
     const language = localStorage.getItem('language')
     return language ? JSON.parse(language) : "Tiếng Việt"
   }
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const [loadingCP, setLoadingCP] = useState<boolean>(false)
   const [cart, setCart] = useState<CartItem[]>(() => {
     const cartlocal = localStorage.getItem('my_cart')
@@ -233,8 +233,10 @@ const FormMain = (): JSX.Element => {
   })
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const [isAdminView, setIsAdminView] = useState<boolean>(true); // Mặc định là Admin view
-
+  const [isAdminView, setIsAdminView] = useState<boolean>(() => {
+    const AdminView = localStorage.getItem('isAdminView')
+    return AdminView ? JSON.parse(AdminView) : true
+  }); // Mặc định là Admin view
   const [messageApi, contextHolder] = message.useMessage();
 
   function NavAdmin({ display_name, userInfo }: { display_name: string; userInfo: UserInfo }) {
@@ -279,7 +281,7 @@ const FormMain = (): JSX.Element => {
       {
         key: '2',
         label: (
-          <button className="flex cursor-pointer gap-2 items-center" onClick={() => {setIsAdminView(false); checkTokenRouter('/')}}>
+          <button className="flex cursor-pointer gap-2 items-center" onClick={() => {localStorage.setItem('isAdminView', JSON.stringify(false)); setIsAdminView(false); checkTokenRouter('/')}}>
             <FaHome /> {language === "Tiếng Việt" ? "Trang chủ người dùng" : "Main User"}
           </button>
         ),
@@ -325,9 +327,8 @@ const FormMain = (): JSX.Element => {
                   }).then(() => {
                     window.location.reload();
                   }).then(() => {
-                    if(isAdminView == false) {
-                      navigate('/')
-                    }
+                    localStorage.setItem('isAdminView', JSON.stringify(false))
+                    navigate('/')
                   });
                 } else {
                   messageApi.error(data.message)
@@ -431,11 +432,9 @@ const FormMain = (): JSX.Element => {
       .catch((error) => console.error("Lỗi khi lấy thông tin người dùng:", error));
   }, [refresh_token, access_token]);
 
-  useEffect(() => {
-    if(isAdminView) {
-      navigate('/'); 
-    }
-  }, [isAdminView]);
+  // useEffect(() => {
+  //     navigate(window.location.pathname); 
+  // });
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -749,6 +748,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
                     }).then(() => {
                       window.location.reload();
                     }).then(() => {
+                      localStorage.setItem('isAdminView', JSON.stringify(false))
                       navigate('/')
                     });
                   } else {
@@ -794,7 +794,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
     {
       key: '2',
       label: (
-        <button className="flex cursor-pointer gap-2 items-center" onClick={() => {toggleView(true); checkTokenRouter('/')}}>
+        <button className="flex cursor-pointer gap-2 items-center" onClick={() => {localStorage.setItem('isAdminView', JSON.stringify(true)); toggleView(true); checkTokenRouter('/')}}>
           <MdManageAccounts /> {language === "Tiếng Việt" ? "Quản lý" : "Manage"}
         </button>
       ),
@@ -891,6 +891,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
                           {cartItemCount}
                         </span>
                       )}
+                      
                     </div>
                   </div>
                 )}
