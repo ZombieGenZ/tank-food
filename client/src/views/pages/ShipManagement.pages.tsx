@@ -148,6 +148,15 @@ const ShipManagement: React.FC<Props> = (props) => {
     }
   })
 
+  const changeFillter = (fill: string) => {
+    setActiveFilter(fill)
+    // fillShipBill(fill, waitingOrders)
+  }
+
+  // const fillShipBill = (type: string, bill: Order[]) => {
+
+  // }
+
   const TakeBill = (orderID: string) => {
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
@@ -462,8 +471,8 @@ const ShipManagement: React.FC<Props> = (props) => {
           {filterOptions.map(filter => (
             <button 
               key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
+              onClick={() => changeFillter(filter)}
+              className={`px-4 cursor-pointer py-1.5 rounded-md text-sm font-medium transition ${
                 activeFilter === filter 
                   ? 'bg-orange-500 text-white' 
                   : 'bg-white border border-gray-300 hover:bg-gray-50'

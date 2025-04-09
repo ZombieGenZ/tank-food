@@ -159,7 +159,7 @@ const ProfilePage: React.FC<Props> = (props) => {
         setHistoryBill(data.order)
       } 
     })
-  }, [refresh_token, access_token])
+  }, [refresh_token, access_token, messageApi])
 
 
   const location = useLocation();

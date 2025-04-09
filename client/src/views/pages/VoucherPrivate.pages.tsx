@@ -5,6 +5,9 @@ import { useEffect, useState } from "react"
 import AOS from "aos"
 import "aos/dist/aos.css"
 import { motion } from "framer-motion"
+import { message } from "antd"
+import Verify from "../components/VerifyToken.components"
+import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
 interface Voucher {
   id: string
@@ -23,6 +26,80 @@ interface Props {
 }
 
 const VoucherPrivate: React.FC<Props> = (props) => {
+  const language = (): string => {
+    const Language = localStorage.getItem('language')
+    return Language ? JSON.parse(Language) : "Tiếng Việt"
+  }
+  const [messageApi, contextHolder] = message.useMessage();
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setRefreshToken(localStorage.getItem("refresh_token"));
+      setAccessToken(localStorage.getItem("access_token"));
+    };
+            
+    window.addEventListener("storage", handleStorageChange);
+            
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: refresh_token
+          }
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-private/get-voucher-unused`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then(response => {
+            return response.json()
+          }).then((data) => {
+            if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
+              messageApi.error("Lỗi khi lấy danh sách voucher");
+              return
+            }
+            if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
+              console.log(data)
+            }
+          })
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-private/get-voucher-used`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then(response => {
+            return response.json()
+          }).then((data) => {
+            if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
+              messageApi.error("Lỗi khi lấy danh sách voucher");
+              return
+            }
+            if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
+              console.log(data)
+            }
+          })
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken()
+  }, [refresh_token, access_token, messageApi])
+
   const [vouchers, setVouchers] = useState<Voucher[]>([
     {
       id: "v1",
@@ -184,6 +261,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white p-6">
+      {contextHolder}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -191,10 +269,10 @@ const VoucherPrivate: React.FC<Props> = (props) => {
         className="max-w-6xl mx-auto"
       >
         <h1 className="text-4xl font-bold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500">
-          Your TankFood Vouchers
+          {language() == "Tiếng Việt" ? "Voucher TankFood của bạn" : "Your TankFood Vouchers"}
         </h1>
         <p className="text-center text-gray-300 mb-8">
-          Use your exclusive vouchers to enjoy delicious meals at discounted prices
+          {language() == "Tiếng Việt" ? "Sử dụng phiếu giảm giá độc quyền của bạn để thưởng thức những bữa ăn ngon với giá ưu đãi" : "Use your exclusive vouchers to enjoy delicious meals at discounted prices"}
         </p>
 
         {/* Tab Navigation */}
@@ -202,23 +280,23 @@ const VoucherPrivate: React.FC<Props> = (props) => {
           <div className="bg-gray-800 p-1 rounded-lg inline-flex">
             <button
               onClick={() => setActiveTab("active")}
-              className={`px-6 py-2 rounded-md transition-all duration-300 ${
+              className={`px-6 cursor-pointer py-2 rounded-md transition-all duration-300 ${
                 activeTab === "active"
                   ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg"
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Active Vouchers
+              {language() == "Tiếng Việt" ? "Voucher đang hoạt động" : "Active Vouchers"}
             </button>
             <button
               onClick={() => setActiveTab("used")}
-              className={`px-6 py-2 rounded-md transition-all duration-300 ${
+              className={`px-6 cursor-pointer py-2 rounded-md transition-all duration-300 ${
                 activeTab === "used"
                   ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg"
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Used Vouchers
+              {language() == "Tiếng Việt" ? "Voucher đã sử dụng" : "Used Vouchers"}
             </button>
           </div>
         </div>
