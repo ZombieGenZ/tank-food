@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
-    host: '0.0.0.0',
+    host: true,
     port: Number(process.env.APP_PORT) || 80,
     fs: {
       allow: [
@@ -19,12 +19,6 @@ export default defineConfig({
         path.resolve(__dirname, '.'),
 	      path.resolve(__dirname, 'client')
       ],
-    },
-    allowedHosts: [
-      'tank-food.io.vn',
-      'tank-travel.io.vn',
-      '*.tank-food.io.vn',
-      '*.tank-travel.io.vn'
-    ]
+    }
   }
 })
