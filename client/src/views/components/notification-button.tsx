@@ -36,7 +36,7 @@ export default function NotificationButton() {
       {/* Notification Button */}
       <button
         onClick={toggleDropdown}
-        className="relative cursor-pointer flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg group"
+        className="relative cursor-pointer w-8 h-8 md:w-11 md:h-11 flex items-center justify-center bg-white rounded-full shadow-lg group"
         data-aos="zoom-in"
       >
         <Bell className="w-6 h-6 text-blue-500 group-hover:text-blue-600 transition-all duration-300" />

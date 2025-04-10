@@ -6,6 +6,7 @@ interface Props {
 const ShipperPages: React.FC<Props> = (props) => {
     return(
         <>
+         <h1>Nam</h1>
         </>
     )
 }

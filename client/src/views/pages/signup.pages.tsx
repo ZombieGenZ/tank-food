@@ -387,334 +387,232 @@ const Signup: React.FC<Props> = (props) => {
     }, [])
 
     return (
-        <div style={styles.body}>
-          {contextHolder}
-            <div style={styles.container}>
-              <div style={styles.infoSide}>
-                
-                <div>
-                    <div style={styles.logo}>Tank<span style={{ color: '#ffcc00' }}>Food</span></div>
-                    <h1 style={styles.infoTitle}>Thưởng thức ẩm thực nhanh chóng!</h1>
-                    <p style={styles.infoText}>Đăng nhập để đặt món ăn yêu thích và nhận nhiều ưu đãi hấp dẫn.</p>
-                    
-                    <div style={styles.features}>
-                    <div style={styles.feature}>
-                        <div style={styles.featureIcon}>✓</div>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat" 
+            style={{ backgroundImage: 'url("/api/placeholder/1200/800")', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+        {contextHolder}
+          <div className="w-full max-w-4xl flex flex-col md:flex-row shadow-lg rounded-lg overflow-hidden bg-white">
+            {/* Info Side */}
+            <div className="w-full md:w-2/5 bg-orange-500 text-white p-6 md:p-8 flex flex-col justify-between">
+              <div>
+                  <div className="text-2xl font-bold mb-6">Tank<span className="text-yellow-300">Food</span></div>
+                  <h1 className="text-2xl md:text-3xl font-bold mb-4">Thưởng thức ẩm thực nhanh chóng!</h1>
+                  <p className="mb-6 leading-relaxed">Đăng nhập để đặt món ăn yêu thích và nhận nhiều ưu đãi hấp dẫn.</p>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">✓</div>
                         <div>Giao hàng nhanh chóng</div>
                     </div>
-                    <div style={styles.feature}>
-                        <div style={styles.featureIcon}>✓</div>
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">✓</div>
                         <div>Ưu đãi độc quyền cho thành viên</div>
                     </div>
-                    <div style={styles.feature}>
-                        <div style={styles.featureIcon}>✓</div>
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">✓</div>
                         <div>Đa dạng món ăn</div>
                     </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <p>Đã có hơn {people} khách hàng truy cập</p>
-                </div>
-                </div>
-                
-                <div style={styles.formSide}>
-                <div style={styles.tabs}>
-                    <div 
-                    style={formType === 'login' ? {...styles.tab, ...styles.activeTab} : styles.tab} 
+                  </div>
+              </div>
+              
+              <div className="mt-6">
+                  <p>Đã có hơn {people} khách hàng truy cập</p>
+              </div>
+            </div>
+            
+            {/* Form Side */}
+            <div className="w-full md:w-3/5 p-6 md:p-8">
+              <div className="flex border-b mb-8">
+                  <button 
+                    className={`pb-2 px-4 font-semibold ${formType === 'login' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
                     onClick={() => showForm('login')}
-                    >
+                  >
                     Đăng nhập
-                    </div>
-                    <div 
-                    style={formType === 'register' ? {...styles.tab, ...styles.activeTab} : styles.tab} 
+                  </button>
+                  <button 
+                    className={`pb-2 px-4 font-semibold ${formType === 'register' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
                     onClick={() => showForm('register')}
-                    >
+                  >
                     Đăng ký
-                    </div>
-                </div>
-                
-                {formType === 'login' ? (
-                    <form onSubmit={handleLoginSubmit} style={{ display: 'block' }}>
-                        <div style={styles.formGroup}>
-                            <label htmlFor="login-email" style={styles.label}>Email</label>
-                            <input 
+                  </button>
+              </div>
+              
+              {formType === 'login' ? (
+                  <form onSubmit={handleLoginSubmit} className="space-y-4">
+                      <div>
+                          <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                          <input 
                             type="email" 
                             id="login-email" 
-                            style={styles.input}
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                             placeholder="Nhập địa chỉ email của bạn" 
                             value={loginData.email}
                             onChange={handleLoginChange} 
-                            />
-                            {errorLogin.email && <p className="text-red-500 mt-2.5">{errorLogin.email}</p>}
-                        </div>
-                        
-                        <div style={styles.formGroup}>
-                            <label htmlFor="login-password" style={styles.label}>Mật khẩu</label>
-                            <div className="relative">
-                              <input 
+                          />
+                          {errorLogin.email && <p className="text-red-500 text-sm mt-1">{errorLogin.email}</p>}
+                      </div>
+                      
+                      <div>
+                          <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                          <div className="relative">
+                            <input 
                               type={showPassword ? "text" : "password"} 
                               id="login-password" 
-                              style={styles.input}
+                              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition pr-10"
                               placeholder="Nhập mật khẩu của bạn" 
                               value={loginData.password}
                               onChange={handleLoginChange}
-                              />
-                              <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
-                                type="button"
-                                onClick={togglePasswordVisibility}
-                                className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
-                              >
-                                {showPassword ? (
-                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
-                                  </svg>
-                                ) : (
-                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                )}
-                              </motion.button>
-                            </div>
-                            {errorLogin.password && <p className="text-red-500 mt-2.5">{errorLogin.password}</p>}
-                        </div>
-                        
-                        <div style={styles.forgotPassword}>
-                            <a href="#" onClick={() => ForgotPass(loginData.email)} style={styles.forgotPasswordLink}>Quên mật khẩu?</a>
-                        </div>
-                        
-                        <button type="submit" style={styles.btn}>Đăng nhập</button>
-                    </form>
-                ) : (
-                    <form onSubmit={handleSubmit} style={{ display: 'block' }}>
-                        <div style={styles.formGroup}>
-                            <label htmlFor="register-display_name" style={styles.label}>Họ và tên</label>
-                            <input 
+                            />
+                            <motion.button
+                              type="button"
+                              onClick={togglePasswordVisibility}
+                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {showPassword ? (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                                </svg>
+                              ) : (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              )}
+                            </motion.button>
+                          </div>
+                          {errorLogin.password && <p className="text-red-500 text-sm mt-1">{errorLogin.password}</p>}
+                      </div>
+                      
+                      <div className="text-right">
+                          <button type="button" onClick={() => ForgotPass(loginData.email)} className="text-sm text-orange-500 hover:underline focus:outline-none">
+                            Quên mật khẩu?
+                          </button>
+                      </div>
+                      
+                      <button 
+                        type="submit" 
+                        className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                      >
+                        Đăng nhập
+                      </button>
+                  </form>
+              ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                          <label htmlFor="register-display_name" className="block text-sm font-medium text-gray-700 mb-1">Họ và tên</label>
+                          <input 
                             type="text" 
                             id="register-display_name" 
-                            style={styles.input}
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                             placeholder="Nhập họ tên đầy đủ" 
                             value={formData.display_name}
                             onChange={handleChange}
-                            />
-                            {errors.display_name && <p className="text-red-500 mt-2.5">{errors.display_name}</p>}
-                        </div>
-                        
-                        <div style={styles.formGroup}>
-                            <label htmlFor="register-email" style={styles.label}>Email</label>
-                            <input 
+                          />
+                          {errors.display_name && <p className="text-red-500 text-sm mt-1">{errors.display_name}</p>}
+                      </div>
+                      
+                      <div>
+                          <label htmlFor="register-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                          <input 
                             type="email" 
                             id="register-email" 
-                            style={styles.input}
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                             placeholder="Nhập địa chỉ email của bạn" 
                             value={formData.email}
                             onChange={handleChange}
-                            />
-                            {errors.email && <p className="text-red-500 mt-2.5">{errors.email}</p>}
-                        </div>
-                        
-                        <div style={styles.formGroup}>
-                            <label htmlFor="register-phone" style={styles.label}>Số điện thoại</label>
-                            <input 
+                          />
+                          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                      </div>
+                      
+                      <div>
+                          <label htmlFor="register-phone" className="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                          <input 
                             type="tel" 
                             id="register-phone" 
-                            style={styles.input}
+                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition"
                             placeholder="Nhập số điện thoại của bạn" 
                             value={formData.phone}
                             onChange={handleChange}
-                            />
-                            {errors.phone && <p className="text-red-500 mt-2.5">{errors.phone}</p>}
-                        </div>
-                        
-                        <div style={styles.formGroup}>
-                            <label htmlFor="register-password" style={styles.label}>Mật khẩu</label>
-                            <div className="relative">
-                              <input 
+                          />
+                          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                      </div>
+                      
+                      <div>
+                          <label htmlFor="register-password" className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                          <div className="relative">
+                            <input 
                               type={showNewPassword ? "text" : "password"} 
                               id="register-password" 
-                              style={styles.input}
+                              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition pr-10"
                               placeholder="Tạo mật khẩu" 
                               value={formData.password}
                               onChange={handleChange}
-                              />
-                              <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
-                                type="button"
-                                onClick={toggleNewPasswordVisibility}
-                                className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
-                              >
-                                {showNewPassword ? (
-                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
-                                  </svg>
-                                ) : (
-                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                )}
-                              </motion.button>
-                            </div>
-                            {errors.password && <p className="text-red-500 mt-2.5">{errors.password}</p>}
-                        </div>
-                        
-                        <div style={styles.formGroup}>
-                            <label htmlFor="register-confirm_password" style={styles.label}>Xác nhận mật khẩu</label>
-                            <div className="relative">
-                              <input 
+                            />
+                            <motion.button
+                              type="button"
+                              onClick={toggleNewPasswordVisibility}
+                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {showNewPassword ? (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                                </svg>
+                              ) : (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              )}
+                            </motion.button>
+                          </div>
+                          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                      </div>
+                      
+                      <div>
+                          <label htmlFor="register-confirm_pass" className="block text-sm font-medium text-gray-700 mb-1">Xác nhận mật khẩu</label>
+                          <div className="relative">
+                            <input 
                               type={showConfirmPassword ? "text" : "password"} 
                               id="register-confirm_pass" 
-                              style={styles.input}
+                              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition pr-10"
                               placeholder="Nhập lại mật khẩu" 
                               value={formData.confirm_pass}
                               onChange={handleChange}
-                              />
-                              <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
-                                type="button"
-                                onClick={toggleConfirmPasswordVisibility}
-                                className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
-                              >
-                                {showConfirmPassword ? (
-                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
-                                  </svg>
-                                ) : (
-                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                )}
-                              </motion.button>
-                            </div>
-                            {errors.confirm_pass && <p className="text-red-500 mt-2.5">{errors.confirm_pass}</p>}
-                        </div>
-                        
-                        <button type="submit" style={styles.btn}>Đăng ký</button>
-                    </form>
-                )}
-                </div>
+                            />
+                            <motion.button
+                              type="button"
+                              onClick={toggleConfirmPasswordVisibility}
+                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {showConfirmPassword ? (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                                </svg>
+                              ) : (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                              )}
+                            </motion.button>
+                          </div>
+                          {errors.confirm_pass && <p className="text-red-500 text-sm mt-1">{errors.confirm_pass}</p>}
+                      </div>
+                      
+                      <button 
+                        type="submit" 
+                        className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                      >
+                        Đăng ký
+                      </button>
+                  </form>
+              )}
             </div>
-        </div>
+          </div>
+      </div>
     )
 }
-
-const styles = {
-    body: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundImage: 'url("/api/placeholder/1200/800")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-    },
-    container: {
-      width: '900px',
-      display: 'flex',
-      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
-      backgroundColor: 'white',
-      borderRadius: '15px',
-      overflow: 'hidden',
-    },
-    infoSide: {
-      width: '40%',
-      backgroundColor: '#FF6B35',
-      padding: '40px 25px',
-      color: 'white',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-    } as React.CSSProperties,
-    infoTitle: {
-      fontSize: '28px',
-      marginBottom: '20px',
-    },
-    infoText: {
-      marginBottom: '20px',
-      lineHeight: '1.6',
-    },
-    features: {
-      marginTop: '30px',
-    },
-    feature: {
-      display: 'flex',
-      alignItems: 'center',
-      marginBottom: '15px',
-    },
-    featureIcon: {
-      width: '30px',
-      height: '30px',
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: '50%',
-      marginRight: '15px',
-    },
-    formSide: {
-      width: '60%',
-      padding: '40px',
-    },
-    tabs: {
-      display: 'flex',
-      marginBottom: '30px',
-    },
-    tab: {
-      padding: '10px 15px',
-      cursor: 'pointer',
-      fontWeight: 600,
-      color: '#777',
-      borderBottom: '2px solid transparent',
-      marginRight: '20px',
-    },
-    activeTab: {
-      color: '#FF6B35',
-      borderBottom: '2px solid #FF6B35',
-    },
-    formGroup: {
-      marginBottom: '20px',
-    },
-    label: {
-      display: 'block',
-      marginBottom: '8px',
-      fontWeight: 500,
-      color: '#555',
-    },
-    input: {
-      width: '100%',
-      padding: '12px',
-      border: '1px solid #ddd',
-      borderRadius: '5px',
-      fontSize: '15px',
-      transition: 'border 0.3s',
-    },
-    forgotPassword: {
-      textAlign: 'right',
-      marginBottom: '20px',
-    } as React.CSSProperties,
-    forgotPasswordLink: {
-      color: '#FF6B35',
-      textDecoration: 'none',
-      fontSize: '14px',
-    },
-    btn: {
-      backgroundColor: '#FF6B35',
-      color: 'white',
-      padding: '12px 15px',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      fontWeight: 600,
-      width: '100%',
-      transition: 'background-color 0.3s',
-    },
-    logo: {
-      fontSize: '24px',
-      fontWeight: 'bold',
-      marginBottom: '30px',
-    },
-  };
 
 export default Signup

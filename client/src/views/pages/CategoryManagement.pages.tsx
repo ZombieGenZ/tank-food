@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Table, Input, Button, Modal, InputNumber, message } from 'antd';
+import { Table, Input, Button, Modal, InputNumber, message, Grid } from 'antd';
 import type { TableProps } from 'antd';
 import Verify from "../components/VerifyToken.components";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_API_URL)
+const { useBreakpoint } = Grid;
 
 interface Props {
   isLoading: boolean;
@@ -33,6 +34,7 @@ interface Category {
 
 
 const CategoryManagement: React.FC<Props> = (props) => {
+  const screens = useBreakpoint();
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
   const [category, setCategory] = useState<Category[]>([])
@@ -346,26 +348,33 @@ const CategoryManagement: React.FC<Props> = (props) => {
       title: 'Danh mục',
       dataIndex: 'category',
       key: 'category',
-      width: 350,
+      width: screens.md ? 350 : 150,
       render: (text) => <p className="font-bold">{text}</p>,
     },
     {
       title: 'Độ ưu tiên',
       dataIndex: 'priority',
-      width: 350,
+      width: screens.md ? 350 : 100,
       key: 'priority',
     },
     {
       title: 'Chỉnh sửa',
       key: 'note',
-      width: 350,
+      width: screens.md ? 350 : 150,
       render: (_text, record) => {
         return (
           <div className="flex gap-2">
-            <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
-                    onClick={() => showEditModalFunc(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
+            <button 
+              className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
+              onClick={() => showEditModalFunc(record)}
+            >
+              {language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}
+            </button>
             <button className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
-                    onClick={() => showDeleteModalFunc(record)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
+              onClick={() => showDeleteModalFunc(record)}
+            >
+              {language() == "Tiếng Việt" ? "Xoá" : "Delete"}
+            </button>
           </div>
         )
       },
@@ -385,19 +394,25 @@ const CategoryManagement: React.FC<Props> = (props) => {
     };
   }, []);
 
-  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={dataView} pagination={{ pageSize: 25 }} />; 
+  const App: React.FC = () => <Table<DataType> className="w-full" scroll={!screens.md ? { x: true } : undefined} columns={columns} dataSource={dataView} pagination={{ pageSize: 25 }} />; 
     return(
-        <div className="p-10">  
+        <div className="p-4 md:p-10">  
             {contextHolder} 
-            <div className="w-full flex justify-center flex-col gap-10 items-center">
-                <div className="w-full flex justify-center flex-col items-cente gap-5">
-                    <div className="w-full flex justify-between items-end">
-                        <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Tạo danh mục" : "Create"}</Button>
-                    </div>
-                    <div className="w-full overflow-x-auto">
-                        <App />
-                    </div>
+            <div className="w-full flex justify-center flex-col gap-5 md:gap-10 items-center">
+              <div className="w-full flex justify-center flex-col items-center gap-5">
+                <div className="w-full flex justify-between items-end">
+                  <Button 
+                    type="primary"
+                    size={screens.md ? "middle" : "small"}
+                    onClick={showcreate}
+                  >
+                    {language() == "Tiếng Việt" ? "Tạo danh mục" : "Create"}
+                  </Button>
                 </div>
+                <div className="w-full overflow-x-auto">
+                  <App />
+                </div>
+              </div>
             </div>
             <Modal title={language() == "Tiếng Việt" ? "Tạo danh mục" : "Create category"} open={showCreateModal} okText="Tạo danh mục" onOk={() => CreateCategory()} onCancel={() => setShowCreateModal(false)}>
               <div className="w-full flex flex-col gap-5">

@@ -600,7 +600,7 @@ function ProductManagement(props: Props): JSX.Element {
             <div className="w-full flex justify-center flex-col gap-10 items-center">
                 <div className="w-full flex justify-center flex-col items-cente gap-5">
                     <div className="w-full flex justify-between items-end">
-                        <Button onClick={showcreate}>{language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"}</Button>
+                        <Button type="primary" onClick={showcreate}>{language() == "Tiếng Việt" ? "Nhập sản phẩm" : "Import product"}</Button>
                     </div>
                     <div className="w-full overflow-x-auto">
                         <App />

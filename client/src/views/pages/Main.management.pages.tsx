@@ -272,10 +272,8 @@ function MainManage(props: Props): JSX.Element{
 
     return(
       <div className="flex-1 overflow-auto">
-      {/* Dashboard Header */}
       {contextHolder}
-      {/* Stats Overview */}
-      <div className="grid grid-cols-4 gap-4 p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 md:p-6">
           <div className="bg-white rounded-lg shadow-sm p-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 bottom-0 left-0 opacity-5" style={{ backgroundColor: "#f97316" }}></div>
             <div className="relative z-10">
@@ -355,107 +353,127 @@ function MainManage(props: Props): JSX.Element{
               </div>
             </div>
           </div>
-      </div>
+        </div>
       
       {/* Charts and Orders Section */}
-      <div className="flex gap-6 p-6">
+      <div className="flex flex-col lg:flex-row gap-4 md:gap-6 p-4 md:p-6">
         {/* Revenue Chart */}
-        <div className="bg-white rounded-lg w-[125%] shadow-sm p-6">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">Biểu đồ doanh thu</h2>
-              <p className="text-sm text-gray-500">1 tháng gần đây</p>
+          <div className="bg-white rounded-lg w-full lg:w-2/3 shadow-sm p-4 md:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6 gap-2">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">{language() == "Tiếng Việt" ? "Biểu đồ doanh thu" : "Revenue chart"}</h2>
+                <p className="text-sm text-gray-500">
+                  {selectDate} {language() == "Tiếng Việt" ? "ngày gần đây" : "recent days"}
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full md:w-auto">
+                <Select 
+                  value={selectDate}
+                  onChange={handleChangeDate}
+                  className="w-full sm:w-32"
+                  options={[
+                    { value: 7, label: language() == "Tiếng Việt" ? '7 ngày' : '7 days' },
+                    { value: 14, label: language() == "Tiếng Việt" ? '14 ngày' : '14 days' },
+                    { value: 21, label: language() == "Tiếng Việt" ? '21 ngày' : '21 days' },
+                    { value: 30, label: language() == "Tiếng Việt" ? '30 ngày' : '30 days' },
+                  ]}
+                />
+                <Select 
+                  value={selectValue}
+                  onChange={handleChange}
+                  className="w-full sm:w-48"
+                  options={[
+                    { value: 'revenue', label: language() == "Tiếng Việt" ? 'Doanh thu' : 'Revenue' },
+                    { value: 'newCustomers', label: language() == "Tiếng Việt" ? 'Khách hàng mới' : 'New customers' },
+                    { value: 'ordersCount', label: language() == "Tiếng Việt" ? 'Số đơn hàng' : 'Orders count' },
+                    { value: 'productsCount', label: language() == "Tiếng Việt" ? 'Sản phẩm bán' : 'Products sold' },
+                  ]}
+                />
+              </div>
             </div>
-            <div className="flex items-center space-x-4 gap-5">
-              <Select 
-                value={selectDate}
-                onChange={handleChangeDate}
-                options={[
-                  { value: 7 , label: '7 ngày',},
-                  { value: 14 , label: '14 ngày',},
-                  { value: 21 , label: '21 ngày',},
-                  { value: 30 , label: '30 ngày',},
-                ]}
-              />
-              <Select 
-                value={selectValue}
-                onChange={handleChange}
-                style={{ width: 150 }}
-                options={[
-                  { value: 'revenue' , label: 'Doanh thu',},
-                  { value: 'newCustomers' , label: 'Khách hàng mới',},
-                  { value: 'ordersCount' , label: 'Số đơn đặt hàng',},
-                  { value: 'productsCount' , label: 'Số sản phẩm bán được',},
-                ]}
-              />
-              {/* <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                <span className="text-xs text-gray-500">Doanh thu</span>
-              </div> */}
-              {/* <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                <span className="text-xs text-gray-500">Lợi nhuận</span>
-              </div> */}
+          
+            {/* Responsive Chart Container */}
+            <div className="overflow-x-auto">
+              <div className="min-w-[500px]">
+                <AreaChart 
+                  width={Math.min(750, window.innerWidth - 40)} 
+                  height={300} 
+                  data={list?.dailyBreakdown}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ff6347" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#ffb3a7" stopOpacity={0.2} /> {/* Màu nhạt hơn của #ff6347 */}
+                  </linearGradient>
+                  <linearGradient id="customersGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#90ee90" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c1facc" stopOpacity={0.2} /> {/* Màu nhạt hơn của #90ee90 */}
+                  </linearGradient>
+                  <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ffa500" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#ffcda3" stopOpacity={0.2} /> {/* Màu nhạt hơn của #ffa500 */}
+                  </linearGradient>
+                  <linearGradient id="productsGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#800080" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#d4a0d4" stopOpacity={0.2} /> {/* Màu nhạt hơn của #800080 */}
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                {selectValue == "revenue" && <Area type="monotone" dataKey="revenue" stroke="#ff6347" fillOpacity={1} fill="url(#revenueGradient)"/>}
+                {selectValue == "newCustomers" && <Area type="monotone" dataKey="newCustomers" stroke="#90ee90" fillOpacity={1} fill="url(#customersGradient)"/>}
+                {selectValue == "ordersCount" && <Area type="monotone" dataKey="ordersCount" stroke="#ffa500" fillOpacity={1} fill="url(#ordersGradient)"/>}
+                {selectValue == "productsCount" && <Area type="monotone" dataKey="productsCount" stroke="#800080" fillOpacity={1} fill="url(#productsGradient)"/>}
+                </AreaChart>
+              </div>
             </div>
           </div>
-          
-          <AreaChart width={750} height={500} data={list?.dailyBreakdown}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <defs>
-              <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ff6347" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#ffb3a7" stopOpacity={0.2} /> {/* Màu nhạt hơn của #ff6347 */}
-              </linearGradient>
-              <linearGradient id="customersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#90ee90" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#c1facc" stopOpacity={0.2} /> {/* Màu nhạt hơn của #90ee90 */}
-              </linearGradient>
-              <linearGradient id="ordersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ffa500" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#ffcda3" stopOpacity={0.2} /> {/* Màu nhạt hơn của #ffa500 */}
-              </linearGradient>
-              <linearGradient id="productsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#800080" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="#d4a0d4" stopOpacity={0.2} /> {/* Màu nhạt hơn của #800080 */}
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            {selectValue == "revenue" && <Area type="monotone" dataKey="revenue" stroke="#ff6347" fillOpacity={1} fill="url(#revenueGradient)"/>}
-            {selectValue == "newCustomers" && <Area type="monotone" dataKey="newCustomers" stroke="#90ee90" fillOpacity={1} fill="url(#customersGradient)"/>}
-            {selectValue == "ordersCount" && <Area type="monotone" dataKey="ordersCount" stroke="#ffa500" fillOpacity={1} fill="url(#ordersGradient)"/>}
-            {selectValue == "productsCount" && <Area type="monotone" dataKey="productsCount" stroke="#800080" fillOpacity={1} fill="url(#productsGradient)"/>}
-          </AreaChart>
+          <div className="bg-white rounded-lg w-full lg:w-1/3 shadow-sm p-4 md:p-6">
+            <h2 className="text-lg font-bold text-slate-900 mb-1">
+              {language() == "Tiếng Việt" ? "Đơn hàng gần đây" : "Recent orders"}
+            </h2>
+            <p className="text-sm text-gray-500 mb-4 md:mb-6">
+              {language() == "Tiếng Việt" ? "Cập nhật mới nhất" : "Latest updates"}
+            </p>
+            
+            <div className="space-y-3 max-h-[300px] overflow-y-auto">
+              {Array.isArray(recentOrders) && recentOrders.slice(0, 5).map((order, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-3 md:p-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium text-slate-900 text-sm md:text-base">
+                      #{order._id.slice(0, 8)}...
+                    </h3>
+                    <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${
+                      order.order_status === 4 ? 'bg-green-500' : 
+                      order.order_status === 3 ? 'bg-yellow-500' : 'bg-blue-500'
+                    }`}></div>
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-xs md:text-sm text-gray-500">
+                      {formatDateFromISO(order.created_at)}
+                    </span>
+                    <span className="text-xs md:text-sm font-medium">
+                      {formatCurrency(order.total_bill)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <button 
+              onClick={() => handletoOrder()} 
+              className="mt-4 md:mt-6 w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm"
+            >
+              {language() == "Tiếng Việt" ? "Xem tất cả đơn hàng" : "View all orders"}
+            </button>
+          </div>
         </div>
         
         {/* Recent Orders */}
-        <div className="bg-white rounded-lg w-[75%] shadow-sm p-6">
-          <h2 className="text-lg font-bold text-slate-900 mb-1">Đơn hàng gần đây</h2>
-          <p className="text-sm text-gray-500 mb-6">Cập nhật mới nhất</p>
-          
-          <div className="space-y-4">
-            {Array.isArray(recentOrders) && recentOrders.map((order, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium text-slate-900">Đơn hàng #{order._id}</h3>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#3b82f6" }}></div>
-                </div>
-                <div className="flex justify-between mt-2">
-                  <span className="text-sm text-gray-500">{formatDateFromISO(order.created_at)}</span>
-                  <span className="text-sm font-medium">{formatCurrency(order.total_bill)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <button onClick={() => handletoOrder()} className="mt-6 w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm">
-            Xem tất cả đơn hàng
-          </button>
-        </div>
       </div>
-    </div>
     )
 } 
 

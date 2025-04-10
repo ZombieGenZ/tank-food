@@ -456,13 +456,13 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
               render: (text) => <p className="font-bold">{text}</p>,
             },
             {
-                title: 'Số lượng mã giảm giá',
+                title: 'Số lượng mã',
                 dataIndex: 'quantity',
                 width: 350,
                 key: 'quantity',
             },
             {
-              title: 'Phần trăm được giảm',
+              title: 'Số tiền giảm',
               dataIndex: 'discount',
               width: 350,
               key: 'discount',
@@ -501,77 +501,103 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
     
           const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
     return(
-        <div className=" p-10">
-            {contextHolder}
-            <div className="w-full flex justify-center flex-col gap-10 items-center">
-                <div className="w-full flex justify-center flex-col items-center gap-5">
-                    <div className="w-full flex justify-between items-end">
-                        <Button onClick={() => showCreateModal()}>{language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create"}</Button>
-                    </div>
-                    <div className="w-full overflow-x-auto">
-                        <App />
-                    </div>
+      <div className="p-4 md:p-10">
+      {contextHolder}
+        <div className="w-full flex justify-center flex-col gap-6 md:gap-10 items-center">
+            <div className="w-full flex justify-center flex-col items-center gap-5">
+                <div className="w-full flex justify-between items-end">
+                    <Button type="primary" onClick={() => showCreateModal()}>{language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create"}</Button>
+                </div>
+                <div className="w-full overflow-x-auto">
+                    <App />
                 </div>
             </div>
-            <Modal title={language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create discount code"} open={showCreateCode} okText={language() == "Tiếng Việt" ? "Tạo mã" : "Create"} onOk={CreateCode} onCancel={() => setShowCreateCode(false)}>
-                <div className="w-full flex flex-col gap-3">
-                    <div className="flex gap-2 flex-col">
-                        <p>{language() == "Tiếng Việt" ? "Nhập mã giảm giá:" : "Enter namecode:"}</p>
-                        <Input placeholder={language() == "Tiếng Việt" ? "Tên mã giảm giá" : "Discount code name"} value={code} onChange={(e) => setCode(e.target.value)}/>
-                    </div>
-                    <div className="flex gap-2 justify-between">
-                        <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số lượng mã giảm giá:" : "Enter quantity of code:"}</p>
-                            <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantity} onChange={handlechangQuantity}/>
-                        </div>
-                        <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Phần trăm giảm giá:" : "Enter discount:"}</p>
-                            <InputNumber min={1000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
-                        </div>
-                        <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
-                            <InputNumber min={0} className="w-full" value={requirement} onChange={handlechangRequirement}/>
-                        </div>
-                    </div>
-                    <div className="flex gap-2 flex-col">
-                        <p>{language() == "Tiếng Việt" ? "Thời hạn mã giảm giá mới:" : "expiration date:"}</p>
-                        <PickDate />
-                    </div>
-                </div>
-            </Modal>
-            <Modal title={language() == "Tiếng Việt" ? "Cập nhật mã giảm giá" : "Update discount code"} open={showUpdateCode} onOk={() => UpdateCode(selectEditCode ? selectEditCode : "")} onCancel={() => setShowUpdateCode(false)}>
-                {selectEditCode && (
-                <div className="w-full flex flex-col gap-3">
-                    <div className="flex gap-2 flex-col">
-                        <p>{language() == "Tiếng Việt" ? "Nhập mã giảm giá:" : "Enter namecode:"}</p>
-                        <Input placeholder={language() == "Tiếng Việt" ? "Tên mã giảm giá" : "Discount code name"} value={codeEdit} onChange={(e) => setCodeEdit(e.target.value)}/>
-                    </div>
-                    <div className="flex gap-2 justify-between">
-                        <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số lượng mã giảm giá:" : "Enter quantity of code:"}</p>
-                            <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantityEdit} onChange={handlechangQuantityEdit}/>
-                        </div>
-                        <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
-                            <InputNumber min={1000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
-                        </div>
-                        <div className="flex gap-2 flex-col">
-                            <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
-                            <InputNumber min={0} className="w-full" value={requirementEdit} onChange={handlechangRequirementEdit}/>
-                        </div>
-                    </div>
-                    <div className="flex gap-2 flex-col">
-                        <p>{language() == "Tiếng Việt" ? "Thời hạn mã giảm giá mới:" : "expiration date:"}</p>
-                        <PickDateEdit />
-                    </div>
-                </div>
-                )}
-            </Modal>
-            <Modal title={language() == "Tiếng Việt" ? "Xoá mã giảm giá" : "Delete discount code"} open={showDeleteCode} onOk={() => DeleteCode(selectDeleteCode ? selectDeleteCode : "")} onCancel={() => setShowDeleteCode(false)}>
-                <p>Bạn có chắc chắn muốn xoá mã giảm giá này không?</p>
-            </Modal>
         </div>
-    )
+        
+        {/* Create Modal */}
+        <Modal 
+            title={language() == "Tiếng Việt" ? "Tạo mã giảm giá" : "Create discount code"} 
+            open={showCreateCode} 
+            okText={language() == "Tiếng Việt" ? "Tạo mã" : "Create"} 
+            onOk={CreateCode} 
+            onCancel={() => setShowCreateCode(false)}
+            width="90%"
+            style={{ maxWidth: '800px' }}
+        >
+            <div className="w-full flex flex-col gap-3">
+                <div className="flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Nhập mã giảm giá:" : "Enter namecode:"}</p>
+                    <Input placeholder={language() == "Tiếng Việt" ? "Tên mã giảm giá" : "Discount code name"} value={code} onChange={(e) => setCode(e.target.value)}/>
+                </div>
+                <div className="flex flex-col md:flex-row gap-4 justify-between">
+                    <div className="flex gap-2 flex-col w-full">
+                        <p className="text-sm">{language() == "Tiếng Việt" ? "Số lượng mã giảm giá:" : "Enter quantity of code:"}</p>
+                        <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantity} onChange={handlechangQuantity}/>
+                    </div>
+                    <div className="flex gap-2 flex-col w-full">
+                        <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
+                        <InputNumber min={1000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discount} onChange={handlechangDiscount}/>
+                    </div>
+                    <div className="flex gap-2 flex-col w-full">
+                        <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
+                        <InputNumber min={0} className="w-full" value={requirement} onChange={handlechangRequirement}/>
+                    </div>
+                </div>
+                <div className="flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Thời hạn mã giảm giá mới:" : "expiration date:"}</p>
+                    <PickDate />
+                </div>
+            </div>
+        </Modal>
+        
+        {/* Update Modal */}
+        <Modal 
+            title={language() == "Tiếng Việt" ? "Cập nhật mã giảm giá" : "Update discount code"} 
+            open={showUpdateCode} 
+            onOk={() => UpdateCode(selectEditCode ? selectEditCode : "")} 
+            onCancel={() => setShowUpdateCode(false)}
+            width="90%"
+            style={{ maxWidth: '800px' }}
+        >
+            {selectEditCode && (
+            <div className="w-full flex flex-col gap-3">
+                <div className="flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Nhập mã giảm giá:" : "Enter namecode:"}</p>
+                    <Input placeholder={language() == "Tiếng Việt" ? "Tên mã giảm giá" : "Discount code name"} value={codeEdit} onChange={(e) => setCodeEdit(e.target.value)}/>
+                </div>
+                <div className="flex flex-col md:flex-row gap-4 justify-between">
+                    <div className="flex gap-2 flex-col w-full">
+                        <p className="text-sm">{language() == "Tiếng Việt" ? "Số lượng mã giảm giá:" : "Enter quantity of code:"}</p>
+                        <InputNumber min={1} placeholder="Tối thiểu 1 voucher" className="w-full" value={quantityEdit} onChange={handlechangQuantityEdit}/>
+                    </div>
+                    <div className="flex gap-2 flex-col w-full">
+                        <p className="text-sm">{language() == "Tiếng Việt" ? "Số tiền giảm giá:" : "Enter discount:"}</p>
+                        <InputNumber min={1000} placeholder="Tối thiểu giảm 5.000 VNĐ" className="w-full" value={discountEdit} onChange={handlechangDiscountEdit}/>
+                    </div>
+                    <div className="flex gap-2 flex-col w-full">
+                        <p className="text-sm">{language() == "Tiếng Việt" ? "Yêu cầu đơn hàng tối thiểu từ:" : "Minimum order requirement from:"}</p>
+                        <InputNumber min={0} className="w-full" value={requirementEdit} onChange={handlechangRequirementEdit}/>
+                    </div>
+                </div>
+                <div className="flex gap-2 flex-col">
+                    <p>{language() == "Tiếng Việt" ? "Thời hạn mã giảm giá mới:" : "expiration date:"}</p>
+                    <PickDateEdit />
+                </div>
+            </div>
+            )}
+        </Modal>
+        
+        {/* Delete Modal */}
+        <Modal 
+            title={language() == "Tiếng Việt" ? "Xoá mã giảm giá" : "Delete discount code"} 
+            open={showDeleteCode} 
+            onOk={() => DeleteCode(selectDeleteCode ? selectDeleteCode : "")} 
+            onCancel={() => setShowDeleteCode(false)}
+        >
+            <p>{language() == "Tiếng Việt" ? "Bạn có chắc chắn muốn xoá mã giảm giá này không?" : "Are you sure you want to delete this discount code?"}</p>
+        </Modal>
+    </div>
+  )
 }
 
 export default DiscountCodeManagement;

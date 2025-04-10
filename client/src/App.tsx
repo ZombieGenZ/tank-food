@@ -35,7 +35,7 @@ const App = () => {
           <button
             onClick={handleScrollTop}
             style={transitionStyles}
-            className="fixed bottom-8 cursor-pointer right-8 p-4 rounded-md bg-orange-500 text-white shadow-lg transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-orange-400 border-2 border-orange-400 hover:-translate-y-2 hover:bg-orange-400 hover:shadow-xl"
+            className="fixed bottom-8 z-50 cursor-pointer right-8 p-4 rounded-md bg-orange-500 text-white shadow-lg transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-orange-400 border-2 border-orange-400 hover:-translate-y-2 hover:bg-orange-400 hover:shadow-xl"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -182,7 +182,7 @@ export default function ChangePassword(props: Props): JSX.Element {
         </div>
 
         <form onSubmit={handleSubmit} className="card-form">
-          {message && (
+          {messages && (
             <div className={`alert ${messages?.type === "success" ? "alert-success" : "alert-error"}`} data-animate>
               <span className="alert-icon">{messages?.type === "success" ? "✓" : "⚠"}</span>
               <span className="alert-text">{messages?.text}</span>

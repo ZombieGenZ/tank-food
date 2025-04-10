@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Table, Input, Modal, InputNumber, Select, Button, message } from 'antd';
+import { Table, Input, Modal, InputNumber, Select, message, Grid } from 'antd';
 import type { TableProps } from 'antd';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import Verify from "../components/VerifyToken.components";
 import io from "socket.io-client";
 
 const socket = io(import.meta.env.VITE_API_URL)
+const { useBreakpoint } = Grid;
 
 interface Props {
   isLoading: boolean;
@@ -44,6 +45,7 @@ interface DataType {
   
 
 const Account: React.FC<Props> = (props) => {
+  const screens = useBreakpoint();
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
 
@@ -358,7 +360,7 @@ const Account: React.FC<Props> = (props) => {
       role: user.role === 3 ? "Admin" : user.role === 2 ? "Shipper" : user.role === 1 ? "Employee" : "Customer",
       active: user.penalty ? "Bị ban" : "Hoạt động",
       readson: user.penalty !== null ? user.penalty?.reason : "Không có lý do",
-      note: ["Ban tài khoản"]
+      note: ["Ban"]
     }));
   
     setDataUser(newData);
@@ -369,64 +371,55 @@ const Account: React.FC<Props> = (props) => {
       title: 'Tên hiển thị',
       dataIndex: 'displayname',
       key: 'displayname',
-      width: 350,
+      width: screens.lg ? 350 : 150,
       render: (text) => <p className="font-bold">{text}</p>,
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      width: 250,
+      width: screens.lg ? 250 : 150,
       key: 'email',
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
-      width: 350,
+      width: screens.lg ? 350 : 150,
       key: 'phone',
     },
     {
       title: 'Quyền hạn',
       key: 'role',
       dataIndex: 'role',
-      width: 250,
+      width: screens.lg ? 250 : 100,
     },
     {
-      title: 'Tình trang hoạt động',
+      title: 'Tình trạng',
       key: 'active',
       dataIndex: 'active',
-      width: 250,
+      width: screens.lg ? 250 : 120,
       render: (text) => <p className={text === "Hoạt động" ? "text-green-500 bg-green-200 p-2 flex justify-center rounded-xl" : "text-red-500 bg-red-200 p-2 flex justify-center rounded-xl"}>{text}</p>,
     },
     {
       title: '',
       key: 'note',
       dataIndex: 'note',
-      width: 250,
+      width: screens.lg ? 250 : 120,
       render: (_text, record) => {
         const isDisabled = record.role === "Admin";
-        let color: string;
-        if(isDisabled) 
-          { 
-            color = "gray"
-          }
-        else if(record.active == "Hoạt động")
-          { 
-            color = "red"
-          }
-        else
-          { 
-            color = "green"
-         }
         return (
         <>
           {record.active == "Hoạt động" ? record.note.map((noteitem, index) => (
-            <Button key={index} style={{ color: color }} onClick={() => showModal(record)} disabled={isDisabled}>
+            <button key={index}
+                    className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold p-2 rounded" 
+                    onClick={() => showModal(record)} disabled={isDisabled}>
               {noteitem}
-            </Button>
+            </button>
           )) : 
-            <Button key={1} style={{ color: color }} onClick={() => showActiveModal(record)} disabled={isDisabled}>
-              Mở khoá tài khoản
-            </Button>
+            <button key={1}
+                    className="bg-green-500 cursor-pointer hover:bg-green-700 transition duration-300 text-white font-semibold p-2 rounded" 
+                    onClick={() => showActiveModal(record)} disabled={isDisabled}>
+              Mở khoá
+            </button>
           }
         </>
       )},
@@ -438,19 +431,19 @@ const Account: React.FC<Props> = (props) => {
     return language ? JSON.parse(language) : "Tiếng Việt"
   }
   
-  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} />;
+  const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} scroll={!screens.lg ? { x: true } : undefined}/>;
     
     return(
-        <div className="p-10">
+        <div className="p-4 md:p-6 lg:p-10">
             {contextHolder}
-            <div className="w-full flex justify-center flex-col gap-10 items-center">
-                <div className="w-full flex justify-center flex-col items-cente gap-5">
-                    <div className="w-full overflow-x-auto">
-                        <App />
-                    </div>
+            <div className="w-full flex justify-center flex-col gap-5 md:gap-8 lg:gap-10 items-center">
+              <div className="w-full flex justify-center flex-col items-center gap-3 md:gap-5">
+                <div className="w-full overflow-x-auto">
+                  <App />
                 </div>
+              </div>
             </div>
-            <Modal title={language() == "Tiếng Việt" ? "Ban tài khoản" : "Ban account"} open={isModalOpen} okText="Ban tài khoản" onOk={() => handleOk(`${selectedRecord ? selectedRecord._id : ""}`)} onCancel={handleCancel}>
+            <Modal width={screens.lg ? '50%' : '90%'} title={language() == "Tiếng Việt" ? "Ban tài khoản" : "Ban account"} open={isModalOpen} okText="Ban tài khoản" onOk={() => handleOk(`${selectedRecord ? selectedRecord._id : ""}`)} onCancel={handleCancel}>
               <div className="w-full flex gap-5">
                 {selectedRecord && (
                   <div className="w-full flex flex-col gap-5">
@@ -498,7 +491,7 @@ const Account: React.FC<Props> = (props) => {
                 )}
               </div>
             </Modal>
-            <Modal title={language() == "Tiếng Việt" ? "Mở khoá tài khoản" : "Active account"} open={isModalActiveOpen} okText="Mở khoá" onOk={() => handleActiveOk(`${selectedRecord ? selectedRecord._id : ""}`)} onCancel={handleActiveCancel}>
+            <Modal width={screens.lg ? '50%' : '90%'} title={language() == "Tiếng Việt" ? "Mở khoá tài khoản" : "Active account"} open={isModalActiveOpen} okText="Mở khoá" onOk={() => handleActiveOk(`${selectedRecord ? selectedRecord._id : ""}`)} onCancel={handleActiveCancel}>
               <div className="w-full flex gap-5">
                 {selectedRecord && (
                   <div className="w-full flex flex-col gap-5">

@@ -87,7 +87,7 @@ export const NavbarShipper = [
         id: 1,
         title: "Đơn đặt hàng",
         english: "Orders",
-        path: "/shipper"
+        path: "/"
     }
 ]
 
@@ -96,6 +96,6 @@ export const NavbarEmployee = [
         id: 1,
         title: "Đơn tại quầy",
         english: "Orders",
-        path: "/employeer"
+        path: "/"
     }
 ]
