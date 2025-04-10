@@ -19,10 +19,6 @@ export default defineConfig({
         path.resolve(__dirname, '.'),
 	      path.resolve(__dirname, 'client')
       ],
-    },
-    allowedHosts: [
-      '*.tank-food.io.vn',
-      '*.tank-travel.io.vn'
-    ]
+    }
   }
 })
