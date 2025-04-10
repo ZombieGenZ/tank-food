@@ -1,7 +1,7 @@
-# Tank Food - Hệ thống đặt đồ ăn nhanh trực tuyến 🍔🍟
+# TANK-Food - Hệ thống đặt đồ ăn nhanh trực tuyến 🍔🍟
 
 ## Giới thiệu ℹ️
-Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung cấp giải pháp tiện lợi cho khách hàng và doanh nghiệp. Hệ thống hỗ trợ quản lý bán hàng, theo dõi doanh thu, thông báo realtime, quản lý đơn hàng, và nhiều tính năng hữu ích khác.
+TANK-Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung cấp giải pháp tiện lợi cho khách hàng và doanh nghiệp. Hệ thống hỗ trợ quản lý bán hàng, theo dõi doanh thu, thông báo realtime, quản lý đơn hàng, và nhiều tính năng hữu ích khác.
 
 ---
 
@@ -74,6 +74,7 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 ### **Yêu cầu hệ thống**
 - **Node.js**: Phiên bản >= 22.x.
 - **MongoDB**: Cơ sở dữ liệu NoSQL.
+- **Git**: Tự động cập nhật code mới nhất từ Github.
 
 ### **Cài đặt**
 1. Clone dự án:
@@ -84,21 +85,30 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 
 2. Tạo ``.env`` và dựa vào tệp ``.env.example`` để điền các thông tin cần thiết
 
-3. Cài đặt dependencies:
-   ```bash
-   cd client
-   npm install
-   cd ../server
-   npm install
-   ```
+3. Cài đặt dependencies và chạy dự án:
+   - **Chạy thủ công**:
+     - Cài đặt dependencies:
+       ```bash
+       cd client
+       npm install
+       cd ../server
+       npm install
+       ```
+     - Chạy dự án:
+       ```bash
+       cd client
+       npm run dev
+       cd server
+       npm run dev
+       ```
 
-4. Chạy dự án:
-   ```bash
-   cd client
-   npm run dev
-   cd server
-   npm run dev
-   ```
+   - **Chạy tự động**:
+     - **Windows**:
+       - Sử dụng các file `run-dev-all.bat` hoặc `run-release-all.bat` để tự động cài đặt dependencies và chạy toàn bộ client và server.
+       - Để chạy từng phần, sử dụng `run-dev.bat` hoặc `run-release.bat` trong thư mục `client` hoặc `server`.
+     - **Linux/Mac**:
+       - Sử dụng các file `run-dev-all.sh` hoặc `run-release-all.sh` để tự động cài đặt dependencies và chạy toàn bộ client và server.
+       - Để chạy từng phần, sử dụng `run-dev.sh` hoặc `run-release.sh` trong thư mục `client` hoặc `server`.
 
 Xem chi tiết hơn trong [Hướng dẩn cài đặt](./INSTALLATION_STEPS.md).
 
@@ -111,7 +121,7 @@ Dự án này được phát hành theo giấy phép MIT. Xem chi tiết trong t
 
 ## Liên hệ 📞
 - **Website**: [tank-food.io.vn](https://tank-food.io.vn/) 🌐
-- **Discord**: [Tank Food Support](https://discord.gg/7SkzMkFWYN) 💬
+- **Discord**: [TANK-Food Support](https://discord.gg/7SkzMkFWYN) 💬
 - **Email**: support@tank-food.io.vn 📧
 
 ---
