@@ -13,6 +13,7 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 - **Thông báo realtime**: Cập nhật trạng thái đơn hàng và thông báo hệ thống.
 - **Hỗ trợ đa ngôn ngữ**: Tiếng Việt và Tiếng Anh.
 - **Hệ thống thanh toán**: Tích hợp cổng thanh toán nội địa và quốc tế.
+- **Hệ thống giám sát hiệu năng máy chủ**: Theo dõi hiệu suất server với Python hoặc Rust và WPF C# client.
 
 ---
 
@@ -37,10 +38,11 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 - **Framework**: Express.js.
 - **Công nghệ khác**:
   - **Socket.io**: Giao tiếp realtime.
-  - **JWT**: Xác thực người dùng.
-  - **Nodemailer**: Gửi email tự động.
+  - **Firebase**: Lưu trữ dữ liệu realtime.
+  - **Gemini API**: Tích hợp trí tuệ nhân tạo.
   - **Node-cron**: Lập lịch tự động.
   - **Express Validator**: Kiểm tra dữ liệu đầu vào.
+  - **Nodemailer**: Gửi email tự động.
 
 ---
 
@@ -57,6 +59,13 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 ### **5. Hệ thống thông báo** 🔔
 - **Discord Bot**: Gửi thông báo hệ thống.
 - **Email (Nodemailer)**: Gửi thông báo quan trọng.
+
+---
+
+### **6. Hệ thống giám sát hiệu năng máy chủ** 📊
+- **Ngôn ngữ server**: Python hoặc Rust.
+- **Client giám sát**: WPF C#.
+- **Realtime**: WebSocket.
 
 ---
 
@@ -90,6 +99,11 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
    cd server
    npm run dev
    ```
+
+---
+
+## Bản quyền 📜
+Dự án này được phát hành theo giấy phép MIT. Xem chi tiết trong tệp `LICENSE`.
 
 ---
 
