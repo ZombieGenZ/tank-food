@@ -1,19 +1,62 @@
 "use client"
 
-// Extend the Window interface to include clickspark
-declare global {
-  interface Window {
-    clickspark: (element: HTMLElement | null) => void;
-  }
-}
 
 import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
 import { message, Modal, Input } from "antd"
 import "aos/dist/aos.css"
+import { motion } from 'framer-motion';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
+
+interface SparkProps {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  onComplete: () => void;
+}
+
+const Spark: React.FC<SparkProps> = ({ x, y, vx, vy, onComplete }) => {
+  return (
+    <motion.div
+      initial={{
+        x: x - 5,
+        y: y - 5,
+        opacity: 1,
+        scale: 1,
+      }}
+      animate={{
+        x: x + vx,
+        y: y + vy,
+        opacity: 0,
+        scale: 0.5,
+      }}
+      transition={{
+        duration: 0.3,
+        ease: "easeOut",
+      }}
+      onAnimationComplete={onComplete}
+      style={{
+        position: "absolute",
+        width: "10px",
+        height: "10px",
+        backgroundColor: "orange",
+        borderRadius: "50%",
+        pointerEvents: "none",
+      }}
+    />
+  );
+};
+
+interface SparkData {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+}
 
 interface Products {
   product_id: string;
@@ -89,8 +132,32 @@ interface Product {
 }
 
 const OrderAtStore: React.FC = () => {
-  const clickref = useRef<HTMLDivElement>(null)
   const [messageApi, contextHolder] = message.useMessage();
+  const [sparks, setSparks] = useState<SparkData[]>([]);
+
+  const handleClick = (event: React.MouseEvent) => {
+    const { clientX, clientY } = event;
+    const numberOfSparks = 15;
+
+    for (let i = 0; i < numberOfSparks; i++) {
+      const angle = Math.random() * 2 * Math.PI;
+      const baseSpeed = 20;
+      const speedVariation = Math.random() * 30;
+      const distance = 5 + Math.random() * 15;
+      const speed = baseSpeed + speedVariation * (distance / 15); // Tốc độ ảnh hưởng bởi distance
+
+      setSparks((prevSparks) => [
+        ...prevSparks,
+        {
+          id: Date.now() + i,
+          x: clientX,
+          y: clientY,
+          vx: speed * Math.cos(angle),
+          vy: speed * Math.sin(angle),
+        },
+      ]);
+    }
+  };
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -153,9 +220,6 @@ const OrderAtStore: React.FC = () => {
     }
   }, [isModalOpen])
 
-  const clicktoeffect = () => {
-    window.clickspark(clickref.current);
-  }
 
   // Simulate payment completion after 5 seconds when in QR mode
   useEffect(() => {
@@ -178,15 +242,17 @@ const OrderAtStore: React.FC = () => {
 
   const addToCart = (item: Product) => {
     const existingItem = cart.find((cartItem) => cartItem._id === item._id)
-
+    const discountedPrice = item.price * (1 - item.discount / 100); 
     if (existingItem) {
       setCart(
         cart.map((cartItem) =>
-          cartItem._id === item._id ? { ...cartItem, price: cartItem.price - cartItem.price * cartItem.discount/100, quantity: (cartItem.quantity || 0) + 1 } : cartItem,
+          cartItem._id === item._id
+            ? { ...cartItem, quantity: (cartItem.quantity || 0) + 1 } // Chỉ tăng số lượng
+            : cartItem,
         ),
-      )
+      );
     } else {
-      setCart([...cart, { ...item, quantity: 1 }])
+      setCart([...cart, { ...item, price: discountedPrice, quantity: 1 }]); // Thêm sản phẩm với giá đã giảm
     }
   }
 
@@ -309,8 +375,20 @@ const OrderAtStore: React.FC = () => {
   : product;
 
   return (
-    <div ref={clickref} onClick={clicktoeffect} className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8" onClick={handleClick}>
       {contextHolder}
+      {sparks.map((spark) => (
+        <Spark
+          key={spark.id}
+          x={spark.x}
+          y={spark.y}
+          vx={spark.vx}
+          vy={spark.vy}
+          onComplete={() =>
+            setSparks((prev) => prev.filter((s) => s.id !== spark.id))
+          }
+        />
+      ))}
       <div className="max-w-7xl mx-auto" data-aos="fade-up" data-aos-delay="100">
         <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Order At Store
@@ -318,6 +396,65 @@ const OrderAtStore: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Cart Section */}
+          
+
+          {/* Menu Section */}
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6" data-aos="fade-left" data-aos-delay="300">
+            <h2 className="text-xl font-bold mb-4">Tank Food's menu</h2>
+
+            {/* Tabs */}
+            <div className="flex border-b mb-6">
+              <button
+                 className={`pb-2 px-4 font-medium transition-all ${
+                   selectedCategoryId === null ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
+                 }`}
+                 onClick={() => setSelectedCategoryId(null)}
+               >
+                 {language() == "Tiếng Việt" ? "Tất cả" : "All"}
+               </button>
+              {Category.map(category => 
+                <button
+                 className={`pb-2 px-4 cursor-pointer font-medium transition-all ${
+                   selectedCategoryId === category._id ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
+                 }`}
+                 onClick={() => setSelectedCategoryId(category._id)}
+               >
+                 {language() == "Tiếng Việt" ? category.category_name_translate_1 : category.category_name_translate_2}
+               </button>
+              )}
+            </div>
+              <>
+                <div data-aos="fade-up" data-aos-delay="400">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                    {filteredProducts.map((item, index) => (
+                      <div
+                        key={index}
+                        className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
+                        onClick={() => addToCart(item)}
+                        data-aos="zoom-in"
+                        data-aos-delay={400 + Number.parseInt(item._id) * 50}
+                      >
+                        <div className="h-32 bg-gray-100 flex items-center justify-center">
+                          <img
+                            src={item.preview.url || "/placeholder.svg"}
+                            alt={item.title_translate_1}
+                            className="h-24 w-24 object-cover"
+                          />
+                        </div>
+                        <div className="p-3 text-center">
+                          <h4 className="font-medium">{item.title_translate_1}</h4>
+                          <div className="flex justify-center items-center space-x-2 mt-2">
+                            <p className={`font-bold ${item.discount > 0 ? "line-through text-gray-500" : "text-red-500"}`}>{formatCurrency(item.price)}</p>
+                            {item.discount > 0 && (<p className="text-red-500 font-bold">{formatCurrency(item.price - item.price * item.discount/100)}</p>)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+          </div>
+
           <div
             className="lg:col-span-1 bg-white rounded-2xl shadow-lg p-6 h-fit"
             data-aos="fade-right"
@@ -361,7 +498,7 @@ const OrderAtStore: React.FC = () => {
               )}
             </div>
 
-            <div className="mt-6 border-t pt-4">
+            <div className={`mt-6 ${cart.length > 0 ? "border-none" : "border-t"} pt-4`}>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-bold">Tổng tiền:</span>
                 <span className="text-lg font-bold">{formatCurrency(calculateTotal())}</span>
@@ -382,63 +519,6 @@ const OrderAtStore: React.FC = () => {
                 </div>
               </button>
             </div>
-          </div>
-
-          {/* Menu Section */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6" data-aos="fade-left" data-aos-delay="300">
-            <h2 className="text-xl font-bold mb-4">Tank Food's menu</h2>
-
-            {/* Tabs */}
-            <div className="flex border-b mb-6">
-              <button
-                 className={`pb-2 px-4 font-medium transition-all ${
-                   selectedCategoryId === null ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
-                 }`}
-                 onClick={() => setSelectedCategoryId(null)}
-               >
-                 {language() == "Tiếng Việt" ? "Tất cả" : "All"}
-               </button>
-              {Category.map(category => 
-                <button
-                 className={`pb-2 px-4 font-medium transition-all ${
-                   selectedCategoryId === category._id ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
-                 }`}
-                 onClick={() => setSelectedCategoryId(category._id)}
-               >
-                 {language() == "Tiếng Việt" ? category.category_name_translate_1 : category.category_name_translate_2}
-               </button>
-              )}
-            </div>
-              <>
-                <div data-aos="fade-up" data-aos-delay="400">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    {filteredProducts.map((item, index) => (
-                      <div
-                        key={index}
-                        className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
-                        onClick={() => addToCart(item)}
-                        data-aos="zoom-in"
-                        data-aos-delay={400 + Number.parseInt(item._id) * 50}
-                      >
-                        <div className="h-32 bg-gray-100 flex items-center justify-center">
-                          <img
-                            src={item.preview.url || "/placeholder.svg"}
-                            alt={item.title_translate_1}
-                            className="h-24 w-24 object-cover"
-                          />
-                        </div>
-                        <div className="p-3 text-center">
-                          <h4 className="font-medium">{item.title_translate_1}</h4>
-                          <div className="flex justify-center items-center space-x-2 mt-2">
-                            <p className={`font-bold ${item.discount > 0 ? "line-through text-gray-500" : "text-red-500"}`}>{formatCurrency(item.price)}</p>
-                            {item.discount > 0 && (<p className="text-red-500 font-bold">{formatCurrency(item.price - item.price * item.discount/100)}</p>)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
           </div>
         </div>
       </div>

@@ -41,9 +41,11 @@
     "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^6.30.0",
+    "react-tsparticles": "^2.12.2",
     "recharts": "^2.15.1",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "tsparticles": "^3.8.1"
   },
   "author": "TANK Groups",
   "license": "MIT",

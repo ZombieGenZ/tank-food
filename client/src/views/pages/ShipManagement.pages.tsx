@@ -409,7 +409,7 @@ const ShipManagement: React.FC<Props> = (props) => {
     };
         
     checkToken();
-  }, [refresh_token, access_token])
+  }, [refresh_token, access_token, messageApi])
   
   // Sample data with more items
 

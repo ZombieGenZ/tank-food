@@ -6,12 +6,37 @@ import { MapPin, Phone, Mail, Clock, Send } from "lucide-react"
 import AOS from "aos"
 import "aos/dist/aos.css"
 import { useNavigate } from "react-router-dom"
+import { message } from "antd"
+// import Verify from "../components/VerifyToken.components"
+import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
-export default function ContactPage() {
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ContactPage: React.FC<Props> = (props) => {
+  const [messageApi, contextHolder] = message.useMessage();
+  // const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  // const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
+  // useEffect(() => {
+  //   const handleStorageChange = () => {
+  //     setRefreshToken(localStorage.getItem("refresh_token"));
+  //     setAccessToken(localStorage.getItem("access_token"));
+  //   };
+            
+  //   window.addEventListener("storage", handleStorageChange);
+            
+  //   return () => {
+  //     window.removeEventListener("storage", handleStorageChange);
+  //   };
+  // }, []);
+
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
   })
@@ -31,30 +56,69 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the form data to your backend
-    console.log("Form submitted:", formData)
+    // const toastElement = document.createElement("div")
+    // console.log("Form submitted:", formData)
+    try {
+      props.setLoading(true)
+      const body = {
+        language: null,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        title: formData.subject,
+        content: formData.message,
+      }
 
-    // Simple toast notification without the toast library
-    const toastElement = document.createElement("div")
-    toastElement.className = "fixed top-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg z-50"
-    toastElement.innerHTML = `
-      <div class="font-bold">Đã Gửi Tin Nhắn!</div>
-      <div>Chúng tôi sẽ phản hồi bạn trong thời gian sớm nhất.</div>
-    `
-    document.body.appendChild(toastElement)
-
-    // Remove toast after 3 seconds
-    setTimeout(() => {
-      toastElement.remove()
-    }, 3000)
-
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" })
+      fetch(`${import.meta.env.VITE_API_URL}/api/contact/send`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body)
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+        if(data.code == RESPONSE_CODE.SEND_CONTACT_FAILED) {
+          messageApi.error(data.message)
+          // toastElement.className = "fixed top-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg z-50"
+          // toastElement.innerHTML = `
+          //   <div class="font-bold">Gửi tin nhắn thất bại !</div>
+          // `
+          // document.body.appendChild(toastElement)
+          return
+        }
+        if(data.code == RESPONSE_CODE.SEND_CONTACT_SUCCESSFUL) {
+          // toastElement.className = "fixed top-4 right-4 bg-green-500 text-white p-4 rounded-md shadow-lg z-50"
+          // toastElement.innerHTML = `
+          //   <div class="font-bold">Đã Gửi Tin Nhắn!</div>
+          //   <div>Chúng tôi sẽ phản hồi bạn trong thời gian sớm nhất.</div>
+          // `
+          // document.body.appendChild(toastElement)
+          messageApi.success("Đã Gửi Tin Nhắn .Chúng tôi sẽ phản hồi bạn trong thời gian sớm nhất")
+        }
+      })
+    } catch (error) {
+      messageApi.open({
+        type: 'error',
+        content: String(error),
+        style: {
+          marginTop: '10vh',
+        },
+      })
+      return;
+    } finally {
+      setTimeout(() => {
+        props.setLoading(false)
+        // toastElement.remove()
+        setFormData({ name: "", email: "", phone: "", subject: "", message: "" })
+      }, 2000)
+    } 
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Hero Section */}
+      {contextHolder}
       <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 opacity-90"></div>
         <div className="absolute inset-0 flex items-center justify-center text-center p-4">
@@ -146,6 +210,17 @@ export default function ContactPage() {
                       name="email"
                       placeholder="Email Của Bạn"
                       value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      name="phone"
+                      placeholder="Số điện thoại Của Bạn"
+                      value={formData.phone}
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -391,3 +466,5 @@ export default function ContactPage() {
     </div>
   )
 }
+
+export default ContactPage
