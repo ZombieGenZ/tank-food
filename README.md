@@ -72,7 +72,7 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 ## Hướng dẫn cài đặt 🚀
 
 ### **Yêu cầu hệ thống**
-- **Node.js**: Phiên bản >= 16.x.
+- **Node.js**: Phiên bản >= 22.x.
 - **MongoDB**: Cơ sở dữ liệu NoSQL.
 
 ### **Cài đặt**
@@ -99,6 +99,8 @@ Tank Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
    cd server
    npm run dev
    ```
+
+Xem chi tiết hơn trong [Hướng dẩn cài đặt](./INSTALLATION_STEPS.md).
 
 ---
 

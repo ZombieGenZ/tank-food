@@ -4,7 +4,7 @@ Hướng dẫn này sẽ giúp bạn cài đặt và chạy dự án một cách
 
 ## Yêu cầu hệ thống
 
-* **Node.js:** (phiên bản 14 trở lên) - [Tải xuống Node.js](https://nodejs.org/en/download)
+* **Node.js:** (phiên bản 22 trở lên) - [Tải xuống Node.js](https://nodejs.org/en/download)
 * **Git:** (phiên bản 2.0 trở lên) - [Tải xuống Git](https://git-scm.com/downloads)
 
 ## Cài đặt
