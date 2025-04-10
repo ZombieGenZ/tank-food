@@ -136,29 +136,39 @@ const ProfilePage: React.FC<Props> = (props) => {
     }, []);
 
   useEffect(() => {
-    const body = {
-      language: null,
-      refresh_token: refresh_token
-    }
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-order`, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body)
-    }).then(response => {
-      return response.json()
-    }).then((data) => {
-      if(data.code == RESPONSE_CODE.GET_ORDER_FAILED) {
-        messageApi.error(data.message)
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: refresh_token
+          }
+      
+          fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-order`, {
+            method: 'POST',
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then(response => {
+            return response.json()
+          }).then((data) => {
+            if(data.code == RESPONSE_CODE.GET_ORDER_FAILED) {
+              messageApi.error(data.message)
+              return
+            }
+            if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL){
+              setHistoryBill(data.order)
+            } 
+          })
+      } else {
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
         return
       }
-      if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL){
-        setHistoryBill(data.order)
-      } 
-    })
+    };
+    
+    checkToken();
   }, [refresh_token, access_token, messageApi])
 
 

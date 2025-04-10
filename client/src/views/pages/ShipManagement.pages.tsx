@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Verify from '../components/VerifyToken.components';
 import { message } from 'antd';
 import { RESPONSE_CODE } from '../../constants/responseCode.constants';
@@ -98,6 +98,8 @@ const ShipManagement: React.FC<Props> = (props) => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
+  const allReceivedOrders = useRef<Order[]>([]);
+  const allWaitingOrders = useRef<Order[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [activeTab, setActiveTab] = useState<'waiting' | 'received'>('waiting');
   const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
@@ -150,12 +152,33 @@ const ShipManagement: React.FC<Props> = (props) => {
 
   const changeFillter = (fill: string) => {
     setActiveFilter(fill)
-    // fillShipBill(fill, waitingOrders)
+    fillShipBill(fill)
   }
 
-  // const fillShipBill = (type: string, bill: Order[]) => {
-
-  // }
+  const fillShipBill = (type: string) => {
+    if (type === "Tất cả") {
+      setWaitingOrders(allWaitingOrders.current);
+      setReceivedOrders(allReceivedOrders.current);
+    } else if (type === "Phí ship cao nhất") {
+      if(allWaitingOrders.current.length > 0) {
+        const maxFee = Math.max(...allWaitingOrders.current.map(order => order.fee));
+        setWaitingOrders(allWaitingOrders.current.filter((order) => order.fee === maxFee));
+      }
+      if (allReceivedOrders.current.length > 0) {
+        const maxFee = Math.max(...allReceivedOrders.current.map(order => order.fee));
+        setReceivedOrders(allReceivedOrders.current.filter((order) => order.fee === maxFee));
+      }
+    } else if (type === "Phí ship thấp nhất") {
+      if(allWaitingOrders.current.length > 0) {
+        const minFee = Math.min(...allWaitingOrders.current.map(order => order.fee));
+        setWaitingOrders(allWaitingOrders.current.filter((order) => order.fee === minFee));
+      }
+      if (allReceivedOrders.current.length > 0) {
+        const minFee = Math.min(...allReceivedOrders.current.map(order => order.fee));
+        setReceivedOrders(allReceivedOrders.current.filter((order) => order.fee === minFee));
+      }
+    }
+  };
 
   const TakeBill = (orderID: string) => {
     const checkToken = async () => {
@@ -340,42 +363,52 @@ const ShipManagement: React.FC<Props> = (props) => {
     checkToken();
   };
   useEffect(() => {
-    const body = {
-      language: null,
-      refresh_token: refresh_token
-    } 
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+      if (isValid) {
+        const body = {
+          language: null,
+          refresh_token: refresh_token
+        };
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
-        method: 'POST',
-        headers: {
+        const fetchNewOrders = fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-new-order-shipper`, {
+          method: 'POST',
+          headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify(body)
-    }).then(response => {
-        return response.json()
-    }).then((data) => {
-        console.log(data)
-        if(data.code == "GET_ORDER_SUCCESSFUL") {
-          setWaitingOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-        }
-    })
+          },
+          body: JSON.stringify(body)
+        }).then(response => response.json());
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
-        method: 'POST',
-        headers: {
+        const fetchOldOrders = fetch(`${import.meta.env.VITE_API_URL}/api/orders/get-old-order-shipper`, {
+          method: 'POST',
+          headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify(body)
-    }).then(response => {
-        return response.json()
-    }).then((data) => {
-        console.log(data)
-        if(data.code == "GET_ORDER_SUCCESSFUL") {
-          setReceivedOrders(data.order.map((order: Order) => ({ ...order, expanded: false })));
-        }
-    })
+          },
+          body: JSON.stringify(body)
+        }).then(response => response.json());
+
+        Promise.all([fetchNewOrders, fetchOldOrders])
+          .then(([newOrdersData, oldOrdersData]) => {
+            if (newOrdersData.code === RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+              const waitingOrder = newOrdersData.order.map((order: Order) => ({ ...order, expanded: false }))
+              setWaitingOrders(waitingOrder);
+              allWaitingOrders.current = waitingOrder
+            }
+            if (oldOrdersData.code === RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
+              const received = oldOrdersData.order.map((order: Order) => ({ ...order, expanded: false }));
+              setReceivedOrders(received);
+              allReceivedOrders.current = received; // Lưu bản gốc vào ref
+            }
+          });
+      } else {
+        messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        return
+      }
+    };
+        
+    checkToken();
   }, [refresh_token, access_token])
   
   // Sample data with more items
@@ -498,13 +531,7 @@ const ShipManagement: React.FC<Props> = (props) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                   </span>
-                  <span className="font-medium">Đơn: {order.product.map((name: Product, index: number) => {
-                    if(index < order.product.length) {
-                      return `${language() == "Tiếng Việt" ? name.title_translate_1 : name.description_translate_2}, `
-                    }
-                    if(index == order.product.length)
-                    return `${language() == "Tiếng Việt" ? name.title_translate_1 : name.description_translate_2}`
-                  })}</span>
+                  <span className="font-medium">Đơn: {order._id}</span>
                 </div>
                 <div className="flex items-center">
                   <span className="text-gray-600 mr-4">{formatDateFromISO(order.created_at)}</span>

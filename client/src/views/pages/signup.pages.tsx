@@ -2,6 +2,7 @@ import React, { FormEvent, useState, useEffect } from "react"
 import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+import { motion } from "framer-motion";
 
 // interface đăng ký
 
@@ -113,7 +114,21 @@ const Signup: React.FC<Props> = (props) => {
         });
     };
 
-    // 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
+
+    const toggleNewPasswordVisibility = () => {
+      setShowNewPassword(!showNewPassword);
+    };
+  
+    const toggleConfirmPasswordVisibility = () => {
+      setShowConfirmPassword(!showConfirmPassword);
+    };
     
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
       const { id, value } = e.currentTarget;
@@ -399,7 +414,7 @@ const Signup: React.FC<Props> = (props) => {
                 </div>
                 
                 <div>
-                    <p>Đã có hơn {people} khách hàng hài lòng</p>
+                    <p>Đã có hơn {people} khách hàng truy cập</p>
                 </div>
                 </div>
                 
@@ -436,14 +451,32 @@ const Signup: React.FC<Props> = (props) => {
                         
                         <div style={styles.formGroup}>
                             <label htmlFor="login-password" style={styles.label}>Mật khẩu</label>
-                            <input 
-                            type="password" 
-                            id="login-password" 
-                            style={styles.input}
-                            placeholder="Nhập mật khẩu của bạn" 
-                            value={loginData.password}
-                            onChange={handleLoginChange}
-                            />
+                            <div className="relative">
+                              <input 
+                              type={showPassword ? "text" : "password"} 
+                              id="login-password" 
+                              style={styles.input}
+                              placeholder="Nhập mật khẩu của bạn" 
+                              value={loginData.password}
+                              onChange={handleLoginChange}
+                              />
+                              <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                              >
+                                {showPassword ? (
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                                  </svg>
+                                ) : (
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                )}
+                              </motion.button>
+                            </div>
                             {errorLogin.password && <p className="text-red-500 mt-2.5">{errorLogin.password}</p>}
                         </div>
                         
@@ -496,27 +529,63 @@ const Signup: React.FC<Props> = (props) => {
                         
                         <div style={styles.formGroup}>
                             <label htmlFor="register-password" style={styles.label}>Mật khẩu</label>
-                            <input 
-                            type="password" 
-                            id="register-password" 
-                            style={styles.input}
-                            placeholder="Tạo mật khẩu" 
-                            value={formData.password}
-                            onChange={handleChange}
-                            />
+                            <div className="relative">
+                              <input 
+                              type={showNewPassword ? "text" : "password"} 
+                              id="register-password" 
+                              style={styles.input}
+                              placeholder="Tạo mật khẩu" 
+                              value={formData.password}
+                              onChange={handleChange}
+                              />
+                              <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
+                                type="button"
+                                onClick={toggleNewPasswordVisibility}
+                                className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                              >
+                                {showNewPassword ? (
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                                  </svg>
+                                ) : (
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                )}
+                              </motion.button>
+                            </div>
                             {errors.password && <p className="text-red-500 mt-2.5">{errors.password}</p>}
                         </div>
                         
                         <div style={styles.formGroup}>
                             <label htmlFor="register-confirm_password" style={styles.label}>Xác nhận mật khẩu</label>
-                            <input 
-                            type="password" 
-                            id="register-confirm_pass" 
-                            style={styles.input}
-                            placeholder="Nhập lại mật khẩu" 
-                            value={formData.confirm_pass}
-                            onChange={handleChange}
-                            />
+                            <div className="relative">
+                              <input 
+                              type={showConfirmPassword ? "text" : "password"} 
+                              id="register-confirm_pass" 
+                              style={styles.input}
+                              placeholder="Nhập lại mật khẩu" 
+                              value={formData.confirm_pass}
+                              onChange={handleChange}
+                              />
+                              <motion.button // Thêm nút để bật/tắt hiển thị mật khẩu
+                                type="button"
+                                onClick={toggleConfirmPasswordVisibility}
+                                className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                              >
+                                {showConfirmPassword ? (
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7 1.274 4.057-1.177 8-5.042 8-3.868 0-7.659-3.943-8.933-8z" />
+                                  </svg>
+                                ) : (
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                )}
+                              </motion.button>
+                            </div>
                             {errors.confirm_pass && <p className="text-red-500 mt-2.5">{errors.confirm_pass}</p>}
                         </div>
                         

@@ -400,27 +400,35 @@ const FormMain = (): JSX.Element => {
       return;
     }
 
-    console.log("Đăng nhập thành công !");
-
-    const body = {
-      language: null,
-      refresh_token: refresh_token,
-    };
-
-    fetch(`${import.meta.env.VITE_API_URL}/api/users/get-user-infomation`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setUser(data.infomation);
-      })
-      .catch((error) => console.error("Lỗi khi lấy thông tin người dùng:", error));
+    const checkToken = async () => {
+          const isValid = await Verify(refresh_token, access_token);
+          if (isValid) {
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+            };
+        
+            fetch(`${import.meta.env.VITE_API_URL}/api/users/get-user-infomation`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data);
+                setUser(data.infomation);
+              })
+              .catch((error) => console.error("Lỗi khi lấy thông tin người dùng:", error));
+          } else {
+            messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('access_token');
+          }
+      };
+    checkToken();
   }, [refresh_token, access_token]);
 
   // useEffect(() => {
@@ -448,13 +456,13 @@ const FormMain = (): JSX.Element => {
             if (isValid) {
               console.log("Người dùng hợp lệ")
             } else {
-              messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+              console.log(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
             }
         };
         checkToken()
       }, 30000)
     }
-  }, [refresh_token, access_token, messageApi])
+  }, [refresh_token, access_token])
 
   useEffect(() => {
     gsap.from(pageRef.current, {
