@@ -337,7 +337,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
     const dailyBars: string = data.dailyBreakdown
       .map((day) => {
         const height: number = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0
-        return `<div style="width: ${100 / daysInPeriod}%; height: ${height}%; background-color: #FF8000;"></div>`
+        return `<div style="width: ${100 / daysInPeriod}%; height: ${height}%; background-color: #FF8000; position: absolute; bottom: 0;"></div>`
       })
       .join('')
 
@@ -414,7 +414,7 @@ export class VIETNAMESE_DYNAMIC_MAIL {
 
                       <h3 style="font-size: 20px; color: #333333; margin: 30px 0 20px 0;">Doanh Thu Theo Ngày</h3>
                       <div style="width: 100%; height: 200px; background-color: #F2F2F2; border-radius: 8px; padding: 15px; position: relative;">
-                          <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; align-items: flex-end;">
+                          <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; align-items: flex-start;">
                               ${dailyBars}
                           </div>
                           <div style="position: absolute; bottom: -20px; width: 100%; text-align: center; font-size: 12px; color: #7f8c8d;">${data.dailyBreakdown[0].date} - ${data.dailyBreakdown[daysInPeriod - 1].date}</div>
@@ -906,7 +906,7 @@ export class ENGLIS_DYNAMIC_MAIL {
     const dailyBars: string = data.dailyBreakdown
       .map((day) => {
         const height: number = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0
-        return `<div style="width: ${100 / daysInPeriod}%; height: ${height}%; background-color: #FF8000;"></div>`
+        return `<div style="width: ${100 / daysInPeriod}%; height: ${height}%; background-color: #FF8000; position: absolute; bottom: 0;"></div>`
       })
       .join('')
 
@@ -983,7 +983,7 @@ export class ENGLIS_DYNAMIC_MAIL {
 
                       <h3 style="font-size: 20px; color: #333333; margin: 30px 0 20px 0;">Daily Revenue</h3>
                       <div style="width: 100%; height: 200px; background-color: #F2F2F2; border-radius: 8px; padding: 15px; position: relative;">
-                          <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; align-items: flex-end;">
+                          <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; display: flex; align-items: flex-start;">
                               ${dailyBars}
                           </div>
                           <div style="position: absolute; bottom: -20px; width: 100%; text-align: center; font-size: 12px; color: #7f8c8d;">${data.dailyBreakdown[0].date} - ${data.dailyBreakdown[daysInPeriod - 1].date}</div>
