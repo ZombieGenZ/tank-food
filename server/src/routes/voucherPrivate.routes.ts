@@ -1,12 +1,12 @@
 import express from 'express'
-import { getVoucherPrivateUnUsedController, getVoucherPrivateUsedController } from '~/controllers/voucherPrivate.controllers'
+import { getVoucherPrivateController } from '~/controllers/voucherPrivate.controllers'
 import { authenticateValidator, authenticateVerifyAccountValidator } from '~/middlewares/authenticate.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
 /*
- * Description: Lấy danh sách các voucher (riêng tư) chưa sử dụng
- * Path: /api/voucher-private/get-voucher-unused
+ * Description: Lấy danh sách các voucher (riêng tư)
+ * Path: /api/voucher-private/get-voucher
  * Method: POST
  * headers: {
  *    authorization: Bearer <token>
@@ -17,29 +17,10 @@ const router = express.Router()
  * }
  */
 router.post(
-  '/get-voucher-unused',
+  '/get-voucher',
   authenticateValidator,
   authenticateVerifyAccountValidator,
-  wrapRequestHandler(getVoucherPrivateUnUsedController)
-)
-
-/*
- * Description: Lấy danh sách các voucher (riêng tư) đã sử dụng
- * Path: /api/voucher-private/get-voucher-used
- * Method: POST
- * headers: {
- *    authorization: Bearer <token>
- * },
- * Body: {
- *    language?: string,
- *    refresh_token: string
- * }
- */
-router.post(
-  '/get-voucher-used',
-  authenticateValidator,
-  authenticateVerifyAccountValidator,
-  wrapRequestHandler(getVoucherPrivateUsedController)
+  wrapRequestHandler(getVoucherPrivateController)
 )
 
 export default router

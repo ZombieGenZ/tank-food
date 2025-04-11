@@ -6,19 +6,10 @@ import { notificationRealtime } from '~/utils/realtime.utils'
 import { VoucherPrivateStatusEnum } from '~/constants/voucher.constants'
 
 class VoucherPrivateService {
-  async getVoucherUnUsed(user: User) {
+  async getVoucher(user: User) {
     return await databaseService.voucherPrivate
       .find({
-        user: user._id,
-        status: VoucherPrivateStatusEnum.UNUSED
-      })
-      .toArray()
-  }
-  async getVoucherUsed(user: User) {
-    return await databaseService.voucherPrivate
-      .find({
-        user: user._id,
-        status: VoucherPrivateStatusEnum.USED
+        user: user._id
       })
       .toArray()
   }
