@@ -146,16 +146,24 @@ const Signup: React.FC<Props> = (props) => {
         messageApi.error("Vui lòng nhập email !")
         return
       }
+
+      if (!captchaToken) {
+        messageApi.error('Vui lòng hoàn thành CAPTCHA');
+        return;
+      }
+
       if(!validateEmail(email))
       {
         messageApi.error("Vui lòng ghi đúng định dạng email !")
+        return
       }
 
       try {
         props.setLoading(true)
         const body = {
           language: null,
-          email: email
+          email: email,
+          'cf-turnstile-response': captchaToken
         }
 
         fetch(`${import.meta.env.VITE_API_URL}/api/users/send-email-forgot-password`, {
