@@ -428,15 +428,15 @@ const Signup: React.FC<Props> = (props) => {
                   
                   <div className="space-y-4">
                     <div className="flex items-center">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">✓</div>
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
                         <div>Giao hàng nhanh chóng</div>
                     </div>
                     <div className="flex items-center">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">✓</div>
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
                         <div>Ưu đãi độc quyền cho thành viên</div>
                     </div>
                     <div className="flex items-center">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">✓</div>
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
                         <div>Đa dạng món ăn</div>
                     </div>
                   </div>
