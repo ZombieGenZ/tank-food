@@ -1,6 +1,6 @@
 {
   "name": "tank-food-server",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
@@ -51,6 +51,7 @@
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
     "express": "^4.21.2",
     "express-useragent": "^1.0.15",
     "express-validator": "^7.2.1",

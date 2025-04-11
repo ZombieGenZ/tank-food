@@ -110,7 +110,7 @@ class OrderService {
         { $match: { _id: order_id } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -118,7 +118,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -264,7 +264,7 @@ class OrderService {
         { $match: { _id: new ObjectId(order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -272,7 +272,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -415,7 +415,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -423,7 +423,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -532,7 +532,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -540,7 +540,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -652,7 +652,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -660,7 +660,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -769,7 +769,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -777,7 +777,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -923,7 +923,7 @@ class OrderService {
           { $match: { _id: order._id } },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -931,7 +931,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -1069,7 +1069,7 @@ class OrderService {
           { $match: { _id: order._id } },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -1077,7 +1077,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -1231,7 +1231,7 @@ class OrderService {
         { $match: { _id: order._id } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -1239,7 +1239,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -1375,7 +1375,7 @@ class OrderService {
         { $match: { _id: new ObjectId(payload.order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -1383,7 +1383,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -1512,7 +1512,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -1520,7 +1520,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -1630,7 +1630,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -1638,7 +1638,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -1754,7 +1754,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -1762,7 +1762,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -1875,7 +1875,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'products',
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
               localField: 'product.product_id',
               foreignField: '_id',
               as: 'product_details'
@@ -1883,7 +1883,7 @@ class OrderService {
           },
           {
             $lookup: {
-              from: 'categories',
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
               localField: 'product_details.category',
               foreignField: '_id',
               as: 'category_details'
@@ -2005,7 +2005,7 @@ class OrderService {
         { $match: { _id: new ObjectId(payload.order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2013,7 +2013,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -2143,7 +2143,7 @@ class OrderService {
         { $match: { _id: new ObjectId(payload.order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2151,7 +2151,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -2299,7 +2299,7 @@ class OrderService {
         { $match: { _id: new ObjectId(payload.order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2307,7 +2307,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -2457,7 +2457,7 @@ class OrderService {
         { $match: { _id: order_id } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2465,7 +2465,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -2605,7 +2605,7 @@ class OrderService {
         { $match: { _id: new ObjectId(payload.order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2613,7 +2613,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -2722,7 +2722,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2730,7 +2730,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'
@@ -2850,7 +2850,7 @@ class OrderService {
         { $match: { _id: new ObjectId(payload.order_id) } },
         {
           $lookup: {
-            from: 'products',
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
             localField: 'product.product_id',
             foreignField: '_id',
             as: 'product_details'
@@ -2858,7 +2858,7 @@ class OrderService {
         },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'product_details.category',
             foreignField: '_id',
             as: 'category_details'

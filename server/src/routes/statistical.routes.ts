@@ -1,10 +1,11 @@
 import express from 'express'
-import { statisticalOverviewController, analyticsTotalRequestsController } from '~/controllers/statistical.controllers'
+import { statisticalOverviewController, analyticsTotalRequestsController, exportStatisticalController } from '~/controllers/statistical.controllers'
 import {
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator
 } from '~/middlewares/authenticate.middlewares'
+import { statisticalTimeValidator } from '~/middlewares/statistical.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -26,6 +27,7 @@ router.post(
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
+  statisticalTimeValidator,
   wrapRequestHandler(statisticalOverviewController)
 )
 
@@ -35,5 +37,27 @@ router.post(
  * Method: GET
  */
 router.get('/analytics-total-requests', wrapRequestHandler(analyticsTotalRequestsController))
+
+/*
+ * Description: Lấy thông tin thống kê tổng quan
+ * Path: /api/statistical/export
+ * Method: POST
+ * headers: {
+ *    authorization?: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    time: number
+ * }
+ */
+router.post(
+  '/export',
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  authenticateAdministratorValidator,
+  statisticalTimeValidator,
+  wrapRequestHandler(exportStatisticalController)
+)
 
 export default router

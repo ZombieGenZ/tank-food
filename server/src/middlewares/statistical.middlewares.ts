@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from 'express'
 import { serverLanguage } from '~/index'
-import { checkSchema } from 'express-validator'
+import { checkSchema, validationResult } from 'express-validator'
 import { LANGUAGE } from '~/constants/language.constants'
 import { ENGLISH_STATIC_MESSAGE, VIETNAMESE_STATIC_MESSAGE } from '~/constants/message.constants'
+import HTTPSTATUS from '~/constants/httpStatus.constants'
+import { RESPONSE_CODE } from '~/constants/responseCode.constants'
+import { writeWarnLog } from '~/utils/log.utils'
 
-export const statisticalOverviewValidator = async (req: Request, res: Response, next: NextFunction) => {
+export const statisticalTimeValidator = async (req: Request, res: Response, next: NextFunction) => {
   const language = req.body.language || serverLanguage
+
   checkSchema(
     {
       time: {
@@ -38,4 +42,35 @@ export const statisticalOverviewValidator = async (req: Request, res: Response, 
     },
     ['body']
   )
+    .run(req)
+    .then(() => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch((err) => {
+      writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
 }

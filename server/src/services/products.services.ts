@@ -66,7 +66,7 @@ class ProductService {
         { $match: { _id: new ObjectId(product_id) } },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'category',
             foreignField: '_id',
             as: 'tempCategory'
@@ -141,7 +141,7 @@ class ProductService {
       { $match: { _id: new ObjectId(product_id) } },
       {
         $lookup: {
-          from: 'categories',
+          from: process.env.DATABASE_CATEGORY_COLLECTION as string,
           localField: 'category',
           foreignField: '_id',
           as: 'tempCategory'
@@ -217,7 +217,7 @@ class ProductService {
       { $match: { _id: new ObjectId(payload.product_id) } },
       {
         $lookup: {
-          from: 'categories',
+          from: process.env.DATABASE_CATEGORY_COLLECTION as string,
           localField: 'category',
           foreignField: '_id',
           as: 'tempCategory'
@@ -256,7 +256,7 @@ class ProductService {
         { $sort: { created_at: -1 } },
         {
           $lookup: {
-            from: 'categories',
+            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
             localField: 'category',
             foreignField: '_id',
             as: 'tempCategory'

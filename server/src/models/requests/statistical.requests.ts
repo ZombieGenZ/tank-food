@@ -1,4 +1,4 @@
-export interface StatisticalOverviewRequestsBody {
+export interface StatisticalRequestsBody {
   language?: string
   time: number
 }

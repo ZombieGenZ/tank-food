@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { serverLanguage } from '~/index'
 import { writeErrorLog, writeInfoLog } from '~/utils/log.utils'
-import { StatisticalOverviewRequestsBody } from '~/models/requests/statistical.requests'
+import { StatisticalRequestsBody } from '~/models/requests/statistical.requests'
 import { LANGUAGE } from '~/constants/language.constants'
 import statisticalService from '~/services/statistical.services'
 import {
@@ -14,9 +14,10 @@ import {
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import User from '~/models/schemas/users.schemas'
 import { formatNumber } from '~/utils/number.utils'
+import { formatDateFull } from '~/utils/date.utils'
 
 export const statisticalOverviewController = async (
-  req: Request<ParamsDictionary, any, StatisticalOverviewRequestsBody>,
+  req: Request<ParamsDictionary, any, StatisticalRequestsBody>,
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
@@ -78,6 +79,51 @@ export const analyticsTotalRequestsController = async (req: Request, res: Respon
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_FAILURE
           : ENGLISH_STATIC_MESSAGE.STATISTICAL_MESSAGE.STATISTICAL_FAILURE
+    })
+  }
+}
+
+export const exportStatisticalController = async (
+  req: Request<ParamsDictionary, any, StatisticalRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    const { buffer, start_date, end_date } = await statisticalService.exportStatistical(req.body.time, language)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ExportStatisticalSuccessful(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.ExportStatisticalSuccessful(user._id.toString(), ip)
+    )
+
+    const fileName = `statistical_${formatDateFull(start_date)}_${formatDateFull(end_date)}.xlsx`
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${fileName}"`
+    )
+
+    res.send(buffer)
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.ExportStatisticalFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.ExportStatisticalFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.EXPORT_STATICSTICAL_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.STATISTICAL_MESSAGE.EXPORT_STATISTICAL_FAILURE
+          : ENGLISH_STATIC_MESSAGE.STATISTICAL_MESSAGE.EXPORT_STATISTICAL_FAILURE
     })
   }
 }
