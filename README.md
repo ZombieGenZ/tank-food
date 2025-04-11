@@ -30,6 +30,8 @@ TANK-Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
   - **Recharts**: Biểu đồ trực quan.
   - **React Router**: Quản lý điều hướng.
   - **AOS**: Hiệu ứng cuộn trang.
+  - **Material-UI**: Bộ công cụ UI hiện đại.
+  - **Lucide React**: Biểu tượng SVG.
 
 ---
 
@@ -43,6 +45,7 @@ TANK-Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
   - **Node-cron**: Lập lịch tự động.
   - **Express Validator**: Kiểm tra dữ liệu đầu vào.
   - **Nodemailer**: Gửi email tự động.
+  - **dotenv**: Quản lý biến môi trường.
 
 ---
 
@@ -66,6 +69,15 @@ TANK-Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 - **Ngôn ngữ server**: Python hoặc Rust.
 - **Client giám sát**: WPF C#.
 - **Realtime**: WebSocket.
+
+---
+
+### **7. Công cụ phát triển** 🛠️
+- **Vite**: Công cụ build nhanh.
+- **ESLint**: Kiểm tra và sửa lỗi code.
+- **TypeScript**: Ngôn ngữ lập trình mạnh mẽ.
+- **Concurrently**: Chạy nhiều lệnh cùng lúc.
+- **Tailwind CSS**: Tích hợp với PostCSS.
 
 ---
 
