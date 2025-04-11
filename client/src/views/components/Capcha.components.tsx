@@ -12,7 +12,7 @@ const TurnstileCaptcha: React.FC<TurnstileCaptchaProps> = ({ siteKey, onVerify }
       siteKey={siteKey}
       onSuccess={onVerify} // Gọi hàm callback khi CAPTCHA được xác minh thành công
       options={{
-        theme: 'auto', // Tùy chọn theme: 'light', 'dark', hoặc 'auto'
+        theme: 'light', // Tùy chọn theme: 'light', 'dark', hoặc 'auto'
         size: 'normal', // Kích thước: 'normal' hoặc 'compact'
       }}
     />

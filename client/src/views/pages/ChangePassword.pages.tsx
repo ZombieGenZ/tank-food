@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type { FormEvent } from "react"
 import { message } from "antd"
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+import TurnstileCaptcha from "../components/Capcha.components";
 
 interface Props {
   isLoading: boolean;
@@ -13,6 +14,7 @@ interface Props {
 
 export default function ChangePassword(props: Props): JSX.Element {
   // Form state
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const navigate = useNavigate()
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -105,6 +107,10 @@ export default function ChangePassword(props: Props): JSX.Element {
   
 
   const handleSubmit = (e: FormEvent) => {
+    if (!captchaToken) {
+      messageApi.error('Vui lòng hoàn thành CAPTCHA');
+      return;
+    }
     try {
       props.setLoading(true)
       e.preventDefault()
@@ -123,7 +129,8 @@ export default function ChangePassword(props: Props): JSX.Element {
         language: null,
         token: paramValue,
         new_password: newPassword,
-        confirm_new_password: confirmPassword
+        confirm_new_password: confirmPassword,
+        'cf-turnstile-response': captchaToken
       }
 
       fetch(`${import.meta.env.VITE_API_URL}/api/users/forgot-password`, {
@@ -320,6 +327,10 @@ export default function ChangePassword(props: Props): JSX.Element {
             </div>
           </div>
 
+          <TurnstileCaptcha
+            siteKey="0x4AAAAAABJKaIKjco1vWIzB" // Thay bằng site key của bạn
+            onVerify={(token) => setCaptchaToken(token)}
+          />
           {/* Submit Button */}
           <button 
             type="submit" 
