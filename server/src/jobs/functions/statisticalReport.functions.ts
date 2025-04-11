@@ -5,8 +5,9 @@ import { serverLanguage } from '~/index'
 import databaseService from '~/services/database.services'
 import statisticsService from '~/services/statistical.services'
 import { reportComment } from '~/utils/ai.utils'
-import { getDaysInMonth, getMonthStartAndEnd } from '~/utils/date.utils'
+import { formatDateFull, getDaysInMonth, getMonthStartAndEnd } from '~/utils/date.utils'
 import { sendMail } from '~/utils/mail.utils'
+import { Buffer } from 'node:buffer'
 
 export const statisticalReport = async () => {
   const currentMonth = new Date()
@@ -34,13 +35,18 @@ export const statisticalReport = async () => {
     email_html = ENGLIS_DYNAMIC_MAIL.monthlyReport(currentMonth, data, comment).html
   }
 
+  const { buffer, start_date, end_date } = await statisticsService.exportStatistical(time, serverLanguage)
+  const fileName = `Statistical_Report_${formatDateFull(start_date)}_${formatDateFull(end_date)}.xlsx`
+
   const promises = [] as Promise<void>[]
 
   for (const user of Users) {
     promises.push(
       new Promise((resolve, reject) => {
         try {
-          sendMail(user.email, email_subject, email_html)
+          sendMail(user.email, email_subject, email_html, {
+            excelAttachment: { buffer, fileName }
+          })
           resolve()
         } catch (err) {
           reject()

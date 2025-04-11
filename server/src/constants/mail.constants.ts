@@ -2,6 +2,7 @@ import { formatDateOnlyMonthAndYear } from '~/utils/date.utils'
 import { OverviewResponseWithComparison } from './statistical.constants'
 import { ProductList } from './orders.constants'
 import { LANGUAGE } from './language.constants'
+import { Buffer } from 'node:buffer'
 
 export class VIETNAMESE_DYNAMIC_MAIL {
   static welcomeMail(display_name: string) {
@@ -1138,5 +1139,13 @@ export class ENGLIS_DYNAMIC_MAIL {
         </div>
       `
     }
+  }
+}
+
+export interface MailOptions {
+  qrCodeUrl?: string
+  excelAttachment?: {
+    buffer: Buffer
+    fileName?: string
   }
 }

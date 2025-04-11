@@ -10,6 +10,7 @@ import {
 import axios from 'axios'
 import ExcelJS from 'exceljs'
 import { LANGUAGE } from '~/constants/language.constants'
+import { writeErrorLog } from '~/utils/log.utils'
 
 const CF_API_URL = 'https://api.cloudflare.com/client/v4/graphql'
 const CF_EMAIL = process.env.CLOUDFLARE_EMAIL as string
@@ -1021,10 +1022,20 @@ class StatisticalService {
       }
     })
 
+    const buffer = await workbook.xlsx.writeBuffer()
+    if (!Buffer.isBuffer(buffer)) {
+      await writeErrorLog(
+        language === LANGUAGE.VIETNAMESE
+          ? 'Xuất file thống kê không thành công'
+          : 'Failed to export statistical file'
+      )
+      throw new Error('Failed to generate valid Excel buffer')
+    }
+
     return {
-        buffer: await workbook.xlsx.writeBuffer(),
-        start_date: currentStartDate,
-        end_date: currentDate
+      buffer,
+      start_date: currentStartDate,
+      end_date: currentDate
     }
   }
 }

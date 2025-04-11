@@ -100,7 +100,7 @@ export const exportStatisticalController = async (
         : ENGLIS_DYNAMIC_MESSAGE.ExportStatisticalSuccessful(user._id.toString(), ip)
     )
 
-    const fileName = `statistical_${formatDateFull(start_date)}_${formatDateFull(end_date)}.xlsx`
+    const fileName = `Statistical_Report_${formatDateFull(start_date)}_${formatDateFull(end_date)}.xlsx`
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

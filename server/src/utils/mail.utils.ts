@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer'
 import { OAuth2Client } from 'google-auth-library'
 import * as SMTPTransport from 'nodemailer/lib/smtp-transport'
 import { generateQRCodeAttachment } from './qrcode.utils'
+import { MailOptions } from '~/constants/mail.constants'
 
 const GOOGLE_MAILER_CLIENT_ID = process.env.GOOGLE_MAILER_CLIENT_ID as string
 const GOOGLE_MAILER_CLIENT_SECRET = process.env.GOOGLE_MAILER_CLIENT_SECRET as string
@@ -19,8 +20,8 @@ export const sendMail = async (
   to: string,
   subject: string,
   html: string,
-  fromEmail: string = GOOGLE_MAILER_EMAIL_SEND_ADDRESS,
-  qrCodeUrl?: string
+  option?: MailOptions,
+  fromEmail: string = GOOGLE_MAILER_EMAIL_SEND_ADDRESS
 ) => {
   try {
     const access_token_object = await MailClient.getAccessToken()
@@ -46,21 +47,32 @@ export const sendMail = async (
       from: fromEmail,
       to,
       subject,
-      html
+      html,
+      attachments: []
     }
 
-    if (qrCodeUrl) {
-      const qrAttachment = await generateQRCodeAttachment(qrCodeUrl)
-      mailOptions.attachments = [qrAttachment]
-
+    if (option?.qrCodeUrl) {
+      const qrAttachment = await generateQRCodeAttachment(option.qrCodeUrl)
+      mailOptions.attachments!.push(qrAttachment)
       mailOptions.html = html.replace('src="${qrCode}"', 'src="cid:ticket-qr"')
+    }
+
+    if (option?.excelAttachment?.buffer) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const excelFileName = option.excelAttachment.fileName || `Statistical_Report_${timestamp}.xlsx`
+
+      mailOptions.attachments!.push({
+        filename: excelFileName,
+        content: option.excelAttachment.buffer,
+        contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      })
     }
 
     await transport.sendMail(mailOptions)
 
     return true
   } catch (err) {
-    console.log(err)
+    console.error('Error sending email:', err)
     return false
   }
 }
