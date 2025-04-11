@@ -1328,9 +1328,6 @@ function Main(): JSX.Element {
                 <h3 className="text-xl font-semibold text-[#654321] font-roboto">Burger Đặc Biệt</h3>
                 <div className="flex justify-between items-center mt-4">
                   <span className="text-[#FF7846] font-bold font-roboto">89.000 ₫</span>
-                  <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white text-sm py-1 px-3 rounded-full transition-all duration-300 font-roboto shadow-sm hover:shadow-md hover:px-4">
-                    Thêm vào giỏ
-                  </button>
                 </div>
               </div>
             </div>
@@ -1347,9 +1344,6 @@ function Main(): JSX.Element {
                 <h3 className="text-xl font-semibold text-[#654321] font-roboto">Khoai Phô Mai</h3>
                 <div className="flex justify-between items-center mt-4">
                   <span className="text-[#FF7846] font-bold font-roboto">49.000 ₫</span>
-                  <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white text-sm py-1 px-3 rounded-full transition-all duration-300 font-roboto shadow-sm hover:shadow-md hover:px-4">
-                    Thêm vào giỏ
-                  </button>
                 </div>
               </div>
             </div>
@@ -1366,9 +1360,6 @@ function Main(): JSX.Element {
                 <h3 className="text-xl font-semibold text-[#654321] font-roboto">Gà Rán Giòn</h3>
                 <div className="flex justify-between items-center mt-4">
                   <span className="text-[#FF7846] font-bold font-roboto">79.000 ₫</span>
-                  <button className="bg-[#FF7846] hover:bg-[#FF6B35] text-white text-sm py-1 px-3 rounded-full transition-all duration-300 font-roboto shadow-sm hover:shadow-md hover:px-4">
-                    Thêm vào giỏ
-                  </button>
                 </div>
               </div>
             </div>

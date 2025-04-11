@@ -9,15 +9,14 @@ import { message } from "antd"
 import Verify from "../components/VerifyToken.components"
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
-interface Voucher {
-  id: string
-  code: string
-  discount: string
-  validUntil: string
-  description: string
-  type: "percentage" | "fixed" | "freeItem"
-  used: boolean
-  minOrder?: number
+interface DiscountCode {
+  _id: string;
+  code: string;
+  user: string;
+  discount: number;
+  status: number;
+  created_at: string | Date;
+  updated_at: string | Date;
 }
 
 interface Props {
@@ -56,7 +55,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
             refresh_token: refresh_token
           }
 
-          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-private/get-voucher-unused`, {
+          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-private/get-voucher`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
@@ -71,26 +70,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
               return
             }
             if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
-              console.log(data)
-            }
-          })
-
-          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-private/get-voucher-used`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-          }).then(response => {
-            return response.json()
-          }).then((data) => {
-            if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
-              messageApi.error("Lỗi khi lấy danh sách voucher");
-              return
-            }
-            if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
-              console.log(data)
+              setVouchers(data.voucher)
             }
           })
         } else {
@@ -100,109 +80,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
     checkToken()
   }, [refresh_token, access_token, messageApi])
 
-  const [vouchers, setVouchers] = useState<Voucher[]>([
-    {
-      id: "v1",
-      code: "BURGER50",
-      discount: "50%",
-      validUntil: "indefinite",
-      description: "50% off on all burgers",
-      type: "percentage",
-      used: false,
-      minOrder: 15,
-    },
-    {
-      id: "v2",
-      code: "FREEFRIES",
-      discount: "Free Fries",
-      validUntil: "indefinite",
-      description: "Free large fries with any burger purchase",
-      type: "freeItem",
-      used: false,
-      minOrder: 20,
-    },
-    {
-      id: "v3",
-      code: "TANK10",
-      discount: "$10",
-      validUntil: "indefinite",
-      description: "$10 off on orders above $30",
-      type: "fixed",
-      used: false,
-      minOrder: 30,
-    },
-    {
-      id: "v4",
-      code: "CHICKEN25",
-      discount: "25%",
-      validUntil: "indefinite",
-      description: "25% off on all fried chicken items",
-      type: "percentage",
-      used: false,
-      minOrder: 35,
-    },
-    {
-      id: "v5",
-      code: "WELCOME15",
-      discount: "15%",
-      validUntil: "indefinite",
-      description: "15% off on your first order",
-      type: "percentage",
-      used: true,
-      minOrder: 20,
-    },
-    // 5 voucher mới
-    {
-      id: "v6",
-      code: "COMBO2OFF",
-      discount: "$2",
-      validUntil: "indefinite",
-      description: "$2 off on any combo meal",
-      type: "fixed",
-      used: false,
-      minOrder: 10,
-    },
-    {
-      id: "v7",
-      code: "DESSERT30",
-      discount: "30%",
-      validUntil: "indefinite",
-      description: "30% off on all desserts",
-      type: "percentage",
-      used: false,
-      minOrder: 10,
-    },
-    {
-      id: "v8",
-      code: "FREECOKE",
-      discount: "Free Drink",
-      validUntil: "indefinite",
-      description: "Free soft drink with any meal purchase",
-      type: "freeItem",
-      used: false,
-      minOrder: 12,
-    },
-    {
-      id: "v9",
-      code: "WEEKEND20",
-      discount: "20%",
-      validUntil: "indefinite",
-      description: "20% off on weekend orders",
-      type: "percentage",
-      used: false,
-      minOrder: 20,
-    },
-    {
-      id: "v10",
-      code: "FAMILYBOX",
-      discount: "15%",
-      validUntil: "indefinite",
-      description: "15% off on family box orders",
-      type: "percentage",
-      used: true,
-      minOrder: 30,
-    },
-  ])
+  const [vouchers, setVouchers] = useState<DiscountCode[]>([])
 
   const [activeTab, setActiveTab] = useState<"active" | "used">("active")
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
@@ -215,38 +93,25 @@ const VoucherPrivate: React.FC<Props> = (props) => {
     })
   }, [])
 
-  const getGradientByType = (type: string) => {
-    switch (type) {
-      case "percentage":
+  const getGradientByType = (price: number) => {
+    switch (price) {
+      case 20000:
         return "bg-gradient-to-r from-purple-500 to-pink-500"
-      case "fixed":
+      case 50000:
         return "bg-gradient-to-r from-blue-500 to-teal-400"
-      case "freeItem":
+      case 10000:
         return "bg-gradient-to-r from-amber-500 to-orange-500"
       default:
         return "bg-gradient-to-r from-gray-500 to-gray-700"
     }
   }
 
-  const formatDate = (dateString: string) => {
-    if (dateString === "indefinite") {
-      return "No expiration date";
-    }
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    })
-  }
-
-  const isExpired = (dateString: string) => {
-    if (dateString === "indefinite") {
-      return false;
-    }
-    const today = new Date();
-    const expiryDate = new Date(dateString);
-    return today > expiryDate;
+  function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+    const formatter = new Intl.NumberFormat(currencyCode, {
+      style: 'currency',
+      currency: currency,
+    });
+    return formatter.format(amount);
   }
 
   const handleCopyCode = (code: string) => {
@@ -256,7 +121,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
   }
 
   const filteredVouchers = vouchers.filter(
-    (voucher) => (activeTab === "active" && !voucher.used) || (activeTab === "used" && voucher.used),
+    (voucher) => (activeTab === "active" && voucher.status == 0) || (activeTab === "used" && voucher.status == 1),
   )
 
   return (
@@ -304,20 +169,20 @@ const VoucherPrivate: React.FC<Props> = (props) => {
         {/* Vouchers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredVouchers.length > 0 ? (
-            filteredVouchers.map((voucher) => (
+            filteredVouchers.map((voucher, index) => (
               <motion.div
-                key={voucher.id}
+                key={index}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 data-aos="fade-up"
                 data-aos-delay={Math.floor(Math.random() * 300)}
                 className={`rounded-xl overflow-hidden shadow-lg relative ${
-                  voucher.used || isExpired(voucher.validUntil) ? "opacity-70" : ""
+                  voucher.status == 1 ? "opacity-70" : ""
                 }`}
               >
                 <div
                   className={`${getGradientByType(
-                    voucher.type,
+                    voucher.discount
                   )} p-5 relative overflow-hidden transition-all duration-300 group`}
                 >
                   {/* Decorative elements */}
@@ -326,44 +191,34 @@ const VoucherPrivate: React.FC<Props> = (props) => {
 
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className="inline-block px-3 py-1 bg-black bg-opacity-30 rounded-full text-sm mb-2">
+                      {/* <span className="inline-block px-3 py-1 bg-black bg-opacity-30 rounded-full text-sm mb-2">
                         {voucher.type === "percentage"
                           ? "Percentage Discount"
                           : voucher.type === "fixed"
                             ? "Fixed Amount"
                             : "Free Item"}
-                      </span>
-                      <h3 className="text-2xl font-bold mb-1">{voucher.discount}</h3>
-                      <p className="text-white text-opacity-90">{voucher.description}</p>
+                      </span> */}
+                      <h3 className="text-2xl font-bold mb-1"> - {formatCurrency(voucher.discount)}</h3>
+                      <p className="text-white text-opacity-90">{String(voucher.created_at)}</p>
                     </div>
-                    {voucher.used && (
+                    {voucher.status == 1 && (
                       <span className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">Used</span>
-                    )}
-                    {!voucher.used && isExpired(voucher.validUntil) && (
-                      <span className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">Expired</span>
                     )}
                   </div>
 
-                  {voucher.minOrder && (
-                    <p className="text-sm mt-2 text-white text-opacity-80">Min. order: ${voucher.minOrder}</p>
-                  )}
                 </div>
 
                 <div className="bg-gray-800 p-4">
                   <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm text-gray-400">Valid until</p>
-                      <p className="font-medium">{formatDate(voucher.validUntil)}</p>
-                    </div>
                     <div className="flex items-center space-x-2">
                       <div className="font-medium bg-gray-700 px-3 py-1.5 rounded-lg text-white">{voucher.code}</div>
                       <motion.button
                         onClick={() => handleCopyCode(voucher.code)}
-                        disabled={voucher.used || isExpired(voucher.validUntil)}
+                        disabled={voucher.status == 1}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className={`relative flex items-center justify-center w-10 h-10 rounded-full ${
-                          voucher.used || isExpired(voucher.validUntil)
+                        className={`relative cursor-pointer flex items-center justify-center w-10 h-10 rounded-full ${
+                          voucher.status == 1
                             ? "bg-gray-700 text-gray-500 cursor-not-allowed"
                             : "bg-white text-gray-900 hover:shadow-lg"
                         }`}

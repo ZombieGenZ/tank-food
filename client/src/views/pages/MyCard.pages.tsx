@@ -1,7 +1,7 @@
 import { JSX, Dispatch, SetStateAction, useEffect } from "react";
 import { Trash2, Plus, Minus } from "lucide-react";
 import { useState } from "react";
-import { Modal, Input, message, Table } from "antd";
+import { Modal, Input, message, Table, Select } from "antd";
 import type { TableProps } from 'antd';
 import MapPicker from "../components/Mapicket.components";
 import Verify from "../components/VerifyToken.components";
@@ -92,36 +92,23 @@ interface MyCardProps {
     user_infor: UserInfo | null;
     props: Props;
   }
+
+  interface DiscountCode {
+    _id: string;
+    code: string;
+    user: string;
+    discount: number;
+    status: number;
+    created_at: string | Date;
+    updated_at: string | Date;
+  }
+
+interface TakeCode {
+  value: string; 
+  label: string
+}
 const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element => {
-    const navigate = useNavigate(); 
-    const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
-    const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
-    const [dataBill, setDatabill] = useState<ProductView[]>([])
-    // const [bill, setBill] = useState<ApiResponse>()
-
-    useEffect(() => {
-      const newData: ProductView[] = cart.map((cart) => ({
-        title: cart.name,
-        quantity: cart.quantity,
-        total_price: formatPrice(cart.priceAfterdiscount * cart.quantity),
-      })) 
-      console.log(cart)
-      setDatabill(newData)
-    }, [cart])
-
-    useEffect(() => {
-      const handleStorageChange = () => {
-        setRefreshToken(localStorage.getItem("refresh_token"));
-        setAccessToken(localStorage.getItem("access_token"));
-      };
-    
-      window.addEventListener("storage", handleStorageChange);
-    
-      return () => {
-        window.removeEventListener("storage", handleStorageChange);
-      };
-    }, []);
-
+    const [vouchers, setVouchers] = useState<DiscountCode[]>([])
     const [messageApi, contextHolder] = message.useMessage();
     const language = (): string => {
       const SaveedLanguage = localStorage.getItem('language')
@@ -136,6 +123,90 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
     const [phoneUser, setPhoneUser] = useState<string|undefined>(user_infor?.phone)
     const [note, setNote] = useState<string|null>("")
     const [voucher, setVoucher] = useState<string|null>("")
+    const navigate = useNavigate(); 
+    const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+    const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token"));
+    const [dataBill, setDatabill] = useState<ProductView[]>([])
+    // const [bill, setBill] = useState<ApiResponse>()
+    const [discount, setDiscount] = useState<TakeCode[]>([])
+
+    useEffect(() => {
+      const newData: ProductView[] = cart.map((cart) => ({
+        title: cart.name,
+        quantity: cart.quantity,
+        total_price: formatPrice(cart.priceAfterdiscount * cart.quantity),
+      })) 
+      console.log(cart)
+      setDatabill(newData)
+    }, [cart])
+
+    function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+      const formatter = new Intl.NumberFormat(currencyCode, {
+        style: 'currency',
+        currency: currency,
+      });
+      return formatter.format(amount);
+    }
+
+    useEffect(() => {
+      const newData: TakeCode[] = vouchers.map(voucheres => ({
+        value: voucheres.code,
+        label: `${voucheres.code} - ${language() == "Tiếng Việt" ? "Giảm" : "Discount"}: ${formatCurrency(voucheres.discount)}`
+      }))
+
+      setDiscount(newData)      
+    }, [vouchers])
+
+    useEffect(() => {
+        const checkToken = async () => {
+          const isValid = await Verify(refresh_token, access_token);
+            if (isValid) {
+              const body = {
+                language: null,
+                refresh_token: refresh_token
+              }
+    
+              fetch(`${import.meta.env.VITE_API_URL}/api/voucher-private/get-voucher`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body)
+              }).then(response => {
+                return response.json()
+              }).then((data) => {
+                if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
+                  messageApi.error("Lỗi khi lấy danh sách voucher");
+                  return
+                }
+                if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
+                  setVouchers(data.voucher)
+                }
+              })
+            } else {
+              messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+            }
+        };
+      checkToken()
+    }, [refresh_token, access_token, messageApi])
+
+    useEffect(() => {
+      const handleStorageChange = () => {
+        setRefreshToken(localStorage.getItem("refresh_token"));
+        setAccessToken(localStorage.getItem("access_token"));
+      };
+    
+      window.addEventListener("storage", handleStorageChange);
+    
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }, []);
+
+    const handleCHangeVoucher = (voucher: string) => {
+      setVoucher(voucher)
+    }
 
     // Hàm xử lý khi chọn vị trí trên bản đồ
     const handleLocationSelect = (lat: number, lng: number) => {
@@ -196,7 +267,7 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
       } finally {
         setTimeout(() => {
           props.setLoading(false)
-        }, 3000)
+        }, 6000)
       }
     }
 
@@ -360,15 +431,19 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Ghi chú:" : "Note:"}</p>
-                  <Input value={note ?? ""} onChange={(e) => setNote(e.target.value)}/>
+                  <Input value={note ?? ""} placeholder="Ghi chú nếu có" onChange={(e) => setNote(e.target.value)}/>
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Voucher:" : "Voucher:"}</p>
-                  <Input value={voucher ?? ""} onChange={(e) => setVoucher(e.target.value)}/>
+                  <Select value={voucher ?? ""} onChange={handleCHangeVoucher} options={discount}/>
               </div>
               <div className="flex gap-2 flex-col">
                   <p>{language() == "Tiếng Việt" ? "Tổng tiền:" : "Total price:"}</p>
                   <Input value={formatPrice(totalPrice)} readOnly/>
+              </div>
+              <div className="flex gap-2 flex-col">
+                  <p>{language() == "Tiếng Việt" ? "Phí VAT (10%):" : "VAT fee (10%):"}</p>
+                  <Input value={formatPrice(totalPrice * 10/100)} readOnly/>
               </div>
             </div>
         </Modal>

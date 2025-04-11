@@ -137,7 +137,8 @@ export default function ChangePassword(props: Props): JSX.Element {
       }).then((data) => {
         if (data.code === RESPONSE_CODE.FORGOT_PASSWORD_SUCCESSFUL) {
           setMessage({ type: "success", text: data.message })
-          messageApi.success(data.message).then(() => {
+          messageApi.success(data.message)
+          .then(() => {
             navigate("/signup")
           })
         } 
@@ -160,6 +161,10 @@ export default function ChangePassword(props: Props): JSX.Element {
     }
   }
 
+  useEffect(() => {
+    console.log(messages);
+  }, [messages])
+
   const getStrengthColor = () => {
     const colors = ["transparent", "#ef4444", "#f97316", "#eab308", "#22c55e"]
     return colors[passwordStrength]
@@ -171,43 +176,60 @@ export default function ChangePassword(props: Props): JSX.Element {
   }
 
   return (
-    <div className="password-change-container">
+    <div className="password-change-container min-h-screen flex items-center justify-center p-4 sm:p-6">
       {contextHolder}
-      <div className="background-pattern"></div>
+      <div className="background-pattern absolute inset-0 opacity-5"></div>
 
-      <div className="password-card" data-animate>
-        <div className="card-header">
-          <h1 className="card-title">Thay đổi mật khẩu mới</h1>
-          <p className="card-description">Giữ cho tài khoản của bạn được bảo mật.</p>
+      <div 
+        className="password-card w-full max-w-md sm:max-w-lg md:max-w-xl bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300"
+        data-animate
+      >
+        {/* Card Header */}
+        <div className="card-header bg-gradient-to-r from-orange-500 to-amber-500 p-4 sm:p-6 text-white">
+          <h1 className="card-title text-xl sm:text-2xl font-bold">Thay đổi mật khẩu mới</h1>
+          <p className="card-description text-sm sm:text-base opacity-90 mt-1">
+            Giữ cho tài khoản của bạn được bảo mật.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="card-form">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="card-form p-4 sm:p-6">
+          {/* Alert Message */}
           {messages && (
-            <div className={`alert ${messages?.type === "success" ? "alert-success" : "alert-error"}`} data-animate>
-              <span className="alert-icon">{messages?.type === "success" ? "✓" : "⚠"}</span>
+            <div 
+              className={`alert mb-4 p-3 rounded-md flex items-center text-sm ${
+                messages.type === "success" 
+                  ? "bg-green-50 text-green-800 border border-green-200" 
+                  : "bg-red-50 text-red-800 border border-red-200"
+              }`}
+              data-animate
+            >
+              <span className="alert-icon mr-2">
+                {messages?.type === "success" ? "✓" : "⚠"}
+              </span>
               <span className="alert-text">{messages?.text}</span>
             </div>
           )}
 
-          <div className="form-fields">
-
+          <div className="form-fields space-y-4">
+            {/* New Password Field */}
             <div className="form-group" data-animate>
-              <label htmlFor="new-password" className="form-label">
-               Mật khẩu mới
+              <label htmlFor="new-password" className="form-label block text-sm font-medium text-gray-700 mb-1">
+                Mật khẩu mới
               </label>
-              <div className="input-group">
+              <div className="input-group relative">
                 <input
                   id="new-password"
                   type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  className="form-input"
+                  className="form-input w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="password-toggle"
+                  className="password-toggle absolute inset-y-0 right-0 px-3 flex items-center"
                   aria-label={showNewPassword ? "Hide password" : "Show password"}
                 >
                   <div className={`eye-icon ${showNewPassword ? "eye-open" : "eye-closed"}`}>
@@ -219,36 +241,44 @@ export default function ChangePassword(props: Props): JSX.Element {
                 </button>
               </div>
 
+              {/* Password Strength Indicator */}
               {newPassword && (
-                <div className="password-strength visible-strength" data-animate>
-                  <div className="strength-header">
-                    <span className="strength-label">Độ mạnh của mật khẩu:</span>
-                    <span className={`strength-text strength-${passwordStrength}`}>{getStrengthText()}</span>
+                <div className="password-strength mt-3" data-animate>
+                  <div className="strength-header flex justify-between items-center mb-1">
+                    <span className="strength-label text-xs text-gray-500">Độ mạnh của mật khẩu:</span>
+                    <span className={`strength-text text-xs font-medium ${
+                      passwordStrength === 1 ? 'text-red-500' :
+                      passwordStrength === 2 ? 'text-orange-500' :
+                      passwordStrength === 3 ? 'text-yellow-500' :
+                      'text-green-500'
+                    }`}>
+                      {getStrengthText()}
+                    </span>
                   </div>
-                  <div className="strength-meter">
+                  <div className="strength-meter h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className="strength-meter-bar"
+                      className="strength-meter-bar h-full transition-all duration-300"
                       style={{
                         width: `${passwordStrength * 25}%`,
                         backgroundColor: getStrengthColor(),
                       }}
                     ></div>
                   </div>
-                  <ul className="password-requirements">
-                    <li className={newPassword.length >= 8 ? "requirement-met" : ""}>
-                      <span>{newPassword.length >= 8 ? "✓" : "○"}</span>
+                  <ul className="password-requirements mt-2 space-y-1 text-xs text-gray-500">
+                    <li className={`flex items-center ${newPassword.length >= 8 ? 'text-green-500' : ''}`}>
+                      <span className="mr-1">{newPassword.length >= 8 ? "✓" : "○"}</span>
                       Ít nhất 8 ký tự
                     </li>
-                    <li className={/[A-Z]/.test(newPassword) ? "requirement-met" : ""}>
-                      <span>{/[A-Z]/.test(newPassword) ? "✓" : "○"}</span>
+                    <li className={`flex items-center ${/[A-Z]/.test(newPassword) ? 'text-green-500' : ''}`}>
+                      <span className="mr-1">{/[A-Z]/.test(newPassword) ? "✓" : "○"}</span>
                       Bao gồm kỹ tự viết hoa
                     </li>
-                    <li className={/[0-9]/.test(newPassword) ? "requirement-met" : ""}>
-                      <span>{/[0-9]/.test(newPassword) ? "✓" : "○"}</span>
+                    <li className={`flex items-center ${/[0-9]/.test(newPassword) ? 'text-green-500' : ''}`}>
+                      <span className="mr-1">{/[0-9]/.test(newPassword) ? "✓" : "○"}</span>
                       Bao gồm số
                     </li>
-                    <li className={/[^A-Za-z0-9]/.test(newPassword) ? "requirement-met" : ""}>
-                      <span>{/[^A-Za-z0-9]/.test(newPassword) ? "✓" : "○"}</span>
+                    <li className={`flex items-center ${/[^A-Za-z0-9]/.test(newPassword) ? 'text-green-500' : ''}`}>
+                      <span className="mr-1">{/[^A-Za-z0-9]/.test(newPassword) ? "✓" : "○"}</span>
                       Bao gồm ký tự đặc biệt
                     </li>
                   </ul>
@@ -256,23 +286,24 @@ export default function ChangePassword(props: Props): JSX.Element {
               )}
             </div>
 
+            {/* Confirm Password Field */}
             <div className="form-group" data-animate>
-              <label htmlFor="confirm-password" className="form-label">
+              <label htmlFor="confirm-password" className="form-label block text-sm font-medium text-gray-700 mb-1">
                 Xác nhận mật khẩu mới
               </label>
-              <div className="input-group">
+              <div className="input-group relative">
                 <input
                   id="confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="form-input"
+                  className="form-input w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="password-toggle"
+                  className="password-toggle absolute inset-y-0 right-0 px-3 flex items-center"
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   <div className={`eye-icon ${showConfirmPassword ? "eye-open" : "eye-closed"}`}>
@@ -284,141 +315,40 @@ export default function ChangePassword(props: Props): JSX.Element {
                 </button>
               </div>
               {confirmPassword && newPassword && confirmPassword !== newPassword && (
-                <p className="password-mismatch">Mật khẩu không trùng khớp</p>
+                <p className="password-mismatch mt-1 text-xs text-red-500">Mật khẩu không trùng khớp</p>
               )}
             </div>
           </div>
 
-          <button type="submit" disabled={isLoading} className="submit-button" data-animate>
+          {/* Submit Button */}
+          <button 
+            type="submit" 
+            disabled={isLoading} 
+            className="submit-button w-full mt-6 py-2 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-md hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center"
+            data-animate
+          >
             {isLoading ? (
-              <div className="button-content">
-                <div className="spinner"></div>
+              <div className="button-content flex items-center">
+                <div className="spinner w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 <span>Đang cập nhật...</span>
               </div>
             ) : (
-              <div className="button-content">
+              <div className="button-content flex items-center">
                 <span>Đặt lại mật khẩu</span>
-                <span className="arrow-icon">→</span>
+                <span className="arrow-icon ml-2 animate-pulse">→</span>
               </div>
             )}
           </button>
         </form>
       </div>
 
-      <div className="footer" data-animate>
+      {/* Footer */}
+      <div className="footer absolute bottom-4 right-4 text-xs text-gray-500" data-animate>
         TankFood © {new Date().getFullYear()}
       </div>
 
-      <style>{`
-        /* Container and background */
-        .password-change-container {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1rem;
-          position: relative;
-          background: linear-gradient(to bottom right, #fef3c7, #fff7ed, #fef9c3);
-        }
-        
-        .background-pattern {
-          position: absolute;
-          inset: 0;
-          opacity: 0.05;
-          background-size: 500px;
-          background-repeat: repeat;
-        }
-        
-        /* Card styling */
-        .password-card {
-          width: 100%;
-          max-width: 28rem;
-          border-radius: 0.5rem;
-          overflow: hidden;
-          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-          background-color: white;
-          opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        .card-header {
-          background: linear-gradient(to right, #f97316, #f59e0b);
-          padding: 1.5rem;
-          color: white;
-        }
-        
-        .card-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin: 0;
-          line-height: 1.2;
-        }
-        
-        .card-description {
-          margin-top: 0.25rem;
-          opacity: 0.8;
-          font-size: 0.875rem;
-        }
-        
-        .card-form {
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-        
-        /* Form elements */
-        .form-fields {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-        
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          opacity: 0;
-          transform: translateY(10px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        .form-label {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #374151;
-          margin-bottom: 0.25rem;
-        }
-        
-        .input-group {
-          position: relative;
-          display: flex;
-        }
-        
-        .form-input {
-          width: 100%;
-          padding: 0.625rem;
-          border: 1px solid #d1d5db;
-          border-radius: 0.375rem;
-          font-size: 0.875rem;
-          transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: #f59e0b;
-          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-          transform: translateY(-1px);
-        }
-
-        .input-group:hover .form-input {
-          border-color: #f59e0b;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-          transform: translateY(-1px);
-        }
-        
-        /* Animated eye icon */
+      {/* Eye Icon Animation Styles */}
+      <style >{`
         .eye-icon {
           position: relative;
           width: 20px;
@@ -475,238 +405,27 @@ export default function ChangePassword(props: Props): JSX.Element {
           transform: rotate(45deg) scaleX(1);
         }
 
-        .password-toggle {
-          position: absolute;
-          right: 0;
-          top: 0;
-          height: 100%;
-          padding: 0 0.75rem;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #9ca3af;
-          transition: all 0.3s ease;
-        }
-
-        .password-toggle:hover {
-          color: #f59e0b;
-          transform: scale(1.1);
-        }
-
-        .password-toggle:hover .eye-icon {
-          transform: scale(1.1);
-        }
-
-        .password-toggle:active .eye-icon {
-          transform: scale(0.9);
-        }
-        
-        /* Password strength */
-        .password-strength {
-          margin-top: 0.5rem;
+        /* Animation for elements with data-animate */
+        [data-animate] {
           opacity: 0;
           transform: translateY(10px);
           transition: opacity 0.5s ease, transform 0.5s ease;
         }
-        
-        .visible-strength {
-          opacity: 1 !important;
-          transform: translateY(0) !important;
+
+        /* Background pattern animation */
+        .background-pattern {
+          background-image: radial-gradient(#f59e0b 0.5px, transparent 0.5px);
+          background-size: 15px 15px;
+          animation: patternMove 60s linear infinite;
         }
 
-        .strength-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.25rem;
-        }
-        
-        .strength-label {
-          font-size: 0.75rem;
-          color: #6b7280;
-        }
-        
-        .strength-text {
-          font-size: 0.75rem;
-          font-weight: 500;
-        }
-        
-        .strength-1 { color: #ef4444; }
-        .strength-2 { color: #f97316; }
-        .strength-3 { color: #eab308; }
-        .strength-4 { color: #22c55e; }
-        
-        .strength-meter {
-          height: 0.375rem;
-          background-color: #e5e7eb;
-          border-radius: 9999px;
-          overflow: hidden;
-        }
-        
-        .strength-meter-bar {
-          height: 100%;
-          transition: width 0.5s ease-out, background-color 0.5s ease;
-        }
-        
-        .password-requirements {
-          margin-top: 0.5rem;
-          padding-left: 0;
-          list-style: none;
-          font-size: 0.75rem;
-          color: #6b7280;
-        }
-        
-        .password-requirements li {
-          display: flex;
-          align-items: center;
-          margin-bottom: 0.25rem;
-        }
-        
-        .password-requirements li span {
-          margin-right: 0.25rem;
-        }
-        
-        .requirement-met {
-          color: #22c55e;
-        }
-        
-        .password-mismatch {
-          color: #ef4444;
-          font-size: 0.75rem;
-          margin-top: 0.25rem;
-        }
-        
-        /* Alert */
-        .alert {
-          display: flex;
-          align-items: center;
-          padding: 0.75rem;
-          border-radius: 0.375rem;
-          font-size: 0.875rem;
-          opacity: 0;
-          transform: translateY(-10px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        
-        .alert-success {
-          background-color: #f0fdf4;
-          color: #166534;
-          border: 1px solid #dcfce7;
-        }
-        
-        .alert-error {
-          background-color: #fef2f2;
-          color: #b91c1c;
-          border: 1px solid #fee2e2;
-        }
-        
-        .alert-icon {
-          margin-right: 0.5rem;
-        }
-        
-        /* Submit button */
-        .submit-button {
-          background: linear-gradient(to right, #f59e0b, #f97316);
-          color: white;
-          border: none;
-          border-radius: 0.375rem;
-          padding: 0.75rem 1rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          opacity: 0;
-          transform: translateY(10px);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .submit-button:before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.2) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
-          transition: all 0.6s ease;
-        }
-
-        .submit-button:hover {
-          background: linear-gradient(to right, #d97706, #ea580c);
-          transform: scale(1.03) translateY(-2px);
-          box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .submit-button:hover:before {
-          left: 100%;
-        }
-
-        .submit-button:active {
-          transform: scale(0.98) translateY(0);
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .submit-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-        
-        .button-content {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .spinner {
-          width: 1.25rem;
-          height: 1.25rem;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 50%;
-          border-top-color: white;
-          animation: spin 1s linear infinite;
-          margin-right: 0.5rem;
-        }
-        
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        
-        .arrow-icon {
-          margin-left: 0.5rem;
-          animation: pulse-move 1.5s infinite;
-          display: inline-block;
-        }
-
-        @keyframes pulse-move {
-          0%, 100% { 
-            opacity: 1;
-            transform: translateX(0);
+        @keyframes patternMove {
+          from {
+            background-position: 0 0;
           }
-          50% { 
-            opacity: 0.6;
-            transform: translateX(3px);
+          to {
+            background-position: 1000px 1000px;
           }
-        }
-        
-        /* Footer */
-        .footer {
-          position: absolute;
-          bottom: 1rem;
-          right: 1rem;
-          font-size: 0.75rem;
-          color: #6b7280;
-          opacity: 0;
-          transform: translateY(10px);
-          transition: opacity 0.5s ease, transform 0.5s ease;
         }
       `}</style>
     </div>

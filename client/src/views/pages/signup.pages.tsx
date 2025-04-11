@@ -227,6 +227,13 @@ const Signup: React.FC<Props> = (props) => {
                 return 
               }
               if(data.code == RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL) {
+                messageApi.open({
+                  type: 'success',
+                  content: 'Đăng ký thành công',
+                  style: {
+                    marginTop: '10vh',
+                  },
+                })
                 const body = {
                   language: null,
                   email: formData.email.trim(),
@@ -423,13 +430,13 @@ const Signup: React.FC<Props> = (props) => {
             <div className="w-full md:w-3/5 p-6 md:p-8">
               <div className="flex border-b mb-8">
                   <button 
-                    className={`pb-2 px-4 font-semibold ${formType === 'login' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
+                    className={`pb-2 cursor-pointer px-4 font-semibold ${formType === 'login' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
                     onClick={() => showForm('login')}
                   >
                     Đăng nhập
                   </button>
                   <button 
-                    className={`pb-2 px-4 font-semibold ${formType === 'register' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
+                    className={`pb-2 cursor-pointer px-4 font-semibold ${formType === 'register' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
                     onClick={() => showForm('register')}
                   >
                     Đăng ký
@@ -465,7 +472,7 @@ const Signup: React.FC<Props> = (props) => {
                             <motion.button
                               type="button"
                               onClick={togglePasswordVisibility}
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                              className="absolute cursor-pointer inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
                               whileTap={{ scale: 0.95 }}
                             >
                               {showPassword ? (
@@ -484,14 +491,14 @@ const Signup: React.FC<Props> = (props) => {
                       </div>
                       
                       <div className="text-right">
-                          <button type="button" onClick={() => ForgotPass(loginData.email)} className="text-sm text-orange-500 hover:underline focus:outline-none">
+                          <button type="button" onClick={() => ForgotPass(loginData.email)} className="text-sm text-orange-500 hover:underline cursor-pointer focus:outline-none">
                             Quên mật khẩu?
                           </button>
                       </div>
                       
                       <button 
                         type="submit" 
-                        className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                        className="w-full cursor-pointer bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                       >
                         Đăng nhập
                       </button>
@@ -551,7 +558,7 @@ const Signup: React.FC<Props> = (props) => {
                             <motion.button
                               type="button"
                               onClick={toggleNewPasswordVisibility}
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                              className="absolute cursor-pointer inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
                               whileTap={{ scale: 0.95 }}
                             >
                               {showNewPassword ? (
@@ -583,7 +590,7 @@ const Signup: React.FC<Props> = (props) => {
                             <motion.button
                               type="button"
                               onClick={toggleConfirmPasswordVisibility}
-                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
+                              className="absolute cursor-pointer inset-y-0 right-0 pr-3 flex items-center text-gray-500 focus:outline-none"
                               whileTap={{ scale: 0.95 }}
                             >
                               {showConfirmPassword ? (
@@ -603,7 +610,7 @@ const Signup: React.FC<Props> = (props) => {
                       
                       <button 
                         type="submit" 
-                        className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                        className="w-full cursor-pointer bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                       >
                         Đăng ký
                       </button>

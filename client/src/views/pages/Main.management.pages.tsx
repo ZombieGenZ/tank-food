@@ -218,7 +218,6 @@ function MainManage(props: Props): JSX.Element{
       }).then(response => {
         return response.json()
       }).then(data => {
-        console.log(data)
         setRecentOrder(data.order)
       })
     }
@@ -232,7 +231,6 @@ function MainManage(props: Props): JSX.Element{
           messageApi.error("Token không hợp lệ!");
         }
       };
-      
       checkToken();
     }, [refresh_token, access_token, messageApi, selectDate]);
 

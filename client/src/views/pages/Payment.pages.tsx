@@ -49,42 +49,52 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ userBill }) => {
   }
 
   return (
-    <div className=" bg-opacity-70 min-h-full flex">
-      <div className="bg-white shadow-2xl flex">
+    <div className="bg-opacity-70 min-h-full flex">
+      <div className="bg-white shadow-2xl flex flex-col lg:flex-row w-full">
         {/* Left Section - Order Info */}
-        <div className="w-2/5 p-8 bg-white">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">
+        <div className="w-full lg:w-2/5 p-4 md:p-6 lg:p-8 bg-white">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-6 border-b pb-2 md:pb-3">
             Thông tin đơn hàng
           </h2>
-          <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
-            <p className="text-gray-500 text-sm mb-1">Chủ tài khoản</p>
-            <p className="font-medium uppercase">{userBill.infomation.account_name}</p>
+          <div className="border-b border-gray-200 pb-3 md:pb-4 mb-4 md:mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
+            <p className="text-gray-500 text-xs md:text-sm mb-1">Chủ tài khoản</p>
+            <p className="font-medium text-sm md:text-base uppercase">{userBill.infomation.account_name}</p>
           </div>
-          <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
-            <p className="text-gray-500 text-sm mb-1">Số tài khoản</p>
-            <p className="font-medium text-orange-600">{userBill.infomation.account_no}</p>
+          <div className="border-b border-gray-200 pb-3 md:pb-4 mb-4 md:mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
+            <p className="text-gray-500 text-xs md:text-sm mb-1">Số tài khoản</p>
+            <p className="font-medium text-sm md:text-base text-orange-600">{userBill.infomation.account_no}</p>
           </div>
-          <div className="border-b border-gray-200 pb-4 mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
-            <p className="text-gray-500 text-sm mb-1">Ngân hàng thụ hưởng</p>
-            <p className="font-medium">{userBill.infomation.bank_id}</p>
+          <div className="border-b border-gray-200 pb-3 md:pb-4 mb-4 md:mb-5 hover:bg-orange-50 transition duration-300 rounded p-2">
+            <p className="text-gray-500 text-xs md:text-sm mb-1">Ngân hàng thụ hưởng</p>
+            <p className="font-medium text-sm md:text-base">{userBill.infomation.bank_id}</p>
           </div>
-          <div className="border-b border-gray-200 pb-4 mb-5">
-            <p className="text-gray-500 text-sm mb-1">Số tiền</p>
-            <p className="font-bold text-xl text-orange-600">{formatCurrency(userBill.infomation.total_bill)}</p>
+          <div className="border-b border-gray-200 pb-3 md:pb-4 mb-4 md:mb-5">
+            <p className="text-gray-500 text-xs md:text-sm mb-1">Số tiền</p>
+            <p className="font-bold text-lg md:text-xl text-orange-600">{formatCurrency(userBill.infomation.total_bill)}</p>
           </div>
-          <div className="bg-orange-50 p-4 rounded-lg border border-orange-100 mb-6 shadow-sm">
-            <p className="text-gray-600 text-sm mb-1">Nội dung chuyển tiền</p>
-            <p className="font-medium text-orange-600 text-lg" style={{ wordWrap: 'break-word' }}>{userBill.infomation.order_id}</p>
+          <div className="bg-orange-50 p-3 md:p-4 rounded-lg border border-orange-100 mb-4 md:mb-6 shadow-sm">
+            <p className="text-gray-600 text-xs md:text-sm mb-1">Nội dung chuyển tiền</p>
+            <p className="font-medium text-orange-600 text-base md:text-lg" style={{ wordWrap: 'break-word' }}>
+              {userBill.infomation.order_id}
+            </p>
           </div>
         </div>
 
         {/* Right Section - QR Code */}
-        <div className="w-3/5 bg-gradient-to-br from-orange-500 to-orange-600 p-8 flex flex-col items-center justify-start relative">
-          <h2 className="text-2xl font-semibold text-white mb-8">Quét mã QR để thanh toán</h2>
-          <div className="bg-white rounded-xl p-4 mb-6 w-full max-w-xs shadow-xl">
-            <img src={userBill.infomation.payment_qr_url || "/api/placeholder/60/30"} alt="QR Code" className="w-full h-auto" />
+        <div className="w-full lg:w-3/5 bg-gradient-to-br from-orange-500 to-orange-600 p-4 md:p-6 lg:p-8 flex flex-col items-center justify-start relative">
+          <h2 className="text-xl md:text-2xl font-semibold text-white mb-4 md:mb-6 lg:mb-8 text-center">
+            Quét mã QR để thanh toán
+          </h2>
+          <div className="bg-white rounded-xl p-3 md:p-4 mb-4 md:mb-6 w-full max-w-xs shadow-xl">
+            <img 
+              src={userBill.infomation.payment_qr_url || "/api/placeholder/60/30"} 
+              alt="QR Code" 
+              className="w-full h-auto" 
+            />
           </div>
-          <p className="text-center text-sm text-gray-200">Quét mã để thanh toán nhanh chóng</p>
+          <p className="text-center text-xs md:text-sm text-gray-200">
+            Quét mã để thanh toán nhanh chóng
+          </p>
         </div>
       </div>
     </div>
