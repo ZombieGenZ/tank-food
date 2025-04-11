@@ -200,7 +200,8 @@ const Signup: React.FC<Props> = (props) => {
               email: formData.email,
               phone: formData.phone,
               password: formData.password,
-              confirm_password: formData.confirm_pass
+              confirm_password: formData.confirm_pass,
+              'cf-turnstile-response': captchaToken
             }
 
             fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
@@ -243,7 +244,8 @@ const Signup: React.FC<Props> = (props) => {
                 const body = {
                   language: null,
                   email: formData.email.trim(),
-                  password: formData.password.trim()
+                  password: formData.password.trim(),
+                  'cf-turnstile-response': captchaToken
                 }
                 fetch(`${import.meta.env.VITE_API_URL}/api/users/login` , {
                   method: 'POST',
@@ -322,7 +324,8 @@ const Signup: React.FC<Props> = (props) => {
           const body = {
             language: null,
             email: loginData.email.trim(),
-            password: loginData.password.trim()
+            password: loginData.password.trim(),
+            'cf-turnstile-response': captchaToken
           }
           fetch(`${import.meta.env.VITE_API_URL}/api/users/login` , {
             method: 'POST',
