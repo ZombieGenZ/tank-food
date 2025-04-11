@@ -380,7 +380,7 @@ const FormMain = (): JSX.Element => {
               className={`p-1 md:p-2 cursor-pointer rounded-md bg-orange-500 text-white text-xs md:text-base`}
               onClick={() => handleChange(language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt')}
             >
-              {language === 'Tiếng Việt' ? 'EN' : 'VN'}
+              {language === 'Tiếng Việt' ? 'VN' : 'US'}
             </button>
             <div className="border-l border-2 border-gray-400 h-6 md:h-8" />
           </div>
@@ -531,7 +531,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/payment' element={<OrderPageWithPayment />} />
               <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
-              <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+              <Route path='/voucher' element={<VoucherPrivate />}/>
               <Route path='/errorpage' element={<NotFoundPage />}/>
               <Route path='/verify-account' element={<ResultVerifyAccount />}/>
             </Routes>
@@ -567,7 +567,7 @@ const FormMain = (): JSX.Element => {
           <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
           <Route path='/deal' element={<SealPage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-          <Route path='/voucher' element={<VoucherPrivate isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path='/voucher' element={<VoucherPrivate />}/>
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           {refresh_token !== null && <>
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
@@ -948,7 +948,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
               className={`p-1 md:p-2 cursor-pointer rounded-md bg-orange-500 text-white text-xs md:text-base`}
               onClick={() => handleChange(language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt')}
             >
-              {language === 'Tiếng Việt' ? 'EN' : 'VN'}
+              {language === 'Tiếng Việt' ? 'VN' : 'US'}
             </button>
             <div className="border-l border-2 border-gray-400 h-6 md:h-8" />
           </div>

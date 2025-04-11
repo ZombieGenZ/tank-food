@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { useNavigate } from "react-router-dom";
 import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import { motion } from "framer-motion";
+import TurnstileCaptcha from "../components/Capcha.components";
 
 // interface đăng ký
 
@@ -27,6 +28,7 @@ interface Props {
 }
 
 const Signup: React.FC<Props> = (props) => {
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [formType, setFormType] = useState('login');
@@ -184,6 +186,10 @@ const Signup: React.FC<Props> = (props) => {
 
     // Nút đăng ký
     const handleSubmit = (e: React.FormEvent) => {
+      if (!captchaToken) {
+        messageApi.error('Vui lòng hoàn thành CAPTCHA');
+        return;
+      }
       try {
         props.setLoading(true)
         e.preventDefault();
@@ -305,6 +311,10 @@ const Signup: React.FC<Props> = (props) => {
 
     // Nút đăng nhập
     const handleLoginSubmit = (e: FormEvent) => {
+      if (!captchaToken) {
+        messageApi.error('Vui lòng hoàn thành CAPTCHA');
+        return;
+      }
       try {
         props.setLoading(true)
         e.preventDefault();
@@ -490,7 +500,11 @@ const Signup: React.FC<Props> = (props) => {
                           {errorLogin.password && <p className="text-red-500 text-sm mt-1">{errorLogin.password}</p>}
                       </div>
                       
-                      <div className="text-right">
+                      <div className="flex justify-between gap-5">
+                          <TurnstileCaptcha
+                            siteKey="0x4AAAAAABJKaIKjco1vWIzB" // Thay bằng site key của bạn
+                            onVerify={(token) => setCaptchaToken(token)}
+                          />
                           <button type="button" onClick={() => ForgotPass(loginData.email)} className="text-sm text-orange-500 hover:underline cursor-pointer focus:outline-none">
                             Quên mật khẩu?
                           </button>
@@ -607,6 +621,11 @@ const Signup: React.FC<Props> = (props) => {
                           </div>
                           {errors.confirm_pass && <p className="text-red-500 text-sm mt-1">{errors.confirm_pass}</p>}
                       </div>
+
+                      <TurnstileCaptcha
+                        siteKey="0x4AAAAAABJKaIKjco1vWIzB" // Thay bằng site key của bạn
+                        onVerify={(token) => setCaptchaToken(token)}
+                      />
                       
                       <button 
                         type="submit" 

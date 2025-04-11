@@ -21,6 +21,7 @@
     "@mantine/form": "^7.17.1",
     "@mantine/hooks": "^7.17.1",
     "@mantine/notifications": "^7.17.1",
+    "@marsidev/react-turnstile": "^1.1.0",
     "@material-tailwind/react": "^2.1.10",
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",

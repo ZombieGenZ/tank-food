@@ -19,12 +19,7 @@ interface DiscountCode {
   updated_at: string | Date;
 }
 
-interface Props {
-  isLoading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const VoucherPrivate: React.FC<Props> = (props) => {
+const VoucherPrivate: React.FC = () => {
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -114,6 +109,14 @@ const VoucherPrivate: React.FC<Props> = (props) => {
     return formatter.format(amount);
   }
 
+  function formatDateFromISO(isoDateString: string): string {
+    const date = new Date(isoDateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code)
     setCopiedCode(code)
@@ -198,18 +201,24 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                             ? "Fixed Amount"
                             : "Free Item"}
                       </span> */}
-                      <h3 className="text-2xl font-bold mb-1"> - {formatCurrency(voucher.discount)}</h3>
-                      <p className="text-white text-opacity-90">{String(voucher.created_at)}</p>
+                      <h3 className="text-2xl font-bold mb-1">{formatCurrency(voucher.discount)}</h3>
+                      <p className="text-white text-opacity-90">{formatDateFromISO(String(voucher.created_at))}</p>
                     </div>
-                    {voucher.status == 1 && (
-                      <span className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">Used</span>
-                    )}
                   </div>
 
                 </div>
 
                 <div className="bg-gray-800 p-4">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between gap-5 items-center">
+                    <p className={`text-sm font-medium px-3 py-2 rounded-md ${
+                      voucher.status == 0 
+                        ? "bg-amber-100 text-amber-800 border border-amber-200" 
+                        : "bg-gray-100 text-gray-600 border border-gray-200"
+                    }`}>
+                      {voucher.status == 0 
+                        ? "Lưu ý: Voucher chỉ được sử dụng 1 lần duy nhất" 
+                        : "Voucher đã được sử dụng"}
+                    </p>
                     <div className="flex items-center space-x-2">
                       <div className="font-medium bg-gray-700 px-3 py-1.5 rounded-lg text-white">{voucher.code}</div>
                       <motion.button
@@ -292,23 +301,6 @@ const VoucherPrivate: React.FC<Props> = (props) => {
             </div>
           )}
         </div>
-
-        {/* Floating Action Button */}
-        <motion.button
-          whileHover={{ scale: 1.05, rotate: 5 }}
-          whileTap={{ scale: 0.95 }}
-          className="fixed bottom-8 right-8 bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 rounded-full shadow-lg"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-        </motion.button>
       </motion.div>
     </div>
   )

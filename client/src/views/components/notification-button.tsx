@@ -36,7 +36,7 @@ export default function NotificationButton() {
       {/* Notification Button */}
       <button
         onClick={toggleDropdown}
-        className="relative cursor-pointer w-8 h-8 md:w-11 md:h-11 flex items-center justify-center bg-white rounded-full shadow-lg group"
+        className="relative cursor-pointer w-8 h-8 md:w-11 md:h-11 flex items-center justify-center bg-transparent rounded-full shadow-lg group"
         data-aos="zoom-in"
       >
         <Bell className="w-6 h-6 text-blue-500 group-hover:text-blue-600 transition-all duration-300" />
@@ -49,7 +49,7 @@ export default function NotificationButton() {
       {isOpen && (
         <div
           className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-xl z-50 overflow-hidden"
-          data-aos="fade-up"
+          data-aos="fade-down"
           data-aos-duration="400"
         >
           <div className="p-3 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-100">
@@ -68,26 +68,12 @@ export default function NotificationButton() {
                 <span className="text-blue-500 text-lg">🍔</span>
               </div>
               <div>
-                <p className="text-gray-700 font-medium">Đơn hàng của bạn đã được xác nhận</p>
+                <p className="text-gray-700 font-medium text-sm">Đơn hàng của bạn đã được xác nhận</p>
                 <p className="text-gray-500 text-sm mt-1">2 phút trước</p>
               </div>
               <div className="absolute right-4 top-4 w-2 h-2 bg-blue-500 rounded-full"></div>
             </div>
           </div>
-
-          <div
-            className="p-3 bg-gradient-to-r from-blue-50 to-blue-100 text-center"
-            data-aos="fade-up"
-            data-aos-delay="300"
-          >
-            <button className="text-blue-600 font-medium hover:text-blue-700 transition-colors">
-              Xem tất cả thông báo
-            </button>
-          </div>
-
-          {/* Animated decorative elements */}
-          <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-blue-100 rounded-full opacity-30 animate-pulse"></div>
-          <div className="absolute -top-4 -right-4 w-12 h-12 bg-blue-200 rounded-full opacity-20 animate-ping"></div>
         </div>
       )}
     </div>
