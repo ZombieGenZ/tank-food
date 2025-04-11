@@ -15,6 +15,7 @@ import {
   changePasswordController
 } from '~/controllers/users.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
+import { verifyRequestValidator } from '~/middlewares/captcha.middlewares'
 import { languageValidator } from '~/middlewares/language.middlewares'
 import {
   registerUserValidator,
@@ -49,6 +50,7 @@ const router = express.Router()
 router.post(
   '/register',
   languageValidator,
+  verifyRequestValidator,
   registerUserValidator,
   wrapRequestHandler(registerUserController)
 )
@@ -67,6 +69,7 @@ router.post(
 router.post(
   '/login',
   languageValidator,
+  verifyRequestValidator,
   loginUserValidator,
   wrapRequestHandler(loginUserController)
 )
@@ -193,6 +196,7 @@ router.post(
 router.put(
   '/send-email-forgot-password',
   languageValidator,
+  verifyRequestValidator,
   sendEmailForgotPasswordValidator,
   wrapRequestHandler(sendEmailForgotPasswordController)
 )
