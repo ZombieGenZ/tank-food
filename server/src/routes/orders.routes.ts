@@ -25,6 +25,7 @@ import {
   authenticateShipperValidator,
   authenticateAdministratorValidator
 } from '~/middlewares/authenticate.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import {
   orderOnlineValidator,
   voucherPublicAndPrivateValidator,
@@ -71,6 +72,7 @@ const router = express.Router()
  */
 router.post(
   '/order-online',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   orderOnlineValidator,
@@ -117,6 +119,7 @@ router.post('/checkout', sepayApiKeyValidator, wrapRequestHandler(checkoutOrderC
  */
 router.post(
   '/get-new-order-employee',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -137,6 +140,7 @@ router.post(
  */
 router.post(
   '/get-old-order-employee',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -160,6 +164,7 @@ router.post(
  */
 router.put(
   '/order-approval',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -183,6 +188,7 @@ router.put(
  */
 router.put(
   '/cancel-order-employee',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -205,6 +211,7 @@ router.put(
  */
 router.put(
   '/order-completion-confirmation',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -226,6 +233,7 @@ router.put(
  */
 router.post(
   '/get-new-order-shipper',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateShipperValidator,
@@ -246,6 +254,7 @@ router.post(
  */
 router.post(
   '/get-old-order-shipper',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateShipperValidator,
@@ -267,6 +276,7 @@ router.post(
  */
 router.put(
   '/receive-delivery',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateShipperValidator,
@@ -289,6 +299,7 @@ router.put(
  */
 router.put(
   '/cancel-order-shipper',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -311,6 +322,7 @@ router.put(
  */
 router.put(
   '/confirm-delivery-completion',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateShipperValidator,
@@ -335,7 +347,13 @@ router.put(
  *    voucher?: string
  * }
  */
-router.post('/order-offline', orderOfflineValidator, voucherPublicValidator, wrapRequestHandler(orderOfflineController))
+router.post(
+  '/order-offline',
+  languageValidator,
+  orderOfflineValidator,
+  voucherPublicValidator,
+  wrapRequestHandler(orderOfflineController)
+)
 
 /*
  * Description: Xác nhận thanh toán (Dành cho order trả bằng tiền mặt)
@@ -352,6 +370,7 @@ router.post('/order-offline', orderOfflineValidator, voucherPublicValidator, wra
  */
 router.put(
   '/payment-confirmation',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateEmployeeValidator,
@@ -373,6 +392,7 @@ router.put(
  */
 router.post(
   '/get-order',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   wrapRequestHandler(getOrderController)
@@ -393,6 +413,7 @@ router.post(
  */
 router.put(
   '/cancel-order',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   cancelOrderValidator,
@@ -413,6 +434,7 @@ router.put(
  */
 router.post(
   '/get-order-overview',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,

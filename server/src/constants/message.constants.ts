@@ -5,6 +5,10 @@ export class VIETNAMESE_STATIC_MESSAGE {
     VALIDATION_ERROR: 'Lỗi dữ liệu đầu vào'
   } as const
 
+  static CAPTCHA_MESSAGE = {
+    CAPTCHA_INVALID: 'Mã xác thực không hợp lệ'
+  }
+
   static USER_MESSAGE = {
     DISPLAY_NAME_IS_REQUIRED: 'Không được bỏ trống tên hiển thị',
     DISPLAY_NAME_MUST_BE_A_STRING: 'Tên hiển thị phải là chuỗi ký tự',
@@ -303,12 +307,20 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_NOTIFICATION_SUCCESS: 'Lấy danh sách thông báo thành công',
     GET_NOTIFICATION_FAILURE: 'Lấy danh sách thông báo thất bại'
   } as const
+
+  static LANGUAGE_MESSAGE = {
+    LANGUAGE_INVALID: 'Ngôn ngữ không hợp lệ',
+  } as const
 }
 
 export class ENGLISH_STATIC_MESSAGE {
   static SYSTEM_MESSAGE = {
     VALIDATION_ERROR: 'Invalid input data'
   } as const
+
+  static CAPTCHA_MESSAGE = {
+    CAPTCHA_INVALID: 'Invalid captcha'
+  }
 
   static USER_MESSAGE = {
     DISPLAY_NAME_IS_REQUIRED: 'Display name is required',
@@ -610,7 +622,11 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_NOTIFICATION_SUCCESS: 'Successfully retrieved notification list',
     GET_NOTIFICATION_FAILURE: 'Failed to retrieve notification list',
   } as const
-}
+
+  static LANGUAGE_MESSAGE = {
+    LANGUAGE_INVALID: 'Invalid language',
+  } as const
+} 
 
 export class VIETNAMESE_DYNAMIC_MESSAGE {
   static UserRegistrationSuccessful(email: string, ip: string) {
@@ -867,6 +883,9 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   }
   static ExportStatisticalFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xuất thông tin thống kê thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
+  static CaptchaVerificationFailed(err: unknown) {
+    return `Thực hiện xác thực captcha thất bại | Lỗi: ${err}`
   }
 }
 
@@ -1125,5 +1144,8 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static ExportStatisticalFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to perform statistical information export (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static CaptchaVerificationFailed(err: unknown) {
+    return `Failed to perform captcha verification | Error: ${err}`
   }
 }

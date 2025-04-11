@@ -15,6 +15,7 @@ import {
   updateCategoryValidator,
   deleteCategoryValidator
 } from '~/middlewares/categories.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -34,6 +35,7 @@ const router = express.Router()
  */
 router.post(
   '/create',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -58,6 +60,7 @@ router.post(
  */
 router.put(
   '/update',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -80,6 +83,7 @@ router.put(
  */
 router.delete(
   '/delete',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -95,6 +99,10 @@ router.delete(
  *    language?: string
  * }
  */
-router.post('/get-category', wrapRequestHandler(getCategoryController))
+router.post(
+  '/get-category',
+  languageValidator,
+  wrapRequestHandler(getCategoryController)
+)
 
 export default router

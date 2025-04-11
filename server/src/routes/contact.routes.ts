@@ -1,6 +1,7 @@
 import express from 'express'
 import { contactController, responseContactController } from '~/controllers/contact.controllers'
 import { contactValidator, discordApiKeyValidator } from '~/middlewares/contact.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -17,7 +18,12 @@ const router = express.Router()
  *    content: string
  * }
  */
-router.post('/send', contactValidator, wrapRequestHandler(contactController))
+router.post(
+  '/send',
+  languageValidator,
+  contactValidator,
+  wrapRequestHandler(contactController)
+)
 
 /*
  * Description: Nhận phản hồi từ Bot discord

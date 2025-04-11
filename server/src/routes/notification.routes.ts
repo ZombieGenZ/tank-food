@@ -5,6 +5,7 @@ import {
 } from '~/middlewares/authenticate.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 import { getNotificationController } from '~/controllers/notification.controllers'
+import { languageValidator } from '~/middlewares/language.middlewares'
 const router = express.Router()
 
 /*
@@ -21,6 +22,7 @@ const router = express.Router()
  */
 router.post(
   '/get-notification',
+  languageValidator,
   authenticateValidator,
   getNotificationValidator,
   wrapRequestHandler(getNotificationController)

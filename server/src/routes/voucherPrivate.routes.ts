@@ -1,6 +1,7 @@
 import express from 'express'
 import { getVoucherPrivateController } from '~/controllers/voucherPrivate.controllers'
 import { authenticateValidator, authenticateVerifyAccountValidator } from '~/middlewares/authenticate.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -18,6 +19,7 @@ const router = express.Router()
  */
 router.post(
   '/get-voucher',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   wrapRequestHandler(getVoucherPrivateController)

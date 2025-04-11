@@ -5,6 +5,7 @@ import {
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator
 } from '~/middlewares/authenticate.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import { statisticalTimeValidator } from '~/middlewares/statistical.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -24,6 +25,7 @@ const router = express.Router()
  */
 router.post(
   '/overview',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -36,7 +38,11 @@ router.post(
  * Path: /api/statistical/analytics-total-requests
  * Method: GET
  */
-router.get('/analytics-total-requests', wrapRequestHandler(analyticsTotalRequestsController))
+router.get(
+  '/analytics-total-requests',
+  languageValidator,
+  wrapRequestHandler(analyticsTotalRequestsController)
+)
 
 /*
  * Description: Lấy thông tin thống kê tổng quan
@@ -53,6 +59,7 @@ router.get('/analytics-total-requests', wrapRequestHandler(analyticsTotalRequest
  */
 router.post(
   '/export',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,

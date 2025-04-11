@@ -10,6 +10,7 @@ import {
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator
 } from '~/middlewares/authenticate.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
 
@@ -27,6 +28,7 @@ const router = express.Router()
  */
 router.post(
   '/get-account',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -50,6 +52,7 @@ router.post(
  */
 router.put(
   '/ban-account',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -72,6 +75,7 @@ router.put(
  */
 router.put(
   '/unban-account',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,

@@ -13,6 +13,7 @@ import {
   authenticateVerifyAccountValidator,
   authenticateAdministratorUploadImageValidator
 } from '~/middlewares/authenticate.middlewares'
+import { languageUploadImageValidator, languageValidator } from '~/middlewares/language.middlewares'
 import {
   setupProductImage,
   createProductValidator,
@@ -49,6 +50,7 @@ const router = express.Router()
 router.post(
   '/create',
   uploadProduct.single('preview'),
+  languageUploadImageValidator,
   authenticateUploadImageValidator,
   authenticateVerifyAccountUploadImageValidator,
   authenticateAdministratorUploadImageValidator,
@@ -80,6 +82,7 @@ router.post(
  */
 router.put(
   '/update',
+  languageValidator,
   authenticateUploadImageValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorUploadImageValidator,
@@ -112,6 +115,7 @@ router.put(
 router.put(
   '/update-change-image',
   uploadProduct.single('preview'),
+  languageUploadImageValidator,
   authenticateUploadImageValidator,
   authenticateVerifyAccountUploadImageValidator,
   authenticateAdministratorUploadImageValidator,
@@ -136,6 +140,7 @@ router.put(
  */
 router.delete(
   '/delete',
+  languageValidator,
   authenticateUploadImageValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorUploadImageValidator,
@@ -151,7 +156,11 @@ router.delete(
  *    language?: string
  * }
  */
-router.post('/get-product', wrapRequestHandler(getProductController))
+router.post(
+  '/get-product',
+  languageValidator,
+  wrapRequestHandler(getProductController)
+)
 
 /*
  * Description: Lấy thông tin danh sách sản phẩm
@@ -172,6 +181,11 @@ router.post('/get-product', wrapRequestHandler(getProductController))
  *    ],
  * }
  */
-router.post('/get-product-list', getProductListValidator, wrapRequestHandler(getProductListController))
+router.post(
+  '/get-product-list',
+  languageValidator,
+  getProductListValidator,
+  wrapRequestHandler(getProductListController)
+)
 
 export default router

@@ -15,6 +15,7 @@ import {
   changePasswordController
 } from '~/controllers/users.controllers'
 import { authenticateValidator } from '~/middlewares/authenticate.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import {
   registerUserValidator,
   loginUserValidator,
@@ -41,10 +42,16 @@ const router = express.Router()
  *    email: string,
  *    phone: string,
  *    password: string,
- *    confirm_password: string
+ *    confirm_password: string,
+ *    'cf-turnstile-response': string
  * }
  */
-router.post('/register', registerUserValidator, wrapRequestHandler(registerUserController))
+router.post(
+  '/register',
+  languageValidator,
+  registerUserValidator,
+  wrapRequestHandler(registerUserController)
+)
 
 /*
  * Description: Đăng nhập vào một tài khoản có trong CSDL
@@ -53,10 +60,16 @@ router.post('/register', registerUserValidator, wrapRequestHandler(registerUserC
  * Body: {
  *    language?: string,
  *    email: string,
- *    password: string
+ *    password: string,
+ *    'cf-turnstile-response': string
  * }
  */
-router.post('/login', loginUserValidator, wrapRequestHandler(loginUserController))
+router.post(
+  '/login',
+  languageValidator,
+  loginUserValidator,
+  wrapRequestHandler(loginUserController)
+)
 
 /*
  * Description: Đăng xuất khỏi một tài khoản có trong CSDL
@@ -70,7 +83,12 @@ router.post('/login', loginUserValidator, wrapRequestHandler(loginUserController
  *    refresh_token: string
  * }
  */
-router.delete('/logout', authenticateValidator, wrapRequestHandler(logoutUserController))
+router.delete(
+  '/logout',
+  languageValidator,
+  authenticateValidator,
+  wrapRequestHandler(logoutUserController)
+)
 
 /*
  * Description: Xác thực token và cấp token mới cho người dùng
@@ -84,7 +102,12 @@ router.delete('/logout', authenticateValidator, wrapRequestHandler(logoutUserCon
  *    refresh_token: string
  * }
  */
-router.post('/verify-token', verifyTokenValidator, wrapRequestHandler(verifyTokenUserController))
+router.post(
+  '/verify-token',
+  languageValidator,
+  verifyTokenValidator,
+  wrapRequestHandler(verifyTokenUserController)
+)
 
 /*
  * Description: Lấy thông tin người dùng
@@ -98,7 +121,12 @@ router.post('/verify-token', verifyTokenValidator, wrapRequestHandler(verifyToke
  *    refresh_token: string
  * }
  */
-router.post('/get-user-infomation', authenticateValidator, wrapRequestHandler(getUserInfomationController))
+router.post(
+  '/get-user-infomation',
+  languageValidator,
+  authenticateValidator,
+  wrapRequestHandler(getUserInfomationController)
+)
 
 /*
  * Description: Gửi lại mã xác thực tài khoản
@@ -114,6 +142,7 @@ router.post('/get-user-infomation', authenticateValidator, wrapRequestHandler(ge
  */
 router.put(
   '/send-email-verify',
+  languageValidator,
   authenticateValidator,
   sendEmailVerifyValidator,
   wrapRequestHandler(sendEmailVerifyController)
@@ -128,7 +157,12 @@ router.put(
  *    token: string
  * }
  */
-router.post('/verify-email-verify-token', verifyEmailVerifyTokenValidator, wrapRequestHandler(verifyEmailVerifyTokenController))
+router.post(
+  '/verify-email-verify-token',
+  languageValidator,
+  verifyEmailVerifyTokenValidator,
+  wrapRequestHandler(verifyEmailVerifyTokenController)
+)
 
 /*
  * Description: Xác thực tài khoản
@@ -139,7 +173,12 @@ router.post('/verify-email-verify-token', verifyEmailVerifyTokenValidator, wrapR
  *    token: string
  * }
  */
-router.post('/verify-account', verifyAccountValidator, wrapRequestHandler(verifyAccountController))
+router.post(
+  '/verify-account',
+  languageValidator,
+  verifyAccountValidator,
+  wrapRequestHandler(verifyAccountController)
+)
 
 /*
  * Description: Gửi email quên mật khẩu
@@ -147,11 +186,13 @@ router.post('/verify-account', verifyAccountValidator, wrapRequestHandler(verify
  * Method: PUT
  * body: {
  *    language?: string,
- *    email: string
+ *    email: string,
+ *    'cf-turnstile-response': string
  * }
  */
 router.put(
   '/send-email-forgot-password',
+  languageValidator,
   sendEmailForgotPasswordValidator,
   wrapRequestHandler(sendEmailForgotPasswordController)
 )
@@ -165,7 +206,12 @@ router.put(
  *    token: string
  * }
  */
-router.post('/verify-forgot-password-token', verifyForgotPasswordTokenValidator, wrapRequestHandler(verifyForgotPasswordTokenController))
+router.post(
+  '/verify-forgot-password-token',
+  languageValidator,
+  verifyForgotPasswordTokenValidator,
+  wrapRequestHandler(verifyForgotPasswordTokenController)
+)
 
 /*
  * Description: Cập nhật mật khẩu bằng token
@@ -178,7 +224,12 @@ router.post('/verify-forgot-password-token', verifyForgotPasswordTokenValidator,
  *    confirm_new_password: string
  * }
  */
-router.put('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
+router.put(
+  '/forgot-password',
+  languageValidator,
+  forgotPasswordValidator,
+  wrapRequestHandler(forgotPasswordController)
+)
 
 /*
  * Description: Thay đổi thông tin tài khoản
@@ -196,6 +247,7 @@ router.put('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgo
  */
 router.put(
   '/change-infomation',
+  languageValidator,
   authenticateValidator,
   changeInformationValidator,
   wrapRequestHandler(changeInformationController)
@@ -218,6 +270,7 @@ router.put(
  */
 router.put(
   '/change-password',
+  languageValidator,
   authenticateValidator,
   changePasswordValidator,
   wrapRequestHandler(changePasswordController)

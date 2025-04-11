@@ -10,6 +10,7 @@ import {
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator
 } from '~/middlewares/authenticate.middlewares'
+import { languageValidator } from '~/middlewares/language.middlewares'
 import {
   createVoucherPublicValidator,
   updateVoucherPublicValidator,
@@ -37,6 +38,7 @@ const router = express.Router()
  */
 router.post(
   '/create',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -64,6 +66,7 @@ router.post(
  */
 router.put(
   '/update',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -86,6 +89,7 @@ router.put(
  */
 router.delete(
   '/delete',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
@@ -107,6 +111,7 @@ router.delete(
  */
 router.post(
   '/get-voucher',
+  languageValidator,
   authenticateValidator,
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
