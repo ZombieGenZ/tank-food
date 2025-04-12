@@ -174,7 +174,9 @@ export class VIETNAMESE_STATIC_MESSAGE {
     GET_VOUCHER_SUCCESS: 'Lấy thông tin mã giảm giá thành công',
     GET_VOUCHER_FAILURE: 'Lấy thông tin mã giảm giá thất bại',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
-      'Mã voucher chỉ được chứa chữ hoa, chữ thường, số và dấu gạch dưới (_)'
+      'Mã voucher chỉ được chứa chữ hoa, chữ thường, số và dấu gạch dưới (_)',
+    STORAGE_VOUCHER_SUCCESS: 'Lưu mã giảm giá thành công',
+    STORAGE_VOUCHER_FAILURE: 'Lưu thông tin mã giảm giá thất bại'
   } as const
 
   static ORDER_MESSAGE = {
@@ -489,7 +491,9 @@ export class ENGLISH_STATIC_MESSAGE {
     GET_VOUCHER_SUCCESS: 'Voucher information retrieved successfully',
     GET_VOUCHER_FAILURE: 'Voucher information retrieval failed',
     CODE_MUST_BE_A_STRING_WITHOUT_SPECIAL_CHARACTERS:
-      'Voucher code can only contain uppercase, lowercase, numbers, and underscores (_)'
+      'Voucher code can only contain uppercase, lowercase, numbers, and underscores (_)',
+    STORAGE_VOUCHER_SUCCESS: 'Save discount code successfully',
+    STORAGE_VOUCHER_FAILURE: 'Failed to save discount code information'
   } as const
 
   static ORDER_MESSAGE = {
@@ -887,6 +891,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static CaptchaVerificationFailed(err: unknown) {
     return `Thực hiện xác thực captcha thất bại | Lỗi: ${err}`
   }
+  static StorageVoucherSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lưu voucher thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static StorageVoucherFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lưu voucher thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -1147,5 +1157,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static CaptchaVerificationFailed(err: unknown) {
     return `Failed to perform captcha verification | Error: ${err}`
+  }
+  static StorageVoucherSuccessfully(user_id: string, ip: string) {
+    return `Successfully saved voucher (User: ${user_id}) (IP: ${ip})`
+  }
+  static StorageVoucherFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to save voucher (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

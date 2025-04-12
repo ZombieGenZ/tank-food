@@ -3,7 +3,8 @@ import {
   createVoucherPublicController,
   updateVoucherPublicController,
   deleteVoucherPublicController,
-  getVoucherPublicController
+  getVoucherPublicController,
+  storageVoucherPublicController
 } from '~/controllers/voucherPublic.controllers'
 import {
   authenticateValidator,
@@ -14,7 +15,8 @@ import { languageValidator } from '~/middlewares/language.middlewares'
 import {
   createVoucherPublicValidator,
   updateVoucherPublicValidator,
-  deleteVoucherPublicValidator
+  deleteVoucherPublicValidator,
+  storageVoucherPublicValidator
 } from '~/middlewares/voucherPublic.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -109,6 +111,28 @@ router.post(
   '/get-voucher',
   languageValidator,
   wrapRequestHandler(getVoucherPublicController)
+)
+
+/*
+ * Description: Lưu mã giảm giá (Công khai)
+ * Path: /api/voucher-public/storage-voucher
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    voucher_id: string
+ * }
+ */
+router.post(
+  '/storage-voucher',
+  languageValidator,
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  storageVoucherPublicValidator,
+  wrapRequestHandler(storageVoucherPublicController)
 )
 
 export default router

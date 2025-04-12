@@ -1,13 +1,15 @@
 import {
   CreateVoucherRequestsBody,
   UpdateVoucherRequestsBody,
-  DeleteVoucherRequestsBody
+  DeleteVoucherRequestsBody,
+  StorageVoucherRequestsBody
 } from '~/models/requests/voucherPublic.requests'
 import databaseService from './database.services'
 import VoucherPublic from '~/models/schemas/voucherPublic.schemas'
 import { ObjectId } from 'mongodb'
 import { notificationRealtime } from '~/utils/realtime.utils'
 import User from '~/models/schemas/users.schemas'
+import { VoucherPublicStatusEnum } from '~/constants/voucher.constants'
 
 class VoucherPublicService {
   async create(payload: CreateVoucherRequestsBody, user: User) {
@@ -102,10 +104,20 @@ class VoucherPublicService {
 
     await Promise.all([
       ...promisesUser,
+      databaseService.users.updateMany(
+        {
+          _id: new ObjectId(payload.voucher_id)
+        },
+        {
+          $pull: {
+            'storage_voucher': new ObjectId(payload.voucher_id)
+          }
+        }
+      ),
       databaseService.voucherPublic.deleteOne({
         _id: new ObjectId(payload.voucher_id)
       }),
-      notificationRealtime('freshSync-admin', 'delete-public-voucher', 'voucher/public/delete', data)
+      notificationRealtime('freshSync', 'delete-public-voucher', 'voucher/public/delete', data)
     ])
   }
   async getVoucher() {
@@ -120,6 +132,42 @@ class VoucherPublicService {
       quantity: used,
       used: voucher.used + 1
     }
+
+    if (used < 1) {
+      const promisesUser = [] as Promise<void>[]
+      const users = await databaseService.users.find({ storage_voucher: { $in: [voucher._id] } }).toArray()
+
+      for (const user of users) {
+        promisesUser.push(
+          new Promise((resolve, reject) => {
+            try {
+              notificationRealtime(`freshSync-user-${user._id}`, 'expired-public-voucher-storage', `voucher/public/${user._id}/expired`, data)
+              resolve()
+            } catch (err) {
+              reject()
+            }
+          })
+        )
+      }
+
+      await Promise.all([
+        databaseService.voucherPublic.updateOne(
+          {
+            _id: voucher._id
+          },
+          {
+            $set: {
+              status: VoucherPublicStatusEnum.UNAVAILABLE
+            },
+            $currentDate: {
+              updated_at: true
+            }
+          }
+        ),
+        ...promisesUser
+      ])
+    }
+
     await Promise.all([
       databaseService.voucherPublic.updateOne(
         {
@@ -135,7 +183,31 @@ class VoucherPublicService {
           }
         }
       ),
-      notificationRealtime('freshSync-admin', 'update-public-voucher', 'voucher/public/update', data)
+      notificationRealtime('freshSync', 'update-public-voucher', 'voucher/public/update', data)
+    ])
+  }
+  async storageVoucher(voucher_id: string, user: User) {
+    await Promise.all([
+      databaseService.users.updateOne(
+        {
+          _id: user._id
+        },
+        {
+          $push: {
+            'storage_voucher': new ObjectId(voucher_id)
+          }
+        }
+      ),
+      databaseService.voucherPublic.updateOne(
+        {
+          _id: new ObjectId(voucher_id)
+        },
+        {
+          $inc: {
+            storage: 1
+          }
+        }
+      )
     ])
   }
 }
