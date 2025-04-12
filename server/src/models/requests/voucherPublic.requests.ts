@@ -1,6 +1,5 @@
 export interface CreateVoucherRequestsBody {
   language?: string
-  refresh_token: string
   code: string
   quantity: number
   discount: number
@@ -10,7 +9,6 @@ export interface CreateVoucherRequestsBody {
 
 export interface UpdateVoucherRequestsBody {
   language?: string
-  refresh_token: string
   voucher_id: string
   code: string
   quantity: number
@@ -27,4 +25,9 @@ export interface DeleteVoucherRequestsBody {
 
 export interface GetVoucherPublicRequestsBody {
   language?: string
+}
+
+export interface StorageVoucherRequestsBody {
+  language?: string
+  voucher_id: string
 }

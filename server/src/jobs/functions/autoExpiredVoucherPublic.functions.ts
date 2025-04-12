@@ -11,7 +11,7 @@ export const autoExpiredVoucherPublic = async () => {
     const voucher = await databaseService.voucherPublic.find({ status: VoucherPublicStatusEnum.AVAILABLE }).toArray()
 
     const expiredVouchers = voucher.filter((item) => {
-      return item.expiration_date.getTime() < currentDate.getTime()
+      return item.expiration_date.getTime() < currentDate.getTime() || item.quantity < 1
     })
 
     const promises = [] as Promise<void>[]
@@ -36,7 +36,16 @@ export const autoExpiredVoucherPublic = async () => {
         new Promise((resolve, reject) => {
           try {
             notificationRealtime(`freshSync`, 'expired-public-voucher', `voucher/public/expired`, item)
-
+            databaseService.users.updateMany(
+              {
+                _id: item._id
+              },
+              {
+                $pull: {
+                  'storage_voucher': item._id
+                }
+              }
+            )
             databaseService.voucherPublic.updateOne(
               {
                 _id: item._id

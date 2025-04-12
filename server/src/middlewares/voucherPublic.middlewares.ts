@@ -5,6 +5,7 @@ import HTTPSTATUS from '~/constants/httpStatus.constants'
 import { LANGUAGE } from '~/constants/language.constants'
 import { ENGLISH_STATIC_MESSAGE, VIETNAMESE_STATIC_MESSAGE } from '~/constants/message.constants'
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
+import { VoucherPublicStatusEnum } from '~/constants/voucher.constants'
 import { serverLanguage } from '~/index'
 import databaseService from '~/services/database.services'
 import { writeWarnLog } from '~/utils/log.utils'
@@ -493,6 +494,89 @@ export const deleteVoucherPublicValidator = async (req: Request, res: Response, 
         custom: {
           options: async (value) => {
             const voucher = await databaseService.voucherPublic.findOne({ _id: new ObjectId(value) })
+
+            if (!voucher) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_DOES_NOT_EXIST
+                  : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_DOES_NOT_EXIST
+              )
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+    .run(req)
+    .then(async () => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        if (language == LANGUAGE.VIETNAMESE) {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: VIETNAMESE_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        } else {
+          res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+            code: RESPONSE_CODE.INPUT_DATA_ERROR,
+            message: ENGLISH_STATIC_MESSAGE.SYSTEM_MESSAGE.VALIDATION_ERROR,
+            errors: errors.mapped()
+          })
+          return
+        }
+      }
+      next()
+      return
+    })
+    .catch(async (err) => {
+      await Promise.all([
+        writeWarnLog(typeof err === 'string' ? err : err instanceof Error ? err.message : String(err))
+      ])
+      res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
+        code: RESPONSE_CODE.FATAL_INPUT_ERROR,
+        message: err
+      })
+      return
+    })
+}
+
+export const storageVoucherPublicValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const language = req.body.language || serverLanguage
+
+  checkSchema(
+    {
+      voucher_id: {
+        notEmpty: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_ID_REQUIRED
+              : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_ID_REQUIRED
+        },
+        trim: true,
+        isString: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_ID_MUST_BE_A_STRING
+              : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_ID_MUST_BE_A_STRING
+        },
+        isMongoId: {
+          errorMessage:
+            language == LANGUAGE.VIETNAMESE
+              ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_ID_MUST_BE_A_ID
+              : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_ID_MUST_BE_A_ID
+        },
+        custom: {
+          options: async (value) => {
+            const voucher = await databaseService.voucherPublic.findOne({
+              _id: new ObjectId(value),
+              status: VoucherPublicStatusEnum.AVAILABLE,
+              quantity: { $gt: 0 }
+            })
 
             if (!voucher) {
               throw new Error(

@@ -4,7 +4,8 @@ import {
   CreateVoucherRequestsBody,
   UpdateVoucherRequestsBody,
   DeleteVoucherRequestsBody,
-  GetVoucherPublicRequestsBody
+  GetVoucherPublicRequestsBody,
+  StorageVoucherRequestsBody
 } from '~/models/requests/voucherPublic.requests'
 import { serverLanguage } from '~/index'
 import User from '~/models/schemas/users.schemas'
@@ -179,6 +180,47 @@ export const getVoucherPublicController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
           : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_FAILURE
+    })
+  }
+}
+
+export const storageVoucherPublicController = async (
+  req: Request<ParamsDictionary, any, StorageVoucherRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const language = req.body.language || serverLanguage
+
+  try {
+    await voucherPublicService.storageVoucher(req.body.voucher_id, user)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.StorageVoucherSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.StorageVoucherSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.STORAGE_VOUCHER_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.STORAGE_VOUCHER_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.STORAGE_VOUCHER_SUCCESS
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.StorageVoucherFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.StorageVoucherFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.STORAGE_VOUCHER_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.STORAGE_VOUCHER_FAILURE
+          : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.STORAGE_VOUCHER_FAILURE
     })
   }
 }
