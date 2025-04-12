@@ -17,6 +17,7 @@ export interface UserType {
     reason: string
     expired_at: Date
   } | null
+  storage_voucher?: ObjectId[]
   created_at?: Date
   updated_at?: Date
 }
@@ -37,6 +38,7 @@ export default class User {
     reason: string
     expired_at: Date
   } | null
+  storage_voucher: ObjectId[]
   created_at: Date
   updated_at: Date
 
@@ -54,6 +56,7 @@ export default class User {
     this.forgot_password_token = user.forgot_password_token || ''
     this.salary = user.salary || 0
     this.penalty = user.penalty || null
+    this.storage_voucher = user.storage_voucher || []
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date
   }

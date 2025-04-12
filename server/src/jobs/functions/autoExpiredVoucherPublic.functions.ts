@@ -4,6 +4,8 @@ import { formatDateFull2 } from '~/utils/date.utils'
 import { serverLanguage } from '~/index'
 import { LANGUAGE } from '~/constants/language.constants'
 import { VoucherPublicStatusEnum } from '~/constants/voucher.constants'
+import { notificationRealtime } from '~/utils/realtime.utils'
+import { ObjectId } from 'mongodb'
 
 export const autoExpiredVoucherPublic = async () => {
   const currentDate = new Date()
@@ -14,7 +16,23 @@ export const autoExpiredVoucherPublic = async () => {
     })
 
     const promises = [] as Promise<void>[]
+    const promisesUser = [] as Promise<void>[]
     for (const item of expiredVouchers) {
+      const users = await databaseService.users.find({ storage_voucher: { $in: [item._id] } }).toArray()
+
+      for (const user of users) {
+        promisesUser.push(
+          new Promise((resolve, reject) => {
+            try {
+              notificationRealtime(`freshSync-user-${user._id}`, 'expired-public-voucher-storage', `voucher/public/${user._id}/expired`, item)
+              resolve()
+            } catch (err) {
+              reject()
+            }
+          })
+        )
+      }
+
       promises.push(
         new Promise((resolve, reject) => {
           try {
@@ -54,5 +72,8 @@ export const autoExpiredVoucherPublic = async () => {
         })
       )
     }
-    await Promise.all(promises)
+    await Promise.all([
+      ...promises,
+      ...promisesUser
+    ])
 }

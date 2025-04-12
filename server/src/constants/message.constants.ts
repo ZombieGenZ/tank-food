@@ -725,11 +725,11 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static VoucherDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện xóa mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
-  static GetVoucherSuccessfully(user_id: string, ip: string) {
-    return `Thực hiện lấy thông tin mã giảm giá thành công (User: ${user_id}) (IP: ${ip})`
+  static GetVoucherSuccessfully(ip: string) {
+    return `Thực hiện lấy thông tin mã giảm giá thành công (IP: ${ip})`
   }
-  static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
-    return `Thực hiện lấy thông tin mã giảm giá thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  static GetVoucherFailed(ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin mã giảm giá thất bại (IP: ${ip}) | Lỗi: ${err}`
   }
   static OrderOnlineSuccessfully(user_id: string, ip: string) {
     return `Thực hiện tạo đơn hàng thành công (User: ${user_id}) (IP: ${ip})`
@@ -986,11 +986,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   static VoucherDeleteFailed(user_id: string, ip: string, err: unknown) {
     return `Voucher deletion failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
-  static GetVoucherSuccessfully(user_id: string, ip: string) {
-    return `Voucher information retrieval successful (User: ${user_id}) (IP: ${ip})`
+  static GetVoucherSuccessfully(ip: string) {
+    return `Voucher information retrieval successful (IP: ${ip})`
   }
-  static GetVoucherFailed(user_id: string, ip: string, err: unknown) {
-    return `Voucher information retrieval failed (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  static GetVoucherFailed(ip: string, err: unknown) {
+    return `Voucher information retrieval failed (IP: ${ip}) | Error: ${err}`
   }
   static OrderOnlineSuccessfully(user_id: string, ip: string) {
     return `Order creation successful (User: ${user_id}) (IP: ${ip})`

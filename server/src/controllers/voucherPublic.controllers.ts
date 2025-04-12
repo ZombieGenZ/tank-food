@@ -147,7 +147,6 @@ export const getVoucherPublicController = async (
   res: Response
 ) => {
   const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
-  const user = req.user as User
   const language = req.body.language || serverLanguage
 
   try {
@@ -155,8 +154,8 @@ export const getVoucherPublicController = async (
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherSuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherSuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherSuccessfully(ip)
     )
 
     res.json({
@@ -170,8 +169,8 @@ export const getVoucherPublicController = async (
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherFailed(ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherFailed(ip, err)
     )
 
     res.json({

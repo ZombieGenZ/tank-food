@@ -101,20 +101,13 @@ router.delete(
  * Description: Lấy mã giảm giá (Công khai) đã có trong CSDL
  * Path: /api/voucher-public/get-voucher
  * Method: POST
- * headers: {
- *    authorization: Bearer <token>
- * },
  * Body: {
- *    language?: string,
- *    refresh_token: string
+ *    language?: string
  * }
  */
 router.post(
   '/get-voucher',
   languageValidator,
-  authenticateValidator,
-  authenticateVerifyAccountValidator,
-  authenticateAdministratorValidator,
   wrapRequestHandler(getVoucherPublicController)
 )
 

@@ -87,7 +87,7 @@ class ContactService {
         { user_id: payload.user_id, reply_content: payload.reply_content },
         timestampSeconds
       ),
-      sendMail(contact.email, email_subject, email_html, process.env.SUPPORT_EMAIL as string),
+      sendMail(contact.email, email_subject, email_html, {}, process.env.SUPPORT_EMAIL as string),
       databaseService.contact.updateOne(
         {
           _id: new ObjectId(payload.contact_id)

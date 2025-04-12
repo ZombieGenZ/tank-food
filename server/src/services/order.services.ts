@@ -401,7 +401,7 @@ class OrderService {
     ])
 
     if (order.user) {
-      await notificationRealtime(`freshSync-user-${order.user}`, 'checkout-order', `order/${order.user}/checkout`, data)
+      await notificationRealtime(`freshSync-user-${order.user}`, 'checkout-order-booking', `order/${order.user}/checkout`, data)
     }
   }
   async getNewOrderEmployee(user: User) {
@@ -1035,7 +1035,7 @@ class OrderService {
       await Promise.all([
         notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data),
         order.user &&
-          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data),
+          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order-booking', `order/${user._id}/approval`, data),
         order.delivery_type == DeliveryTypeEnum.DELIVERY &&
           notificationRealtime(`freshSync-shipper`, 'create-delivery', `order/${user._id}/create-delivery`, data),
         order.user &&
@@ -1175,7 +1175,7 @@ class OrderService {
       await Promise.all([
         notificationRealtime('freshSync-employee', 'approval-order', 'order/approval', data),
         order.user &&
-          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order', `order/${user._id}/approval`, data),
+          notificationRealtime(`freshSync-user-${order.user}`, 'approval-order-booking', `order/${user._id}/approval`, data),
         order.user &&
           notificationService.sendNotification(
           `❌ Đơn hàng #${order._id} của bạn đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ bộ phận hỗ trợ.`,
@@ -1337,7 +1337,7 @@ class OrderService {
     await Promise.all([
       notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data),
       order.user &&
-        notificationRealtime(`freshSync-user-${order.user}`, 'cancel-order', `order/${order.user}/cancel`, data),
+        notificationRealtime(`freshSync-user-${order.user}`, 'cancel-order-booking', `order/${order.user}/cancel`, data),
       order.delivery_type === DeliveryTypeEnum.DELIVERY &&
         notificationRealtime(`freshSync-shipper`, 'remove-delivery', `delivery/remove`, data),
       order.shipper &&
@@ -1495,7 +1495,7 @@ class OrderService {
       notificationRealtime('freshSync-statistical', 'update-chart', 'statistical/chart', dataStatistical),
       notificationRealtime('freshSync-statistical', 'update-order-complete', 'statistical/complete', data),
       order.user &&
-        notificationRealtime(`freshSync-user-${order.user}`, 'complete-order', `order/${order.user}/complete`, data)
+        notificationRealtime(`freshSync-user-${order.user}`, 'complete-order-booking', `order/${order.user}/complete`, data)
     ])
   }
   async getNewOrderShipper(user: User) {
@@ -2417,7 +2417,7 @@ class OrderService {
     await Promise.all([
       notificationRealtime(
         `freshSync-user-${order.user}`,
-        'complete-order',
+        'complete-order-booking',
         `order/${order.user}/complete-order`,
         data
       ),
@@ -2953,7 +2953,18 @@ class OrderService {
       ])
       .next()
 
-    await Promise.all([notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data)])
+    await Promise.all([
+      notificationRealtime('freshSync-employee', 'cancel-order', 'order/cancel', data),
+      notificationRealtime(`freshSync-user-${order.user}`, 'cancel-order-booking', `order/${order.user}/cancel`, data),
+      order.order_status == OrderStatusEnum.DELIVERING &&
+      order.shipper !== null &&
+      notificationRealtime(
+        `freshSync-shipper-${order.shipper}`,
+        'cancel-delivery',
+        `delivery/${order.shipper}/cancel`,
+        data
+      )
+    ])
   }
   async getOrderOverview() {
     return await databaseService.order

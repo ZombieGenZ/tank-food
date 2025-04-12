@@ -56,7 +56,7 @@ class AccountManagementService {
         }
       ),
       notificationRealtime(`freshSync-user-${user_id}`, 'unBan', `user/${user_id}/unBan`, data),
-      notificationRealtime(`freshSync-admin`, 'ban-account', `account-management/unBan`, data)
+      notificationRealtime(`freshSync-admin`, 'unban-account', `account-management/unBan`, data)
     ])
   }
 }

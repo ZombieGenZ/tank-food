@@ -107,6 +107,10 @@ io.on('connection', (socket: Socket) => {
     // create-product: Cập nhật thông tin sản phẩm vừa được thêm vào CSDL
     // update-product: Cập nhật thông tin sản phẩm vừa được cập nhật vào CSDL
     // delete-product: Cập nhật thông tin sản phẩm vừa được xóa khỏi CSDL
+    // create-voucher-public: Cập nhật thông tin voucher (công khai) vừa được tạo
+    // update-voucher-public: Cập nhật thông tin voucher (công khai) vừa được chỉnh sửa
+    // delete-voucher-public: Cập nhật thông tin voucher (công khai) vừa được xóa
+    // expired-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa bị hết hạn
     //
 
     socket.join(`freshSync`)
@@ -123,10 +127,10 @@ io.on('connection', (socket: Socket) => {
     // new-voucher-private: Cập nhật thông tin voucher private vừa được thêm
     // use-voucher-private: Cập nhật thông tin voucher private vừa được sử dụng
     // create-order-booking: Cập nhật thông tin đặt hàng vừa được đặt
-    // checkout-order: Cập nhật thông tin đặt hàng vừa được thanh toán
-    // approval-order: Cập nhật thông tin đặt hàng vừa được xử lý
-    // cancel-order: Cập nhật thông tin đặt hàng vừa bị hủy
-    // complete-order: Cập nhật thông tin đặt hàng vừa được hoàn thành
+    // checkout-order-booking: Cập nhật thông tin đặt hàng vừa được thanh toán
+    // approval-order-booking: Cập nhật thông tin đặt hàng vừa được xử lý
+    // cancel-order-booking: Cập nhật thông tin đặt hàng vừa bị hủy
+    // complete-order-booking: Cập nhật thông tin đặt hàng vừa được hoàn thành
     // delivery-order: Cập nhật thông tin đặt hàng vừa được nhận giao hàng
     // cancel-delivery: Cập nhật thông tin đặt hàng vừa bị hủy giao hàng
     // ban: Cập nhật thông tin khóa tài khoản
@@ -134,6 +138,10 @@ io.on('connection', (socket: Socket) => {
     // verify-account: Cập nhật thông tin xác minh tài khoản
     // logout: Cập nhật thông tin đang xuất tài khoản
     // new-notification: Cập nhật thông tin thông báo mới
+    // create-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
+    // update-public-voucer-storage: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
+    // delete-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
+    // expired-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa bị hết hạn
     //
 
     if (!refresh_token) {
@@ -276,9 +284,8 @@ io.on('connection', (socket: Socket) => {
   socket.on('connect-admin-realtime', async (refresh_token: string) => {
     // Phòng: freshSync-admin
     // sự kiện:
-    // create-public-voucher: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
-    // update-public-voucer: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
-    // delete-public-voucher: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
+    // ban-account: Cập nhật thông tin voucher người dùng vừa bị cấm
+    // unban-account: Cập nhật thông tin voucher người dùng vừa mở khóa
     //
 
     if (!refresh_token) {

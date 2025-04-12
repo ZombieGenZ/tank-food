@@ -1,7 +1,6 @@
 import { LogTypeEnum } from '~/constants/logs.constants'
 import databaseService from './database.services'
-import { io, serverRunningTime } from '~/index'
-import { db } from './firebase.services'
+import { serverRunningTime } from '~/index'
 import Log from '~/models/schemas/logs.schemas'
 import { formatDateFull2 } from '~/utils/date.utils'
 import { notificationRealtime } from '~/utils/realtime.utils'

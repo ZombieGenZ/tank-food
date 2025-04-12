@@ -10,6 +10,7 @@ interface VoucherPublicType {
   requirement: number
   used?: number
   status?: VoucherPublicStatusEnum
+  storage?: number
   created_by: ObjectId
   updated_by: ObjectId
   created_at?: Date
@@ -25,6 +26,7 @@ export default class VoucherPublic {
   requirement: number
   used: number
   status: VoucherPublicStatusEnum
+  storage: number
   created_by: ObjectId
   updated_by: ObjectId
   created_at: Date
@@ -41,6 +43,7 @@ export default class VoucherPublic {
     this.requirement = voucher.requirement
     this.used = voucher.used || 0
     this.status = voucher.status || VoucherPublicStatusEnum.AVAILABLE
+    this.storage = voucher.storage || 0
     this.created_by = voucher.created_by
     this.updated_by = voucher.updated_by
     this.created_at = voucher.created_at || date
