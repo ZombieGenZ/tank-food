@@ -106,6 +106,15 @@ const FormMain = (): JSX.Element => {
     const cartlocal = localStorage.getItem('my_cart')
     return cartlocal ? JSON.parse(cartlocal) : []
   });
+  const [notification, setNotification] = useState<string[]>(() => {
+    const Notification = localStorage.getItem('notification')
+    return Notification ? JSON.parse(Notification) : []
+  })
+
+  useEffect(() => {
+    localStorage.setItem('notification', JSON.stringify(notification))
+  }, [notification])
+
   const addToCart = (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => {
     if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu món vào giỏ hàng !"); return};
     setCart((prevCart) => {
@@ -151,8 +160,9 @@ const FormMain = (): JSX.Element => {
     socket.on('create-order-booking', (res) => {
       messageApi.open({
         type: 'success',
-        content: `Đơn hàng ${res._id} đã được đặt thành công !`,
+        content: `Đơn hàng ${res._id} đã được đặt thành công!`,
       });
+      setNotification([...notification, `Đơn hàng ${res._id} đã được đặt thành công!`])
     })
 
     socket.on('ban' , (res) => {
@@ -160,59 +170,73 @@ const FormMain = (): JSX.Element => {
       localStorage.removeItem('access_token')
       messageApi.open({
         type: 'error',
-        content: `Tài khoản của bạn đã bị ban vì lý do "${res.reason}" !`,
-      }).then(() => {
-        window.location.reload()
+        content: `Tài khoản của bạn đã bị ban vì lý do "${res.reason}"!`,
       })
+
+      setNotification([...notification, `Tài khoản của bạn đã bị ban vì lý do "${res.reason}"!`])
     })
 
     socket.on('checkout-order', (res) => {
       messageApi.open({
         type: 'success',
-        content: `Đơn hàng ${res._id} đã được thanh toán thành công !`,
+        content: `Đơn hàng ${res._id} đã được thanh toán thành công!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đã được thanh toán thành công!`])
     })
 
     socket.on('approval-order', (res) => {
       messageApi.open({
         type: 'success',
-        content: `Đơn hàng ${res._id} đã được duyệt thành công !`,
+        content: `Đơn hàng ${res._id} đã được duyệt thành công!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đã được duyệt thành công!`])
     })
 
     socket.on('complete-order', (res) => {
       messageApi.open({
         type: 'success',
-        content: `Đơn hàng ${res._id} đã được hoàn thành !`,
+        content: `Đơn hàng ${res._id} đã được hoàn thành!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đã được hoàn thành!`])
     })
 
     socket.on('cancel-order', (res) => {
       messageApi.open({
         type: 'error',
-        content: `Đơn hàng ${res._id} đã bị hủy !`,
+        content: `Đơn hàng ${res._id} đã bị hủy!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đã bị hủy!`])
     })
 
     socket.on('delivery-order', (res) => {
       messageApi.open({
         type: 'success',
-        content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn !`,
+        content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`])
     })
 
     socket.on('cancel-delivery', (res) => {
       messageApi.open({
         type: 'error',
-        content: `Đơn hàng ${res._id} đã bị hủy giao hàng !`,
+        content: `Đơn hàng ${res._id} đã bị hủy giao hàng!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đã bị hủy giao hàng!`])
     })
 
     socket.on('complete-delivery', (res) => {
       messageApi.open({
         type: 'success',
-        content: `Đơn hàng ${res._id} đã được giao thành công !`,
+        content: `Đơn hàng ${res._id} đã được giao thành công!`,
       });
+
+      setNotification([...notification, `Đơn hàng ${res._id} đã được giao thành công!`])
     })
 
 
