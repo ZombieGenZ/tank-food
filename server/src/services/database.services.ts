@@ -70,7 +70,8 @@ class DatabaseService {
         name: process.env.DATABASE_USER_COLLECTION as string,
         indexes: [
           { key: { email: 1 }, options: { name: 'email_1', unique: true } },
-          { key: { phone: 1 }, options: { name: 'phone_1', unique: true } }
+          { key: { phone: 1 }, options: { name: 'phone_1', unique: true } },
+          { key: { storage_voucher: 1 }, options: { name: 'storage_voucher_1' } }
         ]
       },
       {
