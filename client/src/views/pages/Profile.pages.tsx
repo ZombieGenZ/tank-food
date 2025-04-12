@@ -637,7 +637,7 @@ const ProfilePage: React.FC<Props> = (props) => {
               </motion.div>
 
               <motion.div variants={itemVariants}>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                   Mật khẩu hiện tại
                 </label>
                 <div className="relative">
@@ -683,7 +683,7 @@ const ProfilePage: React.FC<Props> = (props) => {
               </motion.div>
 
               <motion.div variants={itemVariants}>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-1">
                   Mật khẩu mới
                 </label>
                 <div className="relative">
@@ -764,7 +764,7 @@ const ProfilePage: React.FC<Props> = (props) => {
               </motion.div>
 
               <motion.div variants={itemVariants}>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="confirm_new_password" className="block text-sm font-medium text-gray-700 mb-1">
                   Xác nhận mật khẩu mới
                 </label>
                 <div className="relative">

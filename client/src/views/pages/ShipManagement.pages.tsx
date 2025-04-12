@@ -343,7 +343,7 @@ const ShipManagement: React.FC<Props> = (props) => {
               const originLatitude = position.coords.latitude;
               const originLongitude = position.coords.longitude;
       
-              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${originLatitude},${originLongitude}&destination=${latitude},${longitude}`;
+              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${originLatitude},${originLongitude}&destination=${longitude},${latitude}`;
               window.open(googleMapsUrl, '_blank');
             },
             (error) => {

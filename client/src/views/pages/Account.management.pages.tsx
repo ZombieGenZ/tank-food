@@ -360,7 +360,7 @@ const Account: React.FC<Props> = (props) => {
       role: user.role === 3 ? "Admin" : user.role === 2 ? "Shipper" : user.role === 1 ? "Employee" : "Customer",
       active: user.penalty ? "Bị ban" : "Hoạt động",
       readson: user.penalty !== null ? user.penalty?.reason : "Không có lý do",
-      note: ["Ban"]
+      note: ["Khóa tài khoản"]
     }));
   
     setDataUser(newData);
