@@ -95,6 +95,11 @@ interface CartItem {
   discount: number
 }
 
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const FormMain = (): JSX.Element => {
   const language = (): string => {
     const language = localStorage.getItem('language')
@@ -323,41 +328,49 @@ const FormMain = (): JSX.Element => {
       const checkToken = async () => {
         const isValid = await Verify(refresh_token, access_token);
           if (isValid) {
-            const body = {
-              language: null,
-              refresh_token: refresh_token,
-            };
-            fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${access_token}`,
-              },
-              body: JSON.stringify(body),
-            })
-              .then((response) => response.json())
-              .then((data) => {
-                console.log(data);
-                if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
-                  localStorage.removeItem('refresh_token');
-                  localStorage.removeItem('access_token');
-                  messageApi.open({
-                    type: 'success',
-                    content: 'Đăng xuất thành công',
-                    style: {
-                      marginTop: "10vh",
-                    },
-                  }).then(() => {
-                    navigate('/')
-                    window.location.reload();
-                  }).then(() => {
-                    localStorage.setItem('isAdminView', JSON.stringify(false))
-                  });
-                } else {
-                  messageApi.error(data.message)
-                  return
-                }
-              });
+            try {
+              setLoading(true)
+              const body = {
+                language: null,
+                refresh_token: refresh_token,
+              };
+              fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify(body),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data);
+                  if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
+                    localStorage.removeItem('refresh_token');
+                    localStorage.removeItem('access_token');
+                    messageApi.open({
+                      type: 'success',
+                      content: 'Đăng xuất thành công',
+                      style: {
+                        marginTop: "10vh",
+                      }, 
+                    }).then(() => {
+                      localStorage.setItem('isAdminView', JSON.stringify(false))
+                      navigate('/')
+                    })
+                  } else {
+                    messageApi.error(data.message)
+                    return
+                  }
+                });
+            } catch (error) {
+              messageApi.error(String(error))
+              return;
+            } finally {
+              setTimeout(() => {
+                setLoading(false)
+              }, 6000)
+            }
           } else {
             messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
           }
@@ -545,7 +558,7 @@ const FormMain = (): JSX.Element => {
           </div>
         ) : (
           <>
-            <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+            <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/aboutus" element={<Aboutus />} />
@@ -570,7 +583,7 @@ const FormMain = (): JSX.Element => {
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
-        <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+        <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>
         <Routes>
           <Route path="/" element={user.role == 1 ? <EmployeePage isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipperPages isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -585,7 +598,7 @@ const FormMain = (): JSX.Element => {
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
-        <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+        <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -763,7 +776,7 @@ function NavigationAdmin({ displayname, user }: { displayname: string, user: Use
   );
 }
 
-function NavigationButtons({ role, cartItemCount, userInfo, notification, toggleView }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null, notification: string[], toggleView: Dispatch<SetStateAction<boolean>> }): JSX.Element {
+function NavigationButtons({ role, cartItemCount, userInfo, notification, toggleView, props }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null; notification: string[]; toggleView: Dispatch<SetStateAction<boolean>>; props: Props }): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -821,48 +834,56 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
 
   const Logout = () => {
     const checkToken = async () => {
-          const isValid = await Verify(refresh_token, access_token);
-            if (isValid) {
-              const body = {
-                language: null,
-                refresh_token: refresh_token,
-              };
-              fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
-                method: 'DELETE',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(body),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log(data);
-                  if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
-                    localStorage.removeItem('refresh_token');
-                    localStorage.removeItem('access_token');
-                    messageApi.open({
-                      type: 'success',
-                      content: 'Đăng xuất thành công',
-                      style: {
-                        marginTop: "10vh",
-                      },
-                    }).then(() => {
-                      navigate('/')
-                      window.location.reload();
-                    }).then(() => {
-                      localStorage.setItem('isAdminView', JSON.stringify(false))
-                    });
-                  } else {
-                    messageApi.error(data.message)
-                    return
-                  }
-                });
-            } else {
-              messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
-            }
-        };
-        checkToken();
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          try {
+            props.setLoading(true)
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+            };
+            fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data);
+                if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
+                  localStorage.removeItem('refresh_token');
+                  localStorage.removeItem('access_token');
+                  messageApi.open({
+                    type: 'success',
+                    content: 'Đăng xuất thành công',
+                    style: {
+                      marginTop: "10vh",
+                    }, 
+                  }).then(() => {
+                    localStorage.setItem('isAdminView', JSON.stringify(false))
+                    navigate('/')
+                  })
+                } else {
+                  messageApi.error(data.message)
+                  return
+                }
+              });
+          } catch (error) {
+            messageApi.error(String(error))
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 6000)
+          }
+        } else {
+          messageApi.error(language == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken();
   };
 
   const items: MenuProps['items'] = ([
@@ -976,7 +997,6 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
             >
               {language === 'Tiếng Việt' ? 'VN' : 'US'}
             </button>
-            <div className="border-l border-2 border-gray-400 h-6 md:h-8" />
           </div>
 
           {refresh_token !== null ? (
