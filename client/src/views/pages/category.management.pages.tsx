@@ -217,7 +217,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                 <div className="container mx-auto px-4 pt-16 pb-64 md:pt-24 md:pb-72 relative z-10">
                     <div className="flex justify-center mb-8" data-aos="zoom-in-up">
                         <img
-                        src="/public/images/system/logo tank food.png?height=100&width=300"
+                        src="/images/system/logo tank food.png?height=100&width=300"
                         alt="TankFood logo"
                         width={300}
                         height={100}
@@ -237,12 +237,12 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
     
                     <div className="flex justify-center mt-12" data-aos="fade-right">
                         <div className="relative w-64 h-64 md:w-120 md:h-80">
-                        <img src="/public/images/system/chicken_menu(tn).png?height=400&width=400" alt="chicken" className="object-contain" />
+                        <img src="/images/system/chicken_menu(tn).png?height=400&width=400" alt="chicken" className="object-contain" />
                         </div>
                     </div>
                     <div className="flex justify-center mt-12" data-aos="fade-left">
                         <div className="relative w-64 h-64 md:w-105 md:h-80">
-                        <img src="/public/images/system/burger_menu2tn.png?height=400&width=400" alt="burger" className="object-contain" />
+                        <img src="/images/system/burger_menu2tn.png?height=400&width=400" alt="burger" className="object-contain" />
                         </div>
                     </div>
                 </div>
