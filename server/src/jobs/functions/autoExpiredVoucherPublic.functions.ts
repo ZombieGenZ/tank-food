@@ -5,7 +5,6 @@ import { serverLanguage } from '~/index'
 import { LANGUAGE } from '~/constants/language.constants'
 import { VoucherPublicStatusEnum } from '~/constants/voucher.constants'
 import { notificationRealtime } from '~/utils/realtime.utils'
-import { ObjectId } from 'mongodb'
 
 export const autoExpiredVoucherPublic = async () => {
   const currentDate = new Date()
@@ -36,6 +35,8 @@ export const autoExpiredVoucherPublic = async () => {
       promises.push(
         new Promise((resolve, reject) => {
           try {
+            notificationRealtime(`freshSync`, 'expired-public-voucher', `voucher/public/expired`, item)
+
             databaseService.voucherPublic.updateOne(
               {
                 _id: item._id

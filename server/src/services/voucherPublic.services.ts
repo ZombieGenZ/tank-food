@@ -25,7 +25,7 @@ class VoucherPublicService {
 
     await Promise.all([
       databaseService.voucherPublic.insertOne(voucher),
-      notificationRealtime('freshSync-admin', 'create-public-voucher', 'voucher/public/create', voucher)
+      notificationRealtime('freshSync', 'create-public-voucher', 'voucher/public/create', voucher)
     ])
   }
   async update(payload: UpdateVoucherRequestsBody, user: User) {
@@ -40,7 +40,24 @@ class VoucherPublicService {
       updated_by: user._id
     }
 
+    const promisesUser = [] as Promise<void>[]
+    const users = await databaseService.users.find({ storage_voucher: { $in: [voucher_id] } }).toArray()
+
+    for (const user of users) {
+      promisesUser.push(
+        new Promise((resolve, reject) => {
+          try {
+            notificationRealtime(`freshSync-user-${user._id}`, 'update-public-voucher-storage', `voucher/public/${user._id}/update`, voucher_id)
+            resolve()
+          } catch (err) {
+            reject()
+          }
+        })
+      )
+    }
+
     await Promise.all([
+      ...promisesUser,
       databaseService.voucherPublic.updateOne(
         {
           _id: voucher_id
@@ -59,14 +76,32 @@ class VoucherPublicService {
           }
         }
       ),
-      notificationRealtime('freshSync-admin', 'update-public-voucher', 'voucher/public/update', voucher)
+      notificationRealtime('freshSync', 'update-public-voucher', 'voucher/public/update', voucher)
     ])
   }
   async delete(payload: DeleteVoucherRequestsBody) {
     const data = {
       _id: new ObjectId(payload.voucher_id)
     }
+
+    const promisesUser = [] as Promise<void>[]
+    const users = await databaseService.users.find({ storage_voucher: { $in: [new ObjectId(payload.voucher_id)] } }).toArray()
+
+    for (const user of users) {
+      promisesUser.push(
+        new Promise((resolve, reject) => {
+          try {
+            notificationRealtime(`freshSync-user-${user._id}`, 'delete-public-voucher-storage', `voucher/public/${user._id}/delete`, data)
+            resolve()
+          } catch (err) {
+            reject()
+          }
+        })
+      )
+    }
+
     await Promise.all([
+      ...promisesUser,
       databaseService.voucherPublic.deleteOne({
         _id: new ObjectId(payload.voucher_id)
       }),

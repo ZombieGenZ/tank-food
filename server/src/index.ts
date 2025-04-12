@@ -110,7 +110,7 @@ io.on('connection', (socket: Socket) => {
     // create-voucher-public: Cập nhật thông tin voucher (công khai) vừa được tạo
     // update-voucher-public: Cập nhật thông tin voucher (công khai) vừa được chỉnh sửa
     // delete-voucher-public: Cập nhật thông tin voucher (công khai) vừa được xóa
-    // expired-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa bị hết hạn
+    // expired-public-voucher: Cập nhật thông tin voucher (công khai) vừa bị hết hạn
     //
 
     socket.join(`freshSync`)
