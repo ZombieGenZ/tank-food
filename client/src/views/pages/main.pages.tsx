@@ -113,6 +113,7 @@ const FormMain = (): JSX.Element => {
 
   useEffect(() => {
     localStorage.setItem('notification', JSON.stringify(notification))
+    console.log(notification)
   }, [notification])
 
   const addToCart = (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => {
@@ -239,8 +240,6 @@ const FormMain = (): JSX.Element => {
       setNotification([...notification, `Đơn hàng ${res._id} đã được giao thành công!`])
     })
 
-
-
     return () => {
       socket.off('verify-account')
       socket.off('logout')
@@ -263,7 +262,7 @@ const FormMain = (): JSX.Element => {
   }); // Mặc định là Admin view
   const [messageApi, contextHolder] = message.useMessage();
 
-  function NavAdmin({ display_name, userInfo }: { display_name: string; userInfo: UserInfo }) {
+  function NavAdmin({ display_name, userInfo, notification }: { display_name: string; userInfo: UserInfo; notification: string[] }) {
     const navigate = useNavigate()
     const [language, setLanguage] = useState<string>(() => {
       const savedLanguage = localStorage.getItem('language');
@@ -408,6 +407,9 @@ const FormMain = (): JSX.Element => {
             </button>
             <div className="border-l border-2 border-gray-400 h-6 md:h-8" />
           </div>
+          <div className="cursor-pointer">
+            <NotificationButton notifications={notification}/>
+          </div>
           <Dropdown menu={{ items }} placement="bottom">
             <div className='p-2 rounded-2xl cursor-pointer'>
               <IoSettings />
@@ -527,7 +529,7 @@ const FormMain = (): JSX.Element => {
           <div className='flex'>
             <NavigationAdmin displayname={user.display_name} user={user}/>
             <div className="w-full flex flex-col" ref={pageRef}>
-              <NavAdmin display_name="Bảng thống kê" userInfo={user} />
+              <NavAdmin notification={notification} display_name="Bảng thống kê" userInfo={user} />
               <Routes>
                 <Route path="/" element={<MainManage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path="/Account" element={<Account isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -543,7 +545,7 @@ const FormMain = (): JSX.Element => {
           </div>
         ) : (
           <>
-            <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+            <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/aboutus" element={<Aboutus />} />
@@ -568,7 +570,7 @@ const FormMain = (): JSX.Element => {
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
-        <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+        <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={user.role == 1 ? <EmployeePage isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipperPages isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -583,7 +585,7 @@ const FormMain = (): JSX.Element => {
         {contextHolder}
         {loadingCP && <Loading isLoading={false}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
-        <NavigationButtons toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
+        <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} />
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -761,7 +763,7 @@ function NavigationAdmin({ displayname, user }: { displayname: string, user: Use
   );
 }
 
-function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null, toggleView: Dispatch<SetStateAction<boolean>> }): JSX.Element {
+function NavigationButtons({ role, cartItemCount, userInfo, notification, toggleView }: { role: number|null; cartItemCount: number; userInfo: UserInfo|null, notification: string[], toggleView: Dispatch<SetStateAction<boolean>> }): JSX.Element {
   const navigate = useNavigate();
   const [open, setOpen] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
@@ -993,7 +995,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, toggleView }: { role
 
               {/* Notification Bell */}
               <div className="cursor-pointer">
-                <NotificationButton />
+                <NotificationButton notifications={notification}/>
               </div>
 
               {/* User Dropdown */}
