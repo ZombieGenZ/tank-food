@@ -271,7 +271,7 @@ function ProductManagement(props: Props): JSX.Element {
           setShowCreateModal(false)
           props.setLoading(true)
           const formData = new FormData();
-          formData.append("language", String(null));
+          formData.append("language", ""); // sau này sẽ thêm ngôn ngữ ký tự vào
           formData.append("refresh_token", String(refresh_token));
           formData.append("preview", image); 
           formData.append("title", title);
@@ -319,7 +319,7 @@ function ProductManagement(props: Props): JSX.Element {
         } finally {
           setTimeout(() => {
             props.setLoading(false)
-          }, 2000)
+          }, 4000)
         }
       } else {
         messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
@@ -367,7 +367,7 @@ function ProductManagement(props: Props): JSX.Element {
           }
       
           const formData = new FormData();
-          formData.append("language", String(null));
+          formData.append("language", ""); // sau này sẽ thêm ngôn ngữ ký tự vào
           formData.append("refresh_token", String(refresh_token));
           formData.append("product_id", id);
           formData.append("title", titleEdit);
@@ -428,7 +428,7 @@ function ProductManagement(props: Props): JSX.Element {
         } finally {
           setTimeout(() => {
             props.setLoading(false)
-          }, 2000)
+          }, 4000)
         }
       } else {
         messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")

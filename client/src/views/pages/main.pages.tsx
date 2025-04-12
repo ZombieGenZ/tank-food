@@ -1,4 +1,4 @@
-import { NavbarUser, NavbarEmployee, NavbarShipper } from '../components/navbar_component.tsx';
+import { NavbarUser, NavbarEmployee, NavbarShipper, Customer } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";
 import { Drawer } from "antd";
@@ -356,6 +356,8 @@ const FormMain = (): JSX.Element => {
                       }, 
                     }).then(() => {
                       localStorage.setItem('isAdminView', JSON.stringify(false))
+                      window.location.reload()
+                    }).then(() => { 
                       navigate('/')
                     })
                   } else {
@@ -413,12 +415,11 @@ const FormMain = (): JSX.Element => {
           </div>
           <div className='flex items-center gap-2'>
             <button
-              className={`p-1 md:p-2 cursor-pointer rounded-md bg-orange-500 text-white text-xs md:text-base`}
+              className={`p-1 md:p-2 cursor-pointer underline rounded-md bg-orange-500 text-white text-xs md:text-base`}
               onClick={() => handleChange(language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt')}
             >
               {language === 'Tiếng Việt' ? 'VN' : 'US'}
             </button>
-            <div className="border-l border-2 border-gray-400 h-6 md:h-8" />
           </div>
           <div className="cursor-pointer">
             <NotificationButton notifications={notification}/>
@@ -534,7 +535,7 @@ const FormMain = (): JSX.Element => {
       {loading ? (
       <Loadings />
     ) : user && user.role === 3 ? (
-      <div className={isAdminView ? "flex relative flex-col" : "flex relative flex-col"}>
+      <div className="flex relative flex-col">
         {contextHolder}
         {loadingCP && <Loading isLoading={isAdminView}/>}
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
@@ -542,7 +543,7 @@ const FormMain = (): JSX.Element => {
           <div className='flex'>
             <NavigationAdmin displayname={user.display_name} user={user}/>
             <div className="w-full flex flex-col" ref={pageRef}>
-              <NavAdmin notification={notification} display_name="Bảng thống kê" userInfo={user} />
+              <NavAdmin notification={notification} display_name={language() == "Tiếng Việt" ? "Bảng thống kê" : "Dash board"} userInfo={user} />
               <Routes>
                 <Route path="/" element={<MainManage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path="/Account" element={<Account isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -768,7 +769,7 @@ function NavigationAdmin({ displayname, user }: { displayname: string, user: Use
       {/* Overlay for mobile - Only shows when sidebar is open */}
       {isMobileSidebarOpen && (
         <div 
-          className='fixed inset-0 bg-gray-100 bg-opacity-50 z-30 lg:hidden'
+          className='fixed inset-0 bg-black opacity-50 z-30 lg:hidden'
           onClick={toggleMobileSidebar}
         ></div>
       )}
@@ -864,6 +865,8 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
                     }, 
                   }).then(() => {
                     localStorage.setItem('isAdminView', JSON.stringify(false))
+                    window.location.reload()
+                  }).then(() => { 
                     navigate('/')
                   })
                 } else {
@@ -941,6 +944,10 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
     border: '1px solid rgba(245, 245, 245, 0.3)',
   };
 
+  const getNavbar = () => {
+    return refresh_token !== null ? Customer : NavbarUser
+  }
+
   return (
     <>
     <div className='sticky top-0 z-50 navbarName' style={style}>
@@ -957,8 +964,8 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
         {/* Desktop Navigation Links - Hidden on mobile */}
         <div className='hidden lg:block flex-1 px-4 py-2'>
           <ul className='flex items-center justify-center gap-3 md:gap-5'>
-            {(role === 0 || role === null || role === 3) && (
-              NavbarUser.map((item: NavbarItem) => (
+            {(role === 0 || role === 3) && (
+              Customer.map((item: NavbarItem) => (
                 <li key={item.id} className="text-sm md:text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
                   <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] px-1 py-1 md:p-2 rounded-md transition duration-300">
                     {language === "Tiếng Việt" ? item.title : item.english}
@@ -984,6 +991,15 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
                 </li>
               ))
             )}
+            {role === null && (
+              NavbarUser.map((item: NavbarItem) => (
+                <li key={item.id} className="text-sm md:text-xl relative inline-block after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-[#FF6B35] after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100">
+                  <button onClick={() => navigate(item.path)} className="links cursor-pointer font-semibold text-[#FF6B35] px-1 py-1 md:p-2 rounded-md transition duration-300">
+                    {language === "Tiếng Việt" ? item.title : item.english}
+                  </button>
+                </li>
+              ))
+            )}
           </ul>
         </div>
 
@@ -992,7 +1008,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
           {/* Language Selector */}
           <div className='flex items-center gap-1 md:gap-2'>
             <button
-              className={`p-1 md:p-2 cursor-pointer rounded-md bg-orange-500 text-white text-xs md:text-base`}
+              className={`p-1 md:p-2 cursor-pointer underline rounded-md bg-orange-500 text-white text-xs md:text-base`}
               onClick={() => handleChange(language === 'Tiếng Việt' ? 'English' : 'Tiếng Việt')}
             >
               {language === 'Tiếng Việt' ? 'VN' : 'US'}
@@ -1058,7 +1074,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
           >
             <div className='w-full z-50'>
               <ul className='flex flex-col gap-4'>
-                {NavbarUser.map((item: NavbarItem) => (
+                {getNavbar().map((item: NavbarItem) => (
                   <li key={item.id}>
                     <button 
                       onClick={() => {

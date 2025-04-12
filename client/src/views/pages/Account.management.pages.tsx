@@ -195,7 +195,7 @@ const Account: React.FC<Props> = (props) => {
           } finally {
             setTimeout(() => {
               props.setLoading(false)
-            }, 2000)
+            }, 4000)
           }
         } else {
           messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
@@ -303,7 +303,7 @@ const Account: React.FC<Props> = (props) => {
           } finally {
             setTimeout(() => {
               props.setLoading(false)
-            }, 2000)
+            }, 4000)
           }
         } else {
           messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
@@ -410,7 +410,7 @@ const Account: React.FC<Props> = (props) => {
         <>
           {record.active == "Hoạt động" ? record.note.map((noteitem, index) => (
             <button key={index}
-                    className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold p-2 rounded" 
+                    className={`${isDisabled ? "bg-gray-500" : "bg-red-500 hover:bg-red-700 cursor-pointer"} transition duration-300 text-white font-semibold p-2 rounded`} 
                     onClick={() => showModal(record)} disabled={isDisabled}>
               {noteitem}
             </button>

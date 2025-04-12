@@ -77,6 +77,7 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
         }).then((response) => {
             return response.json()
         }).then((data) => {
+            console.log(data)
             setVoucher(data.voucher)
         })
     }, [refresh_token, access_token])
@@ -464,7 +465,7 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
             {
               title: 'Số tiền giảm',
               dataIndex: 'discount',
-              width: 350,
+              width: 150,
               key: 'discount',
               render: (text) => <p>{formatCurrency(text)}</p>
             },
@@ -481,6 +482,12 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
               dataIndex: 'expiration_date',
               width: 350,
               render: (text) => <p>{formatDateFromISO(text)}</p>
+            },
+            {
+              title: 'Trạng thái',
+              dataIndex: 'status',
+              width: 350,
+              key: 'status',
             },
             {
                 title: '',

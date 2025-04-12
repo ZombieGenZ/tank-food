@@ -276,6 +276,8 @@ const CategoryManagement: React.FC<Props> = (props) => {
               }
               if(data.code == RESPONSE_CODE.CREATE_CATEGORY_SUCCESSFUL) {
                 messageApi.success(data.message)
+                setCategoryName("")
+                setPriority(1)
                 const body = {
                   language: null,
                 } 

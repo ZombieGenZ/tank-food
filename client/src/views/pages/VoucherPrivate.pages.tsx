@@ -6,6 +6,7 @@ import AOS from "aos"
 import "aos/dist/aos.css"
 import { motion } from "framer-motion"
 import { message } from "antd"
+import { useNavigate } from "react-router-dom"
 import Verify from "../components/VerifyToken.components"
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
@@ -20,6 +21,7 @@ interface DiscountCode {
 }
 
 const VoucherPrivate: React.FC = () => {
+  const navigate = useNavigate()
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -42,6 +44,9 @@ const VoucherPrivate: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if(refresh_token == null) {
+      navigate('/errorpage')
+    }
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
         if (isValid) {

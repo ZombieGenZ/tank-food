@@ -100,7 +100,7 @@ const Loading: React.FC<LoadingProps> = (isAdminView) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      position: `${isAdminView.isLoading == true ? "sticky" : "sticky"}`,
+      position: `${isAdminView.isLoading == true ? "fixed" : "fixed"}`,
       top: 0,
       backgroundColor: 'black',
       borderRadius: '8px',

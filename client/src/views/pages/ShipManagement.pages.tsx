@@ -222,7 +222,7 @@ const ShipManagement: React.FC<Props> = (props) => {
         } finally {
           setTimeout(() => {
             props.setLoading(false)
-          }, 2000)
+          }, 3000)
         }    
       } else {
         messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
@@ -273,7 +273,7 @@ const ShipManagement: React.FC<Props> = (props) => {
         } finally {
           setTimeout(() => {
             props.setLoading(false)
-          }, 2000)
+          }, 3000)
         }    
       } else {
           messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
@@ -324,7 +324,7 @@ const ShipManagement: React.FC<Props> = (props) => {
           } finally {
             setTimeout(() => {
               props.setLoading(false)
-            }, 2000)
+            }, 3000)
           }      
       } else {
           messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
@@ -343,7 +343,7 @@ const ShipManagement: React.FC<Props> = (props) => {
               const originLatitude = position.coords.latitude;
               const originLongitude = position.coords.longitude;
       
-              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${originLatitude},${originLongitude}&destination=${longitude},${latitude}`;
+              const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${originLatitude},${originLongitude}&destination=${latitude},${longitude}`;
               window.open(googleMapsUrl, '_blank');
             },
             (error) => {
@@ -608,7 +608,7 @@ const ShipManagement: React.FC<Props> = (props) => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => takeLocation(order.delivery_longitude, order.delivery_latitude)}
+                      onClick={() => takeLocation(order.receiving_longitude, order.receiving_latitude)}
                       className="px-4 py-1.5 cursor-pointer bg-white border border-gray-200 rounded-md hover:bg-gray-50 font-medium text-sm transition sm:px-6 sm:py-2"
                     >
                       MAP

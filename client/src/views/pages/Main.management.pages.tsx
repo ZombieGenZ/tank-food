@@ -2,8 +2,34 @@ import { JSX, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import Verify from '../components/VerifyToken.components';
-import { message, Select } from "antd";
+import { Button, message, Select, ConfigProvider, } from "antd";
 import io from "socket.io-client";
+import { createStyles } from 'antd-style';
+// import { RESPONSE_CODE } from "../../constants/responseCode.constants";
+
+const useStyle = createStyles(({ prefixCls, css }) => ({
+  linearGradientButton: css`
+    &.${prefixCls}-btn-primary:not([disabled]):not(.${prefixCls}-btn-dangerous) {
+      > span {
+        position: relative;
+      }
+
+      &::before {
+        content: '';
+        background: linear-gradient(135deg, #fbbf24, #f97316);
+        position: absolute;
+        inset: -1px;
+        opacity: 1;
+        transition: all 0.3s;
+        border-radius: inherit;
+      }
+
+      &:hover::before {
+        opacity: 0;
+      }
+    }
+  `,
+}));
 
 const socket = io(import.meta.env.VITE_API_URL)
 
@@ -116,6 +142,7 @@ interface StatisticalData {
 }
 
 function MainManage(props: Props): JSX.Element{
+    const { styles } = useStyle();
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [list, setList] = useState<StatisticalData|null>(null)
@@ -231,8 +258,75 @@ function MainManage(props: Props): JSX.Element{
           messageApi.error("Token không hợp lệ!");
         }
       };
-      checkToken();
+    checkToken();
     }, [refresh_token, access_token, messageApi, selectDate]);
+
+    const DownloadFile = async () => {
+      const checkToken = async () => {
+        const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          try {
+            props.setLoading(true)
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              time: selectDate
+            }
+
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/statistical/export`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Failed to export statistics');
+            }
+            const blob = await response.blob();
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let fileName = 'statistics.xlsx';
+      
+            if (contentDisposition) {
+              const fileNameMatch = contentDisposition.match(/filename=(?:"([^"]+)"|(\S+))/);
+              if (fileNameMatch) {
+                fileName = fileNameMatch[1] || fileNameMatch[2];
+              }
+            }
+
+            messageApi.success("Xuất thống kê thành công!")
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+          } catch (error) {
+            messageApi.open({
+              type: 'error',
+              content: String(error),
+              style: {
+                 marginTop: '10vh',
+              },
+            })
+            return;
+          } finally {
+            setTimeout(() => {
+              props.setLoading(false)
+            }, 2500)
+          }
+        } else {
+          messageApi.error("Token không hợp lệ!");
+        }
+      };
+      checkToken();
+    }
 
     useEffect(() => {
       const handleStorageChange = () => {
@@ -246,11 +340,6 @@ function MainManage(props: Props): JSX.Element{
         window.removeEventListener("storage", handleStorageChange);
       };
     }, []);
-
-    useEffect(() => {
-      console.log(recentOrders)
-      console.log(list)
-    }, [recentOrders, list])
 
     function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
       const formatter = new Intl.NumberFormat(currencyCode, {
@@ -387,6 +476,17 @@ function MainManage(props: Props): JSX.Element{
                     { value: 'productsCount', label: language() == "Tiếng Việt" ? 'Sản phẩm bán' : 'Products sold' },
                   ]}
                 />
+                <ConfigProvider
+                  button={{
+                    className: styles.linearGradientButton,
+                  }}
+                >
+                  <Button 
+                    className="w-full sm:w-50"
+                    type="primary"
+                    onClick={DownloadFile}
+                  >Xuất danh sách thống kê</Button>
+                </ConfigProvider>
               </div>
             </div>
           
