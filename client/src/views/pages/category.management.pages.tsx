@@ -212,7 +212,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
         <div className="min-h-screen bg-orange-50">
           {/* {contextHolder} */}
             {/* Hero Section */}
-            <section className="relative w-full overflow-hidden bg-gradient-to-r from-red-400 to-orange-200">
+            <section className="relative w-full overflow-hidden bg-gradient-to-r from-red-560 to-orange-510">
                 {/* Main content */}
                 <div className="container mx-auto px-4 pt-16 pb-64 md:pt-24 md:pb-72 relative z-10">
                     <div className="flex justify-center mb-8" data-aos="zoom-in-up">
@@ -251,7 +251,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
             {/* Menu Items Section with Soft Orange Background */}
             
             {/* Footer */}
-            <section className="relative bg-gradient-to-r from-red-400 to-orange-200 pt-16 pb-20">
+            <section className="relative bg-gradient-to-r from-red-560 to-orange-510 pt-16 pb-20">
                 <div className="container mx-auto px-4">
                     <h2 className="text-6xl font-bold font-['Yeseva_One'] text-center text-orange-800 mb-12 " data-aos="fade-down">Thực Đơn TankFood</h2>
     
