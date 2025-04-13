@@ -1,0 +1,378 @@
+﻿<Window x:Class="sysinfo_client.StateManagement"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:sysinfo_client"
+        mc:Ignorable="d"
+        Title="Giám Sát Hệ Thống" Height="550" Width="900"
+        Background="#F2F2F2" Closing="Window_Closing"
+        WindowStartupLocation="CenterScreen"
+        Icon="images/logo.ico"
+        Closed="StateManagement_OnClosed">
+    <Window.Resources>
+        <DropShadowEffect x:Key="CardShadow" ShadowDepth="1" Direction="270" Opacity="0.2" BlurRadius="4"/>
+    </Window.Resources>
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="GIÁM SÁT HỆ THỐNG" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" 
+                   Foreground="#333333" HorizontalAlignment="Center"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Margin="5" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="8" 
+                    Background="White" Padding="15" Effect="{StaticResource CardShadow}">
+                <StackPanel>
+                    <DockPanel LastChildFill="True" Margin="0,0,0,10">
+                        <Border DockPanel.Dock="Left" Background="#3498db" Width="24" Height="24" CornerRadius="12" Margin="0,0,10,0">
+                            <TextBlock Text="C" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="SỬ DỤNG CPU" FontWeight="Bold" FontSize="16" Foreground="#333333"/>
+                    </DockPanel>
+                    <Grid>
+                        <ProgressBar x:Name="CpuProgress" Height="24" Maximum="100" BorderThickness="0" Value="0" 
+                                     Background="#EEEEEE">
+                            <ProgressBar.Resources>
+                                <Style TargetType="{x:Type ProgressBar}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ProgressBar}">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                                        Background="{TemplateBinding Background}" 
+                                                        CornerRadius="4">
+                                                    <Grid x:Name="PART_Track">
+                                                        <Rectangle x:Name="PART_Indicator" 
+                                                                   HorizontalAlignment="Left" 
+                                                                   Fill="{TemplateBinding Foreground}" 
+                                                                   RadiusX="4" RadiusY="4"/>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Value" 
+                                                                     From="0" Duration="0:0:0.5" 
+                                                                     FillBehavior="HoldEnd"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ProgressBar.Resources>
+                        </ProgressBar>
+                        <TextBlock x:Name="CpuUsageText" Text="{Binding Value, ElementName=CpuProgress, StringFormat={}{0:N1}%, Mode=OneWay}" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   FontSize="14" FontWeight="SemiBold" Foreground="Black"/>
+                    </Grid>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Sử dụng" FontSize="11" Foreground="#666666"/>
+                            <TextBlock x:Name="CpuMinUsageText" Text="0,0%" FontSize="14" FontWeight="SemiBold" TextAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                            <TextBlock Text="Tối đa" FontSize="11" Foreground="#666666" HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="CpuMaxUsageText" Text="0,0%" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Margin="5" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="8" 
+                    Background="White" Padding="15" Effect="{StaticResource CardShadow}">
+                <StackPanel>
+                    <DockPanel LastChildFill="True" Margin="0,0,0,10">
+                        <Border DockPanel.Dock="Left" Background="#27ae60" Width="24" Height="24" CornerRadius="12" Margin="0,0,10,0">
+                            <TextBlock Text="R" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="SỬ DỤNG BỘ NHỚ" FontWeight="Bold" FontSize="16" Foreground="#333333"/>
+                    </DockPanel>
+                    <Grid>
+                        <ProgressBar x:Name="RamProgress" Height="24" Maximum="100" BorderThickness="0" Value="0" 
+                                     Background="#EEEEEE">
+                            <ProgressBar.Resources>
+                                <Style TargetType="{x:Type ProgressBar}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ProgressBar}">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                                        Background="{TemplateBinding Background}" 
+                                                        CornerRadius="4">
+                                                    <Grid x:Name="PART_Track">
+                                                        <Rectangle x:Name="PART_Indicator" 
+                                                                   HorizontalAlignment="Left" 
+                                                                   Fill="{TemplateBinding Foreground}" 
+                                                                   RadiusX="4" RadiusY="4"/>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Value" 
+                                                                     From="0" Duration="0:0:0.5" 
+                                                                     FillBehavior="HoldEnd"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ProgressBar.Resources>
+                        </ProgressBar>
+                        <TextBlock x:Name="RamUsageText" Text="{Binding Value, ElementName=RamProgress, StringFormat={}{0:N1}%, Mode=OneWay}" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   FontSize="14" FontWeight="SemiBold" Foreground="Black"/>
+                    </Grid>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Sử dụng" FontSize="11" Foreground="#666666"/>
+                            <TextBlock x:Name="RamMinUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                            <TextBlock Text="Tối đa" FontSize="11" Foreground="#666666" HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="RamMaxUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Margin="5" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="8" 
+                    Background="White" Padding="15" Effect="{StaticResource CardShadow}">
+                <StackPanel>
+                    <DockPanel LastChildFill="True" Margin="0,0,0,10">
+                        <Border DockPanel.Dock="Left" Background="#e74c3c" Width="24" Height="24" CornerRadius="12" Margin="0,0,10,0">
+                            <TextBlock Text="D" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="SỬ DỤNG Ổ CỨNG" FontWeight="Bold" FontSize="16" Foreground="#333333"/>
+                    </DockPanel>
+                    <Grid>
+                        <ProgressBar x:Name="DiskProgress" Height="24" Maximum="100" BorderThickness="0" Value="0" 
+                                     Background="#EEEEEE">
+                            <ProgressBar.Resources>
+                                <Style TargetType="{x:Type ProgressBar}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ProgressBar}">
+                                                <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                                        Background="{TemplateBinding Background}" 
+                                                        CornerRadius="4">
+                                                    <Grid x:Name="PART_Track">
+                                                        <Rectangle x:Name="PART_Indicator" 
+                                                                   HorizontalAlignment="Left" 
+                                                                   Fill="{TemplateBinding Foreground}" 
+                                                                   RadiusX="4" RadiusY="4"/>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Value" 
+                                                                     From="0" Duration="0:0:0.5" 
+                                                                     FillBehavior="HoldEnd"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ProgressBar.Resources>
+                        </ProgressBar>
+                        <TextBlock x:Name="DiskUsageText" Text="{Binding Value, ElementName=DiskProgress, StringFormat={}{0:N1}%, Mode=OneWay}" 
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                   FontSize="14" FontWeight="SemiBold" Foreground="Black"/>
+                    </Grid>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Sử dụng" FontSize="11" Foreground="#666666"/>
+                            <TextBlock x:Name="DiskMinUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                            <TextBlock Text="Tối đa" FontSize="11" Foreground="#666666" HorizontalAlignment="Right"/>
+                            <TextBlock x:Name="DiskMaxUsageText" Text="0,0 MB" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <TextBlock Grid.Row="2" Text="CỔNG ĐANG HOẠT ĐỘNG" FontWeight="Bold" FontSize="16" Margin="5,20,0,10" 
+                   Foreground="#333333"/>
+
+        <Border Grid.Row="2" Margin="5,45,5,0" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="8" 
+                Background="White" Effect="{StaticResource CardShadow}">
+            <ListView x:Name="PortList" BorderThickness="0" Background="Transparent">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="Padding" Value="10,8"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="#EEEEEE"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#f0f7ff"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#f5f5f5"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Tên" Width="150">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="TÊN" FontWeight="SemiBold" FontSize="12" Foreground="#666666"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayName}" FontSize="14" FontWeight="Medium"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Cổng" Width="80">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="CỔNG" FontWeight="SemiBold" FontSize="12" Foreground="#666666"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Port}" FontSize="14" FontWeight="Medium"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Trạng thái" Width="120">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="TRẠNG THÁI" FontWeight="SemiBold" FontSize="12" Foreground="#666666"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="10" Height="10" Fill="{Binding StatusColor}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Status}" FontSize="14" FontWeight="Medium" Foreground="{Binding StatusColor}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="CPU" Width="100">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="CPU (%)" FontWeight="SemiBold" FontSize="12" Foreground="#666666"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding CpuUsagePercent, StringFormat={}{0:N1}%}" FontSize="14" FontWeight="Medium"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="RAM" Width="100">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="RAM (MB)" FontWeight="SemiBold" FontSize="12" Foreground="#666666"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding RamUsageMb, StringFormat={}{0:N1} MB}" FontSize="14" FontWeight="Medium"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Network" Width="100">
+                            <GridViewColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="NETWORK (MB)" FontWeight="SemiBold" FontSize="12" Foreground="#666666"/>
+                                </DataTemplate>
+                            </GridViewColumn.HeaderTemplate>
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding NetworkUsageMb, StringFormat={}{0:N1} MB}" FontSize="14" FontWeight="Medium"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Border>
+
+        <Border Grid.Row="3" Margin="5,15,5,0" BorderBrush="#DDDDDD" BorderThickness="1" CornerRadius="8" 
+                Background="White" Padding="15,10" Effect="{StaticResource CardShadow}">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <Ellipse x:Name="ConnectionStatusIndicator" Width="12" Height="12" Fill="Green" Margin="0,2,8,0"/>
+                    <TextBlock x:Name="ConnectionStatusText" VerticalAlignment="Center" Text="Trực tuyến" FontSize="14"/>
+                </StackPanel>
+                <Button x:Name="ReconnectButton" Content="Kết nối lại" Width="100" Height="28" 
+                        HorizontalAlignment="Right" Click="ReconnectButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#2196F3"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#1976D2"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" Value="#0D47A1"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Background" Value="#BBBBBB"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

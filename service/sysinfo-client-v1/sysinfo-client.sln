@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sysinfo-client", "sysinfo-client\sysinfo-client.csproj", "{DBAE559C-FEA7-47A7-8C49-6B7C7450D48D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DBAE559C-FEA7-47A7-8C49-6B7C7450D48D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBAE559C-FEA7-47A7-8C49-6B7C7450D48D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBAE559C-FEA7-47A7-8C49-6B7C7450D48D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBAE559C-FEA7-47A7-8C49-6B7C7450D48D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {669EDCFE-31B6-436A-BC70-DC89A395BF4C}
+	EndGlobalSection
+EndGlobal
