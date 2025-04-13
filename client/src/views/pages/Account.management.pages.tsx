@@ -11,6 +11,12 @@ const { useBreakpoint } = Grid;
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  aLert: NotificationProps
+}
+
+interface NotificationProps {
+  notification: string[],
+  setNotification: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 interface DataType {
@@ -77,16 +83,14 @@ const Account: React.FC<Props> = (props) => {
   // }, [refresh_token, messageApi])
 
   useEffect(() => {
-    socket.emit('connect-user-realtime', refresh_token)
-    socket.on('ban', (data) => {
+    socket.emit('connect-admin-realtime', refresh_token)
+    socket.on('ban-account', (data) => {
       console.log(data)
       messageApi.open({
         type: 'error',
-        content: `${data.created_by} đã ban tài khoản ${data.user_id} với lý do ${data.reason}`,
-        style: {
-          marginTop: '10vh',
-        },
+        content: `Admin đã ban 1 tài khoản với lý do ${data.reason}!`,
       })
+      props.aLert.setNotification([...props.aLert.notification, `Admin đã ban 1 tài khoản với lý do ${data.reason}!`])
       setListuser(prevList => {
         return prevList.map(user => {
           if(user._id === data.user_id) {
@@ -103,6 +107,20 @@ const Account: React.FC<Props> = (props) => {
         });
       });
     })
+
+    socket.on('unban-account', (res) => {
+      console.log(res)
+      messageApi.open({
+        type: 'success',
+        content: `Tài khoản ${res.user_id} đã được mở khoá!`,
+      })
+      props.aLert.setNotification([...props.aLert.notification, `Tài khoản ${res.user_id} đã được mở khoá!`])
+    })
+
+    return () => {
+      socket.off('ban-account')
+      socket.off('unban-account')
+    }
   }, [refresh_token, listuser, messageApi])
 
   const showModal = (value: DataType) => {
@@ -147,9 +165,6 @@ const Account: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'error',
                   content: data.message,
-                  style: {
-                    marginTop: '10vh',
-                  },
                 })
                 return;
               }
@@ -158,9 +173,6 @@ const Account: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'success',
                   content: 'Mở khóa tài khoản thành công',
-                  style: {
-                    marginTop: '10vh',
-                  },
                 }).then(() => {
                   setIsModalActiveOpen(false);
                   const body = {
@@ -210,9 +222,6 @@ const Account: React.FC<Props> = (props) => {
       messageApi.open({
         type: 'error',
         content: 'Số giờ ban phải lớn hơn 1',
-        style: {
-          marginTop: '10vh',
-        },
       });
       return;
     }
@@ -220,9 +229,6 @@ const Account: React.FC<Props> = (props) => {
       messageApi.open({
         type: 'error',
         content: 'Không được để trống lý do ban',
-        style: {
-          marginTop: '10vh',
-        },
       })
       return;
     }
@@ -255,9 +261,6 @@ const Account: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'error',
                   content: data.message,
-                  style: {
-                    marginTop: '10vh',
-                  },
                 })
                 return;
               }
@@ -265,9 +268,6 @@ const Account: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'success',
                   content: data.message,
-                  style: {
-                    marginTop: '10vh',
-                  },
                 }).then(() => {
                   setIsModalOpen(false);
                   const body = {

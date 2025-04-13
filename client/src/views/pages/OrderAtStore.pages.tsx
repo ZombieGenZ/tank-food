@@ -10,6 +10,7 @@ import "aos/dist/aos.css"
 import { motion } from 'framer-motion';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 import io from "socket.io-client";
+import '../../../public/css/Order.css';
 
 const socket = io(import.meta.env.VITE_API_URL)
 
@@ -189,7 +190,7 @@ const OrderAtStore: React.FC = () => {
   useEffect(() => {
     AOS.init({
       duration: 800,
-      once: false,
+      once: true,
       mirror: true,
       offset:10
     })
@@ -395,7 +396,7 @@ const OrderAtStore: React.FC = () => {
   : product;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4 md:p-8" onClick={handleClick}>
+    <div className="min-h-screen bg-white p-4 md:p-8" onClick={handleClick}>
       {contextHolder}
       {sparks.map((spark) => (
         <Spark
@@ -410,107 +411,117 @@ const OrderAtStore: React.FC = () => {
         />
       ))}
       <div className="max-w-7xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-        <h1 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Order At Store
+        <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent drop-shadow-sm">
+          <div className="font-bold mb-6">Tank<span className="text-yellow-300">Food</span></div>
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cart Section */}
-          
-
-          {/* Menu Section */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6" data-aos="fade-left" data-aos-delay="300">
-            <h2 className="text-xl font-bold mb-4">Tank Food's menu</h2>
+          {/* Menu Section - Left (2 columns) */}
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-md p-6 border border-gray-100" data-aos="fade-right" data-aos-delay="200">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
+              <span className="mr-2">Tank Food's menu</span>
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+            </h2>
 
             {/* Tabs */}
-            <div className="flex border-b overflow-hidden overflow-x-auto mb-6">
+            <div className="flex border-b border-gray-200 overflow-hidden overflow-x-auto scrollbar-hide mb-6">
               <button
-                 className={`pb-2 px-4 font-medium transition-all ${
-                   selectedCategoryId === null ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
-                 }`}
-                 onClick={() => setSelectedCategoryId(null)}
-               >
-                 {language() == "Tiếng Việt" ? "Tất cả" : "All"}
-               </button>
+                className={`pb-2 px-4 cursor-pointer font-medium transition-all whitespace-nowrap ${
+                  selectedCategoryId === null ? "text-orange-500 border-b-2 border-orange-500 font-bold" : "text-gray-500 hover:text-orange-500"
+                }`}
+                onClick={() => setSelectedCategoryId(null)}
+              >
+                {language() == "Tiếng Việt" ? "Tất cả" : "All"}
+              </button>
               {Category.map(category => 
                 <button
-                 className={`pb-2 px-4 cursor-pointer font-medium transition-all ${
-                   selectedCategoryId === category._id ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
-                 }`}
-                 onClick={() => setSelectedCategoryId(category._id)}
-               >
-                 {language() == "Tiếng Việt" ? category.category_name_translate_1 : category.category_name_translate_2}
-               </button>
+                  key={category._id}
+                  className={`pb-2 px-4 cursor-pointer font-medium transition-all whitespace-nowrap ${
+                    selectedCategoryId === category._id ? "text-orange-500 border-b-2 border-orange-500 font-bold" : "text-gray-500 hover:text-orange-500"
+                  }`}
+                  onClick={() => setSelectedCategoryId(category._id)}
+                >
+                  {language() == "Tiếng Việt" ? category.category_name_translate_1 : category.category_name_translate_2}
+                </button>
               )}
             </div>
-              <>
-                <div data-aos="fade-up" data-aos-delay="400">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    {filteredProducts.map((item, index) => (
-                      <div
-                        key={index}
-                        className="border rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer"
-                        onClick={() => addToCart(item)}
-                        data-aos="zoom-in"
-                        data-aos-delay={400 + Number.parseInt(item._id) * 50}
-                      >
-                        <div className="h-32 bg-gray-100 flex items-center justify-center">
-                          <img
-                            src={item.preview.url || "/placeholder.svg"}
-                            alt={item.title_translate_1}
-                            className="h-24 w-24 object-cover"
-                          />
-                        </div>
-                        <div className="p-3 text-center">
-                          <h4 className="font-medium">{item.title_translate_1}</h4>
-                          <div className="flex justify-center items-center space-x-2 mt-2">
-                            <p className={`font-bold ${item.discount > 0 ? "line-through text-gray-500" : "text-red-500"}`}>{formatCurrency(item.price)}</p>
-                            {item.discount > 0 && (<p className="text-red-500 font-bold">{formatCurrency(item.price - item.price * item.discount/100)}</p>)}
-                          </div>
+            <>
+              <div data-aos="fade-up" data-aos-delay="400">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                  {filteredProducts.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-lg overflow-hidden hover:shadow-lg transition-all transform hover:scale-[1.02] cursor-pointer border border-gray-100"
+                      onClick={() => addToCart(item)}
+                      data-aos="zoom-in"
+                      data-aos-delay={400 + Number.parseInt(item._id) * 50}
+                    >
+                      <div className="h-32 bg-gray-50 flex items-center justify-center">
+                        <img
+                          src={item.preview.url || "/placeholder.svg"}
+                          alt={item.title_translate_1}
+                          className="h-24 w-24 object-cover rounded-lg shadow-sm"
+                        />
+                      </div>
+                      <div className="p-3 text-center">
+                        <h4 className="font-medium text-gray-800">{item.title_translate_1}</h4>
+                        <div className="flex justify-center items-center space-x-2 mt-2">
+                          <p className={`font-bold ${item.discount > 0 ? "line-through text-gray-400" : "text-orange-500"}`}>{formatCurrency(item.price)}</p>
+                          {item.discount > 0 && (<p className="text-orange-500 font-bold">{formatCurrency(item.price - item.price * item.discount/100)}</p>)}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              </>
+              </div>
+            </>
           </div>
 
+          {/* Cart Section - Right (1 column) */}
           <div
-            className="lg:col-span-1 bg-white rounded-2xl shadow-lg p-6 h-fit"
-            data-aos="fade-right"
-            data-aos-delay="200"
+            className="lg:col-span-1 bg-white rounded-2xl shadow-md p-6 h-fit border border-gray-100 sticky top-4"
+            data-aos="fade-left"
+            data-aos-delay="300"
           >
-            <h2 className="text-xl font-bold mb-4 border-b pb-2">Danh sách đồ ăn đã chọn</h2>
+            <h2 className="text-2xl font-bold mb-4 border-b border-gray-200 pb-2 text-gray-800">Danh sách đồ ăn đã chọn</h2>
 
-            <div className="space-y-4 mb-6">
+            <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
               {cart.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Giỏ hàng trống</p>
+                <div className="text-gray-400 text-center py-6 flex flex-col items-center">
+                  <ShoppingCart size={48} className="text-gray-300 mb-2 opacity-50" />
+                  <p>Giỏ hàng trống</p>
+                </div>
               ) : (
                 cart.map((item) => (
                   <div
                     key={item._id}
-                    className="flex justify-between items-center border-b pb-3"
+                    className="flex justify-between items-center border-b border-gray-100 pb-3 hover:bg-gray-50 p-2 rounded-lg transition-colors"
                     data-aos="fade-up"
                     data-aos-delay="300"
                   >
                     <div>
-                      <p className="font-medium">{item.title_translate_1}</p>
-                      <p className="text-gray-600">{formatCurrency(item.price)}</p>
+                      <p className="font-medium text-gray-800">{item.title_translate_1}</p>
+                      <p className="text-orange-500">{formatCurrency(item.price)}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => updateQuantity(item._id, (item.quantity || 0) - 1)}
-                        className="w-7 cursor-pointer h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateQuantity(item._id, (item.quantity || 0) - 1);
+                        }}
+                        className="w-7 cursor-pointer h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
                       >
-                        <Minus size={16} />
+                        <Minus size={16} className="text-gray-700" />
                       </button>
-                      <span className=
-                      "w-6 text-center">{item.quantity}</span>
+                      <span className="w-6 text-center font-bold text-gray-800">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item._id, (item.quantity || 0) + 1)}
-                        className="w-7 cursor-pointer h-7 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateQuantity(item._id, (item.quantity || 0) + 1);
+                        }}
+                        className="w-7 cursor-pointer h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
                       >
-                        <Plus size={16} />
+                        <Plus size={16} className="text-gray-700" />
                       </button>
                     </div>
                   </div>
@@ -518,21 +529,22 @@ const OrderAtStore: React.FC = () => {
               )}
             </div>
 
-            <div className={`mt-6 ${cart.length > 0 ? "border-none" : "border-t"} pt-4`}>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-bold">Tổng tiền:</span>
-                <span className="text-lg font-bold">{formatCurrency(calculateTotal())}</span>
+            <div className={`mt-6 ${cart.length > 0 ? "border-none" : "border-t border-gray-200"} pt-4`}>
+              <div className="flex justify-between items-center mb-4 bg-gray-50 p-3 rounded-lg">
+                <span className="text-lg font-bold text-gray-800">Tổng tiền:</span>
+                <span className="text-lg font-bold text-orange-500">{formatCurrency(calculateTotal())}</span>
               </div>
 
               <button
-                className="relative cursor-pointer w-full py-3 bg-green-500 text-white rounded-lg font-medium overflow-hidden group transition-all duration-300 ease-out hover:bg-green-600 active:scale-95"
+                className="relative cursor-pointer w-full py-3 bg-orange-500 text-white rounded-lg font-medium overflow-hidden group transition-all duration-300 ease-out hover:bg-orange-600 active:scale-95 shadow-md"
                 data-aos="zoom-in"
                 data-aos-delay="400"
                 onClick={ShowModalVoucher}
+                disabled={cart.length === 0}
               >
-                <div className="absolute inset-0 w-full h-full transition-all duration-300 scale-0 group-hover:scale-100 group-hover:bg-green-600/30 rounded-lg"></div>
+                <div className="absolute inset-0 w-full h-full transition-all duration-300 scale-0 group-hover:scale-100 group-hover:bg-orange-600/30 rounded-lg"></div>
                 <div className="relative flex items-center justify-center gap-2">
-                  <span className="inline-block transition-all duration-500 group-hover:scale-125 group-hover:font-bold group-hover:text-yellow-100 group-hover:drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]">
+                  <span className="inline-block transition-all duration-500 group-hover:scale-105 group-hover:font-bold group-hover:text-white group-hover:drop-shadow-sm">
                     Đặt ngay
                   </span>
                   <ShoppingCart className="w-5 h-5 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
@@ -545,116 +557,136 @@ const OrderAtStore: React.FC = () => {
 
       {/* Payment Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm h-auto max-h-[80vh] overflow-hidden">
-            <div className="max-h-[80vh] overflow-y-auto">
-              {/* Modal Header */}
-              <div className="relative p-4 border-b">
-                <h3 className="text-xl font-bold text-center">Phương thức thanh toán</h3>
-                <button
-                  onClick={closeModal}
-                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-                  aria-label="Close"
-                >
-                  <X size={24} />
-                </button>
-              </div>
+        <div className="fixed inset-0 z-50">
+          {/* Lớp nền đen mờ + blur */}
+          <div className="absolute inset-0 bg-black opacity-60 backdrop-blur-sm z-40"></div>
 
-              {/* Modal Content */}
-              <div className="p-4">
-                {!paymentMethod ? (
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      onClick={() => {setPaymentMethod("qr"); handleCreateBill()}}
-                      className="flex flex-col items-center justify-center cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
-                    >
-                      <QrCode size={48} className="text-blue-600 mb-2" />
-                      <span className="font-medium text-center">Thanh toán bằng QR</span>
-                    </button>
-                    <button
-                      onClick={() => {setPaymentMethod("cash"); handelByMoney()}}
-                      className="flex flex-col items-center justify-center cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all"
-                    >
-                      <Wallet size={48} className="text-green-600 mb-2" />
-                      <span className="font-medium text-center">Thanh toán bằng tiền mặt</span>
-                    </button>
-                  </div>
-                ) : paymentMethod === "qr" ? (
-                  <div className="flex flex-col items-center">
-                    <div className="bg-white p-4 rounded-lg border mb-4">
-                      <h4 className="text-lg font-bold text-center mb-2">Đặt hàng thành công</h4>
-                      <p className="text-center text-gray-600 mb-4">Mã đơn hàng #{orderId}</p>
+          {/* Card modal nằm phía trên lớp mờ */}
+          <div className="absolute inset-0 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-sm h-auto max-h-[80vh] overflow-hidden">
+              <div className="max-h-[80vh] overflow-y-auto">
+                {/* Modal Header */}
+                <div className="relative p-4 border-b border-gray-200 bg-white">
+                  <h3 className="text-xl font-bold text-center text-gray-800">Phương thức thanh toán</h3>
+                  <button
+                    onClick={closeModal}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                    aria-label="Close"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
 
-                      <div className="border-t border-b py-4 my-4">
-                        <h5 className="text-center font-medium mb-4">
-                          Vui lòng chuyển khoản qua mã QR dưới đây
-                        </h5>
-
-                        <div className="flex justify-center mb-4">
-                          <img
-                            src={bill?.infomation.payment_qr_url}
-                            alt="QR Payment"
-                            className="w-48 h-48 object-contain"
-                          />
-                        </div>
-
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Ngân hàng:</span>
-                            <span className="font-medium">{bill?.infomation.bank_id}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Chủ tài khoản:</span>
-                            <span className="font-medium">{bill?.infomation.account_name}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Số TK:</span>
-                            <span className="font-medium">{bill?.infomation.account_no}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Số tiền:</span>
-                            <span className="font-medium">{formatCurrency(bill?.infomation.total_bill ?? 0)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Nội dung CK:</span>
-                            <span className="font-medium">{bill?.infomation.order_id}</span>
-                          </div>
-                        </div>
-
-                        <p className="text-xs text-gray-500 mt-4">
-                          Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {bill?.infomation.order_id} để hệ thống tự động xác nhận thanh
-                          toán
-                        </p>
-                      </div>
-
+                {/* Modal Content */}
+                <div className="p-4">
+                  {!paymentMethod ? (
+                    <div className="grid grid-cols-2 gap-4">
                       <button
-                        className={`w-full py-3 rounded-lg font-medium ${
-                          paymentCompleted ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
-                        } text-white transition-colors`}
-                        onClick={paymentCompleted ? handleOrderComplete : undefined}
-                        disabled={!paymentCompleted}
+                        onClick={() => { setPaymentMethod("qr"); handleCreateBill(); }}
+                        className="flex flex-col items-center justify-center cursor-pointer p-6 border border-gray-200 rounded-lg hover:border-orange-500 hover:bg-gray-50 transition-all"
                       >
-                        {paymentCompleted ? "Hoàn tất đơn hàng!" : "Đang chờ thanh toán..."}
+                        <QrCode size={48} className="text-orange-500 mb-2" />
+                        <span className="font-medium text-center text-gray-800">Thanh toán bằng QR</span>
+                      </button>
+                      <button
+                        onClick={() => { setPaymentMethod("cash"); handelByMoney(); }}
+                        className="flex flex-col items-center justify-center cursor-pointer p-6 border border-gray-200 rounded-lg hover:border-orange-500 hover:bg-gray-50 transition-all"
+                      >
+                        <Wallet size={48} className="text-orange-500 mb-2" />
+                        <span className="font-medium text-center text-gray-800">Thanh toán bằng tiền mặt</span>
                       </button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center p-6">
-                    <div className="text-center mb-6">
-                      <p className="text-lg font-medium mb-4">
-                        Vui lòng di chuyển qua quầy thanh toán để hoàn tất đơn hàng 🍔😊❤️
-                      </p>
+                  ) : paymentMethod === "qr" ? (
+                    <div className="flex flex-col items-center">
+                      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+                        <h4 className="text-lg font-bold text-center mb-2 text-gray-800">Đặt hàng thành công</h4>
+                        <p className="text-center text-gray-600 mb-4">Mã đơn hàng #{orderId}</p>
+
+                        <div className="border-t border-b border-gray-200 py-4 my-4">
+                          <h5 className="text-center font-medium mb-4 text-gray-700">
+                            Vui lòng chuyển khoản qua mã QR dưới đây
+                          </h5>
+
+                          <div className="flex justify-center mb-4 bg-white p-2 rounded-lg border border-gray-200">
+                            <img
+                              src={bill?.infomation.payment_qr_url}
+                              alt="QR Payment"
+                              className="w-48 h-48 object-contain"
+                            />
+                          </div>
+
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                              <span className="text-gray-600">Ngân hàng:</span>
+                              <span className="font-medium text-gray-800">{bill?.infomation.bank_id}</span>
+                            </div>
+                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                              <span className="text-gray-600">Chủ tài khoản:</span>
+                              <span className="font-medium text-gray-800">{bill?.infomation.account_name}</span>
+                            </div>
+                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                              <span className="text-gray-600">Số TK:</span>
+                              <span className="font-medium text-gray-800">{bill?.infomation.account_no}</span>
+                            </div>
+                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                              <span className="text-gray-600">Số tiền:</span>
+                              <span className="font-medium text-orange-500">{formatCurrency(bill?.infomation.total_bill ?? 0)}</span>
+                            </div>
+                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                              <span className="text-gray-600">Nội dung CK:</span>
+                              <span className="font-medium text-gray-800">{bill?.infomation.order_id}</span>
+                            </div>
+                          </div>
+
+                          <p className="text-xs text-gray-600 mt-4 bg-gray-50 p-2 rounded-md">
+                            Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {bill?.infomation.order_id} để hệ thống tự động xác nhận thanh toán
+                          </p>
+                        </div>
+
+                        <button
+                          className={`w-full py-3 rounded-lg font-medium ${paymentCompleted ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-400 cursor-not-allowed"} text-white transition-colors shadow-md`}
+                          onClick={paymentCompleted ? handleOrderComplete : undefined}
+                          disabled={!paymentCompleted}
+                        >
+                          {paymentCompleted ? "Hoàn tất đơn hàng!" : "Đang chờ thanh toán..."}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="flex flex-col items-center p-6 bg-white rounded-lg border border-gray-200">
+                      <div className="text-center mb-6">
+                        <p className="text-lg font-medium mb-4 text-gray-800">
+                          Vui lòng di chuyển qua quầy thanh toán để hoàn tất đơn hàng 🍔😊❤️
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
-      <Modal title="Nhập mã giảm giá (nếu có)" open={showModalVoucher} okText={voucher ? "Áp dụng" : "Bỏ qua"} onOk={openModal} onCancel={() => setShowModalVoucher(false)} onClose={() => setShowModalVoucher(false)} className="w-full max-w-md mx-auto">
+
+      
+      {/* Voucher Modal */}
+      <Modal 
+        title={<span className="text-gray-800">Nhập mã giảm giá (nếu có)</span>} 
+        open={showModalVoucher} 
+        okText={voucher ? "Áp dụng" : "Bỏ qua"} 
+        onOk={openModal} 
+        onCancel={() => setShowModalVoucher(false)} 
+        onClose={() => setShowModalVoucher(false)} 
+        className="w-full max-w-md mx-auto"
+        okButtonProps={{ style: { backgroundColor: '#F97316', borderColor: '#F97316' } }}
+      >
         <div className="flex flex-col gap-4">
-          <Input placeholder="Nhập mã giảm giá" onChange={(e) => handleChangeVoucher(e.target.value)} value={voucher ?? ""} />
+          <Input 
+            placeholder="Nhập mã giảm giá" 
+            onChange={(e) => handleChangeVoucher(e.target.value)} 
+            value={voucher ?? ""} 
+            className="border-gray-300 focus:border-orange-500" 
+          />
         </div>
       </Modal>
     </div>

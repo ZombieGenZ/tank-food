@@ -1,9 +1,15 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { message } from "antd";
 import io from "socket.io-client";
-import { useEffect } from "react";
+import { useEffect, useState, JSX } from "react";
+import Verify from '../components/VerifyToken.components';
 
 const socket = io(import.meta.env.VITE_API_URL)
+
+interface NotificationProps {
+  notification: string[],
+  setNotification: React.Dispatch<React.SetStateAction<string[]>>
+}
 
 interface Products {
   id: string;
@@ -101,10 +107,42 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ userBill }) => {
   );
 };
 
-const OrderPageWithPayment = () => {
+const OrderPageWithPayment = ({ notification, setNotification }: NotificationProps): JSX.Element => {
     const location = useLocation();
     const userBill: ApiResponse = location.state;
+    const navigate = useNavigate()
     const [messageApi, contextHolder] = message.useMessage();
+    const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+    const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
+    const language = (): string => {
+      const Language = localStorage.getItem('language')
+      return Language ? JSON.parse(Language) : "Tiếng Việt"
+    }
+
+    useEffect(() => {
+      const handleStorageChange = () => {
+        setRefreshToken(localStorage.getItem("refresh_token"));
+        setAccessToken(localStorage.getItem("access_token"));
+      };
+            
+      window.addEventListener("storage", handleStorageChange);
+            
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }, []);
+
+    const checkTokenRouter = (router: string) => {
+      const checkToken = async () => {
+        const isValid = await Verify(refresh_token, access_token);
+          if (isValid) {
+            navigate(router)
+          } else {
+            messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+          }
+      };
+      checkToken()
+    }
 
     useEffect(() => {
       socket.emit('connect-payment-realtime', userBill.infomation.order_id)
@@ -114,6 +152,8 @@ const OrderPageWithPayment = () => {
           content: message,
           duration: 5,
         });
+        setNotification([...notification, message])
+        checkTokenRouter("/")
       })
       return () => {
         socket.off('payment_notification');

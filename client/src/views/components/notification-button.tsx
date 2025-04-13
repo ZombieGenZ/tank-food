@@ -12,12 +12,18 @@ interface Notification {
 export default function NotificationButton({ notifications = [] }: Notification) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const aosInitialized = useRef(false)
 
   useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: false,
-    })
+    if (!aosInitialized.current) {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 10,
+        mirror: true
+      })
+      aosInitialized.current = true
+    }
 
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -62,14 +68,14 @@ export default function NotificationButton({ notifications = [] }: Notification)
             </h3>
           </div>
 
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto" >
             {notifications.length > 0 ? (
               notifications.map((notification, index) => (
                 <div
                   key={index}
                   className="flex gap-3 p-4 border-b border-gray-100 hover:bg-blue-50 transition-all duration-300 cursor-pointer"
                   data-aos="fade-up"
-                  data-aos-delay={150 * (index + 1)}
+                  data-aos-delay={100 * (index + 1)}
                 >
                   <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                     <span className="text-blue-500 text-lg">🍔</span>

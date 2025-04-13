@@ -563,7 +563,7 @@ function MainManage(props: Props): JSX.Element{
             
             <button 
               onClick={() => handletoOrder()} 
-              className="mt-4 md:mt-6 w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm"
+              className="mt-4 md:mt-6 cursor-pointer w-full py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 font-medium text-sm"
             >
               {language() == "Tiếng Việt" ? "Xem tất cả đơn hàng" : "View all orders"}
             </button>

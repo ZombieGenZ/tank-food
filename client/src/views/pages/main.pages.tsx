@@ -546,8 +546,8 @@ const FormMain = (): JSX.Element => {
               <NavAdmin notification={notification} display_name={language() == "Tiếng Việt" ? "Bảng thống kê" : "Dash board"} userInfo={user} />
               <Routes>
                 <Route path="/" element={<MainManage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path="/Account" element={<Account isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/category' element={<CategoryManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path="/Account" element={<Account aLert={{ notification: notification, setNotification: setNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/category' element={<CategoryManagement aLert={{ notification: notification, setNotification: setNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/order' element={<OrderManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/product' element={<ProductManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/ship' element={<ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -568,7 +568,7 @@ const FormMain = (): JSX.Element => {
               <Route path='/deal' element={<SealPage addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
               <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
-              <Route path='/payment' element={<OrderPageWithPayment />} />
+              <Route path='/payment' element={<OrderPageWithPayment notification={notification} setNotification={setNotification}/>} />
               <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/voucher' element={<VoucherPrivate />}/>
@@ -611,7 +611,7 @@ const FormMain = (): JSX.Element => {
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           {refresh_token !== null && <>
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
-            <Route path='/payment' element={<OrderPageWithPayment />} />
+            <Route path='/payment' element={<OrderPageWithPayment notification={notification} setNotification={setNotification}/>} />
             <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
             <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           </>}
