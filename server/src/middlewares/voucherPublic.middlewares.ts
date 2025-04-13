@@ -589,7 +589,7 @@ export const storageVoucherPublicValidator = async (req: Request, res: Response,
 
             const user = req.user as User
 
-            if (user.storage_voucher.includes(voucher._id)) {
+            if (user.storage_voucher.some((voucher_id) => voucher_id.equals(voucher._id))) {
               throw new Error(
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_HAS_BEEN_STORAGE
