@@ -7,11 +7,43 @@ import { VoucherPrivateStatusEnum } from '~/constants/voucher.constants'
 
 class VoucherPrivateService {
   async getVoucher(user: User) {
-    return await databaseService.voucherPrivate
+    const [voucher_public, voucher_private] = await Promise.all([
+      databaseService.users.aggregate([
+        {
+          $match: {
+            _id: user._id,
+          }
+        },
+        {
+          $lookup: {
+            from: process.env.DATABASE_VOUCHER_PUBLIC_COLLECTION,
+            localField: 'storage_voucher',
+            foreignField: '_id',
+            as: 'voucher_public',
+          }
+        },
+        {
+          $unwind: {
+            path: '$voucher_public'
+          }
+        },
+        {
+          $project: {
+            voucher_public: 1
+          }
+        }
+      ]).toArray(),
+      await databaseService.voucherPrivate
       .find({
         user: user._id
       })
       .toArray()
+    ])
+    
+    return {
+      voucher_public,
+      voucher_private
+    }
   }
   async insertVoucher(code: string, discount: number, user: ObjectId) {
     const voucher_id = new ObjectId()

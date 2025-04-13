@@ -23,12 +23,12 @@ export const getVoucherPrivateController = async (
   const language = req.body.language || serverLanguage
 
   try {
-    const voucher = await voucherPrivateService.getVoucher(user)
+    const { voucher_public, voucher_private } = await voucherPrivateService.getVoucher(user)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherSuccessfully(user._id.toString(), ip)
-        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherSuccessfully(user._id.toString(), ip)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherSuccessfully(ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherSuccessfully(ip)
     )
 
     res.json({
@@ -37,13 +37,14 @@ export const getVoucherPrivateController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_SUCCESS
           : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.GET_VOUCHER_SUCCESS,
-      voucher
+      voucher_public,
+      voucher_private
     })
   } catch (err) {
     await writeErrorLog(
       serverLanguage == LANGUAGE.VIETNAMESE
-        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
-        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherFailed(user._id.toString(), ip, err)
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetVoucherFailed( ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetVoucherFailed(ip, err)
     )
 
     res.json({

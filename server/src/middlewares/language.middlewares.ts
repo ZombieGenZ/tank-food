@@ -13,7 +13,10 @@ export const languageValidator = (req: Request, res: Response, next: NextFunctio
     return
   }
 
-  if (typeof language !== 'string' || !(language in LANGUAGE)) {
+  if (typeof language !== 'string' || (language !== LANGUAGE.VIETNAMESE && language !== LANGUAGE.ENGLISH)) {
+    console.log(typeof language !== 'string')
+    console.log(!(language in LANGUAGE))
+    console.log(language)
     res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json(
       {
         code: RESPONSE_CODE.INVALID_LANGUAGE,
