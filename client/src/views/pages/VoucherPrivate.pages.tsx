@@ -70,7 +70,8 @@ const VoucherPrivate: React.FC = () => {
               return
             }
             if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
-              setVouchers(data.voucher)
+              console.log(data)
+              setVouchers(data.voucher_private)
             }
           })
         } else {
@@ -128,7 +129,7 @@ const VoucherPrivate: React.FC = () => {
     setTimeout(() => setCopiedCode(null), 2000)
   }
 
-  const filteredVouchers = vouchers.filter(
+  const filteredVouchers = (vouchers || []).filter(
     (voucher) => (activeTab === "active" && voucher.status == 0) || (activeTab === "used" && voucher.status == 1),
   )
 

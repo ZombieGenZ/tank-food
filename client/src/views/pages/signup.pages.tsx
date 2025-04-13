@@ -321,10 +321,10 @@ const Signup: React.FC<Props> = (props) => {
 
     // Nút đăng nhập
     const handleLoginSubmit = (e: FormEvent) => {
-      if (!captchaToken) {
-        messageApi.error('Vui lòng hoàn thành CAPTCHA');
-        return;
-      }
+      // if (!captchaToken) {
+      //   messageApi.error('Vui lòng hoàn thành CAPTCHA');
+      //   return;
+      // }
       try {
         props.setLoading(true)
         e.preventDefault();
@@ -333,7 +333,7 @@ const Signup: React.FC<Props> = (props) => {
             language: null,
             email: loginData.email.trim(),
             password: loginData.password.trim(),
-            'cf-turnstile-response': captchaToken
+            'cf-turnstile-response': captchaToken || null
           }
           fetch(`${import.meta.env.VITE_API_URL}/api/users/login` , {
             method: 'POST',

@@ -149,7 +149,7 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
     }
 
     useEffect(() => {
-      const newData: TakeCode[] = vouchers.map(voucheres => ({
+      const newData: TakeCode[] = (vouchers || []).map((voucheres) => ({
         value: voucheres.code,
         label: `${voucheres.code} - ${language() == "Tiếng Việt" ? "Giảm" : "Discount"}: ${formatCurrency(voucheres.discount)}`
       }))
@@ -181,7 +181,7 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
                   return
                 }
                 if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
-                  setVouchers(data.voucher)
+                  setVouchers(data.voucher_private)
                 }
               })
             } else {

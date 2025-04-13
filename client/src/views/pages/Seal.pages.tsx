@@ -1,64 +1,112 @@
 "use client"
-
+import { JSX } from "react"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import AOS from "aos"
+import { message } from "antd"
+import { Plus } from "lucide-react"
 import "aos/dist/aos.css"
+import Verify from "../components/VerifyToken.components"
+import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 
-interface Props {
-  isLoading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+interface MenuItem {
+  key: string,
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  tag: string|null;
+  discount: number,
+  priceAfterdiscount: number
 }
 
-// Dữ liệu combo
-const comboDeals = [
-  {
-    id: 1,
-    name: "Bữa Tiệc Gia Đình",
-    description: "2 Burger, 4 Gà Rán, 2 Khoai Tây Lớn, 4 Nước Uống",
-    originalPrice: 459000,
-    discountedPrice: 359000,
-    image: "/images/system/combogiadinh_voucher.jpg?height=200&width=300",
-    badge: "Bán Chạy",
-    voucherCode: "GIADINH20",
-    voucherThreshold: 359000,
-  },
-  {
-    id: 2,
-    name: "Combo Burger",
-    description: "2 Burger Cao Cấp, 2 Khoai Tây Vừa, 2 Nước Uống",
-    originalPrice: 289000,
-    discountedPrice: 229000,
-    image: "/images/system/burgerchay_menu.jpg?height=200&width=300",
-    badge: "Phổ Biến",
-    voucherCode: "BURGER10",
-    voucherThreshold: 229000,
-  },
-  {
-    id: 3,
-    name: "Combo Gà Rán",
-    description: "6 Miếng Gà Rán, 2 Khoai Tây Vừa, 2 Nước Uống",
-    originalPrice: 329000,
-    discountedPrice: 269000,
-    image: "/images/system/canhgacay_menu.jpg?height=200&width=300",
-    badge: "Giá Sốc",
-    voucherCode: "GARAN15",
-    voucherThreshold: 269000,
-  },
-  {
-    id: 4,
-    name: "Bữa Ăn Đơn",
-    description: "1 Burger, 1 Khoai Tây Vừa, 1 Nước Uống",
-    originalPrice: 159000,
-    discountedPrice: 129000,
-    image: "/images/system/burgerdacbiet.jpg?height=200&width=300",
-    badge: "Nhanh Gọn",
-    voucherCode: "DON5",
-    voucherThreshold: 129000,
-  },
-]
+interface MenuCategory {
+  key: string,
+  id: string;
+  name: string;
+  items: MenuItem[];
+  hasProduct: boolean
+}
+//Giữ nguyên 
+interface CategoryItem {
+    category_name_translate_1: string;
+    category_name_translate_2: string;
+    created_at: string;
+    index: number;
+    translate_1_language: string;
+    translate_2_language: string;
+    updated_at: string;
+    _id: string;
+}
 
-// Dữ liệu món ăn phổ biến
+interface Product {
+    _id: string;
+    availability: boolean;
+    categories: {
+        _id: string;
+        category_name_translate_1: string;
+        category_name_translate_2: string;
+        created_at: string;
+        updated_at: string;
+        index: number;
+        translate_1_language: string;
+        translate_2_language: string;
+    };
+    created_at: string;
+    created_by: string;
+    discount: number;
+    description_translate_1: string;
+    description_translate_1_language: string;
+    description_translate_2: string;
+    description_translate_2_language: string;
+    preview: {
+        path: string;
+        size: number;
+        type: string;
+        url: string;
+    };
+    price: number;
+    tag_translate_1: string;
+    tag_translate_1_language: string;
+    tag_translate_2: string;
+    tag_translate_2_language: string;
+    title_translate_1: string;
+    title_translate_1_language: string;
+    title_translate_2: string;
+    title_translate_2_language: string;
+    updated_at: string;
+    updated_by: string;
+}
+
+interface Voucher {
+  code: string;
+  created_at: string; // Hoặc Date nếu bạn muốn chuyển đổi khi sử dụng
+  discount: number;
+  expiration_date: string; // Hoặc Date nếu bạn muốn chuyển đổi khi sử dụng
+  quantity: number;
+  requirement: number;
+  updated_at: string; // Hoặc Date nếu bạn muốn chuyển đổi khi sử dụng
+  used: number | null; // Giả sử used là số lượng voucher đã sử dụng, nếu null có thể chưa có dữ liệu
+  _id: string;
+}
+
+interface CartItem {
+  id: string;
+  quantity: number;
+  name: string;
+  price: number;
+  image: string;
+  priceAfterdiscount: number; 
+  discount: number
+}
+
+interface CategoryProps {
+  addToCart: (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => void;
+  cart: CartItem[]; // Thêm cart vào props
+  setIsloading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 const popularItems = [
   {
     id: 1,
@@ -94,10 +142,122 @@ const popularItems = [
   },
 ]
 
-const SealPage: React.FC<Props> = (props) => {
+const SealPage =({ addToCart, cart, setIsloading }: CategoryProps): JSX.Element =>{
   const navigate = useNavigate()
-  const [copiedCode, setCopiedCode] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState("weekday")
+  const [messageApi, contextHolder] = message.useMessage();
+  const language = (): string => {
+          const SaveedLanguage = localStorage.getItem('language')
+          return SaveedLanguage ? JSON.parse(SaveedLanguage) : "Tiếng Việt"
+      }
+  const [product, setProduct] = useState<Product[]>([])
+  const [category, setCategory] = useState<CategoryItem[]>([])
+  const [showProduct, setShowProduct] = useState<MenuCategory[]>([])
+  const [voucher, setVoucher] = useState<Voucher[]>([])
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem("refresh_token"));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
+  
+    useEffect(() => {
+      const handleStorageChange = () => {
+        setRefreshToken(localStorage.getItem("refresh_token"));
+        setAccessToken(localStorage.getItem("access_token"));
+      };
+              
+      window.addEventListener("storage", handleStorageChange);
+              
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }, []);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          const body = {
+            language: null,
+            refresh_token: refresh_token
+          }
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify(body)
+          }).then(response => {
+            return response.json()
+          }).then((data) => {
+            if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
+              messageApi.error("Lỗi khi lấy danh sách voucher");
+              return
+            }
+            if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
+              setVoucher(data.voucher)
+            }
+          })
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken()
+  }, [refresh_token, access_token, messageApi])
+
+  useEffect(() => {
+    console.log("Show cart: ", cart)
+    console.log(voucher)
+  }, [cart, voucher])
+
+  useEffect(() => {
+    const fetchData = async () => {
+        const body = { language: null };
+  
+        const productRes = await fetch(`${import.meta.env.VITE_API_URL}/api/products/get-product`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+        const productData = await productRes.json();
+  
+        const categoryRes = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/get-category`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+        });
+        const categoryData = await categoryRes.json();
+  
+        setProduct(productData.products || []); // Nếu dữ liệu null thì gán []
+        setCategory(categoryData.categories || []);
+    }
+  
+      fetchData()
+    }, [])
+
+  useEffect(() => {
+    const newData: MenuCategory[] = category.map((categorys, index) => {
+      const newProduct: MenuItem[] = product
+          .filter((p) => p.categories?._id === categorys?._id)
+          .map((p, idx) => ({
+            key: String(idx + 1),
+            id: p._id,
+            name: language() === "Tiếng Việt" ? p.title_translate_1 : p.title_translate_2,
+            description: language() === "Tiếng Việt" ? p.description_translate_1 : p.description_translate_2,
+            price: p.price,
+            image: p.preview.url,
+            tag: language() === "Tiếng Việt" ? p.tag_translate_1 : p.tag_translate_2,
+            discount: p.discount,
+            priceAfterdiscount: p.price - (p.price * p.discount/100)
+          }));
+        return({
+          key: String(index + 1),
+          id: categorys._id,
+          name: language() == "Tiếng Việt" ? categorys.category_name_translate_1 : categorys.category_name_translate_2,
+          items: newProduct,
+          hasProduct: newProduct.length > 0
+        })
+      })
+      setShowProduct(newData)
+    }, [product, category])
 
   useEffect(() => {
     AOS.init({
@@ -108,23 +268,79 @@ const SealPage: React.FC<Props> = (props) => {
     })
   }, [])
 
-  useEffect(() => {
-    AOS.refresh()
-  }, [activeTab])
+  // Removed duplicate declaration of the language function
 
-  const copyVoucherCode = (code: string) => {
-    navigator.clipboard.writeText(code)
-    setCopiedCode(code)
-    setTimeout(() => setCopiedCode(null), 2000)
+  const handleSaveVoucher = (VoucherId: string) => {
+    if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu món vào giỏ hàng !"); return};
+    const checkToken = async () => {
+      const isValid = await Verify(refresh_token, access_token);
+        if (isValid) {
+          try {
+            setIsloading(true)
+            const body = {
+              language: null,
+              refresh_token: refresh_token,
+              voucher_id: VoucherId
+            };
+            fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/storage-voucher`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${access_token}`,
+              },
+              body: JSON.stringify(body),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data);
+                if(data.code === RESPONSE_CODE.STORAGE_VOUCHER_FAILED) {
+                  messageApi.error(data.message)
+                  return
+                }
+                if (data.code === RESPONSE_CODE.STORAGE_VOUCHER_SUCCESSFUL) {
+                  messageApi.open({
+                    type: 'success',
+                    content: 'Lưu mã giảm giá thành công!',
+                  })
+                }
+              });
+          } catch (error) {
+            messageApi.error(String(error))
+            return;
+          } finally {
+            setTimeout(() => {
+              setIsloading(false)
+            }, 4000)
+          }
+        } else {
+          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+        }
+    };
+    checkToken();
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount)
+  const ComboCategory = showProduct.find((product) => product.name.includes("Combo"));
+
+  function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {
+    const formatter = new Intl.NumberFormat(currencyCode, {
+      style: 'currency',
+      currency: currency,
+    });
+    return formatter.format(amount);
+  }
+
+  function formatDateFromISO(isoDateString: string): string {
+    const date = new Date(isoDateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       {/* Phần Hero */}
+      {contextHolder}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-600 opacity-90"></div>
         <div className="relative container mx-auto px-4 py-20 text-center">
@@ -162,68 +378,79 @@ const SealPage: React.FC<Props> = (props) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {comboDeals.map((combo) => (
-            <div
-              key={combo.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl"
-              data-aos="fade-up"
-              data-aos-delay={combo.id * 100}
-            >
-              <div className="relative">
-                <img src={combo.image || "/placeholder.svg"} alt={combo.name} className="w-full h-48 object-cover" />
-                <span className="absolute top-2 right-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
-                  {combo.badge}
-                </span>
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-xl mb-1">{combo.name}</h3>
-                <p className="text-gray-600 text-sm mb-4">{combo.description}</p>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-lg text-gray-500 line-through">{formatCurrency(combo.originalPrice)}</span>
-                  <span className="text-2xl font-bold text-orange-600">{formatCurrency(combo.discountedPrice)}</span>
-                  <span className="ml-auto text-xs font-medium text-green-600 border border-green-600 rounded px-2 py-1">
-                    Tiết kiệm {formatCurrency(combo.originalPrice - combo.discountedPrice)}
-                  </span>
-                </div>
-                <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
-                  <div className="flex items-center text-amber-800 mb-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-2"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
-                    </svg>
-                    <span className="text-sm font-medium">
-                      Chi tiêu {formatCurrency(combo.voucherThreshold)} để nhận:
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {ComboCategory ? (
+            ComboCategory.items.map((combo, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                {/* Image Section */}
+                <div className="relative aspect-[4/3]">
+                  <img 
+                    src={combo.image || "/placeholder.svg"} 
+                    alt={combo.name} 
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  {combo.tag && (
+                    <span className="absolute top-2 right-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
+                      {combo.tag}
                     </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <code className="bg-white px-3 py-1 rounded border border-amber-200 font-mono text-amber-900">
-                      {combo.voucherCode}
-                    </code>
-                    <button
-                      onClick={() => copyVoucherCode(combo.voucherCode)}
-                      className="text-amber-800 hover:text-amber-900 hover:bg-amber-100 px-3 py-1 rounded text-sm"
-                    >
-                      {copiedCode === combo.voucherCode ? "Đã sao chép!" : "Sao chép"}
+                  )}
+                </div>
+                
+                {/* Content Section */}
+                <div className="p-4 flex-grow flex flex-col">
+                  <h3 className="font-bold text-lg md:text-xl mb-1 line-clamp-2">{combo.name}</h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{combo.description}</p>
+                  
+                  {/* Price Section */}
+                  <div className="mt-auto">
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      <span className="text-base md:text-lg text-gray-500 line-through">
+                        {formatCurrency(combo.price)}
+                      </span>
+                      <span className="text-xl md:text-2xl font-bold text-orange-600">
+                        {formatCurrency(combo.priceAfterdiscount)}
+                      </span>
+                      <span className="ml-auto text-xs font-medium text-green-600 border border-green-600 rounded px-2 py-1 whitespace-nowrap">
+                        Tiết kiệm {formatCurrency(combo.price - combo.priceAfterdiscount)}
+                      </span>
+                    </div>
+                    
+                    {/* Button */}
+                    <button onClick={() => addToCart(combo)} className="w-full cursor-pointer flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium transition-colors duration-300">
+                      <Plus /> Thêm vào giỏ hàng
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="px-4 pb-4">
-                <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
-                  Thêm vào giỏ hàng
-                </button>
+            ))
+          ) : (
+            <div className="col-span-full bg-white rounded-lg shadow-md p-6 text-center">
+              <div className="max-w-md mx-auto">
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  className="h-12 w-12 mx-auto text-gray-400 mb-4"
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                  />
+                </svg>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy Combo</h3>
+                <p className="text-gray-500">Hiện không có combo nào khả dụng. Vui lòng quay lại sau.</p>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </section>
 
@@ -274,9 +501,6 @@ const SealPage: React.FC<Props> = (props) => {
                   <p className="text-gray-600 text-sm mb-3">{item.description}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-orange-600">{formatCurrency(item.price)}</span>
-                    <button className="border border-orange-600 text-orange-600 hover:bg-orange-50 px-3 py-1 rounded text-sm">
-                      Thêm vào giỏ
-                    </button>
                   </div>
                 </div>
               </div>
@@ -288,189 +512,103 @@ const SealPage: React.FC<Props> = (props) => {
       {/* Phần Ưu Đãi Đặc Biệt */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12" data-aos="fade-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Ưu Đãi Đặc Biệt</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Voucher và thẻ giảm giá</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">Những ưu đãi có thời hạn bạn không nên bỏ lỡ</p>
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="flex border-b mb-8">
-            <button
-              className={`px-4 py-2 font-medium text-center flex-1 ${activeTab === "weekday" ? "border-b-2 border-orange-600 text-orange-600" : "text-gray-600"}`}
-              onClick={() => setActiveTab("weekday")}
-            >
-              Ưu Đãi Ngày Thường
-            </button>
-            <button
-              className={`px-4 py-2 font-medium text-center flex-1 ${activeTab === "weekend" ? "border-b-2 border-orange-600 text-orange-600" : "text-gray-600"}`}
-              onClick={() => setActiveTab("weekend")}
-            >
-              Ưu Đãi Cuối Tuần
-            </button>
-            <button
-              className={`px-4 py-2 font-medium text-center flex-1 ${activeTab === "student" ? "border-b-2 border-orange-600 text-orange-600" : "text-gray-600"}`}
-              onClick={() => setActiveTab("student")}
-            >
-              Ưu Đãi Học Sinh
-            </button>
-          </div>
-
-          <div className={`${activeTab === "weekday" ? "block" : "hidden"}`} data-aos="fade-right">
+          <div className="block" data-aos="fade-right">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              {/* Header */}
               <div className="p-4 border-b">
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5 text-orange-600"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                  <h3 className="font-bold text-xl">Ưu Đãi Bữa Trưa Ngày Thường</h3>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="mr-2 h-5 w-5 text-orange-600"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                    <h3 className="font-bold text-xl">Voucher Ưu Đãi</h3>
+                  </div>
+                  <span className="text-sm text-gray-500">Áp dụng có thời hạn</span>
                 </div>
-                <p className="text-gray-600 text-sm">Áp dụng từ Thứ Hai đến Thứ Sáu, 11:00 - 15:00</p>
               </div>
+
+              {/* Voucher List */}
               <div className="p-4">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Combo Burger & Khoai Tây</h4>
-                      <p className="text-sm text-gray-600">Burger thường với khoai tây vừa</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-orange-600">89.000₫</span>
-                      <p className="text-xs text-gray-500">Tiết kiệm 30.000₫</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Bữa Ăn Gà 2 Miếng</h4>
-                      <p className="text-sm text-gray-600">2 miếng gà với salad bắp cải và bánh mì</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-orange-600">79.000₫</span>
-                      <p className="text-xs text-gray-500">Tiết kiệm 25.000₫</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 border-t">
-                <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
-                  Xem Tất Cả Ưu Đãi Ngày Thường
-                </button>
-              </div>
-            </div>
-          </div>
+                  {/* Voucher List */}
+                  {voucher ? (
+                    voucher.map((discount, index) => (
+                      <div 
+                        key={index} 
+                        className="flex flex-col sm:flex-row items-center justify-between p-4 border border-orange-200 rounded-lg hover:shadow-md transition-shadow duration-300 bg-white"
+                      >
+                        {/* Voucher Info */}
+                        <div className="flex items-center gap-4 w-full sm:w-auto mb-3 sm:mb-0">
+                          <div className="bg-orange-100 p-3 rounded-full flex-shrink-0">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-6 w-6 text-orange-600"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4H5z"
+                              />
+                            </svg>
+                          </div>
+                          <div className="flex-grow">
+                            <h4 className="font-medium text-base sm:text-lg">
+                              Giảm {formatCurrency(discount.discount)} cho đơn từ {formatCurrency(discount.requirement)}
+                            </h4>
+                            <p className="text-sm text-gray-600 mt-1">
+                              HSD: {formatDateFromISO(discount.expiration_date)}
+                            </p>
+                          </div>
+                        </div>
 
-          <div className={`${activeTab === "weekend" ? "block" : "hidden"}`} data-aos="fade-right">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-4 border-b">
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5 text-orange-600"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <path d="M16 10a4 4 0 0 1-8 0" />
-                  </svg>
-                  <h3 className="font-bold text-xl">Ưu Đãi Gia Đình Cuối Tuần</h3>
+                        {/* Save Button */}
+                        <button onClick={() => handleSaveVoucher(discount._id)}
+                          className="px-4 py-2 cursor-pointer bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors duration-300 w-full sm:w-auto"
+                        >
+                          Lưu Voucher
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    /* Empty State */
+                    <div className="bg-white rounded-lg p-6 text-center border border-gray-200">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-12 w-12 mx-auto text-gray-400 mb-4"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2} 
+                          d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" 
+                        />
+                      </svg>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Không có voucher nào</h3>
+                      <p className="text-gray-500">Hiện không có voucher khả dụng</p>
+                    </div>
+                  )}
                 </div>
-                <p className="text-gray-600 text-sm">Áp dụng Thứ Bảy và Chủ Nhật, Cả Ngày</p>
-              </div>
-              <div className="p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Hộp Gia Đình</h4>
-                      <p className="text-sm text-gray-600">4 burger, 4 khoai tây, 4 nước uống</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-orange-600">299.000₫</span>
-                      <p className="text-xs text-gray-500">Tiết kiệm 80.000₫</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Gói Tiệc Gà</h4>
-                      <p className="text-sm text-gray-600">12 miếng gà, 3 món phụ cỡ lớn</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-orange-600">329.000₫</span>
-                      <p className="text-xs text-gray-500">Tiết kiệm 70.000₫</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 border-t">
-                <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
-                  Xem Tất Cả Ưu Đãi Cuối Tuần
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className={`${activeTab === "student" ? "block" : "hidden"}`} data-aos="fade-right">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-4 border-b">
-                <div className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="mr-2 h-5 w-5 text-orange-600"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  <h3 className="font-bold text-xl">Ưu Đãi Học Sinh, Sinh Viên</h3>
-                </div>
-                <p className="text-gray-600 text-sm">Áp dụng với thẻ học sinh, sinh viên, mọi ngày</p>
-              </div>
-              <div className="p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Bữa Ăn Học Sinh</h4>
-                      <p className="text-sm text-gray-600">Burger, khoai tây và nước uống</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-orange-600">69.000₫</span>
-                      <p className="text-xs text-gray-500">Tiết kiệm 40.000₫</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Gói Nhóm Học Tập</h4>
-                      <p className="text-sm text-gray-600">4 burger, 2 khoai tây lớn, 4 nước uống</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-orange-600">249.000₫</span>
-                      <p className="text-xs text-gray-500">Tiết kiệm 60.000₫</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 border-t">
-                <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium">
-                  Xem Tất Cả Ưu Đãi Học Sinh
-                </button>
               </div>
             </div>
           </div>
@@ -522,7 +660,7 @@ const SealPage: React.FC<Props> = (props) => {
                 </svg>
               </div>
               <h3 className="text-xl font-bold mb-2">Bước 2</h3>
-              <p className="text-gray-600">Nhập mã voucher tại ô mã khuyến mãi khi thanh toán</p>
+              <p className="text-gray-600">Nhập hoặc chọn mã voucher tại ô mã khuyến mãi khi thanh toán</p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-md text-center" data-aos="fade-up" data-aos-delay="300">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">

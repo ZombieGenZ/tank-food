@@ -310,7 +310,7 @@ const FormMain = (): JSX.Element => {
         key: '2',
         label: (
           <button className="flex cursor-pointer gap-2 items-center" onClick={() => {localStorage.setItem('isAdminView', JSON.stringify(false)); setIsAdminView(false); checkTokenRouter('/')}}>
-            <FaHome /> {language === "Tiếng Việt" ? "Trang chủ người dùng" : "Main User"}
+            <FaHome /> {language === "Tiếng Việt" ? "Trang chủ" : "Main User"}
           </button>
         ),
       },
@@ -565,7 +565,7 @@ const FormMain = (): JSX.Element => {
               <Route path="/aboutus" element={<Aboutus />} />
               <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-              <Route path='/deal' element={<SealPage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+              <Route path='/deal' element={<SealPage addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
               <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
               <Route path='/payment' element={<OrderPageWithPayment />} />
@@ -605,7 +605,7 @@ const FormMain = (): JSX.Element => {
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-          <Route path='/deal' element={<SealPage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+          <Route path='/deal' element={<SealPage addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
           <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/voucher' element={<VoucherPrivate />}/>
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>

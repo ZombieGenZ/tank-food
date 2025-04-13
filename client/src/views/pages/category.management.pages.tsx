@@ -75,13 +75,6 @@ interface Product {
     updated_by: string;
 }
 
-// interface Section {
-//     key: string;   // Khóa định danh
-//     href: string;  // Đường dẫn liên kết
-//     title: string; // Tiêu đề hiển thị
-// }
-
-
 interface CartItem {
   id: string;
   quantity: number;

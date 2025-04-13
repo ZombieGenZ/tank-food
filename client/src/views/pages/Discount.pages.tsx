@@ -387,8 +387,8 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
         checkToken(); 
     }
 
-    const PickDate: React.FC = () => <DatePicker readOnly value={expiration_date} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateCreate} needConfirm />;
-    const PickDateEdit: React.FC = () => <DatePicker readOnly value={expiration_dateEdit} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateEdit} needConfirm />;
+    const PickDate: React.FC = () => <DatePicker value={expiration_date} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateCreate} needConfirm />;
+    const PickDateEdit: React.FC = () => <DatePicker value={expiration_dateEdit} placeholder={language() == "Tiếng Việt" ? "Vui lòng chọn ngày" : "Please choose the date"} onChange={handleDateChangeDateEdit} needConfirm />;
 
     const language = (): string => {
         const Language = localStorage.getItem('language')
@@ -404,7 +404,7 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
     }, [selectCode])
 
     useEffect(() => {
-        const newData: DataType[] = voucher.map((voucherV, index) =>
+        const newData: DataType[] = voucher?.map((voucherV, index) =>
              {
                 return ({
                 key: String(index + 1),
