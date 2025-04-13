@@ -81,7 +81,7 @@ export default function NotificationButton({ notifications = [] }: Notification)
                 </div>
               ))
             ) : (
-              <div className="p-4 text-center text-gray-500">
+              <div className="p-4 text-center text-sm text-gray-500">
                 Không có thông báo mới
               </div>
             )}

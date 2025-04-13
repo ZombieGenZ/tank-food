@@ -375,14 +375,14 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
                     <div className="flex items-center mt-2">
                       <button
                         onClick={() => decreaseQuantity(item.id)}
-                        className="p-1 bg-gray-200 rounded-full hover:bg-gray-300"
+                        className="p-1 cursor-pointer bg-gray-200 rounded-full hover:bg-gray-300"
                       >
                         <Minus className="w-5 h-5" />
                       </button>
                       <span className="mx-3 text-lg">{item.quantity}</span>
                       <button
                         onClick={() => increaseQuantity(item.id)}
-                        className="p-1 bg-gray-200 rounded-full hover:bg-gray-300"
+                        className="p-1 cursor-pointer bg-gray-200 rounded-full hover:bg-gray-300"
                       >
                         <Plus className="w-5 h-5" />
                       </button>

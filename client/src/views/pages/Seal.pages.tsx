@@ -297,6 +297,10 @@ const SealPage =({ addToCart, cart, setIsloading }: CategoryProps): JSX.Element 
                   messageApi.error(data.message)
                   return
                 }
+                if (data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                  messageApi.error(data.errors.voucher_id.msg)
+                  return
+                }
                 if (data.code === RESPONSE_CODE.STORAGE_VOUCHER_SUCCESSFUL) {
                   messageApi.open({
                     type: 'success',
@@ -415,9 +419,6 @@ const SealPage =({ addToCart, cart, setIsloading }: CategoryProps): JSX.Element 
                       </span>
                       <span className="text-xl md:text-2xl font-bold text-orange-600">
                         {formatCurrency(combo.priceAfterdiscount)}
-                      </span>
-                      <span className="ml-auto text-xs font-medium text-green-600 border border-green-600 rounded px-2 py-1 whitespace-nowrap">
-                        Tiết kiệm {formatCurrency(combo.price - combo.priceAfterdiscount)}
                       </span>
                     </div>
                     

@@ -20,6 +20,22 @@ interface DiscountCode {
   updated_at: string | Date;
 }
 
+interface VoucherPublic {
+  code: string;
+  created_at: string; // hoặc có thể dùng Date nếu bạn sẽ chuyển đổi từ string
+  created_by: string;
+  discount: number;
+  expiration_date: string; // hoặc Date
+  quantity: number;
+  requirement: number;
+  status: number;
+  storage: number;
+  updated_at: string; // hoặc Date
+  updated_by: string;
+  used: number;
+  _id: string;
+}
+
 const VoucherPrivate: React.FC = () => {
   const navigate = useNavigate()
   const language = (): string => {
@@ -70,8 +86,8 @@ const VoucherPrivate: React.FC = () => {
               return
             }
             if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
-              console.log(data)
               setVouchers(data.voucher_private)
+              setVoucherPublic(data.voucher_public)
             }
           })
         } else {
@@ -82,6 +98,7 @@ const VoucherPrivate: React.FC = () => {
   }, [refresh_token, access_token, messageApi])
 
   const [vouchers, setVouchers] = useState<DiscountCode[]>([])
+  const [voucherPublic, setVoucherPublic] = useState<VoucherPublic[]>([])
 
   const [activeTab, setActiveTab] = useState<"active" | "used">("active")
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
@@ -127,9 +144,14 @@ const VoucherPrivate: React.FC = () => {
     navigator.clipboard.writeText(code)
     setCopiedCode(code)
     setTimeout(() => setCopiedCode(null), 2000)
+    messageApi.success("Copy thành công!");
   }
 
   const filteredVouchers = (vouchers || []).filter(
+    (voucher) => (activeTab === "active" && voucher.status == 0) || (activeTab === "used" && voucher.status == 1),
+  )
+
+  const filterVoucherPublic = (voucherPublic || []).filter(
     (voucher) => (activeTab === "active" && voucher.status == 0) || (activeTab === "used" && voucher.status == 1),
   )
 
@@ -200,31 +222,31 @@ const VoucherPrivate: React.FC = () => {
 
                   <div className="flex justify-between items-start">
                     <div>
-                      {/* <span className="inline-block px-3 py-1 bg-black bg-opacity-30 rounded-full text-sm mb-2">
-                        {voucher.type === "percentage"
-                          ? "Percentage Discount"
-                          : voucher.type === "fixed"
-                            ? "Fixed Amount"
-                            : "Free Item"}
-                      </span> */}
                       <h3 className="text-2xl font-bold mb-1">{formatCurrency(voucher.discount)}</h3>
-                      <p className="text-white text-opacity-90">{formatDateFromISO(String(voucher.created_at))}</p>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-white text-opacity-90 text-sm">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          HSD: Không giới hạn
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Thêm badge điều kiện sử dụng */}
+                    <div className="bg-black bg-opacity-30 rounded-full px-3 py-1 text-sm flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      Đơn tối thiểu 0 đ
                     </div>
                   </div>
 
+                  {/* Thêm thông tin số lượng còn lại */}
                 </div>
 
                 <div className="bg-gray-800 p-4">
                   <div className="flex justify-between gap-5 items-center">
-                    <p className={`text-sm font-medium px-3 py-2 rounded-md ${
-                      voucher.status == 0 
-                        ? "bg-amber-100 text-amber-800 border border-amber-200" 
-                        : "bg-gray-100 text-gray-600 border border-gray-200"
-                    }`}>
-                      {voucher.status == 0 
-                        ? "Lưu ý: Voucher chỉ được sử dụng 1 lần duy nhất" 
-                        : "Voucher đã được sử dụng"}
-                    </p>
                     <div className="flex items-center space-x-2">
                       <div className="font-medium bg-gray-700 px-3 py-1.5 rounded-lg text-white">{voucher.code}</div>
                       <motion.button
@@ -272,6 +294,23 @@ const VoucherPrivate: React.FC = () => {
                       </motion.div>
                     )}
                   </div>
+                  
+                  {/* Thêm trạng thái voucher */}
+                  <div className="mt-2 flex justify-between items-center text-sm">
+                    <span className={`px-2 py-1 rounded-md text-white ${
+                      voucher.status === 0 
+                        ? "bg-green-500 bg-opacity-20" 
+                        : "bg-red-500 bg-opacity-20"
+                    }`}>
+                      {voucher.status === 0 ? "Có thể sử dụng" : "Đã hết hiệu lực"}
+                    </span>
+                    <span className="text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {formatDateFromISO(String(voucher.created_at))}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Dashed border effect */}
@@ -305,6 +344,129 @@ const VoucherPrivate: React.FC = () => {
                 </p>
               </motion.div>
             </div>
+          )}
+          {filterVoucherPublic && (
+            filterVoucherPublic.map((voucher, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                data-aos="fade-up"
+                data-aos-delay={Math.floor(Math.random() * 300)}
+                className={`rounded-xl overflow-hidden shadow-lg relative ${
+                  voucher.status == 1 ? "opacity-70" : ""
+                }`}
+              >
+                <div
+                  className={`${getGradientByType(
+                    voucher.discount
+                  )} p-5 relative overflow-hidden transition-all duration-300 group`}
+                >
+                  {/* Decorative elements */}
+                  <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white opacity-10 group-hover:scale-150 transition-transform duration-500"></div>
+                  <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-white opacity-10 group-hover:scale-150 transition-transform duration-500"></div>
+
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-2xl font-bold mb-1">{formatCurrency(voucher.discount)}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-white text-opacity-90 text-sm">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          HSD: {formatDateFromISO(voucher.expiration_date)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Thêm badge điều kiện sử dụng */}
+                    {voucher.requirement >= 0 && (
+                      <div className="bg-black bg-opacity-30 rounded-full px-3 py-1 text-sm flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Đơn tối thiểu {formatCurrency(voucher.requirement)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Thêm thông tin số lượng còn lại */}
+                </div>
+
+                <div className="bg-gray-800 p-4">
+                  <div className="flex justify-between gap-5 items-center">
+                    <div className="flex items-center space-x-2">
+                      <div className="font-medium bg-gray-700 px-3 py-1.5 rounded-lg text-white">{voucher.code}</div>
+                      <motion.button
+                        onClick={() => handleCopyCode(voucher.code)}
+                        disabled={voucher.status == 1}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className={`relative cursor-pointer flex items-center justify-center w-10 h-10 rounded-full ${
+                          voucher.status == 1
+                            ? "bg-gray-700 text-gray-500 cursor-not-allowed"
+                            : "bg-white text-gray-900 hover:shadow-lg"
+                        }`}
+                      >
+                        <motion.div
+                          initial={{ rotate: 0 }}
+                          whileHover={{ rotate: 10 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </motion.div>
+                        <span className="sr-only">Copy code</span>
+                      </motion.button>
+                    </div>
+                    {copiedCode === voucher.code && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute -top-8 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-md"
+                      >
+                        Copied!
+                      </motion.div>
+                    )}
+                  </div>
+                  
+                  {/* Thêm trạng thái voucher */}
+                  <div className="mt-2 flex justify-between items-center text-sm">
+                    <span className={`px-2 py-1 rounded-md ${
+                      voucher.status === 0 
+                        ? "bg-green-500 bg-opacity-20" 
+                        : "bg-red-500 bg-opacity-20"
+                    }`}>
+                      {voucher.status === 0 ? "Có thể sử dụng" : "Đã hết hiệu lực"}
+                    </span>
+                    <span className="text-gray-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {formatDateFromISO(voucher.created_at)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Dashed border effect */}
+                <div className="absolute top-1/2 left-0 w-full border-t-2 border-dashed border-white border-opacity-30"></div>
+                <div className="absolute top-1/2 left-0 h-8 w-8 -ml-4 rounded-full bg-gray-900"></div>
+                <div className="absolute top-1/2 right-0 h-8 w-8 -mr-4 rounded-full bg-gray-900"></div>
+              </motion.div>
+            ))
           )}
         </div>
       </motion.div>

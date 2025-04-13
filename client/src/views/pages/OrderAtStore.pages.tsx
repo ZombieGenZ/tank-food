@@ -9,6 +9,9 @@ import { message, Modal, Input } from "antd"
 import "aos/dist/aos.css"
 import { motion } from 'framer-motion';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface SparkProps {
   x: number;
@@ -158,6 +161,23 @@ const OrderAtStore: React.FC = () => {
       ]);
     }
   };
+
+  useEffect(() => {
+      socket.emit('connect-payment-realtime', bill?.infomation.order_id);
+  
+      socket.on('payment_notification', (message) => {
+        messageApi.open({
+          type: 'info',
+          content: message,
+          duration: 5,
+        });
+      })
+  
+      return () => {
+        socket.off('payment_notification')
+      };
+    });
+
   const language = (): string => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
@@ -227,7 +247,7 @@ const OrderAtStore: React.FC = () => {
     if (paymentMethod === "qr" && !paymentCompleted) {
       timer = setTimeout(() => {
         setPaymentCompleted(true)
-      }, 5000)
+      }, 20000)
     }
     return () => clearTimeout(timer)
   }, [paymentMethod, paymentCompleted])
@@ -291,7 +311,7 @@ const OrderAtStore: React.FC = () => {
       language: null,
       products: listproduct,
       payment_type: 0,
-      voucher: null,
+      voucher: voucher || null,
     }
 
     fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-offline`, {
@@ -342,7 +362,7 @@ const OrderAtStore: React.FC = () => {
       language: null,
       products: listproduct,
       payment_type: 1,
-      voucher: null,
+      voucher: voucher || null,
     }
 
     fetch(`${import.meta.env.VITE_API_URL}/api/orders/order-offline`, {
@@ -403,7 +423,7 @@ const OrderAtStore: React.FC = () => {
             <h2 className="text-xl font-bold mb-4">Tank Food's menu</h2>
 
             {/* Tabs */}
-            <div className="flex border-b mb-6">
+            <div className="flex border-b overflow-hidden overflow-x-auto mb-6">
               <button
                  className={`pb-2 px-4 font-medium transition-all ${
                    selectedCategoryId === null ? "text-red-500 border-b-2 border-red-500" : "text-gray-500 hover:text-gray-700"
@@ -546,14 +566,14 @@ const OrderAtStore: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       onClick={() => {setPaymentMethod("qr"); handleCreateBill()}}
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
+                      className="flex flex-col items-center justify-center cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all"
                     >
                       <QrCode size={48} className="text-blue-600 mb-2" />
                       <span className="font-medium text-center">Thanh toán bằng QR</span>
                     </button>
                     <button
                       onClick={() => {setPaymentMethod("cash"); handelByMoney()}}
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all"
+                      className="flex flex-col items-center justify-center cursor-pointer p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-all"
                     >
                       <Wallet size={48} className="text-green-600 mb-2" />
                       <span className="font-medium text-center">Thanh toán bằng tiền mặt</span>

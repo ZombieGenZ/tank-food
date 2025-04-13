@@ -20,8 +20,8 @@ import OrderPageWithPayment from './Payment.pages.tsx';
 import ChangePassword from './ChangePassword.pages.tsx';
 import VoucherPrivate from './VoucherPrivate.pages.tsx';
 import AlertBanner from '../components/Banner.components.tsx';
-import EmployeePage from './Employee.pages.tsx';
-import ShipperPages from './Shipper.pages.tsx';
+// import EmployeePage from './Employee.pages.tsx';
+// import ShipperPages from './Shipper.pages.tsx';
 import NotFoundPage from './NotFound.pages.tsx';
 import ResultVerifyAccount from './ResultVerifyAccount.pages.tsx';
 import { Dropdown, Button } from "antd";
@@ -586,7 +586,7 @@ const FormMain = (): JSX.Element => {
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
         <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>
         <Routes>
-          <Route path="/" element={user.role == 1 ? <EmployeePage isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipperPages isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path="/" element={user.role == 1 ? <OrderManagement isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />

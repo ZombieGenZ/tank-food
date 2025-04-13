@@ -650,14 +650,14 @@ const handleReject = (orderID: string) => {
                 {(order.delivery_type == 0 && order.payment_type == 0 && order.payment_status == 0) ? (
                   <button
                     onClick={() => handleConfirm(order._id)}
-                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition`}
+                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
                   >
                     Xác nhận thanh toán
                   </button>
                 ) : (
                   <button
                     onClick={() => handleAproval(order._id)}
-                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition`}
+                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
                   >
                     Duyệt
                   </button>
@@ -673,7 +673,7 @@ const handleReject = (orderID: string) => {
               <>
                 <button
                     onClick={() => handleAproval(order._id)}
-                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition`}
+                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
                   >
                     Duyệt
                 </button>

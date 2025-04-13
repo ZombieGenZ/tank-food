@@ -478,7 +478,7 @@ const ShipManagement: React.FC<Props> = (props) => {
               activeTab === 'waiting' ? 'bg-orange-500 text-white' : 'bg-gray-200'
             } rounded-tl rounded-bl sm:px-6 md:px-8`}
           >
-            Chờ giao ({waitingOrders.length})
+            Chờ nhận giao ({waitingOrders.length})
           </button>
           <button
             onClick={() => setActiveTab('received')}
