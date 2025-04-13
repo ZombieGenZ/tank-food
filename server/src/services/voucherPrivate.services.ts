@@ -28,8 +28,8 @@ class VoucherPrivateService {
           }
         },
         {
-          $project: {
-            voucher_public: 1
+          $replaceRoot: {
+            newRoot: '$voucher_public'
           }
         }
       ]).toArray(),

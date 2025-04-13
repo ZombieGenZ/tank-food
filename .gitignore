@@ -56,3 +56,5 @@ service/sysinfo-client-v2/sysinfo-client/bin
 service/sysinfo-client-v2/sysinfo-client/obj
 
 service/sysinfo-client-v2-build
+
+service/
