@@ -7,6 +7,7 @@ import { ENGLISH_STATIC_MESSAGE, VIETNAMESE_STATIC_MESSAGE } from '~/constants/m
 import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { VoucherPublicStatusEnum } from '~/constants/voucher.constants'
 import { serverLanguage } from '~/index'
+import User from '~/models/schemas/users.schemas'
 import databaseService from '~/services/database.services'
 import { writeWarnLog } from '~/utils/log.utils'
 
@@ -583,6 +584,16 @@ export const storageVoucherPublicValidator = async (req: Request, res: Response,
                 language == LANGUAGE.VIETNAMESE
                   ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_DOES_NOT_EXIST
                   : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_DOES_NOT_EXIST
+              )
+            }
+
+            const user = req.user as User
+
+            if (user.storage_voucher.includes(voucher._id)) {
+              throw new Error(
+                language == LANGUAGE.VIETNAMESE
+                  ? VIETNAMESE_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_HAS_BEEN_STORAGE
+                  : ENGLISH_STATIC_MESSAGE.VOUCHER_MESSAGE.VOUCHER_HAS_BEEN_STORAGE
               )
             }
 

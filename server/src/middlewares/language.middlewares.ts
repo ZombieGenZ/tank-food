@@ -9,6 +9,7 @@ export const languageValidator = (req: Request, res: Response, next: NextFunctio
   const language = req.body.language
 
   if (!language) {
+    console.log('here')
     next()
     return
   }
@@ -28,6 +29,8 @@ export const languageValidator = (req: Request, res: Response, next: NextFunctio
     )
     return
   }
+
+  next()
 }
 
 export const languageUploadImageValidator = async (req: Request, res: Response, next: NextFunction) => {
