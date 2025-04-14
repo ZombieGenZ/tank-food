@@ -16,7 +16,8 @@ import {
   paymentConfirmationController,
   getOrderController,
   cancelOrderController,
-  getOrderOverViewController
+  getOrderOverViewController,
+  getPaymentInfomationController
 } from '~/controllers/orders.controllers'
 import {
   authenticateValidator,
@@ -39,7 +40,8 @@ import {
   orderOfflineValidator,
   voucherPublicValidator,
   paymentConfirmationValidator,
-  cancelOrderValidator
+  cancelOrderValidator,
+  getPaymentInfomationValidator
 } from '~/middlewares/orders.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers.utils'
 const router = express.Router()
@@ -439,6 +441,28 @@ router.post(
   authenticateVerifyAccountValidator,
   authenticateAdministratorValidator,
   wrapRequestHandler(getOrderOverViewController)
+)
+
+/*
+ * Description: Lấy thông tin thanh toán
+ * Path: /api/orders/get-payment-infomation
+ * Method: POST
+ * headers: {
+ *    authorization: Bearer <token>
+ * },
+ * Body: {
+ *    language?: string,
+ *    refresh_token: string,
+ *    order_id: string
+ * }
+ */
+router.post(
+  '/get-payment-infomation',
+  languageValidator,
+  authenticateValidator,
+  authenticateVerifyAccountValidator,
+  getPaymentInfomationValidator,
+  wrapRequestHandler(getPaymentInfomationController)
 )
 
 export default router

@@ -242,7 +242,9 @@ export class VIETNAMESE_STATIC_MESSAGE {
     ORDER_DELIVERY_PERSON_MISMATCH: 'Bạn không phải là người giao đơn hàng này',
     CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Xác nhận giao đơn hàng thành công',
     CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Xác nhận giao đơn hàng thất bại',
-    ORDER_CAN_NOT_CANCEL: 'Không thể hủy đơn hàng'
+    ORDER_CAN_NOT_CANCEL: 'Không thể hủy đơn hàng',
+    GET_PAYMENT_INFOMATION_SUCCESS: 'Lấy thông tin thanh toán thành công',
+    GET_PAYMENT_INFOMATION_FAILURE: 'Lấy thông tin thanh toán thất bại'
   } as const
 
   static STATISTICAL_MESSAGE = {
@@ -560,7 +562,9 @@ export class ENGLISH_STATIC_MESSAGE {
     ORDER_DELIVERY_PERSON_MISMATCH: 'You are not the delivery person for this order',
     CONFIRM_DELIVERY_COMPLETION_SUCCESS: 'Delivery completion confirmation successful',
     CONFIRM_DELIVERY_COMPLETION_FAILURE: 'Delivery completion confirmation failed',
-    ORDER_CAN_NOT_CANCEL: 'Cannot cancel the order'
+    ORDER_CAN_NOT_CANCEL: 'Cannot cancel the order',
+    GET_PAYMENT_INFOMATION_SUCCESS: 'Successfully retrieved payment information',
+    GET_PAYMENT_INFOMATION_FAILURE: 'Failed to retrieve payment information'
   } as const
 
   static STATISTICAL_MESSAGE = {
@@ -899,6 +903,12 @@ export class VIETNAMESE_DYNAMIC_MESSAGE {
   static StorageVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Thực hiện lưu voucher thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
   }
+  static GetPaymentInfomationSuccessfully(user_id: string, ip: string) {
+    return `Thực hiện lấy thông tin thanh toán thành công (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetPaymentInfomationFailed(user_id: string, ip: string, err: unknown) {
+    return `Thực hiện lấy thông tin thanh toán thất bại (User: ${user_id}) (IP: ${ip}) | Lỗi: ${err}`
+  }
 }
 
 export class ENGLIS_DYNAMIC_MESSAGE {
@@ -1165,5 +1175,11 @@ export class ENGLIS_DYNAMIC_MESSAGE {
   }
   static StorageVoucherFailed(user_id: string, ip: string, err: unknown) {
     return `Failed to save voucher (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
+  }
+  static GetPaymentInfomationSuccessfully(user_id: string, ip: string) {
+    return `Successfully retrieved payment information (User: ${user_id}) (IP: ${ip})`
+  }
+  static GetPaymentInfomationFailed(user_id: string, ip: string, err: unknown) {
+    return `Failed to retrieve payment information (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }

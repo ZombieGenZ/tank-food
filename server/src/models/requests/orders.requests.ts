@@ -78,3 +78,8 @@ export interface CancelOrderRequestsBody {
   language: string
   order_id: string
 }
+
+export interface GetPaymentInfomationRequestsBody {
+  language: string
+  order_id: string
+}

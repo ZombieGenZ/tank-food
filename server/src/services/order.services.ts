@@ -2973,6 +2973,68 @@ class OrderService {
       .limit(5)
       .toArray()
   }
+  async getPaymentInfomation(order: Order) {
+    const aggregateResult = await databaseService.order
+      .aggregate([
+        {
+          $match: { _id: order._id }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $lookup: {
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product.data'
+          }
+        },
+        {
+          $unwind: {
+            path: '$product.data',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: {
+              $push: {
+                product_id: '$product.product_id',
+                quantity: '$product.quantity',
+                price: '$product.price',
+                data: '$product.data'
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            product: 1,
+            _id: 0
+          }
+        }
+      ])
+      .toArray()
+
+    const products = aggregateResult[0]?.product || [];
+
+    return {
+      payment_qr_url: `https://qr.sepay.vn/img?acc=${process.env.BANK_ACCOUNT_NO}&bank=${process.env.BANK_BANK_ID}&amount=${order.total_bill}&des=DH${order._id}&template=compact`,
+      order_id: `DH${order._id}`,
+      account_no: process.env.BANK_ACCOUNT_NO,
+      account_name: process.env.BANK_ACCOUNT_NAME,
+      bank_id: process.env.BANK_BANK_ID,
+      product: products,
+      total_quantity: order.total_quantity,
+      total_price: order.total_price,
+      fee: order.fee,
+      vat: order.vat,
+      total_bill: order.total_bill,
+      distance: order.distance
+    }
+  }
 }
 
 const orderService = new OrderService()

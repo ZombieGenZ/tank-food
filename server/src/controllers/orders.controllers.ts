@@ -13,7 +13,8 @@ import {
   ConfirmDeliveryCompletionRequestsBody,
   OrderOfflineRequestsBody,
   PaymentConfirmationRequestsBody,
-  CancelOrderRequestsBody
+  CancelOrderRequestsBody,
+  GetPaymentInfomationRequestsBody
 } from '~/models/requests/orders.requests'
 import { serverLanguage } from '~/index'
 import {
@@ -740,6 +741,49 @@ export const getOrderOverViewController = async (
         language == LANGUAGE.VIETNAMESE
           ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
           : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_ORDER_FAILURE
+    })
+  }
+}
+
+export const getPaymentInfomationController = async (
+  req: Request<ParamsDictionary, any, GetPaymentInfomationRequestsBody>,
+  res: Response
+) => {
+  const ip = (req.headers['cf-connecting-ip'] || req.ip) as string
+  const user = req.user as User
+  const order = req.order as Order
+  const language = req.body.language || serverLanguage
+
+  try {
+    const infomation = await orderOnlineService.getPaymentInfomation(order)
+
+    await writeInfoLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetPaymentInfomationSuccessfully(user._id.toString(), ip)
+        : ENGLIS_DYNAMIC_MESSAGE.GetPaymentInfomationSuccessfully(user._id.toString(), ip)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_PAYMENT_INFOMATION_SUCCESSFUL,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_PAYMENT_INFOMATION_SUCCESS
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_PAYMENT_INFOMATION_SUCCESS,
+      infomation
+    })
+  } catch (err) {
+    await writeErrorLog(
+      serverLanguage == LANGUAGE.VIETNAMESE
+        ? VIETNAMESE_DYNAMIC_MESSAGE.GetPaymentInfomationFailed(user._id.toString(), ip, err)
+        : ENGLIS_DYNAMIC_MESSAGE.GetPaymentInfomationFailed(user._id.toString(), ip, err)
+    )
+
+    res.json({
+      code: RESPONSE_CODE.GET_PAYMENT_INFOMATION_FAILED,
+      message:
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_STATIC_MESSAGE.ORDER_MESSAGE.GET_PAYMENT_INFOMATION_FAILURE
+          : ENGLISH_STATIC_MESSAGE.ORDER_MESSAGE.GET_PAYMENT_INFOMATION_FAILURE
     })
   }
 }
