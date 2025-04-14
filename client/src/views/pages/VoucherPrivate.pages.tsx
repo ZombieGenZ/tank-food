@@ -145,7 +145,6 @@ const VoucherPrivate: React.FC<Props> = (props) => {
             if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
               setVouchers(data.voucher_private)
               setVoucherPublic(data.voucher_public)
-              console.log(data.voucher_public)
             }
           })
         } else {

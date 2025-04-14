@@ -2,15 +2,20 @@
 
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Plus, Minus, ShoppingCart, X, QrCode, Wallet } from "lucide-react"
 import AOS from "aos"
-import { message, Modal, Input } from "antd"
+import { message, Modal, Input, Button } from "antd"
 import "aos/dist/aos.css"
 import { motion } from 'framer-motion';
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
 import io from "socket.io-client";
 import '../../../public/css/Order.css';
+import Keyboard from "react-simple-keyboard";
+import "react-simple-keyboard/build/css/index.css";
+import layout from "simple-keyboard-layouts/build/layouts/english";
+import type { DraggableData, DraggableEvent } from 'react-draggable';
+import Draggable from 'react-draggable';
 
 const socket = io(import.meta.env.VITE_API_URL)
 
@@ -66,7 +71,7 @@ interface Products {
   product_id: string;
   quantity: number;
   price: number;
-  data: Product; // Sử dụng Record để đại diện cho object data
+  data: Product1; // Sử dụng Record để đại diện cho object data
 }
 
 interface Information {
@@ -135,9 +140,42 @@ interface Product {
   quantity?: number | null;
 }
 
+interface Product1 {
+  _id: string;
+  availability: boolean;
+  category: string;
+  created_at: string;
+  created_by: string;
+  description_translate_1: string;
+  description_translate_1_language: string;
+  description_translate_2: string;
+  description_translate_2_language: string;
+  preview: {
+      path: string;
+      size: number;
+      type: string;
+      url: string;
+  };
+  discount: number,
+  price: number;
+  tag_translate_1: string;
+  tag_translate_1_language: string;
+  tag_translate_2: string;
+  tag_translate_2_language: string;
+  title_translate_1: string;
+  title_translate_1_language: string;
+  title_translate_2: string;
+  title_translate_2_language: string;
+  updated_at: string;
+  updated_by: string;
+  quantity: number;
+}
+
 const OrderAtStore: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [sparks, setSparks] = useState<SparkData[]>([]);
+  const [layoutName, setLayoutName] = useState("default");
+  const keyboardRef = useRef<string>(null);
 
   const handleClick = (event: React.MouseEvent) => {
     const { clientX, clientY } = event;
@@ -163,21 +201,32 @@ const OrderAtStore: React.FC = () => {
     }
   };
 
+  const onKeyPress = (button: string) => {
+    if (button === "{shift}" || button === "{lock}") {
+      setLayoutName(layoutName === "default" ? "shift" : "default");
+    }
+  };
+
   useEffect(() => {
+    if(bill?.infomation.order_id) {
       socket.emit('connect-payment-realtime', bill?.infomation.order_id);
+    }
+
+    socket.on('payment_notification', (res) => {
+      console.log(res)
+      if(res.payment_status == 1) {
+        messageApi.success("Thanh toán thành công!")
+        setPaymentCompleted(true)
+      } else {
+        messageApi.success("Thanh toán thất bại!")
+        return;
+      }
+    })
   
-      socket.on('payment_notification', (message) => {
-        messageApi.open({
-          type: 'info',
-          content: message,
-          duration: 5,
-        });
-      })
-  
-      return () => {
-        socket.off('payment_notification')
-      };
-    });
+    return () => {
+      socket.off('payment_notification')
+    };
+  });
 
   const language = (): string => {
     const Language = localStorage.getItem('language')
@@ -233,6 +282,7 @@ const OrderAtStore: React.FC = () => {
   const [orderId, setOrderId] = useState("")
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [bill, setBill] = useState<ResponseData|null>(null)
+  const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -243,15 +293,6 @@ const OrderAtStore: React.FC = () => {
 
 
   // Simulate payment completion after 5 seconds when in QR mode
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-    if (paymentMethod === "qr" && !paymentCompleted) {
-      timer = setTimeout(() => {
-        setPaymentCompleted(true)
-      }, 20000)
-    }
-    return () => clearTimeout(timer)
-  }, [paymentMethod, paymentCompleted])
 
   const ShowModalVoucher = () => {
     setShowModalVoucher(true)
@@ -381,19 +422,39 @@ const OrderAtStore: React.FC = () => {
         setBill(data)
       } else {
         messageApi.error(data.message)
-        return;      }
+        return;      
+      }
     })
   }
 
   const handleOrderComplete = () => {
     closeModal()
-    
+    setPaymentCompleted(false)
     setCart([])
   }
 
   const filteredProducts = selectedCategoryId
   ? product.filter((item) => item.categories?._id === selectedCategoryId)
   : product;
+
+  const [disabled, setDisabled] = useState(true);
+  const [bounds, setBounds] = useState({ left: 0, top: 0, bottom: 0, right: 0 });
+  const draggleRef = useRef<HTMLDivElement>(null!);
+
+  const onStart = (_event: DraggableEvent, uiData: DraggableData) => {
+    const { clientWidth, clientHeight } = window.document.documentElement;
+    const targetRect = draggleRef.current?.getBoundingClientRect();
+    if (!targetRect) {
+      return;
+    }
+    setBounds({
+      left: -targetRect.left + uiData.x,
+      right: clientWidth - (targetRect.right - uiData.x),
+      top: -targetRect.top + uiData.y,
+      bottom: clientHeight - (targetRect.bottom - uiData.y),
+    });
+  };
+
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8" onClick={handleClick}>
@@ -412,14 +473,14 @@ const OrderAtStore: React.FC = () => {
       ))}
       <div className="max-w-7xl mx-auto" data-aos="fade-up" data-aos-delay="100">
         <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent drop-shadow-sm">
-          <div className="font-bold mb-6">Tank<span className="text-yellow-300">Food</span></div>
+          <div className="font-bold mb-6 ">Tank<span className="text-yellow-300">Food</span></div>
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Menu Section - Left (2 columns) */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-md p-6 border border-gray-100" data-aos="fade-right" data-aos-delay="200">
             <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
-              <span className="mr-2">Tank Food's menu</span>
+              <span className="mr-2 flex "><div className="font-bold mb-6 bg-gradient-to-r bg-clip-text from-orange-500 to-orange-600 text-transparent">Tank<span className="text-yellow-300">Food</span></div>'s menu</span>
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
             </h2>
 
@@ -598,59 +659,64 @@ const OrderAtStore: React.FC = () => {
                     </div>
                   ) : paymentMethod === "qr" ? (
                     <div className="flex flex-col items-center">
-                      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-                        <h4 className="text-lg font-bold text-center mb-2 text-gray-800">Đặt hàng thành công</h4>
-                        <p className="text-center text-gray-600 mb-4">Mã đơn hàng #{orderId}</p>
+                      {bill && bill.infomation ? (
+                        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+                          <h4 className="text-lg font-bold text-center mb-2 text-gray-800">Đặt hàng thành công</h4>
+                          <p className="text-center text-gray-600 mb-4">Mã đơn hàng #{orderId}</p>
 
-                        <div className="border-t border-b border-gray-200 py-4 my-4">
-                          <h5 className="text-center font-medium mb-4 text-gray-700">
-                            Vui lòng chuyển khoản qua mã QR dưới đây
-                          </h5>
+                          <div className="border-t border-b border-gray-200 py-4 my-4">
+                            <h5 className="text-center font-medium mb-4 text-gray-700">
+                              Vui lòng chuyển khoản qua mã QR dưới đây
+                            </h5>
 
-                          <div className="flex justify-center mb-4 bg-white p-2 rounded-lg border border-gray-200">
-                            <img
-                              src={bill?.infomation.payment_qr_url}
-                              alt="QR Payment"
-                              className="w-48 h-48 object-contain"
-                            />
+                            <div className="flex justify-center mb-4 bg-white p-2 rounded-lg border border-gray-200">
+                              <img
+                                src={bill?.infomation.payment_qr_url}
+                                alt="QR Payment"
+                                className="w-48 h-48 object-contain"
+                              />
+                            </div>
+
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                                <span className="text-gray-600">Ngân hàng:</span>
+                                <span className="font-medium text-gray-800">{bill?.infomation.bank_id}</span>
+                              </div>
+                              <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                                <span className="text-gray-600">Chủ tài khoản:</span>
+                                <span className="font-medium text-gray-800">{bill?.infomation.account_name}</span>
+                              </div>
+                              <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                                <span className="text-gray-600">Số TK:</span>
+                                <span className="font-medium text-gray-800">{bill?.infomation.account_no}</span>
+                              </div>
+                              <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                                <span className="text-gray-600">Số tiền:</span>
+                                <span className="font-medium text-orange-500">{formatCurrency(bill?.infomation.total_bill ?? 0)}</span>
+                              </div>
+                              <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                                <span className="text-gray-600">Phí VAT:</span>
+                                <span className="font-medium text-orange-500">{formatCurrency(bill?.infomation.vat ?? 0)}</span>
+                              </div>
+                              <div className="flex justify-between bg-gray-50 p-2 rounded-md">
+                                <span className="text-gray-600">Nội dung CK:</span>
+                                <span className="font-medium text-gray-800">{bill?.infomation.order_id}</span>
+                              </div>
+                            </div>
+
+                            <p className="text-xs text-gray-600 mt-4 bg-gray-50 p-2 rounded-md">
+                              Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {bill?.infomation.order_id} để hệ thống tự động xác nhận thanh toán
+                            </p>
                           </div>
 
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
-                              <span className="text-gray-600">Ngân hàng:</span>
-                              <span className="font-medium text-gray-800">{bill?.infomation.bank_id}</span>
-                            </div>
-                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
-                              <span className="text-gray-600">Chủ tài khoản:</span>
-                              <span className="font-medium text-gray-800">{bill?.infomation.account_name}</span>
-                            </div>
-                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
-                              <span className="text-gray-600">Số TK:</span>
-                              <span className="font-medium text-gray-800">{bill?.infomation.account_no}</span>
-                            </div>
-                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
-                              <span className="text-gray-600">Số tiền:</span>
-                              <span className="font-medium text-orange-500">{formatCurrency(bill?.infomation.total_bill ?? 0)}</span>
-                            </div>
-                            <div className="flex justify-between bg-gray-50 p-2 rounded-md">
-                              <span className="text-gray-600">Nội dung CK:</span>
-                              <span className="font-medium text-gray-800">{bill?.infomation.order_id}</span>
-                            </div>
-                          </div>
-
-                          <p className="text-xs text-gray-600 mt-4 bg-gray-50 p-2 rounded-md">
-                            Lưu ý: Vui lòng giữ nguyên nội dung chuyển khoản {bill?.infomation.order_id} để hệ thống tự động xác nhận thanh toán
-                          </p>
-                        </div>
-
-                        <button
-                          className={`w-full py-3 rounded-lg font-medium ${paymentCompleted ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-400 cursor-not-allowed"} text-white transition-colors shadow-md`}
-                          onClick={paymentCompleted ? handleOrderComplete : undefined}
-                          disabled={!paymentCompleted}
-                        >
-                          {paymentCompleted ? "Hoàn tất đơn hàng!" : "Đang chờ thanh toán..."}
-                        </button>
-                      </div>
+                          <button
+                            className={`w-full py-3 rounded-lg font-medium ${paymentCompleted ? "bg-orange-500 hover:bg-orange-600 cursor-pointer" : "bg-gray-400 cursor-not-allowed"} text-white transition-colors shadow-md`}
+                            onClick={paymentCompleted ? handleOrderComplete : undefined}
+                            disabled={!paymentCompleted}
+                          >
+                            {paymentCompleted ? "Hoàn tất đơn hàng!" : "Đang chờ thanh toán..."}
+                          </button>
+                        </div>) : <p className="text-center text-gray-500">Đang tải thông tin thanh toán...</p>}
                     </div>
                   ) : (
                     <div className="flex flex-col items-center p-6 bg-white rounded-lg border border-gray-200">
@@ -670,24 +736,85 @@ const OrderAtStore: React.FC = () => {
 
       
       {/* Voucher Modal */}
-      <Modal 
-        title={<span className="text-gray-800">Nhập mã giảm giá (nếu có)</span>} 
-        open={showModalVoucher} 
-        okText={voucher ? "Áp dụng" : "Bỏ qua"} 
-        onOk={openModal} 
-        onCancel={() => setShowModalVoucher(false)} 
-        onClose={() => setShowModalVoucher(false)} 
+      <Modal
+        centered
+        title={<span className="text-gray-800">Nhập mã giảm giá (nếu có)</span>}
+        open={showModalVoucher}
+        okText={voucher ? "Áp dụng" : "Bỏ qua"}
+        cancelText="Huỷ"
+        onOk={openModal}
+        onCancel={() => {setShowModalVoucher(false); setVoucher("")}}
+        onClose={() => {setShowModalVoucher(false); setVoucher("")}}
         className="w-full max-w-md mx-auto"
-        okButtonProps={{ style: { backgroundColor: '#F97316', borderColor: '#F97316' } }}
-      >
-        <div className="flex flex-col gap-4">
-          <Input 
-            placeholder="Nhập mã giảm giá" 
-            onChange={(e) => handleChangeVoucher(e.target.value)} 
-            value={voucher ?? ""} 
-            className="border-gray-300 focus:border-orange-500" 
-          />
+        okButtonProps={{
+            style: {
+                backgroundColor: '#F97316',
+                borderColor: '#F97316',
+                fontWeight: 'bold', // Làm đậm chữ
+                borderRadius: '6px', // Bo tròn nhẹ góc
+            },
+        }}
+        cancelButtonProps={{
+            style: {
+                // Có thể thêm style nếu bạn muốn tùy chỉnh thêm nút Huỷ
+                // Ví dụ: backgroundColor: 'white', color: '#777', border: '1px solid #ccc', borderRadius: '6px'
+                color: '#777',
+                backgroundColor: 'white',
+                borderColor: '#ccc',
+                border: '1px solid #ccc',
+                borderRadius: '6px',
+            },
+        }}
+    >
+        <div className="flex gap-4">
+            <Input
+                placeholder="Nhập mã giảm giá"
+                onChange={(e) => handleChangeVoucher(e.target.value)}
+                value={voucher ?? ""}
+                className="border-gray-300 focus:border-orange-500"
+            />
+            <Button type="primary" onClick={() => setIsInputFocused(true)}>Mở bàn phím</Button>
         </div>
+    </Modal>
+
+      <Modal footer={null} mask={false} title={
+          <div
+            style={{ width: '100%', cursor: 'move' }}
+            onMouseOver={() => {
+              if (disabled) {
+                setDisabled(false);
+              }
+            }}
+            onMouseOut={() => {
+              setDisabled(true);
+            }}
+          >
+            Draggable Modal
+          </div>
+        } modalRender={(modal) => (
+          <Draggable
+            disabled={disabled}
+            bounds={bounds}
+            nodeRef={draggleRef}
+            onStart={(event, uiData) => onStart(event, uiData)}
+          >
+            <div ref={draggleRef}>{modal}</div>
+          </Draggable>
+        )} open={isInputFocused}
+          onClose={() => setIsInputFocused(false)} onCancel={() => setIsInputFocused(false)}
+          style={{ // Thêm style này
+            position: 'absolute',
+            bottom: 0,
+            zIndex: 1000, // Đảm bảo nó ở trên các phần khác
+          }}>
+        <Keyboard
+          keyboardRef={(r) => (keyboardRef.current = r)}
+          layoutName={layoutName}
+          onChange={handleChangeVoucher}
+          onKeyPress={onKeyPress}
+          layout={layout.layout}
+          theme="hg-theme-default hg-layout-default"
+        />
       </Modal>
     </div>
   )

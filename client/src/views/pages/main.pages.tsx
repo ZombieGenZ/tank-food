@@ -225,7 +225,7 @@ const addNotification = (newMessage: string) => {
       addNotification(`Đơn hàng ${res._id} đã bị hủy!`);
     })
 
-    socket.on('delivery-order-booking', (res) => {
+    socket.on('delivery-order', (res) => {
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`,
@@ -243,15 +243,6 @@ const addNotification = (newMessage: string) => {
       addNotification(`Đơn hàng ${res._id} đã bị hủy giao hàng!`);
     })
 
-    socket.on('complete-delivery', (res) => {
-      messageApi.open({
-        type: 'success',
-        content: `Đơn hàng ${res._id} đã được giao thành công!`,
-      });
-
-      addNotification(`Đơn hàng ${res._id} đã được giao thành công!`);
-    })
-
     return () => {
       socket.off('verify-account')
       socket.off('logout')
@@ -263,7 +254,6 @@ const addNotification = (newMessage: string) => {
       socket.off('cancel-order-booking')
       socket.off('delivery-order')
       socket.off('cancel-delivery')
-      socket.off('complete-delivery')
     }
   })
 
@@ -559,7 +549,7 @@ const addNotification = (newMessage: string) => {
                 <Route path='/product' element={<ProductManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/ship' element={<ShipManagement isLoading={loadingCP} aLert={{ addNotification: addNotification }} setLoading={setLoadingCP}/>} />
                 <Route path='/discount' element={<DiscountCodeManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>} />
                 <Route path='/errorpage' element={<NotFoundPage />}/>
               </Routes>
             </div>
@@ -575,8 +565,8 @@ const addNotification = (newMessage: string) => {
               <Route path='/deal' element={<SealPage props={{ addNotification: addNotification }} addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
               <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
-              <Route path='/payment' element={<OrderPageWithPayment notification={notification} setNotification={setNotification}/>} />
-              <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+              <Route path='/payment' element={<OrderPageWithPayment setLoading={setLoadingCP} addNotification={addNotification}/>} />
+              <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>} />
               <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/voucher' element={<VoucherPrivate aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/errorpage' element={<NotFoundPage />}/>
@@ -596,7 +586,7 @@ const addNotification = (newMessage: string) => {
           <Route path="/" element={user.role == 1 ? <OrderManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
-          <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+          <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>} />
           <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           <Route path='/errorpage' element={<NotFoundPage />}/>
         </Routes>
@@ -618,8 +608,8 @@ const addNotification = (newMessage: string) => {
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           {refresh_token !== null && <>
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
-            <Route path='/payment' element={<OrderPageWithPayment notification={notification} setNotification={setNotification}/>} />
-            <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+            <Route path='/payment' element={<OrderPageWithPayment setLoading={setLoadingCP} addNotification={addNotification}/>} />
+            <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>}/>
             <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           </>}
           <Route path='/errorpage' element={<NotFoundPage />}/>

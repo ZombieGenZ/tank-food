@@ -10,9 +10,14 @@ import { RESPONSE_CODE } from "../../constants/responseCode.constants";
 import OrderTrackingSteps from "../components/OrderTrackingSteps.components"
 import AOS from "aos"
 import "aos/dist/aos.css"
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
+
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  addNotification: (message: string) => void;
 }
 
 interface User {
@@ -122,6 +127,7 @@ const ProfilePage: React.FC<Props> = (props) => {
   const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem("access_token")); 
   const [passwordStrength, setPasswordStrength] = useState(0)
   const [historyBill, setHistoryBill] = useState<HistoryOrder[]>([])
+
   useEffect(() => {
       const handleStorageChange = () => {
         setRefreshToken(localStorage.getItem("refresh_token"));
@@ -134,6 +140,42 @@ const ProfilePage: React.FC<Props> = (props) => {
         window.removeEventListener("storage", handleStorageChange);
       };
     }, []);
+
+  useEffect(() => {
+    socket.emit('connect-user-realtime', refresh_token)
+    socket.on('delivery-order', (res) => {
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`,
+      });
+      setHistoryBill((prev) => prev.map(bill => bill._id == res._id ? res : bill))
+      props.addNotification(`Đơn hàng ${res._id} đang được giao đến chỗ bạn!`);
+    })
+
+    socket.on('cancel-delivery', (res) => {
+      messageApi.open({
+        type: 'error',
+        content: `Đơn hàng ${res._id} đã bị hủy giao hàng!`,
+      });
+
+      props.addNotification(`Đơn hàng ${res._id} đã bị hủy giao hàng!`);
+    })
+
+    socket.on('complete-order-booking', (res) => {
+      messageApi.open({
+        type: 'success',
+        content: `Đơn hàng ${res._id} đã được hoàn thành!`,
+      });
+      setHistoryBill((prev) => prev.map(bill => bill._id == res._id ? res : bill))
+      props.addNotification(`Đơn hàng ${res._id} đã được hoàn thành!`);
+    })
+
+    return () => {
+      socket.off('delivery-order')
+      socket.off('cancel-delivery')
+      socket.off('complete-order-booking')
+    }
+  })
 
   useEffect(() => {
     const checkToken = async () => {
@@ -405,6 +447,14 @@ const ProfilePage: React.FC<Props> = (props) => {
     return formatter.format(amount);
   }
 
+  function formatDateFromISO(isoDateString: string): string {
+    const date = new Date(isoDateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   const statusColors: Record<string, string> = {
     "Thành công": "bg-green-100 text-green-600",
     "Duyệt thành công": "bg-green-100 text-green-600",
@@ -424,7 +474,7 @@ const ProfilePage: React.FC<Props> = (props) => {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      once: true,
+      once: false,
       mirror: false
     });
   }, []);
@@ -939,7 +989,7 @@ const ProfilePage: React.FC<Props> = (props) => {
                   <div className="flex justify-between items-start mb-2 relative z-10">
                     <div>
                       <h3 className="font-medium">Đơn hàng #{order._id}</h3>
-                      <p className="text-sm text-gray-500">Ngày đặt: {order.created_at}</p>
+                      <p className="text-sm text-gray-500">Ngày đặt: {formatDateFromISO(order.created_at)}</p>
                     </div>
                     <motion.div
                       className={`bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm ${statusColors[order.order_status === 0 ? "Đang chờ duyệt" : 

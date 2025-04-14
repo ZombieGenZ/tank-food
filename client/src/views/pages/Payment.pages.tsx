@@ -7,8 +7,8 @@ import Verify from '../components/VerifyToken.components';
 const socket = io(import.meta.env.VITE_API_URL)
 
 interface NotificationProps {
-  notification: string[],
-  setNotification: React.Dispatch<React.SetStateAction<string[]>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  addNotification: (message: string) => void;
 }
 
 interface Products {
@@ -107,7 +107,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ userBill }) => {
   );
 };
 
-const OrderPageWithPayment = ({ notification, setNotification }: NotificationProps): JSX.Element => {
+const OrderPageWithPayment = ({ setLoading, addNotification }: NotificationProps): JSX.Element => {
     const location = useLocation();
     const userBill: ApiResponse = location.state;
     const navigate = useNavigate()
@@ -146,17 +146,27 @@ const OrderPageWithPayment = ({ notification, setNotification }: NotificationPro
 
     useEffect(() => {
       socket.emit('connect-payment-realtime', userBill.infomation.order_id)
-      socket.on('payment_notification', (message) => {
-        messageApi.open({
-          type: 'info',
-          content: message,
-          duration: 5,
-        });
-        setNotification([...notification, message])
-        checkTokenRouter("/")
+      socket.on('payment_notification', (res) => {
+        console.log(res)
+        if(res.payment_status == 1) {
+          try {
+            setLoading(true)
+            messageApi.success("Thanh toán thành công!")
+            addNotification(`Thanh toán đơn hàng ${res._id} thành công!`)
+            checkTokenRouter("/")
+          } finally {
+            setTimeout(() => {
+              setLoading(false)
+            }, 3000)
+          }
+        } else {
+          messageApi.success("Thanh toán thất bại!")
+          return;
+        }
       })
+    
       return () => {
-        socket.off('payment_notification');
+        socket.off('payment_notification')
       };
     })
     
