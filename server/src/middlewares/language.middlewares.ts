@@ -9,7 +9,6 @@ export const languageValidator = (req: Request, res: Response, next: NextFunctio
   const language = req.body.language
 
   if (!language) {
-    console.log('here')
     next()
     return
   }
