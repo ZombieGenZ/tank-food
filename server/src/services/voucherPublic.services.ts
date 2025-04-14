@@ -77,9 +77,12 @@ class VoucherPublicService {
             updated_at: true
           }
         }
-      ),
-      notificationRealtime('freshSync', 'update-public-voucher', 'voucher/public/update', voucher)
+      )
     ])
+
+    const voucher_public = await databaseService.voucherPublic.findOne({ _id: voucher_id })
+
+    await notificationRealtime('freshSync', 'update-public-voucher', 'voucher/public/update', voucher_public)
   }
   async delete(payload: DeleteVoucherRequestsBody) {
     const data = {
