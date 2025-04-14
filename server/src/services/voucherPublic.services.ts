@@ -211,7 +211,7 @@ class VoucherPublicService {
         }
       )
     ]),
-    notificationRealtime('freshSync', 'create-public-voucher-storage', 'voucher/public/create', data)
+    notificationRealtime(`freshSync-user-${user._id}`, 'create-public-voucher-storage', 'voucher/public/create', data)
   }
 }
 
