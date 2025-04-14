@@ -121,7 +121,11 @@ class VoucherPublicService {
     ])
   }
   async getVoucher() {
-    const voucher = await databaseService.voucherPublic.find({}).toArray()
+    const now = new Date()
+    const voucher = await databaseService.voucherPublic.find({
+      status: VoucherPublicStatusEnum.AVAILABLE,
+      expiration_date: { $gt: now }
+    }).toArray()
     return voucher
   }
   async useVoucher(voucher: VoucherPublic) {
