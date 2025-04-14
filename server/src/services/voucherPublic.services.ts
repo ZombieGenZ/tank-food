@@ -49,7 +49,7 @@ class VoucherPublicService {
       promisesUser.push(
         new Promise((resolve, reject) => {
           try {
-            notificationRealtime(`freshSync-user-${user._id}`, 'update-public-voucher-storage', `voucher/public/${user._id}/update`, voucher_id)
+            notificationRealtime(`freshSync-user-${user._id}`, 'update-public-voucher-storage', `voucher/public/${user._id}/update`, voucher)
             resolve()
           } catch (err) {
             reject()

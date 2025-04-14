@@ -139,7 +139,7 @@ io.on('connection', (socket: Socket) => {
     // logout: Cập nhật thông tin đang xuất tài khoản
     // new-notification: Cập nhật thông tin thông báo mới
     // create-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa được thêm vào CSDL
-    // update-public-voucer-storage: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
+    // update-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa được cập nhật vào CSDL
     // delete-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa được xóa khỏi CSDL
     // expired-public-voucher-storage: Cập nhật thông tin voucher (công khai) vừa bị hết hạn
     //
