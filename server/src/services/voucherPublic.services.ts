@@ -213,7 +213,7 @@ class VoucherPublicService {
         }
       )
     ]),
-    notificationRealtime('freshSync', 'create-public-voucher', 'voucher/public/create', data)
+    notificationRealtime('freshSync', 'create-public-voucher-storage', 'voucher/public/create', data)
   }
 }
 
