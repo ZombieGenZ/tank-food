@@ -107,9 +107,9 @@ io.on('connection', (socket: Socket) => {
     // create-product: Cập nhật thông tin sản phẩm vừa được thêm vào CSDL
     // update-product: Cập nhật thông tin sản phẩm vừa được cập nhật vào CSDL
     // delete-product: Cập nhật thông tin sản phẩm vừa được xóa khỏi CSDL
-    // create-voucher-public: Cập nhật thông tin voucher (công khai) vừa được tạo
-    // update-voucher-public: Cập nhật thông tin voucher (công khai) vừa được chỉnh sửa
-    // delete-voucher-public: Cập nhật thông tin voucher (công khai) vừa được xóa
+    // create-public-voucher: Cập nhật thông tin voucher (công khai) vừa được tạo
+    // update-public-voucher: Cập nhật thông tin voucher (công khai) vừa được chỉnh sửa
+    // delete-public-voucher: Cập nhật thông tin voucher (công khai) vừa được xóa
     // expired-public-voucher: Cập nhật thông tin voucher (công khai) vừa bị hết hạn
     //
 
