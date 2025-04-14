@@ -284,8 +284,9 @@ io.on('connection', (socket: Socket) => {
   socket.on('connect-admin-realtime', async (refresh_token: string) => {
     // Phòng: freshSync-admin
     // sự kiện:
-    // ban-account: Cập nhật thông tin voucher người dùng vừa bị cấm
-    // unban-account: Cập nhật thông tin voucher người dùng vừa mở khóa
+    // ban-account: Cập nhật thông tin người dùng vừa bị cấm
+    // unban-account: Cập nhật thông tin người dùng vừa mở khóa
+    // create-account: Cập nhật thông tin tài khoản vừa được tạo
     //
 
     if (!refresh_token) {

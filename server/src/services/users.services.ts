@@ -69,13 +69,23 @@ class UserService {
       email_verify_html = ENGLIS_DYNAMIC_MAIL.emailVerifyMail(emailVerifyUrl).html
     }
 
+    const data = {
+      _id: user_id,
+      display_name: payload.display_name,
+      email: payload.email,
+      password: HashPassword(payload.password),
+      phone: payload.phone,
+      email_verify_token: emailVerifyToken
+    }
+
     await Promise.all([
       sendMail(payload.email, email_welcome_subject, email_welcome_html),
       sendMail(payload.email, email_verify_subject, email_verify_html),
       notificationService.sendNotification(
         '🎉 Đăng ký tài khoản thành công! Bắt đầu trải nghiệm ngay bằng cách đặt đơn đầu tiên nhé!',
         user_id
-      )
+      ),
+      notificationRealtime('freshSync-admin', 'create-account', 'account/create', data)
     ])
 
     return authenticate

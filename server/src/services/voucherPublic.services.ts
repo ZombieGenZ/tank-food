@@ -187,6 +187,10 @@ class VoucherPublicService {
     ])
   }
   async storageVoucher(voucher_id: string, user: User) {
+    const data = {
+      voucher_id
+    }
+
     await Promise.all([
       databaseService.users.updateOne(
         {
@@ -208,7 +212,8 @@ class VoucherPublicService {
           }
         }
       )
-    ])
+    ]),
+    notificationRealtime('freshSync', 'create-public-voucher', 'voucher/public/create', data)
   }
 }
 
