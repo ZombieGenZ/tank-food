@@ -141,6 +141,7 @@ const addNotification = (newMessage: string) => {
       }
     });
     messageApi.success(`Thêm ${item.name} vào giỏ hàng thành công !`)
+    addNotification(`Thêm ${item.name} vào giỏ hàng thành công !`)
   };
 
   useEffect(() => {
@@ -699,7 +700,7 @@ function NavigationAdmin({ displayname, user }: { displayname: string, user: Use
       {contextHolder}
       <div className='lg:hidden fixed top-4 left-4 z-50'>
         <button 
-          className='p-2 text-gray-700 bg-white rounded-md shadow-md hover:bg-gray-100'
+          className='p-2 text-gray-700 cursor-pointer bg-white rounded-md shadow-md hover:bg-gray-100'
           onClick={toggleMobileSidebar}
         >
           <IoMenu size={24} className="text-slate-800" />
@@ -1422,27 +1423,6 @@ function Main(): JSX.Element {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="py-12 px-4 md:px-8 lg:px-16 bg-gradient-to-r from-[#FF9A3D] to-[#FF6B35] text-white rounded-lg mx-4 md:mx-8 lg:mx-16 my-16 relative overflow-hidden shadow-lg border border-[#FFB800]/30 transition-transform duration-300 hover:shadow-2xl hover:scale-[1.01]" data-aos="zoom-in-up">
-          <div className="absolute top-2 right-2 bg-white text-[#FF6B35] font-bold py-1 px-3 rounded-full text-sm font-roboto shadow-md">-20%</div>
-
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-roboto" data-aos="fade-right" data-aos-delay="200">Combo Gia Đình</h2>
-          <p className="mb-6 max-w-2xl font-roboto" data-aos="fade-right" data-aos-delay="300">
-            Đặt combo gia đình cho 4 người chỉ với 299.000₫. Gồm 4 burger, 2 phần khoai tây, 4 món tráng miệng và 4 nước uống.
-          </p>
-
-          <button className="bg-white text-[#FF6B35] hover:bg-gray-100 font-bold py-2 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8" data-aos="fade-up" data-aos-delay="400">
-            Đặt Ngay
-          </button>
-
-          <div className="absolute right-0 top-0 opacity-20">
-            <img
-              src="/images/system/combogiadinh.jpg"
-              alt="Family combo meal with burgers"
-              className="h-full object-cover transition-transform duration-700 hover:scale-110"
-            />
           </div>
         </div>
 

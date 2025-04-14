@@ -519,7 +519,7 @@ const ProfilePage: React.FC<Props> = (props) => {
         <nav className="-mb-px flex space-x-8">
           <motion.button
             onClick={() => setActiveTab("info")}
-            className={`py-4 px-1 border-b-2 font-medium text-sm relative ${
+            className={`py-4 px-1 cursor-pointer border-b-2 font-medium text-sm relative ${
               activeTab === "info"
                 ? "border-red-500 text-red-500"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -546,7 +546,7 @@ const ProfilePage: React.FC<Props> = (props) => {
           </motion.button>
           <motion.button
             onClick={() => setActiveTab("history")}
-            className={`py-4 px-1 border-b-2 font-medium text-sm relative ${
+            className={`py-4 px-1 cursor-pointer border-b-2 font-medium text-sm relative ${
               activeTab === "history"
                 ? "border-red-500 text-red-500"
                 : "border-transparent text-gray-500 hover:text-gray-700"

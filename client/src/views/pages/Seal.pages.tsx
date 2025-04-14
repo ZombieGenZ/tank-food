@@ -310,7 +310,7 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
   // Removed duplicate declaration of the language function
 
   const handleSaveVoucher = (VoucherId: string) => {
-    if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu món vào giỏ hàng !"); return};
+    if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu Voucher!"); return};
     const checkToken = async () => {
       const isValid = await Verify(refresh_token, access_token);
         if (isValid) {

@@ -17,10 +17,9 @@ export default function NotificationButton({ notifications = [] }: Notification)
   useEffect(() => {
     if (!aosInitialized.current) {
       AOS.init({
-        duration: 800,
+        duration: 1000,
         once: true,
-        offset: 10,
-        mirror: true
+        offset: 5,
       })
       aosInitialized.current = true
     }
