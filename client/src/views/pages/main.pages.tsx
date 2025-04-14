@@ -111,15 +111,22 @@ const FormMain = (): JSX.Element => {
     const cartlocal = localStorage.getItem('my_cart')
     return cartlocal ? JSON.parse(cartlocal) : []
   });
-  const [notification, setNotification] = useState<string[]>(() => {
-    const Notification = localStorage.getItem('notification')
-    return Notification ? JSON.parse(Notification) : []
-  })
+  const MAX_NOTIFICATIONS = 5; // Giới hạn 5 thông báo
 
-  useEffect(() => {
-    localStorage.setItem('notification', JSON.stringify(notification))
-    console.log(notification)
-  }, [notification])
+const [notification, setNotification] = useState<string[]>(() => {
+  const savedNotifications = localStorage.getItem('notification');
+  return savedNotifications ? JSON.parse(savedNotifications) : [];
+});
+
+// Hàm thêm thông báo mới với giới hạn
+const addNotification = (newMessage: string) => {
+  setNotification(prev => {
+    const updatedNotifications = [...prev, newMessage];
+    const limitedNotifications = updatedNotifications.slice(-MAX_NOTIFICATIONS); // Giữ lại 5 thông báo mới nhất
+    localStorage.setItem('notification', JSON.stringify(limitedNotifications)); // Lưu vào localStorage
+    return limitedNotifications;
+  });
+};
 
   const addToCart = (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => {
     if(refresh_token == null) {messageApi.error("Vui lòng đăng nhập để lưu món vào giỏ hàng !"); return};
@@ -143,7 +150,7 @@ const FormMain = (): JSX.Element => {
   useEffect(() => {
     socket.emit('connect-user-realtime', refresh_token)
     socket.on('verify-account', (res: { user_id: string }) => {
-      messageApi.success("Tài khoản được xác thực thành công !")
+      messageApi.success("Tài khoản được xác thực thành công !");
       setUser((prev) => {
         if (prev) {
           return { ...prev, _id: res.user_id, user_type: 1 };
@@ -168,7 +175,7 @@ const FormMain = (): JSX.Element => {
         type: 'success',
         content: `Đơn hàng ${res._id} đã được đặt thành công!`,
       });
-      setNotification([...notification, `Đơn hàng ${res._id} đã được đặt thành công!`])
+      addNotification(`Đơn hàng ${res._id} đã được đặt thành công!`);
     })
 
     socket.on('ban' , (res) => {
@@ -179,7 +186,7 @@ const FormMain = (): JSX.Element => {
         content: `Tài khoản của bạn đã bị ban vì lý do "${res.reason}"!`,
       })
 
-      setNotification([...notification, `Tài khoản của bạn đã bị ban vì lý do "${res.reason}"!`])
+      addNotification(`Tài khoản của bạn đã bị ban vì lý do "${res.reason}"!`);
     })
 
     socket.on('checkout-order', (res) => {
@@ -188,7 +195,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đã được thanh toán thành công!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đã được thanh toán thành công!`])
+      addNotification(`Đơn hàng ${res._id} đã được thanh toán thành công!`);
     })
 
     socket.on('approval-order', (res) => {
@@ -197,7 +204,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đã được duyệt thành công!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đã được duyệt thành công!`])
+      addNotification(`Đơn hàng ${res._id} đã được duyệt thành công!`);
     })
 
     socket.on('complete-order', (res) => {
@@ -206,7 +213,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đã được hoàn thành!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đã được hoàn thành!`])
+      addNotification(`Đơn hàng ${res._id} đã được hoàn thành!`);
     })
 
     socket.on('cancel-order', (res) => {
@@ -215,7 +222,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đã bị hủy!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đã bị hủy!`])
+      addNotification(`Đơn hàng ${res._id} đã bị hủy!`);
     })
 
     socket.on('delivery-order', (res) => {
@@ -224,7 +231,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`])
+      addNotification(`Đơn hàng ${res._id} đang được giao đến chỗ bạn!`);
     })
 
     socket.on('cancel-delivery', (res) => {
@@ -233,7 +240,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đã bị hủy giao hàng!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đã bị hủy giao hàng!`])
+      addNotification(`Đơn hàng ${res._id} đã bị hủy giao hàng!`);
     })
 
     socket.on('complete-delivery', (res) => {
@@ -242,7 +249,7 @@ const FormMain = (): JSX.Element => {
         content: `Đơn hàng ${res._id} đã được giao thành công!`,
       });
 
-      setNotification([...notification, `Đơn hàng ${res._id} đã được giao thành công!`])
+      addNotification(`Đơn hàng ${res._id} đã được giao thành công!`);
     })
 
     return () => {
