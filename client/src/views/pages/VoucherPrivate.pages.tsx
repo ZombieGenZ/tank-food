@@ -9,6 +9,19 @@ import { message } from "antd"
 import { useNavigate } from "react-router-dom"
 import Verify from "../components/VerifyToken.components"
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
+
+interface Props {
+  isLoading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  aLert: NotificationProps
+}
+
+interface NotificationProps {
+  addNotification: (message: string) => void;
+}
 
 interface DiscountCode {
   _id: string;
@@ -36,7 +49,7 @@ interface VoucherPublic {
   _id: string;
 }
 
-const VoucherPrivate: React.FC = () => {
+const VoucherPrivate: React.FC<Props> = (props) => {
   const navigate = useNavigate()
   const language = (): string => {
     const Language = localStorage.getItem('language')
@@ -58,6 +71,50 @@ const VoucherPrivate: React.FC = () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  useEffect(() => {
+    socket.emit('connect-user-realtime', refresh_token)
+
+    socket.on('new-voucher-private', (res) => {
+      setVouchers([...vouchers, res])
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher riêng tư mới" : "New  Private")
+    })
+
+    socket.on('use-voucher-private', (res) => {
+      setVouchers(vouchers.map((item) => item._id === res._id ? res : item))
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher riêng tư mới" : "New  Private")
+    })
+
+    socket.on('create-public-voucher-storage', (res) => {
+      setVoucherPublic([...voucherPublic, res])
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới" : "New Voucher Public")
+    })
+
+    socket.on('update-public-voucher-storage', (res) => {
+      console.log(res)
+      setVoucherPublic(voucherPublic.map((item) => item._id === res._id ? res : item))
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới cập nhật" : "A Voucher Updated")
+    })
+
+    socket.on('delete-public-voucher-storage', (res) => {
+      setVoucherPublic(voucherPublic.filter((item) => item._id !== res._id))
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới được xoá" : "A Voucher Deleted")
+    })
+
+    socket.on('expired-public-voucher-storage', (res) => {
+      setVoucherPublic(voucherPublic.filter((item) => item._id !== res._id))
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới hết hạn" : "A Voucher Expired")
+    })
+
+    return () => {
+      socket.off('new-voucher-private')
+      socket.off('use-voucher-private')
+      socket.off('create-public-voucher-storage')
+      socket.off('update-public-voucher-storage')
+      socket.off('delete-public-voucher-storage')
+      socket.off('expired-public-voucher-storage')
+    }
+  })
 
   useEffect(() => {
     if(refresh_token == null) {
@@ -88,6 +145,7 @@ const VoucherPrivate: React.FC = () => {
             if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
               setVouchers(data.voucher_private)
               setVoucherPublic(data.voucher_public)
+              console.log(data.voucher_public)
             }
           })
         } else {

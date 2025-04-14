@@ -12,6 +12,11 @@ const socket = io(import.meta.env.VITE_API_URL)
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  aLert: NotificationProps
+}
+
+interface NotificationProps {
+  addNotification: (message: string) => void;
 }
 
 interface DataType {
@@ -83,27 +88,36 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
     }, [refresh_token, access_token])
 
     useEffect(() => {
-        socket.emit('connect-admin-realtime', refresh_token)
+        socket.emit('connect-guest-realtime')
         socket.on('create-public-voucher', (data) => {
             messageApi.info(language() === "Tiếng Việt" ? "Có voucher mới" : "New voucher");
+            props.aLert.addNotification(language() === "Tiếng Việt" ? "Có voucher mới" : "New voucher")
             setVoucher((prev) => [...prev, data])
         })
 
         socket.on('update-public-voucher', (data) => {
             messageApi.info(language() === "Tiếng Việt" ? "Có voucher mới được cập nhật" : "New voucher updated");
+            props.aLert.addNotification(language() === "Tiếng Việt" ? "Có voucher mới được cập nhật" : "New voucher updated")
             setVoucher((prev) => prev.map((item) => item._id === data._id ? data : item))
         })
 
         socket.on('delete-public-voucher', (data) => {
             messageApi.info(language() === "Tiếng Việt" ? "Có voucher mới bị xoá" : "New voucher deleted");
+            props.aLert.addNotification(language() === "Tiếng Việt" ? "Có voucher mới bị xoá" : "New voucher deleted")
             setVoucher((prev) => prev.filter((item) => item._id !== data._id))
+        })
+
+        // thêm
+        socket.on('expired-public-voucher', (data) => {
+          console.log(data)
         })
         return () => {
             socket.off('create-public-voucher');
             socket.off('update-public-voucher');
             socket.off('delete-public-voucher');
+            socket.off('expired-public-voucher');
         }
-    },[refresh_token, messageApi])
+    })
     const showCreateModal = () => {
         setShowCreateCode(true)
     }

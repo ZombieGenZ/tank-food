@@ -189,7 +189,7 @@ const addNotification = (newMessage: string) => {
       addNotification(`Tài khoản của bạn đã bị ban vì lý do "${res.reason}"!`);
     })
 
-    socket.on('checkout-order', (res) => {
+    socket.on('checkout-order-booking', (res) => {
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được thanh toán thành công!`,
@@ -198,7 +198,7 @@ const addNotification = (newMessage: string) => {
       addNotification(`Đơn hàng ${res._id} đã được thanh toán thành công!`);
     })
 
-    socket.on('approval-order', (res) => {
+    socket.on('approval-order-booking', (res) => {
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được duyệt thành công!`,
@@ -207,7 +207,7 @@ const addNotification = (newMessage: string) => {
       addNotification(`Đơn hàng ${res._id} đã được duyệt thành công!`);
     })
 
-    socket.on('complete-order', (res) => {
+    socket.on('complete-order-booking', (res) => {
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được hoàn thành!`,
@@ -216,7 +216,7 @@ const addNotification = (newMessage: string) => {
       addNotification(`Đơn hàng ${res._id} đã được hoàn thành!`);
     })
 
-    socket.on('cancel-order', (res) => {
+    socket.on('cancel-order-booking', (res) => {
       messageApi.open({
         type: 'error',
         content: `Đơn hàng ${res._id} đã bị hủy!`,
@@ -225,7 +225,7 @@ const addNotification = (newMessage: string) => {
       addNotification(`Đơn hàng ${res._id} đã bị hủy!`);
     })
 
-    socket.on('delivery-order', (res) => {
+    socket.on('delivery-order-booking', (res) => {
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đang được giao đến chỗ bạn!`,
@@ -257,10 +257,10 @@ const addNotification = (newMessage: string) => {
       socket.off('logout')
       socket.off('create-order-booking')
       socket.off('ban')
-      socket.off('checkout-order')
-      socket.off('approval-order')
-      socket.off('complete-order')
-      socket.off('cancel-order')
+      socket.off('checkout-order-booking')
+      socket.off('approval-order-booking')
+      socket.off('complete-order-booking')
+      socket.off('cancel-order-booking')
       socket.off('delivery-order')
       socket.off('cancel-delivery')
       socket.off('complete-delivery')
@@ -557,8 +557,8 @@ const addNotification = (newMessage: string) => {
                 <Route path='/category' element={<CategoryManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/order' element={<OrderManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/product' element={<ProductManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/ship' element={<ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/discount' element={<DiscountCodeManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/ship' element={<ShipManagement isLoading={loadingCP} aLert={{ addNotification: addNotification }} setLoading={setLoadingCP}/>} />
+                <Route path='/discount' element={<DiscountCodeManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/errorpage' element={<NotFoundPage />}/>
               </Routes>
@@ -572,13 +572,13 @@ const addNotification = (newMessage: string) => {
               <Route path="/aboutus" element={<Aboutus />} />
               <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-              <Route path='/deal' element={<SealPage addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
+              <Route path='/deal' element={<SealPage props={{ addNotification: addNotification }} addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
               <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />
               <Route path='/payment' element={<OrderPageWithPayment notification={notification} setNotification={setNotification}/>} />
               <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
               <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
-              <Route path='/voucher' element={<VoucherPrivate />}/>
+              <Route path='/voucher' element={<VoucherPrivate aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/errorpage' element={<NotFoundPage />}/>
               <Route path='/verify-account' element={<ResultVerifyAccount />}/>
             </Routes>
@@ -593,7 +593,7 @@ const addNotification = (newMessage: string) => {
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
         <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>
         <Routes>
-          <Route path="/" element={user.role == 1 ? <OrderManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path="/" element={user.role == 1 ? <OrderManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -612,9 +612,9 @@ const addNotification = (newMessage: string) => {
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path='/menu' element={<Menu addToCart={addToCart} cart={cart} />} />
-          <Route path='/deal' element={<SealPage addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
+          <Route path='/deal' element={<SealPage props={{ addNotification: addNotification }} addToCart={addToCart} cart={cart} setIsloading={setLoadingCP}/>} />
           <Route path='/contact' element={<ContactUs isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-          <Route path='/voucher' element={<VoucherPrivate />}/>
+          <Route path='/voucher' element={<VoucherPrivate aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           {refresh_token !== null && <>
             <Route path='/mycard' element={<MyCard cart={cart} setCart={setCart} user_infor={user} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>} />

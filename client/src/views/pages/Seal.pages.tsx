@@ -8,6 +8,9 @@ import { Plus } from "lucide-react"
 import "aos/dist/aos.css"
 import Verify from "../components/VerifyToken.components"
 import { RESPONSE_CODE } from "../../constants/responseCode.constants"
+import io from "socket.io-client";
+
+const socket = io(import.meta.env.VITE_API_URL)
 
 interface MenuItem {
   key: string,
@@ -105,6 +108,11 @@ interface CategoryProps {
   addToCart: (item: { id: string; name: string; price: number; image: string; priceAfterdiscount: number; discount: number }) => void;
   cart: CartItem[]; // Thêm cart vào props
   setIsloading: React.Dispatch<React.SetStateAction<boolean>>;
+  props: NotificationProps
+}
+
+interface NotificationProps {
+  addNotification: (message: string) => void;
 }
 
 const popularItems = [
@@ -142,7 +150,7 @@ const popularItems = [
   },
 ]
 
-const SealPage =({ addToCart, cart, setIsloading }: CategoryProps): JSX.Element =>{
+const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.Element =>{
   const navigate = useNavigate()
   const [messageApi, contextHolder] = message.useMessage();
   const language = (): string => {
@@ -168,6 +176,37 @@ const SealPage =({ addToCart, cart, setIsloading }: CategoryProps): JSX.Element 
         window.removeEventListener("storage", handleStorageChange);
       };
     }, []);
+
+    useEffect(() => {
+      socket.emit('connect-guest-realtime')
+      socket.on('create-public-voucher', (res) => {
+        setVoucher([...voucher, res])
+        props.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới" : "New Voucher")
+      })
+
+      socket.on('update-public-voucher', (res) => {
+        console.log(res)
+        setVoucher(voucher.map((item) => item._id === res._id ? res : item))
+        props.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới cập nhật" : "A Voucher Update")
+      })
+
+      socket.on('delete-public-voucher', (res) => {
+        setVoucher(voucher.filter((item) => item._id !== res._id))
+        props.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới bị xoá" : "A Voucher Delete")
+      })
+
+      socket.on('expired-public-voucher', (res) => {
+        setVoucher(voucher.map((item) => item._id === res._id ? res : item))
+        props.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới bị xoá" : "A Voucher Delete")
+      })
+
+      return () => {
+        socket.off('create-public-voucher')
+        socket.off('update-public-voucher')
+        socket.off('delete-public-voucher')
+        socket.off('expired-public-voucher')
+      }
+    })
 
   useEffect(() => {
     const checkToken = async () => {

@@ -210,7 +210,7 @@ function ProductManagement(props: Props): JSX.Element {
       socket.off('delete-product')
       socket.off('update-product')
     }
-  }, [product, messageApi])
+  })
 
   useEffect(() => { setIsImageChanged(isImageChanged) }, [isImageChanged])
   // useEffect(() => { setProduct(product) }, [product])

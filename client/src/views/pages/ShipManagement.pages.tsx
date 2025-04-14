@@ -91,6 +91,11 @@ interface Preview {
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  aLert: NotificationProps
+}
+
+interface NotificationProps {
+  addNotification: (message: string) => void;
 }
 
 const ShipManagement: React.FC<Props> = (props) => {
@@ -124,6 +129,7 @@ const ShipManagement: React.FC<Props> = (props) => {
     socket.emit('connect-shipper-realtime', refresh_token)
     socket.on('create-delivery', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Có đơn giao hàng mới" : "New delivery order available");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có đơn giao hàng mới" : "New delivery order available")
         setWaitingOrders((prev) => [
           ...prev, { ...data, expanded: false }
         ]);
@@ -133,12 +139,14 @@ const ShipManagement: React.FC<Props> = (props) => {
     // socket chưa đúng
     socket.on('remove-delivery', (data) => {
       setWaitingOrders((prev) => prev.filter((item) => item._id !== data._id))
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Đơn hàng đã được nhận giao" : "Order has been received for delivery")
       setReceivedOrders((prev) => [...prev, { ...data, expanded: false }])
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được nhận giao" : "Order has been received for delivery");
     })
 
     socket.on('cancel-delivery', (data) => {
       setWaitingOrders((prev) => prev.filter((item) => item._id !== data._id))
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled")
       setReceivedOrders((prev) => prev.filter((item) => item._id !== data._id))
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled");
     })
