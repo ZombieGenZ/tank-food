@@ -11,6 +11,11 @@ const socket = io(import.meta.env.VITE_API_URL)
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  aLert: NotificationProps
+}
+
+interface NotificationProps {
+  addNotification: (message: string) => void;
 }
 
 interface DropdownType {
@@ -182,12 +187,14 @@ function ProductManagement(props: Props): JSX.Element {
       messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới" : "New product")
       setProduct((prev) =>[...prev, res])
       takeProduct()
+      props.aLert.addNotification(language() == "Tiếng Việt" ? "Có sản phẩm mới" : "New product")
     })
     
     socket.on('delete-product', (res: Product) => {
       messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới bị xoá" : "New product deleted")
       setProduct(product.filter((item) => item._id !== res._id))
       takeProduct()
+      props.aLert.addNotification(language() == "Tiếng Việt" ? "Có sản phẩm mới bị xoá" : "New product deleted")
     })
 
     // còn lỗi
@@ -195,6 +202,7 @@ function ProductManagement(props: Props): JSX.Element {
       messageApi.info(language() == "Tiếng Việt" ? "Có sản phẩm mới cập nhật" : "New product updated")
       setProduct(product.map((item) => item._id === res._id ? res : item))
       takeProduct()
+      props.aLert.addNotification(language() == "Tiếng Việt" ? `Có sản phẩm mới cập nhật` : "New product updated")
     })
 
     return () => {

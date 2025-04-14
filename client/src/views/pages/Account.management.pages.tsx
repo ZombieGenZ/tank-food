@@ -15,8 +15,7 @@ interface Props {
 }
 
 interface NotificationProps {
-  notification: string[],
-  setNotification: React.Dispatch<React.SetStateAction<string[]>>
+  addNotification: (message: string) => void;
 }
 
 interface DataType {
@@ -90,7 +89,7 @@ const Account: React.FC<Props> = (props) => {
         type: 'error',
         content: `Admin đã ban 1 tài khoản với lý do ${data.reason}!`,
       })
-      props.aLert.setNotification([...props.aLert.notification, `Admin đã ban 1 tài khoản với lý do ${data.reason}!`])
+      props.aLert.addNotification(`Admin đã ban 1 tài khoản với lý do ${data.reason}!`)
       setListuser(prevList => {
         return prevList.map(user => {
           if(user._id === data.user_id) {
@@ -114,7 +113,7 @@ const Account: React.FC<Props> = (props) => {
         type: 'success',
         content: `Tài khoản ${res.user_id} đã được mở khoá!`,
       })
-      props.aLert.setNotification([...props.aLert.notification, `Tài khoản ${res.user_id} đã được mở khoá!`])
+      props.aLert.addNotification(`Tài khoản ${res.user_id} đã được mở khoá!`)
     })
 
     return () => {

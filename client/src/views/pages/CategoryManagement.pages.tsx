@@ -15,8 +15,7 @@ interface Props {
 }
 
 interface NotificationProps {
-  notification: string[],
-  setNotification: React.Dispatch<React.SetStateAction<string[]>>
+  addNotification: (message: string) => void;
 }
 
 interface DataType {
@@ -64,19 +63,19 @@ const CategoryManagement: React.FC<Props> = (props) => {
     socket.on('create-category', (res) => {
       messageApi.info(language() == "Tiếng Việt" ? "Có danh mục mới" : "New category")
       setCategory((prevCategories) => [...prevCategories, res]);
-      props.aLert.setNotification([...props.aLert.notification, language() == "Tiếng Việt" ? "Có danh mục mới được tạo" : "New category"])
+      props.aLert.addNotification(language() == "Tiếng Việt" ? "Có danh mục mới được tạo" : "New category")
     })
 
     socket.on('delete-category', (res) => {
       messageApi.info(language() == "Tiếng Việt" ? "Có danh mục mới bị xoá" : "New category deleted")
       setCategory(category.filter((item) => item._id !== res._id))
-      props.aLert.setNotification([...props.aLert.notification, language() == "Tiếng Việt" ? "Có danh mục mới bị xoá" : "New category deleted"])
+      props.aLert.addNotification(language() == "Tiếng Việt" ? "Có danh mục mới bị xoá" : "New category deleted")
     })
 
     socket.on('update-category', (res) => {
       messageApi.info(language() == "Tiếng Việt" ? "Có danh mục mới cập nhật" : "New category updated")
       setCategory(category.map((item) => item._id === res._id ? res : item))
-      props.aLert.setNotification([...props.aLert.notification, language() == "Tiếng Việt" ? "Có danh mục mới cập nhật" : "New category updated"])
+      props.aLert.addNotification(language() == "Tiếng Việt" ? "Có danh mục mới cập nhật" : "New category updated")
     })
 
     return () => {

@@ -553,10 +553,10 @@ const addNotification = (newMessage: string) => {
               <NavAdmin notification={notification} display_name={language() == "Tiếng Việt" ? "Bảng thống kê" : "Dash board"} userInfo={user} />
               <Routes>
                 <Route path="/" element={<MainManage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path="/Account" element={<Account aLert={{ notification: notification, setNotification: setNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/category' element={<CategoryManagement aLert={{ notification: notification, setNotification: setNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/order' element={<OrderManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
-                <Route path='/product' element={<ProductManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path="/Account" element={<Account aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/category' element={<CategoryManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/order' element={<OrderManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
+                <Route path='/product' element={<ProductManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/ship' element={<ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/discount' element={<DiscountCodeManagement isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -593,7 +593,7 @@ const addNotification = (newMessage: string) => {
         {user?.user_type == 0 && <AlertBanner refresh_token={refresh_token ?? ""} access_token={access_token ?? ""} isLoading={loadingCP} setLoading={setLoadingCP}/>}
         <NavigationButtons notification={notification} toggleView={setIsAdminView} role={user?.role ?? null} cartItemCount={cartItemCount} userInfo={user ?? null} props={{ isLoading: loadingCP, setLoading: setLoadingCP }}/>
         <Routes>
-          <Route path="/" element={user.role == 1 ? <OrderManagement isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
+          <Route path="/" element={user.role == 1 ? <OrderManagement aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/> : <ShipManagement isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path="/signup" element={<Signup isLoading={loadingCP} setLoading={setLoadingCP}/>} />
           <Route path='/forgot-password' element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP}/>} />

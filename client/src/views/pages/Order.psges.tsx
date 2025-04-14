@@ -10,6 +10,11 @@ const { useBreakpoint } = Grid;
 interface Props {
   isLoading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  aLert: NotificationProps
+}
+
+interface NotificationProps {
+  addNotification: (message: string) => void;
 }
 
 interface Order {
@@ -133,6 +138,7 @@ const OrderManagement: React.FC<Props> = (props) => {
 
     socket.on('create-order', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Có đơn hàng mới" : "New order");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có đơn hàng mới" : "New order")
       setWaitData((prevData) => [
         ...prevData,
         { ...data, address: data.delivery_type === 0 ? "Tại quầy" : data.receiving_address },
@@ -141,6 +147,7 @@ const OrderManagement: React.FC<Props> = (props) => {
 
     socket.on('checkout-order', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Có đơn hàng mới thanh toán thành công" : "New order payment");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có đơn hàng mới thanh toán thành công" : "New order payment")
       setWaitData((prevData) =>
         prevData.map((order) => (order._id === data._id ?  data  : order))
       );
@@ -148,6 +155,7 @@ const OrderManagement: React.FC<Props> = (props) => {
 
     socket.on('payment-confirmation', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được xác nhận thanh toán" : "Order has been confirmed");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Đơn hàng đã được xác nhận thanh toán" : "Order has been confirmed")
       setWaitData((prevData) =>
         prevData.map((order) => (order._id === data._id ? { ...data, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address } : order))
       );
@@ -155,12 +163,14 @@ const OrderManagement: React.FC<Props> = (props) => {
 
     socket.on('approval-order', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã được duyệt" : "Order has been approved");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Đơn hàng đã được duyệt" : "Order has been approved")
       setWaitData((prevData) => prevData.filter((order) => order._id !== data._id));
       setDoneData((prevData) => [...prevData, data]); // Thêm đơn hàng vào doneData
     });
 
     socket.on('cancel-order', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Đơn hàng đã bị hủy" : "Order has been canceled")
       setWaitData((prevData) => prevData.filter((order) => order._id !== data._id));
       setDoneData((prevData) =>
           prevData.map((order) => (order._id === data._id ? { ...data, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address } : order))
@@ -169,6 +179,7 @@ const OrderManagement: React.FC<Props> = (props) => {
 
     socket.on('complete-order', (data) => {
       messageApi.info(language() === "Tiếng Việt" ? "Đơn hàng đã hoàn thành" : "Order completed");
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Đơn hàng đã hoàn thành" : "Order completed")
       setDoneData((prevData) =>
         prevData.map((order) => (order._id === data._id ? { ...data, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address } : order))
       );
