@@ -45,11 +45,13 @@ class VoucherPublicService {
     const promisesUser = [] as Promise<void>[]
     const users = await databaseService.users.find({ storage_voucher: { $in: [voucher_id] } }).toArray()
 
+    const voucher_public = await databaseService.voucherPublic.findOne({ _id: voucher_id })
+
     for (const user of users) {
       promisesUser.push(
         new Promise((resolve, reject) => {
           try {
-            notificationRealtime(`freshSync-user-${user._id}`, 'update-public-voucher-storage', `voucher/public/${user._id}/update`, voucher)
+            notificationRealtime(`freshSync-user-${user._id}`, 'update-public-voucher-storage', `voucher/public/${user._id}/update`, voucher_public)
             resolve()
           } catch (err) {
             reject()
@@ -77,12 +79,9 @@ class VoucherPublicService {
             updated_at: true
           }
         }
-      )
+      ),
+      notificationRealtime('freshSync', 'update-public-voucher', 'voucher/public/update', voucher)
     ])
-
-    const voucher_public = await databaseService.voucherPublic.findOne({ _id: voucher_id })
-
-    await notificationRealtime('freshSync', 'update-public-voucher', 'voucher/public/update', voucher_public)
   }
   async delete(payload: DeleteVoucherRequestsBody) {
     const data = {
