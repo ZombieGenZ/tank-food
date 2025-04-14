@@ -187,9 +187,7 @@ class VoucherPublicService {
     ])
   }
   async storageVoucher(voucher_id: string, user: User) {
-    const data = {
-      voucher_id
-    }
+    const data = await databaseService.voucherPublic.findOne({ _id: new ObjectId(voucher_id) })
 
     await Promise.all([
       databaseService.users.updateOne(
