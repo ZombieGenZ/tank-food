@@ -213,7 +213,6 @@ const OrderAtStore: React.FC = () => {
     }
 
     socket.on('payment_notification', (res) => {
-      console.log(res)
       if(res.payment_status == 1) {
         messageApi.success("Thanh toán thành công!")
         setPaymentCompleted(true)

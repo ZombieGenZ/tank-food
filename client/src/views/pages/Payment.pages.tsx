@@ -157,7 +157,7 @@ const OrderPageWithPayment = ({ setLoading, addNotification }: NotificationProps
           } finally {
             setTimeout(() => {
               setLoading(false)
-            }, 3000)
+            }, 15000)
           }
         } else {
           messageApi.success("Thanh toán thất bại!")

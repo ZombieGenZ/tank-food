@@ -162,7 +162,7 @@ export default function ChangePassword(props: Props): JSX.Element {
         setNewPassword("")
         setConfirmPassword("")
         // navigate("/signup")
-      }, 2000)
+      }, 5000)
     }
   }
 

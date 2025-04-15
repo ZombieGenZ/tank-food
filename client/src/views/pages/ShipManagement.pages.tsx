@@ -99,7 +99,7 @@ interface NotificationProps {
 }
 
 const ShipManagement: React.FC<Props> = (props) => {
-  const language = (): string => {
+  const language = (): "Tiếng Việt" | "English" => {
     const Language = localStorage.getItem('language')
     return Language ? JSON.parse(Language) : "Tiếng Việt"
   }
@@ -167,7 +167,7 @@ const ShipManagement: React.FC<Props> = (props) => {
     if (type === "Tất cả") {
       setWaitingOrders(allWaitingOrders.current);
       setReceivedOrders(allReceivedOrders.current);
-    } else if (type === "Phí ship cao nhất") {
+    } else if (type === "Phí ship cao nhất" || type == "Highest shipping fee") {
       if(allWaitingOrders.current.length > 0) {
         const maxFee = Math.max(...allWaitingOrders.current.map(order => order.fee));
         setWaitingOrders(allWaitingOrders.current.filter((order) => order.fee === maxFee));
@@ -176,7 +176,7 @@ const ShipManagement: React.FC<Props> = (props) => {
         const maxFee = Math.max(...allReceivedOrders.current.map(order => order.fee));
         setReceivedOrders(allReceivedOrders.current.filter((order) => order.fee === maxFee));
       }
-    } else if (type === "Phí ship thấp nhất") {
+    } else if (type === "Phí ship thấp nhất" || type === "Lowest shipping fee") {
       if(allWaitingOrders.current.length > 0) {
         const minFee = Math.min(...allWaitingOrders.current.map(order => order.fee));
         setWaitingOrders(allWaitingOrders.current.filter((order) => order.fee === minFee));
@@ -451,8 +451,14 @@ const ShipManagement: React.FC<Props> = (props) => {
   // Get orders based on active tab
 
 
-  const filterOptions: string[] = ["Tất cả", "Phí ship cao nhất", "Phí ship thấp nhất"];
-  const [activeFilter, setActiveFilter] = useState<string>("Tất cả");
+  const filterTranslations = {
+    "Tiếng Việt": ["Tất cả", "Phí ship cao nhất", "Phí ship thấp nhất"],
+    "English": ["All", "Highest shipping fee", "Lowest shipping fee"],
+    // Thêm các ngôn ngữ khác nếu cần
+  };
+  
+  const filterOptions = filterTranslations[language()] ?? filterTranslations["Tiếng Việt"]; // Mặc định là Tiếng Việt nếu ngôn ngữ hiện tại không có trong translations
+  const [activeFilter, setActiveFilter] = useState<string>(filterOptions[0]); // Mặc định chọn phần tử đầu tiên của mảng đã dịch
 
   const getActiveOrders = (): Order[] => {
     return activeTab === 'waiting' ? waitingOrders : receivedOrders;
@@ -502,7 +508,7 @@ const ShipManagement: React.FC<Props> = (props) => {
       {/* Orders container */}
       <div className="bg-white rounded-lg shadow-sm p-4">
         <h2 className="text-lg font-medium mb-3 sm:text-xl md:text-2xl sm:mb-4">
-          {activeTab === 'waiting' ? 'Đơn hàng đang chờ nhận giao:' : 'Đơn hàng đã giao:'}
+        {activeTab === 'waiting' ? (language() == "Tiếng Việt" ? 'Đơn hàng đang chờ nhận giao:' : 'Orders waiting for delivery:') : (language() == "Tiếng Việt" ? 'Đơn hàng đã giao:' : 'Delivered orders:')}
         </h2>
 
         {/* Filters */}
@@ -573,95 +579,95 @@ const ShipManagement: React.FC<Props> = (props) => {
 
               {order.expanded && (
                 <div className="p-4 sm:p-6">
-                  {/* Order items */}
-                  <div className="space-y-2 mb-4 sm:space-y-3 sm:mb-6">
-                    {order.product.map(item => (
-                      <div key={item._id} className="flex justify-between items-center border border-gray-200 rounded-md p-3 hover:bg-gray-50 transition sm:p-4">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center mr-3 text-orange-600 sm:w-10 sm:h-10">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
-                              <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="font-medium sm:text-base">{item.title_translate_1}</p>
-                            <p className="text-sm text-gray-600 sm:text-xs">{formatCurrency(Number(item.price))}</p>
-                          </div>
+                {/* Order items */}
+                <div className="space-y-2 mb-4 sm:space-y-3 sm:mb-6">
+                  {order.product.map(item => (
+                    <div key={item._id} className="flex justify-between items-center border border-gray-200 rounded-md p-3 hover:bg-gray-50 transition sm:p-4">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-orange-100 rounded-md flex items-center justify-center mr-3 text-orange-600 sm:w-10 sm:h-10">
+                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
+                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                          </svg>
                         </div>
-                        {/* Removed the delete button for products */}
+                        <div>
+                          <p className="font-medium sm:text-base">{item.title_translate_1}</p>
+                          <p className="text-sm text-gray-600 sm:text-xs">{formatCurrency(Number(item.price))}</p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Order status */}
-                  <div className="flex justify-between items-center mb-4 sm:mb-6">
-                    <div className="flex-1">
-                      <p className="font-medium sm:text-base">
-                        Trạng thái đơn hàng:
-                        <span className={`ml-2 ${
-                          order.order_status === 0 ? "text-yellow-500" :
-                          order.order_status === 1 ? "text-blue-500" :
-                          order.order_status === 2 ? "text-blue-600" :
-                          order.order_status === 3 ? "text-green-600" :
-                          order.order_status === 4 ? "text-green-500" :
-                          "text-red-500"
-                        }`}>
-                          {order.order_status === 0 ? "Đang chờ duyệt" :
-                          order.order_status === 1 ? "Đang chờ nhận giao hàng" :
-                          order.order_status === 2 ? "Đang giao" :
-                          order.order_status === 3 ? "Giao đơn thành công" :
-                          order.order_status === 4 ? "Thành công" : "Thất bại"}
-                        </span>
-                      </p>
+                      {/* Removed the delete button for products */}
                     </div>
+                  ))}
+                </div>
+              
+                {/* Order status */}
+                <div className="flex justify-between items-center mb-4 sm:mb-6">
+                  <div className="flex-1">
+                    <p className="font-medium sm:text-base">
+                      {language() == "Tiếng Việt" ? "Trạng thái đơn hàng:" : "Order Status:"}
+                      <span className={`ml-2 ${
+                        order.order_status === 0 ? "text-yellow-500" :
+                        order.order_status === 1 ? "text-blue-500" :
+                        order.order_status === 2 ? "text-blue-600" :
+                        order.order_status === 3 ? "text-green-600" :
+                        order.order_status === 4 ? "text-green-500" :
+                        "text-red-500"
+                      }`}>
+                        {order.order_status === 0 ? (language() == "Tiếng Việt" ? "Đang chờ duyệt" : "Pending Approval") :
+                        order.order_status === 1 ? (language() == "Tiếng Việt" ? "Đang chờ nhận giao hàng" : "Waiting for Delivery") :
+                        order.order_status === 2 ? (language() == "Tiếng Việt" ? "Đang giao" : "Delivering") :
+                        order.order_status === 3 ? (language() == "Tiếng Việt" ? "Giao đơn thành công" : "Delivery Successful") :
+                        order.order_status === 4 ? (language() == "Tiếng Việt" ? "Thành công" : "Successful") : (language() == "Tiếng Việt" ? "Thất bại" : "Failed")}
+                      </span>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => takeLocation(order.receiving_longitude, order.receiving_latitude)}
+                    className="px-4 py-1.5 cursor-pointer bg-white border border-gray-200 rounded-md hover:bg-gray-50 font-medium text-sm transition sm:px-6 sm:py-2"
+                  >
+                    MAP
+                  </button>
+                </div>
+              
+                {/* Delivery info */}
+                <div className="mb-4 space-y-1 text-sm sm:space-y-2 sm:text-base">
+                  <p><span className="text-gray-600">{language() == "Tiếng Việt" ? "Địa chỉ nhận hàng:" : "Pickup Address:"}</span> {order.delivery_address}</p>
+                  <p><span className="text-gray-600">{language() == "Tiếng Việt" ? "Địa chỉ giao hàng:" : "Delivery Address:"}</span> {order.receiving_address}</p>
+                  <p><span className="text-gray-600">{language() == "Tiếng Việt" ? "Khoảng cách:" : "Distance:"}</span> {order.distance} km</p>
+                </div>
+              
+                {/* Total */}
+                <div className="flex justify-between items-center pt-3 border-t border-gray-200 sm:pt-4">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600 sm:text-base">{language() == "Tiếng Việt" ? "Phí giao hàng:" : "Delivery Fee:"} {formatCurrency(order.fee - (order.fee * 15/100))}</p>
+                    <p className="text-xl font-bold text-orange-500 sm:text-2xl">{formatCurrency(order.total_bill)}</p>
+                  </div>
+                  {activeTab === 'waiting' ? (
                     <button
                       type="button"
-                      onClick={() => takeLocation(order.receiving_longitude, order.receiving_latitude)}
-                      className="px-4 py-1.5 cursor-pointer bg-white border border-gray-200 rounded-md hover:bg-gray-50 font-medium text-sm transition sm:px-6 sm:py-2"
+                      className="rounded-md p-2 gap-2 cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition sm:px-4 sm:py-2"
+                      onClick={() => TakeBill(order._id)}
                     >
-                      MAP
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="sm:text-sm">{language() == "Tiếng Việt" ? "Nhận đơn hàng" : "Accept Order"}</span>
                     </button>
-                  </div>
-
-                  {/* Delivery info */}
-                  <div className="mb-4 space-y-1 text-sm sm:space-y-2 sm:text-base">
-                    <p><span className="text-gray-600">Địa chỉ nhận hàng:</span> {order.delivery_address}</p>
-                    <p><span className="text-gray-600">Địa chỉ giao hàng:</span> {order.receiving_address}</p>
-                    <p><span className="text-gray-600">Khoảng cách:</span> {order.distance} km</p>
-                  </div>
-
-                  {/* Total */}
-                  <div className="flex justify-between items-center pt-3 border-t border-gray-200 sm:pt-4">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600 sm:text-base">Phí giao hàng: {formatCurrency(order.fee - (order.fee * 15/100))}</p>
-                      <p className="text-xl font-bold text-orange-500 sm:text-2xl">{formatCurrency(order.total_bill)}</p>
+                  ) : (order.order_status == 4 ?
+                    <div className="cursor-pointer p-2 gap-2 bg-white border border-gray-200 transition hover:bg-gray-50 flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 sm:h-7 sm:w-7" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div> :
+                    <div className="cursor-pointer p-2 gap-2 bg-white border border-gray-200 transition hover:bg-gray-50 flex items-center justify-center" onClick={() => ConfirmBill(order._id)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 sm:h-7 sm:w-7" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="sm:text-sm">{language() == "Tiếng Việt" ? "Giao đơn hàng thành công" : "Deliver Order Successful"}</span>
                     </div>
-                    {activeTab === 'waiting' ? (
-                      <button
-                        type="button"
-                        className="rounded-md p-2 gap-2 cursor-pointer bg-white border border-gray-200 hover:bg-gray-50 flex items-center justify-center transition sm:px-4 sm:py-2"
-                        onClick={() => TakeBill(order._id)}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 sm:h-7 sm:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="sm:text-sm">Nhận đơn hàng</span>
-                      </button>
-                    ) : (order.order_status == 4 ?
-                      <div className="cursor-pointer p-2 gap-2 bg-white border border-gray-200 transition hover:bg-gray-50 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 sm:h-7 sm:w-7" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div> :
-                      <div className="cursor-pointer p-2 gap-2 bg-white border border-gray-200 transition hover:bg-gray-50 flex items-center justify-center" onClick={() => ConfirmBill(order._id)}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500 sm:h-7 sm:w-7" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        <span className="sm:text-sm">Giao đơn hàng thành công</span>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
+              </div>
               )}
             </div>
           ))}

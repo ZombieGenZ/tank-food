@@ -187,7 +187,7 @@ const Signup: React.FC<Props> = (props) => {
       } finally {
         setTimeout(() => {
           props.setLoading(false)
-        }, 2000)
+        }, 7000)
       }
 
     }
@@ -235,9 +235,6 @@ const Signup: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'error',
                   content: `${data.errors.email ? data.errors.email.msg: ""}, ${data.errors.phone ? data.errors.phone.msg : ""}`,
-                  style: {
-                    marginTop: '10vh',
-                  },
                 })
                 return 
               }
@@ -245,9 +242,6 @@ const Signup: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'success',
                   content: 'Đăng ký thành công',
-                  style: {
-                    marginTop: '10vh',
-                  },
                 })
                 const body = {
                   language: null,
@@ -268,18 +262,12 @@ const Signup: React.FC<Props> = (props) => {
                     messageApi.open({
                       type: 'error',
                       content: data.message,
-                      style: {
-                        marginTop: '10vh',
-                      },
                     })
                   }
                   if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
                     messageApi.open({
                       type: 'error',
                       content: data.errors.email.msg,
-                      style: {
-                        marginTop: '10vh',
-                      },
                     })
                   }
                   if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
@@ -288,9 +276,6 @@ const Signup: React.FC<Props> = (props) => {
                     messageApi.open({
                       type: 'success',
                       content: 'Đăng nhập thành công',
-                      style: {
-                        marginTop: '10vh',
-                      },
                     }).then(() => {
                       setTimeout(() => {
                         navigate("/");
@@ -305,9 +290,6 @@ const Signup: React.FC<Props> = (props) => {
             messageApi.open({
               type: 'error',
               content: `Đăng ký thất bại vui lòng thử lại sau !`,
-              style: {
-                marginTop: '10vh',
-              },
             });
         }
       } catch (error) {
@@ -315,7 +297,7 @@ const Signup: React.FC<Props> = (props) => {
       } finally {
         setTimeout(() => {
           props.setLoading(false)
-        }, 2000)
+        }, 7000)
       }
     };
 
@@ -348,18 +330,12 @@ const Signup: React.FC<Props> = (props) => {
               messageApi.open({
                 type: 'error',
                 content: data.message,
-                style: {
-                  marginTop: '10vh',
-                },
               })
             }
             if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
               messageApi.open({
                 type: 'error',
                 content: data.errors.email.msg,
-                style: {
-                  marginTop: '10vh',
-                },
               })
             }
             if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
@@ -368,9 +344,6 @@ const Signup: React.FC<Props> = (props) => {
               messageApi.open({
                 type: 'success',
                 content: 'Đăng nhập thành công',
-                style: {
-                  marginTop: '10vh',
-                },
               }).then(() => {
                 setTimeout(() => {
                   navigate("/");
@@ -383,9 +356,6 @@ const Signup: React.FC<Props> = (props) => {
           messageApi.open({
             type: 'error',
             content: `Đăng nhập thất bại vui lòng thử lại sau`,
-            style: {
-              marginTop: '10vh',
-            },
           });
         }
       } catch (error) {
@@ -414,6 +384,11 @@ const Signup: React.FC<Props> = (props) => {
       })
     }, [])
 
+    const language = (): "Tiếng Việt" | "English" => {
+      const Language = localStorage.getItem('language')
+      return Language ? JSON.parse(Language) : "Tiếng Việt"
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat" 
             style={{ backgroundImage: 'url("/api/placeholder/1200/800")', fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
@@ -422,46 +397,46 @@ const Signup: React.FC<Props> = (props) => {
             {/* Info Side */}
             <div className="w-full md:w-2/5 bg-orange-500 text-white p-6 md:p-8 flex flex-col justify-between">
               <div>
-                  <div className="text-2xl font-bold mb-6">Tank<span className="text-yellow-300">Food</span></div>
-                  <h1 className="text-2xl md:text-3xl font-bold mb-4">Thưởng thức ẩm thực nhanh chóng!</h1>
-                  <p className="mb-6 leading-relaxed">Đăng nhập để đặt món ăn yêu thích và nhận nhiều ưu đãi hấp dẫn.</p>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
-                        <div>Giao hàng nhanh chóng</div>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
-                        <div>Ưu đãi độc quyền cho thành viên</div>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
-                        <div>Đa dạng món ăn</div>
-                    </div>
+                <div className="text-2xl font-bold mb-6">Tank<span className="text-yellow-300">Food</span></div>
+                <h1 className="text-2xl md:text-3xl font-bold mb-4">{language() == "Tiếng Việt" ? "Thưởng thức ẩm thực nhanh chóng!" : "Enjoy fast food!"}</h1>
+                <p className="mb-6 leading-relaxed">{language() == "Tiếng Việt" ? "Đăng nhập để đặt món ăn yêu thích và nhận nhiều ưu đãi hấp dẫn." : "Log in to order your favorite food and get many attractive offers."}</p>
+
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
+                    <div>{language() == "Tiếng Việt" ? "Giao hàng nhanh chóng" : "Fast delivery"}</div>
                   </div>
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
+                    <div>{language() == "Tiếng Việt" ? "Ưu đãi độc quyền cho thành viên" : "Exclusive offers for members"}</div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-opacity-20 flex items-center justify-center">✓</div>
+                    <div>{language() == "Tiếng Việt" ? "Đa dạng món ăn" : "Diverse dishes"}</div>
+                  </div>
+                </div>
               </div>
-              
+
               <div className="mt-6">
-                  <p>Đã có hơn {people} khách hàng truy cập</p>
+                <p>{language() == "Tiếng Việt" ? `Đã có hơn ${people} khách hàng truy cập` : `More than ${people} customers have visited`}</p>
               </div>
             </div>
             
             {/* Form Side */}
             <div className="w-full md:w-3/5 p-6 md:p-8">
               <div className="flex border-b mb-8">
-                  <button 
-                    className={`pb-2 cursor-pointer px-4 font-semibold ${formType === 'login' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
-                    onClick={() => showForm('login')}
-                  >
-                    Đăng nhập
-                  </button>
-                  <button 
-                    className={`pb-2 cursor-pointer px-4 font-semibold ${formType === 'register' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
-                    onClick={() => showForm('register')}
-                  >
-                    Đăng ký
-                  </button>
+                <button
+                  className={`pb-2 cursor-pointer px-4 font-semibold ${formType === 'login' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
+                  onClick={() => showForm('login')}
+                >
+                  {language() == "Tiếng Việt" ? "Đăng nhập" : "Login"}
+                </button>
+                <button
+                  className={`pb-2 cursor-pointer px-4 font-semibold ${formType === 'register' ? 'text-orange-500 border-b-2 border-orange-500' : 'text-gray-500'}`}
+                  onClick={() => showForm('register')}
+                >
+                  {language() == "Tiếng Việt" ? "Đăng ký" : "Register"}
+                </button>
               </div>
               
               {formType === 'login' ? (
@@ -517,7 +492,7 @@ const Signup: React.FC<Props> = (props) => {
                             onVerify={(token) => setCaptchaToken(token)}
                           />
                           <button type="button" onClick={() => ForgotPass(loginData.email)} className="text-sm text-orange-500 hover:underline cursor-pointer focus:outline-none">
-                            Quên mật khẩu?
+                          {language() == "Tiếng Việt" ? "Quên mật khẩu?" : "forgot-password?"}
                           </button>
                       </div>
                       
@@ -525,7 +500,7 @@ const Signup: React.FC<Props> = (props) => {
                         type="submit" 
                         className="w-full cursor-pointer bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold hover:bg-orange-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                       >
-                        Đăng nhập
+                        {language() == "Tiếng Việt" ? "Đăng nhập" : "Login"}
                       </button>
                   </form>
               ) : (

@@ -27,6 +27,7 @@ interface DataType {
     discount: number,
     requirement: number,
     expiration_date: string | Dayjs,
+    status: boolean,
     note: string[],
 }
 
@@ -418,23 +419,6 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
     }, [selectCode])
 
     useEffect(() => {
-        const newData: DataType[] = voucher?.map((voucherV, index) =>
-             {
-                return ({
-                key: String(index + 1),
-                _id: voucherV._id,
-                code: voucherV.code,
-                quantity: voucherV.quantity,
-                discount: voucherV.discount,
-                requirement: voucherV.requirement,
-                expiration_date: voucherV.expiration_date,
-                note: ["Chỉnh sửa"]
-        })})
-
-        setData(newData)
-    }, [voucher])
-
-    useEffect(() => {
         const handleStorageChange = () => {
           setRefreshToken(localStorage.getItem("refresh_token"));
           setAccessToken(localStorage.getItem("access_token"));
@@ -462,63 +446,97 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
       }
-    const columns: TableProps<DataType>['columns'] = [
-            {
-              title: 'Mã giảm giá',
-              dataIndex: 'code',
-              key: 'code',
-              width: 350,
-              render: (text) => <p className="font-bold">{text}</p>,
-            },
-            {
-                title: 'Số lượng mã',
-                dataIndex: 'quantity',
-                width: 350,
-                key: 'quantity',
-            },
-            {
-              title: 'Số tiền giảm',
-              dataIndex: 'discount',
-              width: 150,
-              key: 'discount',
-              render: (text) => <p>{formatCurrency(text)}</p>
-            },
-            {
-                title: 'Yêu cầu tối thiểu đơn hàng từ',
-                key: 'requirement',
-                dataIndex: 'requirement',
-                width: 350,
-                render: (text) => <p>{formatCurrency(text)}</p>
-            },
-            {
-              title: 'Thời gian hết hạn',
-              key: 'expiration_date',
-              dataIndex: 'expiration_date',
-              width: 350,
-              render: (text) => <p>{formatDateFromISO(text)}</p>
-            },
-            {
-              title: 'Trạng thái',
-              dataIndex: 'status',
-              width: 350,
-              key: 'status',
-            },
-            {
-                title: '',
-                key: 'note',
-                width: 350,
-                render: (_text, record) => {
-                    return (
-                      <div className="flex gap-2">
-                        <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
-                                onClick={() => showEditModal(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
-                        <button className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
-                                onClick={() => showDeleteModal(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
-                      </div>
-                    )
-                },
-              },
-          ];
+
+      useEffect(() => {
+        const newData: DataType[] = voucher?.map((voucherV, index) =>
+             {
+                const date = new Date()
+                const date1 = new Date(voucherV.expiration_date)
+                let voucherStatus;
+                if(date < date1) {
+                  voucherStatus = true
+                } else {
+                  voucherStatus = false
+                }
+                return ({
+                key: String(index + 1),
+                _id: voucherV._id,
+                code: voucherV.code,
+                quantity: voucherV.quantity,
+                discount: voucherV.discount,
+                requirement: voucherV.requirement,
+                expiration_date: voucherV.expiration_date,
+                status: voucherStatus,
+                note: ["Chỉnh sửa"]
+        })})
+
+        setData(newData)
+    }, [voucher])
+
+      const columns: TableProps<DataType>['columns'] = [
+        {
+          title: language() == "Tiếng Việt" ? 'Mã giảm giá' : 'Discount Code',
+          dataIndex: 'code',
+          key: 'code',
+          width: 350,
+          render: (text) => <p className="font-bold">{text}</p>,
+        },
+        {
+          title: language() == "Tiếng Việt" ? 'Số lượng mã' : 'Code Quantity',
+          dataIndex: 'quantity',
+          width: 350,
+          key: 'quantity',
+        },
+        {
+          title: language() == "Tiếng Việt" ? 'Số tiền giảm' : 'Discount Amount',
+          dataIndex: 'discount',
+          width: 150,
+          key: 'discount',
+          render: (text) => <p>{formatCurrency(text)}</p>
+        },
+        {
+          title: language() == "Tiếng Việt" ? 'Yêu cầu tối thiểu đơn hàng từ' : 'Minimum Order Requirement From',
+          key: 'requirement',
+          dataIndex: 'requirement',
+          width: 350,
+          render: (text) => <p>{formatCurrency(text)}</p>
+        },
+        {
+          title: language() == "Tiếng Việt" ? 'Thời gian hết hạn' : 'Expiration Date',
+          key: 'expiration_date',
+          dataIndex: 'expiration_date',
+          width: 350,
+          render: (text) => <p>{formatDateFromISO(text)}</p>
+        },
+        {
+          title: language() == "Tiếng Việt" ? 'Trạng thái' : 'Status',
+          dataIndex: 'status',
+          width: 350,
+          key: 'status',
+          render: (status) => {
+            if (status) {
+              return <p style={{ color: 'green', textAlign: 'center', backgroundColor: 'lightgreen', padding: '5px', borderRadius: '3px' }}>{language() == "Tiếng Việt" ? 'Còn hạn' : 'Active'}</p>;
+            } else {
+              return <p style={{ color: 'red', textAlign: 'center', backgroundColor: 'lightcoral', padding: '5px', borderRadius: '3px' }}>{language() == "Tiếng Việt" ? 'Hết hạn' : 'Expired'}</p>;
+            }
+          },
+        },
+        {
+          title: '',
+          key: 'note',
+          width: 350,
+          render: (_text, record) => {
+            return (
+              <div className="flex gap-2">
+                <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
+                  onClick={() => showEditModal(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
+                <button className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
+                  onClick={() => showDeleteModal(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
+              </div>
+            )
+          },
+        },
+      ];
     
           const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} />;
     return(
