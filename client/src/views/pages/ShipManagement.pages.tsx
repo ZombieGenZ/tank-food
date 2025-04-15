@@ -476,26 +476,26 @@ const ShipManagement: React.FC<Props> = (props) => {
 
   return (
     <div className="bg-gray-50 p-4 w-full mx-auto">
-  {/* Tabs */}
+      {/* Tabs */}
       {contextHolder}
       <div className="mb-4 overflow-x-auto">
         <div className="flex whitespace-nowrap">
-          <button
-            onClick={() => setActiveTab('waiting')}
-            className={`px-4 py-2 font-medium cursor-pointer ${
-              activeTab === 'waiting' ? 'bg-orange-500 text-white' : 'bg-gray-200'
-            } rounded-tl rounded-bl sm:px-6 md:px-8`}
-          >
-            Chờ nhận giao ({waitingOrders.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('received')}
-            className={`px-4 py-2 font-medium cursor-pointer ${
-              activeTab === 'received' ? 'bg-orange-500 text-white' : 'bg-gray-200'
-            } rounded-tr rounded-br sm:px-6 md:px-8`}
-          >
-            Đã nhận ({receivedOrders.length})
-          </button>
+        <button
+          onClick={() => setActiveTab('waiting')}
+          className={`px-4 py-2 font-medium cursor-pointer ${
+            activeTab === 'waiting' ? 'bg-orange-500 text-white' : 'bg-gray-200'
+          } rounded-tl rounded-bl sm:px-6 md:px-8`}
+        >
+          {language() == "Tiếng Việt" ? `Chờ nhận giao (${waitingOrders.length})` : `Waiting for Delivery (${waitingOrders.length})`}
+        </button>
+        <button
+          onClick={() => setActiveTab('received')}
+          className={`px-4 py-2 font-medium cursor-pointer ${
+            activeTab === 'received' ? 'bg-orange-500 text-white' : 'bg-gray-200'
+          } rounded-tr rounded-br sm:px-6 md:px-8`}
+        >
+          {language() == "Tiếng Việt" ? `Đã nhận (${receivedOrders.length})` : `Received (${receivedOrders.length})`}
+        </button>
         </div>
       </div>
 

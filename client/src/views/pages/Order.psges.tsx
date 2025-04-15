@@ -538,25 +538,33 @@ const handleReject = (orderID: string) => {
     return formatter.format(amount);
   }
 
+  function formatDateFromISO(isoDateString: string): string {
+    const date = new Date(isoDateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   const renderPendingOrder = (order: Order) => {
     const isPickup = order.address === "Tại quầy";
 
     return (
       <div key={order._id} className="bg-white rounded-xl shadow-md overflow-hidden mb-4 hover:shadow-lg transition">
         <div className="p-6">
-          <div className="flex justify-between items-start gap-3 mb-4">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800">Đơn hàng #{order._id}</h3>
-              <p className="text-gray-500 text-sm">{order.created_at}</p>
-            </div>
-            <div className="bg-orange-100 text-orange-600 p-2 text-center rounded-full text-sm font-medium">
-               Chờ duyệt
-            </div>
+        <div className="flex justify-between items-start gap-3 mb-4">
+          <div>
+            <h3 className="text-xl font-semibold text-gray-800">{language() == "Tiếng Việt" ? `Đơn hàng ${order._id}` : `Bill: ${order._id}`}</h3>
+            <p className="text-gray-500 text-sm">{formatDateFromISO(order.created_at)}</p>
           </div>
+          <div className="bg-orange-100 text-orange-600 p-2 text-center rounded-full text-sm font-medium">
+            {language() == "Tiếng Việt" ? "Chờ duyệt" : "Pending"}
+          </div>
+        </div>
 
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Khách hàng</p>
+              <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Khách hàng" : "Customer"}</p>
               <div className="flex items-center">
                 <div className="w-6 h-6 mr-2 text-orange-500">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -567,7 +575,7 @@ const handleReject = (orderID: string) => {
               </div>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Số điện thoại</p>
+              <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Số điện thoại" : "Phone Number"}</p>
               <div className="flex items-center">
                 <div className="w-6 h-6 mr-2 text-orange-500">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -578,7 +586,7 @@ const handleReject = (orderID: string) => {
               </div>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Địa chỉ</p>
+              <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Địa chỉ" : "Address"}</p>
               <div className="flex items-center">
                 <div className="w-6 h-6 mr-2 text-orange-500">
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -589,22 +597,22 @@ const handleReject = (orderID: string) => {
               </div>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Tổng tiền</p>
+              <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Tổng tiền" : "Total Amount"}</p>
               <p className="font-bold text-xl text-orange-600 truncate">{formatCurrency(order.total_bill)}</p>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Hình thức thanh toán</p>
+              <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Hình thức thanh toán" : "Payment Method"}</p>
               <div className="flex items-center">
                 <div className="w-6 h-6 mr-2 text-orange-500">
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
                   </svg>
                 </div>
-                <p className="font-medium truncate">{order.payment_type == 0 ? "Tiền mặt" : "Chuyển khoản"}</p>
+                <p className="font-medium truncate">{order.payment_type == 0 ? (language() == "Tiếng Việt" ? "Tiền mặt" : "Cash") : (language() == "Tiếng Việt" ? "Chuyển khoản" : "Bank Transfer")}</p>
               </div>
             </div>
             <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Trạng thái thanh toán</p>
+              <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Trạng thái thanh toán" : "Payment Status"}</p>
               <div className="flex items-center">
                 <div className={`w-6 h-6 mr-2 ${order.payment_status == 1 ? 'text-green-500' : 'text-red-500'}`}>
                   <svg viewBox="0 0 24 24" fill="currentColor">
@@ -616,7 +624,7 @@ const handleReject = (orderID: string) => {
                   </svg>
                 </div>
                 <p className={`font-medium ${order.payment_status == 1 ? 'text-green-600' : 'text-red-600'} truncate`}>
-                  {order.payment_status == 1 ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                  {order.payment_status == 1 ? (language() == "Tiếng Việt" ? 'Đã thanh toán' : 'Paid') : (language() == "Tiếng Việt" ? 'Chưa thanh toán' : 'Unpaid')}
                 </p>
               </div>
             </div>
@@ -624,12 +632,12 @@ const handleReject = (orderID: string) => {
 
           <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4 shadow-sm">
             <div className="flex justify-between items-center mb-2">
-              <p className="text-gray-600 text-sm font-medium">Danh sách sản phẩm</p>
+              <p className="text-gray-600 text-sm font-medium">{language() == "Tiếng Việt" ? 'Danh sách sản phẩm' : 'List product'}</p>
               <button
                 onClick={() => toggleProducts(order._id)}
                 className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center"
               >
-                {expandedOrders[order._id] ? 'Thu gọn' : 'Xem chi tiết'}
+                {expandedOrders[order._id] ? (language() == "Tiếng Việt" ? 'Thu gọn' : 'Collapse') : (language() == "Tiếng Việt" ? 'Xem chi tiết' : 'View details')}
                 <svg
                   className={`w-4 h-4 ml-1 transform ${expandedOrders[order._id] ? 'rotate-180' : ''}`}
                   fill="none"
@@ -663,36 +671,36 @@ const handleReject = (orderID: string) => {
                     onClick={() => handleConfirm(order._id)}
                     className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
                   >
-                    Xác nhận thanh toán
+                    {language() == "Tiếng Việt" ? "Xác nhận thanh toán" : "Confirm Payment"}
                   </button>
                 ) : (
                   <button
                     onClick={() => handleAproval(order._id)}
                     className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
                   >
-                    Duyệt
+                    {language() == "Tiếng Việt" ? "Duyệt" : "Approve"}
                   </button>
                 )}
                 <button
                   onClick={() => showModalReject(order._id)}
                   className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`}
                 >
-                  Từ chối
+                  {language() == "Tiếng Việt" ? "Từ chối" : "Reject"}
                 </button>
               </>
             ) : (
               <>
                 <button
-                    onClick={() => handleAproval(order._id)}
-                    className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
-                  >
-                    Duyệt
+                  onClick={() => handleAproval(order._id)}
+                  className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-orange-500 cursor-pointer hover:bg-orange-600 text-white rounded-lg font-medium transition`}
+                >
+                  {language() == "Tiếng Việt" ? "Duyệt" : "Approve"}
                 </button>
                 <button
                   onClick={() => showModalReject(order._id)}
                   className={`${screens.md ? 'px-4 py-2 text-sm' : 'px-3 py-1 text-xs'} bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`}
                 >
-                  Từ chối
+                  {language() == "Tiếng Việt" ? "Từ chối" : "Reject"}
                 </button>
               </>
             )}
@@ -714,75 +722,98 @@ const handleReject = (orderID: string) => {
     return (
       <div key={order._id} className="bg-white rounded-xl shadow-md overflow-hidden mb-4">
         <div className="p-6">
-          <div className="flex justify-between items-start gap-3 mb-4">
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800">Đơn hàng #{order._id}</h3>
-              <p className="text-gray-500 text-sm">{order.created_at}</p>
-            </div>
-            <div className={`${statusColors[order.order_status == 1 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"]} p-2 text-center rounded-full text-xs font-medium`}>
-              {order.order_status == 1 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"}
-            </div>
+        <div className="flex justify-between items-start gap-3 mb-4">
+          <div>
+          <h3 className="text-xl font-semibold text-gray-800">{language() == "Tiếng Việt" ? `Đơn hàng ${order._id}` : `Bill: ${order._id}`}</h3>
+            <p className="text-gray-500 text-sm">{formatDateFromISO(order.created_at)}</p>
           </div>
+          <div className={`${statusColors[order.order_status == 1 ? "Duyệt thành công" : order.order_status == 2 ? "Đang giao" : order.order_status == 4 ? "Thành công" : "Thất bại"]} p-2 text-center rounded-full text-xs font-medium`}>
+            {order.order_status == 1
+              ? language() == "Tiếng Việt" ? "Duyệt thành công" : "Approved"
+              : order.order_status == 2
+                ? language() == "Tiếng Việt" ? "Đang giao" : "Shipping"
+                : order.order_status == 4
+                  ? language() == "Tiếng Việt" ? "Thành công" : "Success"
+                  : language() == "Tiếng Việt" ? "Thất bại" : "Failed"}
+          </div>
+        </div>
 
           <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Khách hàng</p>
-              <div className="flex items-center">
-                <div className="w-6 h-6 mr-2 text-orange-500">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                  </svg>
-                </div>
-                <p className="font-medium truncate">{order.name}</p>
+          <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
+            <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Khách hàng" : "Customer"}</p>
+            <div className="flex items-center">
+              <div className="w-6 h-6 mr-2 text-orange-500">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
               </div>
+              <p className="font-medium truncate">{order.name}</p>
             </div>
-            <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Số điện thoại</p>
-              <div className="flex items-center">
-                <div className="w-6 h-6 mr-2 text-orange-500">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                  </svg>
-                </div>
-                <p className="font-medium truncate">{order.phone}</p>
+          </div>
+          <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
+            <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Số điện thoại" : "Phone Number"}</p>
+            <div className="flex items-center">
+              <div className="w-6 h-6 mr-2 text-orange-500">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                </svg>
               </div>
+              <p className="font-medium truncate">{order.phone}</p>
             </div>
-            <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Địa chỉ</p>
-              <div className="flex items-center">
-                <div className="w-6 h-6 mr-2 text-orange-500">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                  </svg>
-                </div>
-                <p className="font-medium truncate">{order.address}</p>
+          </div>
+          <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
+            <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Địa chỉ" : "Address"}</p>
+            <div className="flex items-center">
+              <div className="w-6 h-6 mr-2 text-orange-500">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
               </div>
+              <p className="font-medium truncate">{order.address}</p>
             </div>
-            <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Tổng tiền</p>
-              <p className="font-bold text-xl text-orange-600 truncate">{formatCurrency(order.total_bill)}</p>
-            </div>
-            <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
-              <p className="text-gray-500 text-sm mb-1">Hình thức thanh toán</p>
-              <div className="flex items-center">
-                <div className="w-6 h-6 mr-2 text-orange-500">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
-                  </svg>
-                </div>
-                <p className="font-medium truncate">{order.payment_type == 0 ? "Tiền mặt" : "Chuyển khoản"}</p>
+          </div>
+          <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
+            <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Tổng tiền" : "Total Amount"}</p>
+            <p className="font-bold text-xl text-orange-600 truncate">{formatCurrency(order.total_bill)}</p>
+          </div>
+          <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
+            <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Hình thức thanh toán" : "Payment Method"}</p>
+            <div className="flex items-center">
+              <div className="w-6 h-6 mr-2 text-orange-500">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                </svg>
               </div>
+              <p className="font-medium truncate">{order.payment_type == 0 ? (language() == "Tiếng Việt" ? "Tiền mặt" : "Cash") : (language() == "Tiếng Việt" ? "Chuyển khoản" : "Bank Transfer")}</p>
             </div>
+          </div>
+          <div className="border-b border-gray-200 pb-3 hover:bg-orange-50 transition rounded p-2">
+            <p className="text-gray-500 text-sm mb-1">{language() == "Tiếng Việt" ? "Trạng thái thanh toán" : "Payment Status"}</p>
+            <div className="flex items-center">
+              <div className={`w-6 h-6 mr-2 ${order.payment_status == 1 ? 'text-green-500' : 'text-red-500'}`}>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  {order.payment_status == 1 ? (
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  ) : (
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                  )}
+                </svg>
+              </div>
+              <p className={`font-medium ${order.payment_status == 1 ? 'text-green-600' : 'text-red-600'} truncate`}>
+                {order.payment_status == 1 ? (language() == "Tiếng Việt" ? 'Đã thanh toán' : 'Paid') : (language() == "Tiếng Việt" ? 'Chưa thanh toán' : 'Unpaid')}
+              </p>
+            </div>
+          </div>
           </div>
 
           <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4 shadow-sm">
             <div className="flex justify-between items-center mb-2">
-              <p className="text-gray-600 text-sm font-medium">Danh sách sản phẩm</p>
+              <p className="text-gray-600 text-sm font-medium">{language() == "Tiếng Việt" ? 'Danh sách sản phẩm' : 'List product'}</p>
               <button
                 onClick={() => toggleProducts(order._id)}
                 className="text-orange-600 hover:text-orange-700 text-sm font-medium flex items-center"
               >
-                {expandedOrders[order._id] ? 'Thu gọn' : 'Xem chi tiết'}
+                {expandedOrders[order._id] ? (language() == "Tiếng Việt" ? 'Thu gọn' : 'Collapse') : (language() == "Tiếng Việt" ? 'Xem chi tiết' : 'View details')}
                 <svg
                   className={`w-4 h-4 ml-1 transform ${expandedOrders[order._id] ? 'rotate-180' : ''}`}
                   fill="none"
@@ -808,22 +839,22 @@ const handleReject = (orderID: string) => {
             ))}
           </div>
           <div className="flex cursor-pointer gap-3 mt-6 justify-end">
-            {(isPickup && order.order_status !== 5 && order.payment_type == 0) && 
-                <button
-                  onClick={() => handleConfirmSuccess(order._id)}
-                  className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  Xác nhận đơn hàng thành công
-                </button>
+            {(isPickup && order.order_status !== 5 && order.payment_type == 0) &&
+              <button
+                onClick={() => handleConfirmSuccess(order._id)}
+                className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                {language() == "Tiếng Việt" ? "Xác nhận đơn hàng thành công" : "Confirm Order Success"}
+              </button>
             }
-            
-            {order.order_status == 5 ? <p className='text-red-500 font-bold'>Đơn hàng đã bị từ chối hoặc bị huỷ</p> :
-             order.order_status == 4 ? <p className='text-green-500 font-bold'>Hoàn thành đơn hàng</p> : 
+
+            {order.order_status == 5 ? <p className='text-red-500 font-bold'>{language() == "Tiếng Việt" ? "Đơn hàng đã bị từ chối hoặc bị huỷ" : "Order has been rejected or cancelled"}</p> :
+            order.order_status == 4 ? <p className='text-green-500 font-bold'>{language() == "Tiếng Việt" ? "Hoàn thành đơn hàng" : "Order completed"}</p> :
               <button
                 onClick={() => showModalCancel(order._id)}
                 className="bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
-                Huỷ đơn hàng
+                {language() == "Tiếng Việt" ? "Huỷ đơn hàng" : "Cancel Order"}
               </button>}
           </div>
         </div>
@@ -841,13 +872,13 @@ const handleReject = (orderID: string) => {
               className={`pb-3 px-4 text-sm font-medium ${activeTab === 'pending' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('pending')}
             >
-              Đơn đang chờ duyệt ({waitData.length})
+              {language() == "Tiếng Việt" ? `Đơn đang chờ duyệt (${waitData.length})` : `Pending Orders (${waitData.length})`}
             </button>
             <button
               className={`pb-3 px-4 text-sm font-medium ${activeTab === 'processed' ? 'text-orange-600 border-b-2 border-orange-600' : 'text-gray-500 hover:text-gray-700'}`}
               onClick={() => setActiveTab('processed')}
             >
-              Đơn đã xử lý ({doneData.length})
+              {language() == "Tiếng Việt" ? `Đơn đã xử lý (${doneData.length})` : `Processed Orders (${doneData.length})`}
             </button>
           </div>
         </div>
@@ -861,7 +892,7 @@ const handleReject = (orderID: string) => {
                 <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <p className="mt-2 text-gray-500">Không có đơn hàng nào đang chờ duyệt</p>
+                <p className="mt-2 text-gray-500">{language() == "Tiếng Việt" ? "Không có đơn hàng nào đang chờ duyệt" : "No pending orders"}</p>
               </div>
             )
           ) : (
@@ -872,7 +903,7 @@ const handleReject = (orderID: string) => {
                 <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <p className="mt-2 text-gray-500">Không có đơn hàng nào đã xử lý</p>
+                <p className="mt-2 text-gray-500">{language() == "Tiếng Việt" ? "Không có đơn hàng nào đã xử lý" : "No processed orders"}</p>
               </div>
             )
           )}
