@@ -104,9 +104,9 @@ class DatabaseService {
       if (!collectionNames.includes(config.name)) {
         await this.db.createCollection(config.name)
         if (serverLanguage === LANGUAGE.VIETNAMESE) {
-          console.log(`\x1b[33mĐã tạo collection: ${config.name}\x1b[0m`)
+          console.log(`\x1b[33mĐã tạo collection: \x1b[36m${config.name}\x1b[0m`)
         } else {
-          console.log(`\x1b[33mCreated collection: ${config.name}\x1b[0m`)
+          console.log(`\x1b[33mCreated collection: \x1b[36m${config.name}\x1b[0m`)
         }
       }
 
@@ -119,20 +119,20 @@ class DatabaseService {
           try {
             await collection.createIndex(index.key, index.options)
             if (serverLanguage === LANGUAGE.VIETNAMESE) {
-              console.log(`\x1b[33mĐã tạo index ${index.options.name} cho ${config.name}\x1b[0m`)
+              console.log(`\x1b[33mĐã tạo index \x1b[36m${index.options.name}\x1b[33m cho \x1b[36m${config.name}\x1b[0m`)
             } else {
-              console.log(`\x1b[33mCreated index ${index.options.name} on ${config.name}\x1b[0m`)
+              console.log(`\x1b[33mCreated index \x1b[36m${index.options.name}\x1b[33m on \x1b[36m${config.name}\x1b[0m`)
             }
           } catch (error: any) {
             if (serverLanguage === LANGUAGE.VIETNAMESE) {
               console.log(
-                `\x1b[31mLỗi khi tạo index ${index.options.name} cho ${config.name}:\x1b[33m`,
+                `\x1b[31mLỗi khi tạo index \x1b[33m${index.options.name}\x1b[31m cho \x1b[33m${config.name}\x1b[31m:\x1b[33m`,
                 (error as Error).message,
                 `\x1b[0m`
               )
             } else {
               console.log(
-                `\x1b[31mError creating index ${index.options.name} on ${config.name}:\x1b[33m`,
+                `\x1b[31mError creating index \x1b[33m${index.options.name}\x1b[31m on \x1b[33m${config.name}\x1b[31m:\x1b[33m`,
                 (error as Error).message,
                 `\x1b[0m`
               )
