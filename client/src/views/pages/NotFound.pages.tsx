@@ -23,7 +23,7 @@ function NotFoundPage(): JSX.Element {
 
               <div className="mt-[-50px]">
                 <h3 className="h2 text-[50px]">
-                  {language == "Tiếng Việt" ? "Có vẻ như bạn đã bị mất kết nối" : "Seem like you're lost"}
+                  {language == "Tiếng Việt" ? "Có vẻ như bạn đã bị mất kết nối hoặc bạn đang có kết nối tới trang không tồn tại" : "It looks like you have lost your connection or you are trying to connect to a page that doesn't exist."}
                 </h3>
                 <p>{language == "Tiếng Việt" ? "Trang bạn tìm kiếm không tồn tại !" : "A page you're looking for is not available"}</p>
                 <a onClick={() => navigate('/')} className="inline-block cursor-pointer text-white py-2 px-5 bg-green-500 mt-5 no-underline hover:bg-green-600 focus:ring focus:ring-green-300">

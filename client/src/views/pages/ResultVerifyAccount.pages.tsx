@@ -146,19 +146,21 @@ const ResultVerifyAccount = () => {
 
         {/* Content */}
         <div className="p-4 sm:p-6 text-center">
-          <h2 
-            className="text-2xl sm:text-3xl font-bold mb-2 text-gray-800" 
-            data-aos="fade-up" 
+          <h2
+            className="text-2xl sm:text-3xl font-bold mb-2 text-gray-800"
+            data-aos="fade-up"
             data-aos-delay="400"
           >
-            Email Verified!
+            {language() == "Tiếng Việt" ? "Email Đã Được Xác Minh!" : "Email Verified!"}
           </h2>
-          <p 
-            className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6" 
-            data-aos="fade-up" 
+          <p
+            className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6"
+            data-aos="fade-up"
             data-aos-delay="500"
           >
-            Your email has been successfully verified. You can now enjoy all the delicious offerings from TankFood!
+            {language() == "Tiếng Việt"
+              ? "Email của bạn đã được xác minh thành công. Bây giờ bạn có thể tận hưởng tất cả những món ăn ngon từ TankFood!"
+              : "Your email has been successfully verified. You can now enjoy all the delicious offerings from TankFood!"}
           </p>
 
           {/* Buttons */}
@@ -169,14 +171,14 @@ const ResultVerifyAccount = () => {
             >
               <span className="absolute inset-0 bg-white opacity-0 transition-opacity group-hover:opacity-20 group-active:opacity-30"></span>
               <span className="relative flex items-center justify-center gap-2">
-                <span>Return to Home</span>
+                <span>{language() == "Tiếng Việt" ? "Quay về Trang Chủ" : "Return to Home"}</span>
                 <span className="text-xs sm:text-sm">({countdown}s)</span>
               </span>
               <span className="absolute bottom-0 left-0 h-1 w-0 bg-white transition-all duration-300 group-hover:w-full"></span>
             </button>
 
             <div className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 animate-pulse">
-              Auto-redirecting in {countdown} seconds...
+              {language() == "Tiếng Việt" ? `Tự động chuyển hướng sau ${countdown} giây...` : `Auto-redirecting in ${countdown} seconds...`}
             </div>
           </div>
 

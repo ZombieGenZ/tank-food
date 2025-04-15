@@ -67,6 +67,11 @@ const Account: React.FC<Props> = (props) => {
     };
   }, []);
 
+  const language = (): string => {
+    const language = localStorage.getItem('language')
+    return language ? JSON.parse(language) : "Tiếng Việt"
+  }
+
   const [listuser, setListuser] = useState<User[]>([]);
   const [data, setDataUser] = useState<DataType[]>([]);
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
@@ -356,10 +361,28 @@ const Account: React.FC<Props> = (props) => {
       displayname: user.display_name,
       email: user.email,
       phone: user.phone,
-      role: user.role === 3 ? "Admin" : user.role === 2 ? "Shipper" : user.role === 1 ? "Employee" : "Customer",
-      active: user.penalty ? "Bị ban" : "Hoạt động",
-      readson: user.penalty !== null ? user.penalty?.reason : "Không có lý do",
-      note: ["Khóa tài khoản"]
+      role: user.role === 3
+        ? "Admin"
+        : user.role === 2
+          ? "Shipper"
+          : user.role === 1
+            ? "Employee"
+            : language() == "Tiếng Việt"
+              ? "Khách hàng"
+              : "Customer",
+      active: user.penalty
+        ? (language() == "Tiếng Việt"
+          ? "Bị ban"
+          : "Banned")
+        : (language() == "Tiếng Việt"
+          ? "Hoạt động"
+          : "Active"),
+      readson: user.penalty !== null
+        ? user.penalty?.reason
+        : language() == "Tiếng Việt"
+          ? "Không có lý do"
+          : "No reason",
+      note: [language() == "Tiếng Việt" ? "Khóa tài khoản" : "Lock account"],
     }));
   
     setDataUser(newData);
@@ -367,7 +390,7 @@ const Account: React.FC<Props> = (props) => {
 
   const columns: TableProps<DataType>['columns'] = [
     {
-      title: 'Tên hiển thị',
+      title: language() == "Tiếng Việt" ? 'Tên hiển thị' : 'Display Name',
       dataIndex: 'displayname',
       key: 'displayname',
       width: screens.lg ? 350 : 150,
@@ -380,23 +403,23 @@ const Account: React.FC<Props> = (props) => {
       key: 'email',
     },
     {
-      title: 'Số điện thoại',
+      title: language() == "Tiếng Việt" ? 'Số điện thoại' : 'Phone Number',
       dataIndex: 'phone',
       width: screens.lg ? 350 : 150,
       key: 'phone',
     },
     {
-      title: 'Quyền hạn',
+      title: language() == "Tiếng Việt" ? 'Quyền hạn' : 'Role',
       key: 'role',
       dataIndex: 'role',
       width: screens.lg ? 250 : 100,
     },
     {
-      title: 'Tình trạng',
+      title: language() == "Tiếng Việt" ? 'Tình trạng' : 'Status',
       key: 'active',
       dataIndex: 'active',
       width: screens.lg ? 250 : 120,
-      render: (text) => <p className={text === "Hoạt động" ? "text-green-500 bg-green-200 p-2 flex justify-center rounded-xl" : "text-red-500 bg-red-200 p-2 flex justify-center rounded-xl"}>{text}</p>,
+      render: (text) => <p className={text === "Hoạt động" || text === "Active" ? "text-green-500 bg-green-200 p-2 flex justify-center rounded-xl" : "text-red-500 bg-red-200 p-2 flex justify-center rounded-xl"}>{text}</p>,
     },
     {
       title: '',
@@ -406,29 +429,25 @@ const Account: React.FC<Props> = (props) => {
       render: (_text, record) => {
         const isDisabled = record.role === "Admin";
         return (
-        <>
-          {record.active == "Hoạt động" ? record.note.map((noteitem, index) => (
-            <button key={index}
-                    className={`${isDisabled ? "bg-gray-500" : "bg-red-500 hover:bg-red-700 cursor-pointer"} transition duration-300 text-white font-semibold p-2 rounded`} 
-                    onClick={() => showModal(record)} disabled={isDisabled}>
-              {noteitem}
-            </button>
-          )) : 
-            <button key={1}
-                    className="bg-green-500 cursor-pointer hover:bg-green-700 transition duration-300 text-white font-semibold p-2 rounded" 
-                    onClick={() => showActiveModal(record)} disabled={isDisabled}>
-              Mở khoá
-            </button>
-          }
-        </>
-      )},
+          <>
+            {record.active == "Hoạt động" || record.active == "Active" ? record.note.map((noteitem, index) => (
+              <button key={index}
+                className={`${isDisabled ? "bg-gray-500" : "bg-red-500 hover:bg-red-700 cursor-pointer"} transition duration-300 text-white font-semibold p-2 rounded`}
+                onClick={() => showModal(record)} disabled={isDisabled}>
+                {noteitem}
+              </button>
+            )) :
+              <button key={1}
+                className="bg-green-500 cursor-pointer hover:bg-green-700 transition duration-300 text-white font-semibold p-2 rounded"
+                onClick={() => showActiveModal(record)} disabled={isDisabled}>
+                {language() == "Tiếng Việt" ? "Mở khoá" : "Unlock"}
+              </button>
+            }
+          </>
+        )
+      },
     },
   ];
-  
-  const language = (): string => {
-    const language = localStorage.getItem('language')
-    return language ? JSON.parse(language) : "Tiếng Việt"
-  }
   
   const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} scroll={!screens.lg ? { x: true } : undefined}/>;
     

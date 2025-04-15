@@ -413,7 +413,7 @@ function MainManage(props: Props): JSX.Element{
               <div className="flex items-center gap-2">
                 <div className="flex items-baseline">
                   <span className="text-xl font-bold text-slate-900 mr-1">{list?.totalProducts}</span>
-                  <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "sản phẩm" : "sản phẩm"}</span>
+                  <span className="text-gray-500 text-xs">{language() == "Tiếng Việt" ? "sản phẩm" : "products"}</span>
                 </div>
                 <div className={`mt-1 text-xs ${list?.comparison.totalProductsChange ? 'text-green-600' : 'text-red-600'}`}>
                   {list?.comparison.totalProductsChange} {list?.comparison.totalProductsChange ? '↑' : '↓'}
@@ -485,7 +485,7 @@ function MainManage(props: Props): JSX.Element{
                     className="w-full sm:w-50"
                     type="primary"
                     onClick={DownloadFile}
-                  >Xuất danh sách thống kê</Button>
+                  >{language() == "Tiếng Việt" ? "Xuất danh sách thống kê" : "Export statistics list"}</Button>
                 </ConfigProvider>
               </div>
             </div>

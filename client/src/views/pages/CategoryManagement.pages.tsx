@@ -355,27 +355,27 @@ const CategoryManagement: React.FC<Props> = (props) => {
 
   const columns: TableProps<DataType>['columns'] = [
     {
-      title: 'Danh mục',
+      title: language() == "Tiếng Việt" ? 'Danh mục' : 'Category',
       dataIndex: 'category',
       key: 'category',
       width: screens.md ? 350 : 150,
       render: (text) => <p className="font-bold">{text}</p>,
     },
     {
-      title: 'Độ ưu tiên',
+      title: language() == "Tiếng Việt" ? 'Độ ưu tiên' : 'Priority',
       dataIndex: 'priority',
       width: screens.md ? 350 : 100,
       key: 'priority',
     },
     {
-      title: 'Chỉnh sửa',
+      title: language() == "Tiếng Việt" ? 'Chỉnh sửa' : 'Edit',
       key: 'note',
       width: screens.md ? 350 : 150,
       render: (_text, record) => {
         return (
           <div className="flex gap-2">
-            <button 
-              className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
+            <button
+              className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
               onClick={() => showEditModalFunc(record)}
             >
               {language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}

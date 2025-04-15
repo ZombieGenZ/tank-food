@@ -388,12 +388,12 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-600 opacity-90"></div>
         <div className="relative container mx-auto px-4 py-20 text-center">
           <div className="opacity-0 translate-y-4" data-aos="fade-up" data-aos-duration="500">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4">Khuyến Mãi Cực Sốc!</h1>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4">{language() == "Tiếng Việt" ? "Khuyến Mãi Cực Sốc!" : "Amazing Deals!"}</h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8">
-              Nhanh tay đặt ngay để thưởng thức những ưu đãi hấp dẫn
+              {language() == "Tiếng Việt" ? "Nhanh tay đặt ngay để thưởng thức những ưu đãi hấp dẫn" : "Order now and enjoy our amazing offers"}
             </p>
             <button onClick={() => navigate('/menu')} className="px-6 py-3 cursor-pointer bg-white text-orange-600 hover:bg-orange-100 rounded-md font-medium text-lg flex items-center justify-center mx-auto">
-              Đặt Hàng Ngay
+              {language() == "Tiếng Việt" ? "Đặt Hàng Ngay" : "Order Now"}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="ml-2 h-5 w-5"
@@ -415,9 +415,9 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
       {/* Phần Combo Deals */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12" data-aos="fade-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Combo Khuyến Mãi Hấp Dẫn</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{language() == "Tiếng Việt" ? "Combo Khuyến Mãi Hấp Dẫn" : "Attractive Combo Deals"}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Tiết kiệm hơn với các combo giá trị. Hoàn hảo để chia sẻ cùng gia đình và bạn bè!
+            {language() == "Tiếng Việt" ? "Tiết kiệm hơn với các combo giá trị. Hoàn hảo để chia sẻ cùng gia đình và bạn bè!" : "Save more with our value combos. Perfect for sharing with family and friends!"}
           </p>
         </div>
 
@@ -432,9 +432,9 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
               >
                 {/* Image Section */}
                 <div className="relative aspect-[4/3]">
-                  <img 
-                    src={combo.image || "/placeholder.svg"} 
-                    alt={combo.name} 
+                  <img
+                    src={combo.image || "/placeholder.svg"}
+                    alt={combo.name}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
@@ -444,12 +444,12 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                     </span>
                   )}
                 </div>
-                
+
                 {/* Content Section */}
                 <div className="p-4 flex-grow flex flex-col">
                   <h3 className="font-bold text-lg md:text-xl mb-1 line-clamp-2">{combo.name}</h3>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-3">{combo.description}</p>
-                  
+
                   {/* Price Section */}
                   <div className="mt-auto">
                     <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -460,10 +460,10 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                         {formatCurrency(combo.priceAfterdiscount)}
                       </span>
                     </div>
-                    
+
                     {/* Button */}
                     <button onClick={() => addToCart(combo)} className="w-full cursor-pointer flex justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-2 rounded font-medium transition-colors duration-300">
-                      <Plus /> Thêm vào giỏ hàng
+                      <Plus /> {language() == "Tiếng Việt" ? "Thêm vào giỏ hàng" : "Add to cart"}
                     </button>
                   </div>
                 </div>
@@ -472,22 +472,22 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
           ) : (
             <div className="col-span-full bg-white rounded-lg shadow-md p-6 text-center">
               <div className="max-w-md mx-auto">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
                   className="h-12 w-12 mx-auto text-gray-400 mb-4"
-                  fill="none" 
-                  viewBox="0 0 24 24" 
+                  fill="none"
+                  viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy Combo</h3>
-                <p className="text-gray-500">Hiện không có combo nào khả dụng. Vui lòng quay lại sau.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{language() == "Tiếng Việt" ? "Không tìm thấy Combo" : "No Combos Found"}</h3>
+                <p className="text-gray-500">{language() == "Tiếng Việt" ? "Hiện không có combo nào khả dụng. Vui lòng quay lại sau." : "There are no combos available at the moment. Please check back later."}</p>
               </div>
             </div>
           )}
@@ -498,9 +498,9 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
       <section className="bg-gradient-to-br from-amber-600 to-orange-500 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12" data-aos="fade-up">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Món Ăn Yêu Thích</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{language() == "Tiếng Việt" ? "Món Ăn Yêu Thích" : "Popular Dishes"}</h2>
             <p className="text-lg text-white/90 max-w-2xl mx-auto">
-              Những món ăn được yêu thích nhất khiến khách hàng luôn quay lại
+              {language() == "Tiếng Việt" ? "Những món ăn được yêu thích nhất khiến khách hàng luôn quay lại" : "Our most loved dishes that keep customers coming back"}
             </p>
           </div>
 
@@ -552,8 +552,8 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
       {/* Phần Ưu Đãi Đặc Biệt */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12" data-aos="fade-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Voucher và thẻ giảm giá</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">Những ưu đãi có thời hạn bạn không nên bỏ lỡ</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{language() == "Tiếng Việt" ? "Voucher và thẻ giảm giá" : "Vouchers and Discount Codes"}</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{language() == "Tiếng Việt" ? "Những ưu đãi có thời hạn bạn không nên bỏ lỡ" : "Limited-time offers you shouldn't miss"}</p>
         </div>
 
         <div className="max-w-4xl mx-auto">
@@ -575,9 +575,9 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                     >
                       <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                     </svg>
-                    <h3 className="font-bold text-xl">Voucher Ưu Đãi</h3>
+                    <h3 className="font-bold text-xl">{language() == "Tiếng Việt" ? "Voucher Ưu Đãi" : "Special Vouchers"}</h3>
                   </div>
-                  <span className="text-sm text-gray-500">Áp dụng có thời hạn</span>
+                  <span className="text-sm text-gray-500">{language() == "Tiếng Việt" ? "Áp dụng có thời hạn" : "Limited Availability"}</span>
                 </div>
               </div>
 
@@ -587,8 +587,8 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                   {/* Voucher List */}
                   {voucher ? (
                     voucher.map((discount, index) => (
-                      <div 
-                        key={index} 
+                      <div
+                        key={index}
                         className="flex flex-col sm:flex-row items-center justify-between p-4 border border-orange-200 rounded-lg hover:shadow-md transition-shadow duration-300 bg-white"
                       >
                         {/* Voucher Info */}
@@ -611,10 +611,12 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                           </div>
                           <div className="flex-grow">
                             <h4 className="font-medium text-base sm:text-lg">
-                              Giảm {formatCurrency(discount.discount)} cho đơn từ {formatCurrency(discount.requirement)}
+                              {language() == "Tiếng Việt"
+                                ? `Giảm ${formatCurrency(discount.discount)} cho đơn từ ${formatCurrency(discount.requirement)}`
+                                : `Save ${formatCurrency(discount.discount)} on orders over ${formatCurrency(discount.requirement)}`}
                             </h4>
                             <p className="text-sm text-gray-600 mt-1">
-                              HSD: {formatDateFromISO(discount.expiration_date)}
+                              {language() == "Tiếng Việt" ? `HSD: ${formatDateFromISO(discount.expiration_date)}` : `Exp: ${formatDateFromISO(discount.expiration_date)}`}
                             </p>
                           </div>
                         </div>
@@ -623,29 +625,29 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                         <button onClick={() => handleSaveVoucher(discount._id)}
                           className="px-4 py-2 cursor-pointer bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium rounded-lg transition-colors duration-300 w-full sm:w-auto"
                         >
-                          Lưu Voucher
+                          {language() == "Tiếng Việt" ? "Lưu Voucher" : "Save Voucher"}
                         </button>
                       </div>
                     ))
                   ) : (
                     /* Empty State */
                     <div className="bg-white rounded-lg p-6 text-center border border-gray-200">
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
                         className="h-12 w-12 mx-auto text-gray-400 mb-4"
-                        fill="none" 
-                        viewBox="0 0 24 24" 
+                        fill="none"
+                        viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
-                        <path 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth={2} 
-                          d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" 
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"
                         />
                       </svg>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Không có voucher nào</h3>
-                      <p className="text-gray-500">Hiện không có voucher khả dụng</p>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">{language() == "Tiếng Việt" ? "Không có voucher nào" : "No vouchers available"}</h3>
+                      <p className="text-gray-500">{language() == "Tiếng Việt" ? "Hiện không có voucher khả dụng" : "There are no vouchers available at the moment"}</p>
                     </div>
                   )}
                 </div>
@@ -659,8 +661,8 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
       <section className="bg-gradient-to-br from-amber-100 to-orange-100 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12" data-aos="fade-up">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Cách Sử Dụng Voucher</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">Làm theo các bước đơn giản để tận hưởng ưu đãi</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{language() == "Tiếng Việt" ? "Cách Sử Dụng Voucher" : "How to Use Vouchers"}</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">{language() == "Tiếng Việt" ? "Làm theo các bước đơn giản để tận hưởng ưu đãi" : "Follow these simple steps to enjoy the discounts"}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -681,8 +683,8 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                   <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Bước 1</h3>
-              <p className="text-gray-600">Thêm món ăn yêu thích vào giỏ hàng và đạt mức chi tiêu tối thiểu</p>
+              <h3 className="text-xl font-bold mb-2">{language() == "Tiếng Việt" ? "Bước 1" : "Step 1"}</h3>
+              <p className="text-gray-600">{language() == "Tiếng Việt" ? "Thêm món ăn yêu thích vào giỏ hàng và đạt mức chi tiêu tối thiểu" : "Add your favorite dishes to the cart and reach the minimum spending"}</p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-md text-center" data-aos="fade-up" data-aos-delay="200">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -699,8 +701,8 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                   <path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Bước 2</h3>
-              <p className="text-gray-600">Nhập hoặc chọn mã voucher tại ô mã khuyến mãi khi thanh toán</p>
+              <h3 className="text-xl font-bold mb-2">{language() == "Tiếng Việt" ? "Bước 2" : "Step 2"}</h3>
+              <p className="text-gray-600">{language() == "Tiếng Việt" ? "Nhập hoặc chọn mã voucher tại ô mã khuyến mãi khi thanh toán" : "Enter or select the voucher code in the promo code field at checkout"}</p>
             </div>
             <div className="bg-white p-6 rounded-xl shadow-md text-center" data-aos="fade-up" data-aos-delay="300">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -717,8 +719,8 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                   <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Bước 3</h3>
-              <p className="text-gray-600">Tận hưởng bữa ăn ngon với mức giá tiết kiệm!</p>
+              <h3 className="text-xl font-bold mb-2">{language() == "Tiếng Việt" ? "Bước 3" : "Step 3"}</h3>
+              <p className="text-gray-600">{language() == "Tiếng Việt" ? "Tận hưởng bữa ăn ngon với mức giá tiết kiệm!" : "Enjoy your delicious meal at a discounted price!"}</p>
             </div>
           </div>
         </div>
@@ -749,12 +751,12 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
                   <line x1="12" y1="8" x2="12" y2="12" />
                   <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <h3 className="text-xl font-bold">Ưu Đãi Có Thời Hạn!</h3>
+                <h3 className="text-xl font-bold">{language() == "Tiếng Việt" ? "Ưu Đãi Có Thời Hạn!" : "Limited Time Offer!"}</h3>
               </div>
-              <p className="mt-2">Các khuyến mãi sẽ kết thúc sớm. Đặt hàng ngay trước khi hết hạn!</p>
+              <p className="mt-2">{language() == "Tiếng Việt" ? "Các khuyến mãi sẽ kết thúc sớm. Đặt hàng ngay trước khi hết hạn!" : "Promotions will end soon. Order now before it's too late!"}</p>
             </div>
             <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-orange-100 px-6 py-3 rounded-md font-medium text-lg">
-              Đặt Hàng Ngay
+              {language() == "Tiếng Việt" ? "Đặt Hàng Ngay" : "Order Now"}
             </button>
           </div>
         </div>
@@ -762,87 +764,93 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
       <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 2 + 1}rem`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  opacity: 0.3,
-                }}
-              >
-                🍔
-              </div>
-            ))}
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div
-                key={i + 20}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 2 + 1}rem`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  opacity: 0.3,
-                }}
-              >
-                🍟
-              </div>
-            ))}
-          </div>
+            <div className="absolute top-0 left-0 w-full h-full">
+                {Array.from({ length: 20 }).map((_, i) => (
+                    <div
+                        key={i}
+                        className="absolute"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            fontSize: `${Math.random() * 2 + 1}rem`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            opacity: 0.3,
+                        }}
+                    >
+                        🍔
+                    </div>
+                ))}
+                {Array.from({ length: 15 }).map((_, i) => (
+                    <div
+                        key={i + 20}
+                        className="absolute"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            fontSize: `${Math.random() * 2 + 1}rem`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            opacity: 0.3,
+                        }}
+                    >
+                        🍟
+                    </div>
+                ))}
+            </div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div
-            className="max-w-3xl mx-auto text-center"
-            data-aos="zoom-in-up"
-            data-aos-duration="1000"
-            data-aos-delay="100"
-            data-aos-anchor-placement="top-bottom"
-          >
-            <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
-              <h2
-                className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
-                style={{
-                  textShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                }}
-              >
-                TankFood
-              </h2>
-              <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
-            </div>
-
-            <p className="text-xl text-white/90 mb-8 drop-shadow-md">
-              Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
-              <input
-                type="email"
-                placeholder="Địa Chỉ Email Của Bạn"
-                className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
-              />
-              <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
-                Đặt Hàng Ngay
-              </button>
-            </div>
-
-            <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
-              {["Burger", "Gà Rán", "Pizza", "Đồ Uống"].map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
-                >
-                  {item}
+            <div
+                className="max-w-3xl mx-auto text-center"
+                data-aos="zoom-in-up"
+                data-aos-duration="1000"
+                data-aos-delay="100"
+                data-aos-anchor-placement="top-bottom"
+            >
+                <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
+                    <h2
+                        className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
+                        style={{
+                            textShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                            fontFamily: "system-ui, -apple-system, sans-serif",
+                        }}
+                    >
+                        TankFood
+                    </h2>
+                    <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
                 </div>
-              ))}
+
+                <p className="text-xl text-white/90 mb-8 drop-shadow-md">
+                    {language() == "Tiếng Việt"
+                        ? "Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!"
+                        : "Enjoy the most delicious dishes with fast and convenient delivery service!"}
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
+                    <input
+                        type="email"
+                        placeholder={language() == "Tiếng Việt" ? "Địa Chỉ Email Của Bạn" : "Your Email Address"}
+                        className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
+                    />
+                    <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+                        {language() == "Tiếng Việt" ? "Đặt Hàng Ngay" : "Order Now"}
+                    </button>
+                </div>
+
+                <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
+                    {[language() == "Tiếng Việt" ? "Burger" : "Burger",
+                    language() == "Tiếng Việt" ? "Gà Rán" : "Fried Chicken",
+                    language() == "Tiếng Việt" ? "Pizza" : "Pizza",
+                    language() == "Tiếng Việt" ? "Đồ Uống" : "Drinks"
+                    ].map((item, index) => (
+                        <div
+                            key={index}
+                            className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
+                        >
+                            {item}
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
         </div>
 
         {/* Animated elements */}

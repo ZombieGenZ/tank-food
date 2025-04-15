@@ -82,7 +82,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
 
     socket.on('use-voucher-private', (res) => {
       setVouchers(vouchers.map((item) => item._id === res._id ? res : item))
-      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher riêng tư mới" : "New  Private")
+      props.aLert.addNotification(language() === "Tiếng Việt" ? "Có Voucher mới được sử dụng" : "A Voucher Used")
     })
 
     socket.on('create-public-voucher-storage', (res) => {
@@ -285,17 +285,17 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                          HSD: Không giới hạn
+                          {language() == "Tiếng Việt" ? "HSD: Không giới hạn" : "EXP: Unlimited"}
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Thêm badge điều kiện sử dụng */}
                     <div className="bg-black bg-opacity-30 rounded-full px-3 py-1 text-sm flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                       </svg>
-                      Đơn tối thiểu 0 đ
+                      {language() == "Tiếng Việt" ? "Đơn tối thiểu 0 đ" : "Min order 0 đ"}
                     </div>
                   </div>
 
@@ -355,11 +355,11 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                   {/* Thêm trạng thái voucher */}
                   <div className="mt-2 flex justify-between items-center text-sm">
                     <span className={`px-2 py-1 rounded-md text-white ${
-                      voucher.status === 0 
-                        ? "bg-green-500 bg-opacity-20" 
+                      voucher.status === 0
+                        ? "bg-green-500 bg-opacity-20"
                         : "bg-red-500 bg-opacity-20"
                     }`}>
-                      {voucher.status === 0 ? "Có thể sử dụng" : "Đã hết hiệu lực"}
+                      {voucher.status === 0 ? (language() == "Tiếng Việt" ? "Có thể sử dụng" : "Usable") : (language() == "Tiếng Việt" ? "Đã hết hiệu lực" : "Expired")}
                     </span>
                     <span className="text-gray-400">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -431,7 +431,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
-                          HSD: {formatDateFromISO(voucher.expiration_date)}
+                          {language() == "Tiếng Việt" ? `HSD: ${formatDateFromISO(voucher.expiration_date)}` : `EXP: ${formatDateFromISO(voucher.expiration_date)}`}
                         </span>
                       </div>
                     </div>
@@ -442,7 +442,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
-                        Đơn tối thiểu {formatCurrency(voucher.requirement)}
+                        {language() == "Tiếng Việt" ? `Đơn tối thiểu ${formatCurrency(voucher.requirement)}` : `Min order ${formatCurrency(voucher.requirement)}`}
                       </div>
                     )}
                   </div>
@@ -507,7 +507,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                         ? "bg-green-500 bg-opacity-20" 
                         : "bg-red-500 bg-opacity-20"
                     }`}>
-                      {voucher.status === 0 ? "Có thể sử dụng" : "Đã hết hiệu lực"}
+                      {voucher.status === 0 ? (language() == "Tiếng Việt" ? "Có thể sử dụng" : "Usable") : (language() == "Tiếng Việt" ? "Đã hết hiệu lực" : "Expired")}
                     </span>
                     <span className="text-gray-400">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

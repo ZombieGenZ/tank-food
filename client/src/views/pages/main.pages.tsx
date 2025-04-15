@@ -265,7 +265,7 @@ const addNotification = (newMessage: string) => {
   }); // Mặc định là Admin view
   const [messageApi, contextHolder] = message.useMessage();
 
-  function NavAdmin({ display_name, userInfo, notification }: { display_name: string; userInfo: UserInfo; notification: string[] }) {
+  function NavAdmin({ display_name, notification }: { display_name: string; notification: string[] }) {
     const navigate = useNavigate()
     const [language, setLanguage] = useState<string>(() => {
       const savedLanguage = localStorage.getItem('language');
@@ -299,7 +299,7 @@ const addNotification = (newMessage: string) => {
       {
         key: '1',
         label: (
-          <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
+          <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile')}>
             <FaRegUserCircle /> Thông tin tài khoản
           </button>
         ),
@@ -541,7 +541,7 @@ const addNotification = (newMessage: string) => {
           <div className='flex'>
             <NavigationAdmin displayname={user.display_name} user={user}/>
             <div className="w-full flex flex-col" ref={pageRef}>
-              <NavAdmin notification={notification} display_name={language() == "Tiếng Việt" ? "Bảng thống kê" : "Dash board"} userInfo={user} />
+              <NavAdmin notification={notification} display_name={language() == "Tiếng Việt" ? "Bảng thống kê" : "Dash board"}/>
               <Routes>
                 <Route path="/" element={<MainManage isLoading={loadingCP} setLoading={setLoadingCP}/>} />
                 <Route path="/Account" element={<Account aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>} />
@@ -1098,6 +1098,10 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
 
 function Main(): JSX.Element {
   const navigate = useNavigate()
+  const language = (): string => {
+    const Language = localStorage.getItem('language')
+    return Language ? JSON.parse(Language) : "Tiếng Việt"
+  }
   const Slideshow = (): JSX.Element => {
     const [slideIndex, setSlideIndex] = useState<number>(0);
     const slideTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -1267,270 +1271,280 @@ function Main(): JSX.Element {
       `}</style>
       <Slideshow />
       <div className="bg-gradient-to-b from-[#FFE5B4] to-[#92e2fb] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxsaW5lIHgxPSIwIiB5PSIwIiB4Mj0iMCIgeTI9IjQwIiBzdHJva2U9IiNGRkI4MDAiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=')]"></div>
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxsaW5lIHgxPSIwIiB5PSIwIiB4Mj0iMCIgeTI9IjQwIiBzdHJva2U9IiNGRkI4MDAiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=')]"></div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between py-12 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up" data-aos-duration="1000">
-          <div className="relative w-full md:w-1/3 flex justify-center" data-aos="zoom-in" data-aos-delay="300">
-            <div className="relative transform transition-transform duration-500 hover:scale-105 hover:rotate-3">
-              <div className="w-72 h-72 rounded-full border-4 border-[#FFB800] p-2 shadow-lg bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:border-[#FF7846]">
-                <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#FF7846]/30 transition-all duration-300 hover:border-[#FFB800]">
-                  <img
-                    src="/images/system/Hamburger_trangchu.jpg"
-                    alt="Burger đặc biệt"
-                    className="w-full h-full object-cover rounded-full transition-transform duration-700 hover:scale-110"
-                  />
+                <div className="flex flex-col md:flex-row items-center justify-between py-12 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up" data-aos-duration="1000">
+                    <div className="relative w-full md:w-1/3 flex justify-center" data-aos="zoom-in" data-aos-delay="300">
+                        <div className="relative transform transition-transform duration-500 hover:scale-105 hover:rotate-3">
+                            <div className="w-72 h-72 rounded-full border-4 border-[#FFB800] p-2 shadow-lg bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:border-[#FF7846]">
+                                <div className="w-full h-full rounded-full overflow-hidden border-2 border-[#FF7846]/30 transition-all duration-300 hover:border-[#FFB800]">
+                                    <img
+                                        src="/images/system/Hamburger_trangchu.jpg"
+                                        alt={language() == "Tiếng Việt" ? "Burger đặc biệt" : "Special Burger"}
+                                        className="w-full h-full object-cover rounded-full transition-transform duration-700 hover:scale-110"
+                                    />
+                                </div>
+                            </div>
+                            <div className="absolute top-0 left-0 -translate-x-6 -translate-y-6 text-[#FFB800] animate-pulse">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full md:w-2/3 mt-8 md:mt-0 text-center md:text-left" data-aos="fade-left" data-aos-delay="500">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4 font-roboto">
+                            <span className="text-[#654321]">{language() == "Tiếng Việt" ? "Nâng " : "Elevate "}</span>
+                            <span className="text-[#FF7846]">{language() == "Tiếng Việt" ? "cao " : "your "}</span>
+                            <span className="text-[#654321]">{language() == "Tiếng Việt" ? "bữa ăn" : "meal"}</span>
+                        </h2>
+                        <p className="text-[#654321] mb-6 max-w-xl font-roboto">
+                            {language() == "Tiếng Việt"
+                                ? "Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo."
+                                : "You'll find lots of info on how to make your food experience even better. There are so many ways to cook a great meal at TankFood. All you need are the right ingredients, some cooking skills, and a little imagination."}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <button onClick={() => navigate('/menu')} className="bg-[#FF7846] cursor-pointer hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
+                                {language() == "Tiếng Việt" ? "Đặt hàng ngay" : "Order Now"}
+                            </button>
+                            <button onClick={() => navigate('/menu')} className="border-2 cursor-pointer border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px]">
+                                {language() == "Tiếng Việt" ? "Xem thực đơn" : "View Menu"}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div className="absolute top-0 left-0 -translate-x-6 -translate-y-6 text-[#FFB800] animate-pulse">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
-                </svg>
-              </div>
-            </div>
-          </div>
 
-          <div className="w-full md:w-2/3 mt-8 md:mt-0 text-center md:text-left" data-aos="fade-left" data-aos-delay="500">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 font-roboto">
-              <span className="text-[#654321]">Nâng </span>
-              <span className="text-[#FF7846]">cao </span>
-              <span className="text-[#654321]">bữa ăn</span>
-            </h2>
-            <p className="text-[#654321] mb-6 max-w-xl font-roboto">
-              Bạn sẽ tìm thấy nhiều thông tin về cách nâng cao trải nghiệm ẩm thực của bạn. Có rất nhiều cách để chế biến một bữa ăn tuyệt vời tại TankFood. Tất cả những gì bạn cần là nguyên liệu phù hợp, vai trò nấu nướng và một chút sáng tạo.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <button onClick={() => navigate('/menu')} className="bg-[#FF7846] cursor-pointer hover:bg-[#FF6B35] text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px] hover:px-8">
-                Đặt hàng ngay
-              </button>
-              <button onClick={() => navigate('/menu')} className="border-2 cursor-pointer border-[#654321] text-[#654321] hover:bg-[#654321] hover:text-white font-bold py-3 px-6 rounded-full transition-all duration-300 font-roboto shadow-md hover:shadow-lg hover:translate-y-[-3px]">
-                Xem thực đơn
-              </button>
-            </div>
-          </div>
+                <div className="py-16 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up">
+                    <h2 className="text-3xl font-bold text-center mb-8 font-roboto" data-aos="zoom-in">
+                        <span className="text-[#654321]">{language() == "Tiếng Việt" ? "Danh mục " : "Featured "}</span>
+                        <span className="text-[#FF7846]">{language() == "Tiếng Việt" ? "nổi bật" : "Categories"}</span>
+                    </h2>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="100">
+                            <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                                <img
+                                    src="/images/system/Hamburger_trangchu2.jpg"
+                                    alt={language() == "Tiếng Việt" ? "Bánh mì kẹp thịt" : "Burger"}
+                                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                                />
+                            </div>
+                            <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">{language() == "Tiếng Việt" ? "Bánh mì kẹp thịt" : "Burger"}</h3>
+                            <p className="text-sm text-gray-500 text-center font-roboto">{language() == "Tiếng Việt" ? "Đa dạng hương vị" : "Variety of flavors"}</p>
+                        </div>
+
+                        <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="200">
+                            <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                                <img
+                                    src="/images/system/Khoaitaychien_trangchu.jpg"
+                                    alt={language() == "Tiếng Việt" ? "Khoai tây chiên" : "French Fries"}
+                                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                                />
+                            </div>
+                            <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">{language() == "Tiếng Việt" ? "Khoai tây chiên" : "French Fries"}</h3>
+                            <p className="text-sm text-gray-500 text-center font-roboto">{language() == "Tiếng Việt" ? "Giòn tan hấp dẫn" : "Crispy and delicious"}</p>
+                        </div>
+
+                        <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="300">
+    <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+        <img
+            src="/images/system/garan_trangchu.jpg"
+            alt={language() == "Tiếng Việt" ? "Gà rán" : "Fried Chicken"}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+        />
+    </div>
+      <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">{language() == "Tiếng Việt" ? "Gà rán" : "Fried Chicken"}</h3>
+      <p className="text-sm text-gray-500 text-center font-roboto">{language() == "Tiếng Việt" ? "Thơm ngon đặc biệt" : "Especially delicious"}</p>
+    </div>
+
+    <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="400">
+        <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+            <img
+                src="/images/system/nuocuong_trangchu.jpg"
+                alt={language() == "Tiếng Việt" ? "Thức uống" : "Drinks"}
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+            />
         </div>
+        <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">{language() == "Tiếng Việt" ? "Thức uống" : "Drinks"}</h3>
+        <p className="text-sm text-gray-500 text-center font-roboto">{language() == "Tiếng Việt" ? "Giải khát sảng khoái" : "Refreshing"}</p>
+    </div>
+    </div>
 
-        <div className="py-16 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up">
-          <h2 className="text-3xl font-bold text-center mb-8 font-roboto" data-aos="zoom-in">
-            <span className="text-[#654321]">Danh mục </span>
-            <span className="text-[#FF7846]">nổi bật</span>
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="100">
-              <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
-                <img
-                  src="/images/system/Hamburger_trangchu2.jpg"
-                  alt="Bánh mì kẹp thịt"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">Bánh mì kẹp thịt</h3>
-              <p className="text-sm text-gray-500 text-center font-roboto">Đa dạng hương vị</p>
-            </div>
-
-            <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="200">
-              <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
-                <img
-                  src="/images/system/Khoaitaychien_trangchu.jpg"
-                  alt="Khoai tây chiên"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">Khoai tây chiên</h3>
-              <p className="text-sm text-gray-500 text-center font-roboto">Giòn tan hấp dẫn</p>
-            </div>
-
-            <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="300">
-              <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
-                <img
-                  src="/images/system/garan_trangchu.jpg"
-                  alt="Gà rán"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">Gà rán</h3>
-              <p className="text-sm text-gray-500 text-center font-roboto">Thơm ngon đặc biệt</p>
-            </div>
-
-            <div className="flex flex-col items-center bg-white rounded-lg p-4 shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="flip-left" data-aos-delay="400">
-              <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
-                <img
-                  src="/images/system/nuocuong_trangchu.jpg"
-                  alt="Thức uống"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <h3 className="text-lg font-semibold text-[#654321] text-center font-roboto">Thức uống</h3>
-              <p className="text-sm text-gray-500 text-center font-roboto">Giải khát sảng khoái</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="py-16 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up">
-          <div className="text-center mb-8">
-            <h3 className="text-3xl font-medium text-[#654321] font-roboto" data-aos="fade-up">MÓN ĂN NGON</h3>
-            <h2 className="text-5xl font-bold text-[#FF7846] mt-2 font-roboto" data-aos="zoom-in" data-aos-delay="200">GIÁ TUYỆT VỜI</h2>
+    <div className="py-16 px-4 md:px-8 lg:px-16 relative z-10" data-aos="fade-up">
+        <div className="text-center mb-8">
+            <h3 className="text-3xl font-medium text-[#654321] font-roboto" data-aos="fade-up">{language() == "Tiếng Việt" ? "MÓN ĂN NGON" : "DELICIOUS FOOD"}</h3>
+            <h2 className="text-5xl font-bold text-[#FF7846] mt-2 font-roboto" data-aos="zoom-in" data-aos-delay="200">{language() == "Tiếng Việt" ? "GIÁ TUYỆT VỜI" : "AMAZING PRICES"}</h2>
             <p className="text-[#654321] max-w-2xl mx-auto mt-4 font-roboto" data-aos="fade-up" data-aos-delay="400">
-              Khám phá các món ăn tuyệt vời của chúng tôi, được tạo ra để giúp bạn tìm đúng công thức cho bữa ăn hoàn hảo tại TankFood.
+                {language() == "Tiếng Việt"
+                    ? "Khám phá các món ăn tuyệt vời của chúng tôi, được tạo ra để giúp bạn tìm đúng công thức cho bữa ăn hoàn hảo tại TankFood."
+                    : "Discover our amazing dishes, created to help you find the perfect meal recipe at TankFood."}
             </p>
-          </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-right" data-aos-delay="100">
-              <div className="h-56 overflow-hidden">
-                <img
-                  src="/images/system/burgerdacbiet.jpg"
-                  alt="Burger Đặc Biệt"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-[#654321] font-roboto">Burger Đặc Biệt</h3>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-[#FF7846] font-bold font-roboto">89.000 ₫</span>
+                <div className="h-56 overflow-hidden">
+                    <img
+                        src="/images/system/burgerdacbiet.jpg"
+                        alt={language() == "Tiếng Việt" ? "Burger Đặc Biệt" : "Special Burger"}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
                 </div>
-              </div>
+                <div className="p-4">
+                    <h3 className="text-xl font-semibold text-[#654321] font-roboto">{language() == "Tiếng Việt" ? "Burger Đặc Biệt" : "Special Burger"}</h3>
+                    <div className="flex justify-between items-center mt-4">
+                        <span className="text-[#FF7846] font-bold font-roboto">89.000 ₫</span>
+                    </div>
+                </div>
             </div>
 
             <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-up" data-aos-delay="200">
-              <div className="h-56 overflow-hidden">
-                <img
-                  src="/images/system/khoaiphomai.jpg"
-                  alt="Khoai Phô Mai"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-[#654321] font-roboto">Khoai Phô Mai</h3>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-[#FF7846] font-bold font-roboto">49.000 ₫</span>
+                <div className="h-56 overflow-hidden">
+                    <img
+                        src="/images/system/khoaiphomai.jpg"
+                        alt={language() == "Tiếng Việt" ? "Khoai Phô Mai" : "Cheese Fries"}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
                 </div>
-              </div>
+                <div className="p-4">
+                    <h3 className="text-xl font-semibold text-[#654321] font-roboto">{language() == "Tiếng Việt" ? "Khoai Phô Mai" : "Cheese Fries"}</h3>
+                    <div className="flex justify-between items-center mt-4">
+                        <span className="text-[#FF7846] font-bold font-roboto">49.000 ₫</span>
+                    </div>
+                </div>
             </div>
 
             <div className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-[#FFB800]/20 hover:shadow-xl hover:translate-y-[-5px] hover:border-[#FF7846]" data-aos="fade-left" data-aos-delay="300">
-              <div className="h-56 overflow-hidden">
-                <img
-                  src="/images/system/garansotthai.jpg"
-                  alt="Gà Rán Giòn"
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-[#654321] font-roboto">Gà Rán Giòn</h3>
-                <div className="flex justify-between items-center mt-4">
-                  <span className="text-[#FF7846] font-bold font-roboto">79.000 ₫</span>
+                <div className="h-56 overflow-hidden">
+                    <img
+                        src="/images/system/garansotthai.jpg"
+                        alt={language() == "Tiếng Việt" ? "Gà Rán Giòn" : "Crispy Fried Chicken"}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
                 </div>
-              </div>
+                <div className="p-4">
+                    <h3 className="text-xl font-semibold text-[#654321] font-roboto">{language() == "Tiếng Việt" ? "Gà Rán Giòn" : "Crispy Fried Chicken"}</h3>
+                    <div className="flex justify-between items-center mt-4">
+                        <span className="text-[#FF7846] font-bold font-roboto">79.000 ₫</span>
+                    </div>
+                </div>
             </div>
-          </div>
+        </div>
+    </div>
+
+    <div className="py-24 px-4 md:px-8 lg:px-16 bg-gradient-to-b from-[#9ee8ff] to-[#FFE5B4] text-center relative z-10 shadow-inner" data-aos="fade-up">
+        <div className="absolute top-8 left-1/4 text-[#FFB800] animate-pulse">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+            </svg>
         </div>
 
-        <div className="py-24 px-4 md:px-8 lg:px-16 bg-gradient-to-b from-[#9ee8ff] to-[#FFE5B4] text-center relative z-10 shadow-inner" data-aos="fade-up">
-          <div className="absolute top-8 left-1/4 text-[#FFB800] animate-pulse">
+        <h3 className="text-4xl font-bold text-[#654321] mb-2 font-stretch-semi-condensed blur-text" data-aos="fade-up" data-aos-delay="200">{language() == "Tiếng Việt" ? "Vẫn còn đói?" : "Still hungry?"}</h3>
+        <h2 className="text-6xl font-bold text-[#FF7846] mb-12 font-roboto blur-text" data-aos="zoom-in" data-aos-delay="400">{language() == "Tiếng Việt" ? "ĐẶT THÊM NGAY" : "ORDER MORE NOW"}</h2>
+
+        <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] cursor-pointer text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-roboto shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
+            {language() == "Tiếng Việt" ? "Đặt hàng ngay" : "Order now"}
+        </button>
+
+        <div className="absolute bottom-8 right-1/4 text-[#FFB800] animate-pulse">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
             </svg>
-          </div>
-
-          <h3 className="text-4xl font-bold text-[#654321] mb-2 font-stretch-semi-condensed blur-text" data-aos="fade-up" data-aos-delay="200">Vẫn còn đói?</h3>
-          <h2 className="text-6xl font-bold text-[#FF7846] mb-12 font-roboto blur-text" data-aos="zoom-in" data-aos-delay="400">ĐẶT THÊM NGAY</h2>
-
-          <button onClick={() => navigate('/menu')} className="bg-[#FF7846] hover:bg-[#FF6B35] cursor-pointer text-white font-bold py-3 px-8 rounded-full transition-all duration-300 text-lg font-roboto shadow-lg hover:shadow-xl hover:translate-y-[-5px] hover:px-10" data-aos="fade-up" data-aos-delay="600">
-            Đặt hàng ngay
-          </button>
-
-          <div className="absolute bottom-8 right-1/4 text-[#FFB800] animate-pulse">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
-            </svg>
-          </div>
         </div>
-        <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">
+    </div>
+    <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 2 + 1}rem`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  opacity: 0.3,
-                }}
-              >
-                🍔
-              </div>
-            ))}
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div
-                key={i + 20}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 2 + 1}rem`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  opacity: 0.3,
-                }}
-              >
-                🍟
-              </div>
-            ))}
-          </div>
+            <div className="absolute top-0 left-0 w-full h-full">
+                {Array.from({ length: 20 }).map((_, i) => (
+                    <div
+                        key={i}
+                        className="absolute"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            fontSize: `${Math.random() * 2 + 1}rem`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            opacity: 0.3,
+                        }}
+                    >
+                        🍔
+                    </div>
+                ))}
+                {Array.from({ length: 15 }).map((_, i) => (
+                    <div
+                        key={i + 20}
+                        className="absolute"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            fontSize: `${Math.random() * 2 + 1}rem`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            opacity: 0.3,
+                        }}
+                    >
+                        🍟
+                    </div>
+                ))}
+            </div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div
-            className="max-w-3xl mx-auto text-center"
-            data-aos="zoom-in-up"
-            data-aos-duration="1000"
-            data-aos-delay="100"
-            data-aos-anchor-placement="top-bottom"
-          >
-            <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
-              <h2
-                className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
-                style={{
-                  textShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                }}
-              >
-                TankFood
-              </h2>
-              <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
-            </div>
-
-            <p className="text-xl text-white/90 mb-8 drop-shadow-md">
-              Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
-              <input
-                type="email"
-                placeholder="Địa Chỉ Email Của Bạn"
-                className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
-              />
-              <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
-                Đặt Hàng Ngay
-              </button>
-            </div>
-
-            <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
-              {["Burger", "Gà Rán", "Pizza", "Đồ Uống"].map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
-                >
-                  {item}
+            <div
+                className="max-w-3xl mx-auto text-center"
+                data-aos="zoom-in-up"
+                data-aos-duration="1000"
+                data-aos-delay="100"
+                data-aos-anchor-placement="top-bottom"
+            >
+                <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
+                    <h2
+                        className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
+                        style={{
+                            textShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                            fontFamily: "system-ui, -apple-system, sans-serif",
+                        }}
+                    >
+                        TankFood
+                    </h2>
+                    <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
                 </div>
-              ))}
+
+                <p className="text-xl text-white/90 mb-8 drop-shadow-md">
+                    {language() == "Tiếng Việt"
+                        ? "Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!"
+                        : "Enjoy the most delicious dishes with fast and convenient delivery service!"}
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
+                    <input
+                        type="email"
+                        placeholder={language() == "Tiếng Việt" ? "Địa Chỉ Email Của Bạn" : "Your Email Address"}
+                        className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
+                    />
+                    <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+                        {language() == "Tiếng Việt" ? "Đặt Hàng Ngay" : "Order Now"}
+                    </button>
+                </div>
+
+                <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
+                    {[language() == "Tiếng Việt" ? "Burger" : "Burger",
+                    language() == "Tiếng Việt" ? "Gà Rán" : "Fried Chicken",
+                    language() == "Tiếng Việt" ? "Pizza" : "Pizza",
+                    language() == "Tiếng Việt" ? "Đồ Uống" : "Drinks"
+                    ].map((item, index) => (
+                        <div
+                            key={index}
+                            className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
+                        >
+                            {item}
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
         </div>
+    </div>
 
         {/* Animated elements */}
         <div className="absolute bottom-0 left-0 w-full overflow-hidden">

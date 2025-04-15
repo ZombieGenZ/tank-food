@@ -23,6 +23,11 @@ export default function ChangePassword(props: Props): JSX.Element {
   const [passwordStrength, setPasswordStrength] = useState(0)
   const [messageApi, contextHolder] = message.useMessage();
 
+  const language = (): string => {
+    const Language = localStorage.getItem('language')
+    return Language ? JSON.parse(Language) : "Tiếng Việt"
+  }
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const paramValue = queryParams.get('token');
@@ -180,15 +185,15 @@ export default function ChangePassword(props: Props): JSX.Element {
       {contextHolder}
       <div className="background-pattern absolute inset-0 opacity-5"></div>
 
-      <div 
+      <div
         className="password-card w-full max-w-md sm:max-w-lg md:max-w-xl bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300"
         data-animate
       >
         {/* Card Header */}
         <div className="card-header bg-gradient-to-r from-orange-500 to-amber-500 p-4 sm:p-6 text-white">
-          <h1 className="card-title text-xl sm:text-2xl font-bold">Thay đổi mật khẩu mới</h1>
+          <h1 className="card-title text-xl sm:text-2xl font-bold">{language() == "Tiếng Việt" ? "Thay đổi mật khẩu mới" : "Change New Password"}</h1>
           <p className="card-description text-sm sm:text-base opacity-90 mt-1">
-            Giữ cho tài khoản của bạn được bảo mật.
+            {language() == "Tiếng Việt" ? "Giữ cho tài khoản của bạn được bảo mật." : "Keep your account secure."}
           </p>
         </div>
 
@@ -196,10 +201,10 @@ export default function ChangePassword(props: Props): JSX.Element {
         <form onSubmit={handleSubmit} className="card-form p-4 sm:p-6">
           {/* Alert Message */}
           {messages && (
-            <div 
+            <div
               className={`alert mb-4 p-3 rounded-md flex items-center text-sm ${
-                messages.type === "success" 
-                  ? "bg-green-50 text-green-800 border border-green-200" 
+                messages.type === "success"
+                  ? "bg-green-50 text-green-800 border border-green-200"
                   : "bg-red-50 text-red-800 border border-red-200"
               }`}
               data-animate
@@ -215,7 +220,7 @@ export default function ChangePassword(props: Props): JSX.Element {
             {/* New Password Field */}
             <div className="form-group" data-animate>
               <label htmlFor="new-password" className="form-label block text-sm font-medium text-gray-700 mb-1">
-                Mật khẩu mới
+                {language() == "Tiếng Việt" ? "Mật khẩu mới" : "New Password"}
               </label>
               <div className="input-group relative">
                 <input
@@ -230,7 +235,7 @@ export default function ChangePassword(props: Props): JSX.Element {
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
                   className="password-toggle absolute inset-y-0 right-0 px-3 flex items-center"
-                  aria-label={showNewPassword ? "Hide password" : "Show password"}
+                  aria-label={showNewPassword ? (language() == "Tiếng Việt" ? "Ẩn mật khẩu" : "Hide password") : (language() == "Tiếng Việt" ? "Hiện mật khẩu" : "Show password")}
                 >
                   <div className={`eye-icon ${showNewPassword ? "eye-open" : "eye-closed"}`}>
                     <div className="eye-outer">
@@ -245,7 +250,7 @@ export default function ChangePassword(props: Props): JSX.Element {
               {newPassword && (
                 <div className="password-strength mt-3" data-animate>
                   <div className="strength-header flex justify-between items-center mb-1">
-                    <span className="strength-label text-xs text-gray-500">Độ mạnh của mật khẩu:</span>
+                    <span className="strength-label text-xs text-gray-500">{language() == "Tiếng Việt" ? "Độ mạnh của mật khẩu:" : "Password strength:"}</span>
                     <span className={`strength-text text-xs font-medium ${
                       passwordStrength === 1 ? 'text-red-500' :
                       passwordStrength === 2 ? 'text-orange-500' :
@@ -267,19 +272,19 @@ export default function ChangePassword(props: Props): JSX.Element {
                   <ul className="password-requirements mt-2 space-y-1 text-xs text-gray-500">
                     <li className={`flex items-center ${newPassword.length >= 8 ? 'text-green-500' : ''}`}>
                       <span className="mr-1">{newPassword.length >= 8 ? "✓" : "○"}</span>
-                      Ít nhất 8 ký tự
+                      {language() == "Tiếng Việt" ? "Ít nhất 8 ký tự" : "At least 8 characters"}
                     </li>
                     <li className={`flex items-center ${/[A-Z]/.test(newPassword) ? 'text-green-500' : ''}`}>
                       <span className="mr-1">{/[A-Z]/.test(newPassword) ? "✓" : "○"}</span>
-                      Bao gồm kỹ tự viết hoa
+                      {language() == "Tiếng Việt" ? "Bao gồm kỹ tự viết hoa" : "Include uppercase letter"}
                     </li>
                     <li className={`flex items-center ${/[0-9]/.test(newPassword) ? 'text-green-500' : ''}`}>
                       <span className="mr-1">{/[0-9]/.test(newPassword) ? "✓" : "○"}</span>
-                      Bao gồm số
+                      {language() == "Tiếng Việt" ? "Bao gồm số" : "Include number"}
                     </li>
                     <li className={`flex items-center ${/[^A-Za-z0-9]/.test(newPassword) ? 'text-green-500' : ''}`}>
                       <span className="mr-1">{/[^A-Za-z0-9]/.test(newPassword) ? "✓" : "○"}</span>
-                      Bao gồm ký tự đặc biệt
+                      {language() == "Tiếng Việt" ? "Bao gồm ký tự đặc biệt" : "Include special symbol"}
                     </li>
                   </ul>
                 </div>
@@ -289,7 +294,7 @@ export default function ChangePassword(props: Props): JSX.Element {
             {/* Confirm Password Field */}
             <div className="form-group" data-animate>
               <label htmlFor="confirm-password" className="form-label block text-sm font-medium text-gray-700 mb-1">
-                Xác nhận mật khẩu mới
+                {language() == "Tiếng Việt" ? "Xác nhận mật khẩu mới" : "Confirm New Password"}
               </label>
               <div className="input-group relative">
                 <input
@@ -304,7 +309,7 @@ export default function ChangePassword(props: Props): JSX.Element {
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="password-toggle absolute inset-y-0 right-0 px-3 flex items-center"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={showConfirmPassword ? (language() == "Tiếng Việt" ? "Ẩn mật khẩu" : "Hide password") : (language() == "Tiếng Việt" ? "Hiện mật khẩu" : "Show password")}
                 >
                   <div className={`eye-icon ${showConfirmPassword ? "eye-open" : "eye-closed"}`}>
                     <div className="eye-outer">
@@ -315,31 +320,32 @@ export default function ChangePassword(props: Props): JSX.Element {
                 </button>
               </div>
               {confirmPassword && newPassword && confirmPassword !== newPassword && (
-                <p className="password-mismatch mt-1 text-xs text-red-500">Mật khẩu không trùng khớp</p>
+                <p className="password-mismatch mt-1 text-xs text-red-500">{language() == "Tiếng Việt" ? "Mật khẩu không trùng khớp" : "Passwords do not match"}</p>
               )}
             </div>
           </div>
           {/* Submit Button */}
-          <button 
-            type="submit" 
-            disabled={isLoading} 
+          <button
+            type="submit"
+            disabled={isLoading}
             className="submit-button w-full mt-6 py-2 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-md hover:from-amber-600 hover:to-orange-600 transition-all duration-300 flex items-center justify-center"
             data-animate
           >
             {isLoading ? (
               <div className="button-content flex items-center">
                 <div className="spinner w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                <span>Đang cập nhật...</span>
+                <span>{language() == "Tiếng Việt" ? "Đang cập nhật..." : "Updating..."}</span>
               </div>
             ) : (
               <div className="button-content flex items-center">
-                <span>Đặt lại mật khẩu</span>
+                <span>{language() == "Tiếng Việt" ? "Đặt lại mật khẩu" : "Reset Password"}</span>
                 <span className="arrow-icon ml-2 animate-pulse">→</span>
               </div>
             )}
           </button>
         </form>
       </div>
+
 
       {/* Footer */}
       <div className="footer absolute bottom-4 right-4 text-xs text-gray-500" data-animate>

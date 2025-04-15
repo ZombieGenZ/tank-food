@@ -219,7 +219,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
           <div className="flex justify-center mb-8" data-aos="zoom-in-up">
             <img
               src="/images/system/logo tank food.png?height=100&width=300"
-              alt="TankFood logo"
+              alt={language() == "Tiếng Việt" ? "Logo TankFood" : "TankFood logo"}
               width={300}
               height={100}
               className="object-contain"
@@ -227,7 +227,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
           </div>
 
           <div className="text-center text-gray-700 mb-6" data-aos="zoom-out-up">
-            <p className="text-xl md:text-2xl font-san">Nấu, Khuấy và Sẵn Sàng để Phục Vụ</p>
+            <p className="text-xl md:text-2xl font-san">{language() == "Tiếng Việt" ? "Nấu, Khuấy và Sẵn Sàng để Phục Vụ" : "Cook, Stir, and Ready to Serve"}</p>
           </div>
 
           <div className="text-center" data-aos="zoom-out-up">
@@ -246,14 +246,15 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
           <div className="flex justify-center mt-12">
             <div className="max-w-2xl text-center" data-aos="fade-up">
               <p className="text-lg text-gray-600 mb-6">
-                Khám phá thực đơn đa dạng với các món ăn được chế biến từ nguyên liệu tươi ngon. Đặt hàng ngay hôm nay
-                để thưởng thức hương vị tuyệt vời!
+                {language() == "Tiếng Việt"
+                  ? "Khám phá thực đơn đa dạng với các món ăn được chế biến từ nguyên liệu tươi ngon. Đặt hàng ngay hôm nay để thưởng thức hương vị tuyệt vời!"
+                  : "Explore our diverse menu with dishes made from fresh ingredients. Order today to enjoy the amazing flavors!"}
               </p>
               <button
                 onClick={() => navigate("/menu")}
                 className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300"
               >
-                Xem Thực Đơn
+                {language() == "Tiếng Việt" ? "Xem Thực Đơn" : "View Menu"}
               </button>
             </div>
           </div>
@@ -272,7 +273,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                 textShadow: "1px 1px 3px rgba(0,0,0,0.1)",
               }}
             >
-              Thực Đơn TankFood
+              {language() == "Tiếng Việt" ? "Thực Đơn TankFood" : "TankFood Menu"}
             </h2>
             <div className="h-1 w-32 bg-orange-400 mx-auto"></div>
           </div>
@@ -353,7 +354,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                                   onClick={() => addToCart(item)}
                                   className="w-full cursor-pointer flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
                                 >
-                                  <Plus className="w-4 h-4" /> Thêm vào giỏ hàng
+                                  <Plus className="w-4 h-4" /> {language() == "Tiếng Việt" ? "Thêm vào giỏ hàng" : "Add to cart"}
                                 </button>
                               </div>
                             </div>
@@ -362,10 +363,10 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
                       </div>
                     )}
                   </div>
-                )
+                );
               }
               // Nếu category không có sản phẩm, không render gì cả (null)
-              return null
+              return null;
             })}
           </div>
         </div>
@@ -374,87 +375,93 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
       <div className="relative bg-gradient-to-r from-orange-500 to-red-500 py-20 overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 2 + 1}rem`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  opacity: 0.3,
-                }}
-              >
-                🍔
-              </div>
-            ))}
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div
-                key={i + 20}
-                className="absolute"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 2 + 1}rem`,
-                  transform: `rotate(${Math.random() * 360}deg)`,
-                  opacity: 0.3,
-                }}
-              >
-                🍟
-              </div>
-            ))}
-          </div>
+            <div className="absolute top-0 left-0 w-full h-full">
+                {Array.from({ length: 20 }).map((_, i) => (
+                    <div
+                        key={i}
+                        className="absolute"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            fontSize: `${Math.random() * 2 + 1}rem`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            opacity: 0.3,
+                        }}
+                    >
+                        🍔
+                    </div>
+                ))}
+                {Array.from({ length: 15 }).map((_, i) => (
+                    <div
+                        key={i + 20}
+                        className="absolute"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            fontSize: `${Math.random() * 2 + 1}rem`,
+                            transform: `rotate(${Math.random() * 360}deg)`,
+                            opacity: 0.3,
+                        }}
+                    >
+                        🍟
+                    </div>
+                ))}
+            </div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div
-            className="max-w-3xl mx-auto text-center"
-            data-aos="zoom-in-up"
-            data-aos-duration="1000"
-            data-aos-delay="100"
-            data-aos-anchor-placement="top-bottom"
-          >
-            <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
-              <h2
-                className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
-                style={{
-                  textShadow: "0 4px 8px rgba(0,0,0,0.3)",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                }}
-              >
-                TankFood
-              </h2>
-              <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
-            </div>
-
-            <p className="text-xl text-white/90 mb-8 drop-shadow-md">
-              Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
-              <input
-                type="email"
-                placeholder="Địa Chỉ Email Của Bạn"
-                className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
-              />
-              <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
-                Đặt Hàng Ngay
-              </button>
-            </div>
-
-            <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
-              {["Burger", "Gà Rán", "Pizza", "Đồ Uống"].map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
-                >
-                  {item}
+            <div
+                className="max-w-3xl mx-auto text-center"
+                data-aos="zoom-in-up"
+                data-aos-duration="1000"
+                data-aos-delay="100"
+                data-aos-anchor-placement="top-bottom"
+            >
+                <div className="mb-8 transform transition-transform duration-700 hover:scale-105">
+                    <h2
+                        className="text-6xl font-bold mb-2 text-white drop-shadow-lg"
+                        style={{
+                            textShadow: "0 4px 8px rgba(0,0,0,0.3)",
+                            fontFamily: "system-ui, -apple-system, sans-serif",
+                        }}
+                    >
+                        TankFood
+                    </h2>
+                    <div className="h-1 w-24 bg-white mx-auto rounded-full"></div>
                 </div>
-              ))}
+
+                <p className="text-xl text-white/90 mb-8 drop-shadow-md">
+                    {language() == "Tiếng Việt"
+                        ? "Thưởng thức những món ăn ngon nhất với dịch vụ giao hàng nhanh chóng và tiện lợi!"
+                        : "Enjoy the most delicious dishes with fast and convenient delivery service!"}
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" data-aos="fade-up" data-aos-delay="300">
+                    <input
+                        type="email"
+                        placeholder={language() == "Tiếng Việt" ? "Địa Chỉ Email Của Bạn" : "Your Email Address"}
+                        className="flex-grow px-4 py-3 border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-white shadow-lg"
+                    />
+                    <button onClick={() => navigate('/menu')} className="bg-white cursor-pointer text-orange-600 hover:bg-yellow-50 px-6 py-3 rounded-md font-bold shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+                        {language() == "Tiếng Việt" ? "Đặt Hàng Ngay" : "Order Now"}
+                    </button>
+                </div>
+
+                <div className="mt-8 flex justify-center gap-6" data-aos="fade-up" data-aos-delay="500">
+                    {[language() == "Tiếng Việt" ? "Burger" : "Burger",
+                    language() == "Tiếng Việt" ? "Gà Rán" : "Fried Chicken",
+                    language() == "Tiếng Việt" ? "Pizza" : "Pizza",
+                    language() == "Tiếng Việt" ? "Đồ Uống" : "Drinks"
+                    ].map((item, index) => (
+                        <div
+                            key={index}
+                            className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium shadow-md hover:bg-white/30 cursor-pointer transition-all"
+                        >
+                            {item}
+                        </div>
+                    ))}
+                </div>
             </div>
-          </div>
         </div>
 
         {/* Animated elements */}
