@@ -26,12 +26,16 @@ TANK-Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
   - **Tailwind CSS**: Thiết kế giao diện nhanh chóng.
   - **Ant Design**: Bộ công cụ UI chuyên nghiệp.
   - **Mantine UI**: Hỗ trợ giao diện hiện đại.
+  - **Material-UI**: Bộ công cụ UI hiện đại.
   - **Framer Motion**: Hiệu ứng động mượt mà.
   - **Recharts**: Biểu đồ trực quan.
   - **React Router**: Quản lý điều hướng.
   - **AOS**: Hiệu ứng cuộn trang.
-  - **Material-UI**: Bộ công cụ UI hiện đại.
   - **Lucide React**: Biểu tượng SVG.
+  - **React Leaflet**: Tích hợp bản đồ.
+  - **GSAP**: Hiệu ứng hoạt hình nâng cao.
+  - **React Simple Keyboard**: Bàn phím ảo.
+  - **Socket.io Client**: Giao tiếp realtime.
 
 ---
 
