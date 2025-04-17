@@ -225,18 +225,19 @@ const Signup: React.FC<Props> = (props) => {
                 messageApi.open({
                   type: 'error',
                   content: data.message,
-                  style: {
-                    marginTop: '10vh',
-                  },
                 })
                 return
               }
               if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-                messageApi.open({
-                  type: 'error',
-                  content: `${data.errors.email ? data.errors.email.msg: ""}, ${data.errors.phone ? data.errors.phone.msg : ""}`,
-                })
-                return 
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
+                return;
               }
               if(data.code == RESPONSE_CODE.USER_REGISTRATION_SUCCESSFUL) {
                 messageApi.open({
@@ -333,10 +334,15 @@ const Signup: React.FC<Props> = (props) => {
               })
             }
             if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-              messageApi.open({
-                type: 'error',
-                content: data.errors.email.msg,
-              })
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
             }
             if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
               localStorage.setItem('access_token', data.authenticate.access_token)

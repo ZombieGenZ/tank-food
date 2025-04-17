@@ -169,15 +169,18 @@ const VoucherPrivate: React.FC<Props> = (props) => {
   }, [])
 
   const getGradientByType = (price: number) => {
-    switch (price) {
-      case 20000:
-        return "bg-gradient-to-r from-purple-500 to-pink-500"
-      case 50000:
-        return "bg-gradient-to-r from-blue-500 to-teal-400"
-      case 10000:
-        return "bg-gradient-to-r from-amber-500 to-orange-500"
-      default:
-        return "bg-gradient-to-r from-gray-500 to-gray-700"
+    if (price < 30000) {
+      return "bg-gradient-to-r from-green-400 to-lime-500"; // Giá rẻ (màu xanh lá cây tươi tắn)
+    } else if (price >= 30000 && price < 70000) {
+      return "bg-gradient-to-r from-blue-400 to-cyan-400"; // Giá trung bình thấp (màu xanh dương nhẹ nhàng)
+    } else if (price >= 70000 && price < 150000) {
+      return "bg-gradient-to-r from-orange-400 to-yellow-400"; // Giá trung bình cao (màu cam ấm áp)
+    } else if (price >= 150000 && price < 300000) {
+      return "bg-gradient-to-r from-purple-400 to-violet-400"; // Giá hơi cao (màu tím dịu)
+    } else if (price >= 300000) {
+      return "bg-gradient-to-r from-red-400 to-pink-400"; // Giá cao (màu đỏ hoặc hồng nổi bật)
+    } else {
+      return "bg-gradient-to-r from-gray-500 to-gray-700"; // Giá không xác định (màu xám)
     }
   }
 
@@ -256,7 +259,7 @@ const VoucherPrivate: React.FC<Props> = (props) => {
 
         {/* Vouchers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVouchers.length > 0 ? (
+          {filteredVouchers && (
             filteredVouchers.map((voucher, index) => (
               <motion.div
                 key={index}
@@ -376,31 +379,6 @@ const VoucherPrivate: React.FC<Props> = (props) => {
                 <div className="absolute top-1/2 right-0 h-8 w-8 -mr-4 rounded-full bg-gray-900"></div>
               </motion.div>
             ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 mx-auto text-gray-600 mb-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <h3 className="text-xl font-medium text-gray-400">No vouchers found</h3>
-                <p className="text-gray-500 mt-2">
-                  {activeTab === "active"
-                    ? "You don't have any active vouchers at the moment."
-                    : "You haven't used any vouchers yet."}
-                </p>
-              </motion.div>
-            </div>
           )}
           {filterVoucherPublic && (
             filterVoucherPublic.map((voucher, index) => (

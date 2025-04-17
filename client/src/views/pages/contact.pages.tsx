@@ -83,7 +83,17 @@ const ContactPage: React.FC<Props> = (props) => {
       }).then((response) => {
         return response.json()
       }).then((data) => {
-        console.log(data)
+        if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+          messageApi.error(data.message)
+          if (data.errors) {
+            for (const key in data.errors) {
+              if (data.errors[key] && data.errors[key].msg) {
+                messageApi.error(data.errors[key].msg);
+              }
+            }
+          }
+          return;
+        }
         if(data.code == RESPONSE_CODE.SEND_CONTACT_FAILED) {
           messageApi.error(data.message)
           // toastElement.className = "fixed top-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg z-50"

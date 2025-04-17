@@ -310,6 +310,17 @@ function ProductManagement(props: Props): JSX.Element {
               setTag("")
               setImageUrl(null)
             } 
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
             if(data.code == RESPONSE_CODE.CREATE_PRODUCT_FAILED) {
               messageApi.error(data.message)
               return;
@@ -401,6 +412,17 @@ function ProductManagement(props: Props): JSX.Element {
                 messageApi.error(data.message)
                 return;
               }
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
+                return;
+              }
               if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL) {
                 messageApi.success(data.message)
               }
@@ -417,6 +439,17 @@ function ProductManagement(props: Props): JSX.Element {
             .then((response) => { return response.json() }).then((data) => {
               if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_FAILED) {
                 messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
                 return;
               }
               if(data.code == RESPONSE_CODE.UPDATE_PRODUCT_SUCCESSFUL) {
@@ -480,6 +513,17 @@ function ProductManagement(props: Props): JSX.Element {
             if (data.code == RESPONSE_CODE.DELETE_PRODUCT_SUCCESSFUL) {
               messageApi.success(data.message)
             } 
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
             if(data.code == RESPONSE_CODE.DELETE_PRODUCT_FAILED) {
               messageApi.error(data.message)
               return;
@@ -538,61 +582,61 @@ function ProductManagement(props: Props): JSX.Element {
     }, [product])
       
     const columns: TableProps<DataType>['columns'] = [
-        {
-          title: 'Tên sản phẩm',
-          dataIndex: 'title',
-          key: 'title',
-          width: 350,
-          render: (text) => <p className="font-bold">{text}</p>,
-        },
-        {
-          title: 'Danh mục',
-          dataIndex: 'category',
-          width: 350,
-          key: 'category',
-        },
-        {
-          title: 'Mô tả',
-          dataIndex: 'description',
-          width: 450,
-          key: 'description',
-        },
-        {
-          title: 'Giá tiền (VNĐ)',
-          key: 'price',
-          dataIndex: 'price',
-          width: 350,
-          render: (text) => <p>{formatCurrency(text)}</p>
-        },
-        {
-          title: 'Giảm giá',
-          key: 'discount',
-          dataIndex: 'discount',
-          width: 350,
-          render: (text) => <p>{text}%</p>
-        },
-        {
-          title: 'Tags',
-          key: 'tags',
-          dataIndex: 'tags',
-          width: 350,
-        },
-        {
-          title: '',
-          key: 'note',
-          width: 350,
-          render: (_text, record) => {
+      {
+        title: language() == "Tiếng Việt" ? 'Tên sản phẩm' : 'Product Name',
+        dataIndex: 'title',
+        key: 'title',
+        width: 350,
+        render: (text) => <p className="font-bold">{text}</p>,
+      },
+      {
+        title: language() == "Tiếng Việt" ? 'Danh mục' : 'Category',
+        dataIndex: 'category',
+        width: 350,
+        key: 'category',
+      },
+      {
+        title: language() == "Tiếng Việt" ? 'Mô tả' : 'Description',
+        dataIndex: 'description',
+        width: 450,
+        key: 'description',
+      },
+      {
+        title: language() == "Tiếng Việt" ? 'Giá tiền (VNĐ)' : 'Price (VND)',
+        key: 'price',
+        dataIndex: 'price',
+        width: 350,
+        render: (text) => <p>{formatCurrency(text)}</p>
+      },
+      {
+        title: language() == "Tiếng Việt" ? 'Giảm giá' : 'Discount',
+        key: 'discount',
+        dataIndex: 'discount',
+        width: 350,
+        render: (text) => <p>{text}%</p>
+      },
+      {
+        title: language() == "Tiếng Việt" ? 'Tags' : 'Tags',
+        key: 'tags',
+        dataIndex: 'tags',
+        width: 350,
+      },
+      {
+        title: '', // Cột này thường không có tiêu đề cụ thể
+        key: 'note',
+        width: 350,
+        render: (_text, record) => {
           return (
             <div className="flex gap-2">
-              <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded" 
-                      onClick={() => showEditModalFunc(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
+              <button className="bg-blue-500 cursor-pointer hover:bg-blue-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
+                onClick={() => showEditModalFunc(record)}>{language() == "Tiếng Việt" ? "Chỉnh sửa" : "Edit"}</button>
               <button className="bg-red-500 cursor-pointer hover:bg-red-700 transition duration-300 text-white font-semibold py-2 px-4 rounded"
-                      onClick={() => showDeleteModalFunc(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
+                onClick={() => showDeleteModalFunc(record._id)}>{language() == "Tiếng Việt" ? "Xoá" : "Delete"}</button>
             </div>
           )
-      },
         },
-      ];
+      },
+    ];
 
     const App: React.FC = () => <Table<DataType> className="w-full" columns={columns} dataSource={data} pagination={{ pageSize: 25 }} />;
     function formatCurrency(amount: number, currencyCode = 'vi-VN', currency = 'VND') {

@@ -20,8 +20,6 @@ import OrderPageWithPayment from './Payment.pages.tsx';
 import ChangePassword from './ChangePassword.pages.tsx';
 import VoucherPrivate from './VoucherPrivate.pages.tsx';
 import AlertBanner from '../components/Banner.components.tsx';
-// import EmployeePage from './Employee.pages.tsx';
-// import ShipperPages from './Shipper.pages.tsx';
 import NotFoundPage from './NotFound.pages.tsx';
 import ResultVerifyAccount from './ResultVerifyAccount.pages.tsx';
 import { Dropdown, Button } from "antd";
@@ -200,6 +198,15 @@ const addNotification = (newMessage: string) => {
     })
 
     socket.on('approval-order-booking', (res) => {
+      if(res.order_status == 5) {
+        messageApi.open({
+          type: 'error',
+          content: `Đơn hàng ${res._id} đã bị huỷ hoặc bị từ chối với lý do ${res.cancellation_reason}!`,
+        });
+  
+        addNotification(`Đơn hàng ${res._id} đã bị huỷ hoặc bị từ chối với lý do ${res.cancellation_reason}!`);
+        return
+      }
       messageApi.open({
         type: 'success',
         content: `Đơn hàng ${res._id} đã được duyệt thành công!`,
@@ -342,7 +349,17 @@ const addNotification = (newMessage: string) => {
               })
                 .then((response) => response.json())
                 .then((data) => {
-                  console.log(data);
+                  if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                    messageApi.error(data.message)
+                    if (data.errors) {
+                      for (const key in data.errors) {
+                        if (data.errors[key] && data.errors[key].msg) {
+                          messageApi.error(data.errors[key].msg);
+                        }
+                      }
+                    }
+                    return;
+                  }
                   if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
                     localStorage.removeItem('refresh_token');
                     localStorage.removeItem('access_token');
@@ -469,7 +486,6 @@ const addNotification = (newMessage: string) => {
             })
               .then((response) => response.json())
               .then((data) => {
-                console.log(data);
                 setUser(data.infomation);
               })
               .catch((error) => console.error("Lỗi khi lấy thông tin người dùng:", error));
@@ -851,16 +867,23 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
             })
               .then((response) => response.json())
               .then((data) => {
-                console.log(data);
+                if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                  messageApi.error(data.message)
+                  if (data.errors) {
+                    for (const key in data.errors) {
+                      if (data.errors[key] && data.errors[key].msg) {
+                        messageApi.error(data.errors[key].msg);
+                      }
+                    }
+                  }
+                  return;
+                }
                 if (data.code === RESPONSE_CODE.USER_LOGOUT_SUCCESSFUL) {
                   localStorage.removeItem('refresh_token');
                   localStorage.removeItem('access_token');
                   messageApi.open({
                     type: 'success',
                     content: 'Đăng xuất thành công',
-                    style: {
-                      marginTop: "10vh",
-                    }, 
                   }).then(() => {
                     localStorage.setItem('isAdminView', JSON.stringify(false))
                     window.location.reload()

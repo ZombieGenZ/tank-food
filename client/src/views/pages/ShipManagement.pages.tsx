@@ -210,6 +210,17 @@ const ShipManagement: React.FC<Props> = (props) => {
           }).then((response) => {
             return response.json()
           }).then((data) => {
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
             if(data.code == RESPONSE_CODE.RECEIVE_DELIVERY_FAILED) {
               messageApi.error(data.message)
               return
@@ -261,6 +272,17 @@ const ShipManagement: React.FC<Props> = (props) => {
           }).then((response) => {
             return response.json()
           }).then((data) => {
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
             if(data.code == RESPONSE_CODE.CONFIRM_DELIVERY_COMPLETION_FAILED) { 
               messageApi.error(data.message)
               return
@@ -312,6 +334,17 @@ const ShipManagement: React.FC<Props> = (props) => {
             }).then((response) => {
               return response.json()
             }).then((data) => {
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
+                return;
+              }
               if(data.code == RESPONSE_CODE.CANCEL_ORDER_FAILED) { 
                 messageApi.error(data.message)
                 return

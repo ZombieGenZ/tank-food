@@ -248,6 +248,17 @@ const MyCard = ({ cart, setCart, user_infor, props }: MyCardProps): JSX.Element 
             }).then(response => {
               return response.json()
             }).then((data) => {
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
+                return;
+              }
               if(data.code == RESPONSE_CODE.CREATE_ORDER_SUCCESSFUL){
                 navigate('/payment', { replace: true, state: data })
               } else {

@@ -123,7 +123,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
     AOS.init({
       duration: 1300,
       offset: 100,
-      once: false,
+      once: true,
       mirror: true,
     })
   }, [])
@@ -252,7 +252,7 @@ const Menu = ({ addToCart, cart }: CategoryProps): JSX.Element => {
               </p>
               <button
                 onClick={() => navigate("/menu")}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300"
+                className="bg-orange-600 cursor-pointer hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300"
               >
                 {language() == "Tiếng Việt" ? "Xem Thực Đơn" : "View Menu"}
               </button>

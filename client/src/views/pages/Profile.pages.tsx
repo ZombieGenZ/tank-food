@@ -182,6 +182,12 @@ const ProfilePage: React.FC<Props> = (props) => {
 
   useEffect(() => {
     socket.emit('connect-user-realtime', refresh_token)
+
+    socket.on('create-order-booking', (res) => {
+      console.log(res)
+      setHistoryBill([res, ...historyBill])
+    })
+
     socket.on('delivery-order', (res) => {
       messageApi.open({
         type: 'success',
@@ -209,12 +215,23 @@ const ProfilePage: React.FC<Props> = (props) => {
       props.addNotification(`Đơn hàng ${res._id} đã được hoàn thành!`);
     })
 
+    socket.on('approval-order-booking', (res) => {
+      console.log(res)
+      setHistoryBill((prev) => prev.map(bill => bill._id == res._id ? res : bill))
+    })
+
     return () => {
       socket.off('delivery-order')
       socket.off('cancel-delivery')
       socket.off('complete-order-booking')
+      socket.off('approval-order-booking')
+      socket.off('create-order-booking')
     }
   })
+
+  useEffect(() => {
+    console.log(historyBill)
+  }, [historyBill])
 
   useEffect(() => {
     const checkToken = async () => {
@@ -375,20 +392,27 @@ const ProfilePage: React.FC<Props> = (props) => {
                 localStorage.removeItem('access_token');
                 window.location.reload();
               })
-            } else if(data.code == RESPONSE_CODE.CHANGE_PASSWORD_FAILED || data.code == RESPONSE_CODE.INPUT_DATA_ERROR || data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
-              messageApi.open({
-                type: 'error',
-                content: `${data.errors.password ? data.errors.password.msg : data.errors.new_password ? data.errors.new_password.msg: data.errors.confirm_new_password ? data.errors.confirm_new_password.msg: ""}`,
-              })
+            } 
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
+            if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_FAILED) {
+              messageApi.error(data.message)
+              return;
             }
           })
         } catch (error) {
           messageApi.open({
             type: 'error',
             content: String(error),
-            style: {
-              marginTop: '10vh',
-            },
           })
           return;
         } finally {
@@ -435,7 +459,17 @@ const ProfilePage: React.FC<Props> = (props) => {
           }).then((response) => {
             return response.json()
           }).then((data) => {
-            console.log(data)
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
             if(data.code == RESPONSE_CODE.CHANGE_INFORMATION_SUCCESSFUL) {
               const body = {
                 language: null,
@@ -751,7 +785,7 @@ const ProfilePage: React.FC<Props> = (props) => {
                         <motion.div variants={itemVariants} className="pt-4">
                             <motion.button
                                 type="submit"
-                                className={`relative overflow-hidden ${isDisableChange ? "bg-gray-400" : "bg-gradient-to-r from-amber-400 to-orange-500 cursor-pointer"} px-6 py-2 rounded-md text-black font-medium shadow-md`}
+                                className={`relative text-white overflow-hidden ${isDisableChange ? "bg-gray-400" : "bg-gradient-to-r from-amber-400 to-orange-500 cursor-pointer"} px-6 py-2 rounded-md text-black font-medium shadow-md`}
                                 whileHover={isDisableChange == false ? {
                                     scale: 1.03,
                                     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
@@ -1026,7 +1060,8 @@ const ProfilePage: React.FC<Props> = (props) => {
                               order.order_status === 0 ? 0 :
                               order.order_status === 1 ? 1 :
                               order.order_status === 2 ? 2 :
-                              order.order_status >= 3 ? 3 : 0
+                              order.order_status === 3 ? 3 : 
+                              order.order_status === 4 ? 4 : 5
                           }
                           timestamps={{
                               created: order.confirmmed_at || order.created_at,
@@ -1116,13 +1151,24 @@ const ProfilePage: React.FC<Props> = (props) => {
                       </div>
       
                       <motion.div
-                          className="flex justify-end border-t pt-2 font-medium relative z-10"
+                          className="flex justify-end items-center border-t pt-2 font-medium relative z-10"
                           whileHover={{
                               color: "#FF8200",
                               transition: { duration: 0.2 },
                           }}
                       >
-                          <span>{language() == "Tiếng Việt" ? "Tổng tiền:" : "Total:"} {formatCurrency(order.total_bill)}</span>
+                          <span className="font-medium mr-4"> {/* Thêm margin-right để tạo khoảng cách */}
+                            {language() == "Tiếng Việt" ? "Tổng tiền:" : "Total:"} {formatCurrency(order.total_bill)}
+                          </span>
+                          {order.payment_status == 0 && order.order_status !== 5 && order.order_status !== 4 && (
+                            <motion.button
+                              className="bg-gradient-to-r from-amber-400 to-orange-500 cursor-pointer text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out"
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {language() == "Tiếng Việt" ? "Thanh toán" : "Pay"}
+                            </motion.button>
+                          )}
                       </motion.div>
                   </motion.div>
               ))}

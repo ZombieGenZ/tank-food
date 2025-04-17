@@ -147,6 +147,11 @@ const CategoryManagement: React.FC<Props> = (props) => {
                 messageApi.error(data.message)
                 return;
               }
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                messageApi.error(data.errors.category_name.msg)
+                return;
+              }
               if(data.code == RESPONSE_CODE.UPDATE_CATEGORY_SUCCESSFUL) {
                 messageApi.success(data.message)
                 const body = {
@@ -280,6 +285,11 @@ const CategoryManagement: React.FC<Props> = (props) => {
             }).then((data) => {
               if(data.code == RESPONSE_CODE.CREATE_CATEGORY_FAILED) {
                 messageApi.error(data.message)
+                return;
+              }
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                messageApi.error(data.errors.category_name.msg)
                 return;
               }
               if(data.code == RESPONSE_CODE.CREATE_CATEGORY_SUCCESSFUL) {

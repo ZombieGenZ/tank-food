@@ -229,6 +229,17 @@ const handleConfirmSuccess = (orderId: string) => {
         }).then((response) => {
           return response.json()
         }).then((data) => {
+          if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+            messageApi.error(data.message)
+            if (data.errors) {
+              for (const key in data.errors) {
+                if (data.errors[key] && data.errors[key].msg) {
+                  messageApi.error(data.errors[key].msg);
+                }
+              }
+            }
+            return;
+          }
           if(data.code == RESPONSE_CODE.ORDER_COMPLETION_CONFIRMATION_SUCCESSFUL){
               messageApi.success(data.message)
           } else {
@@ -286,6 +297,17 @@ const handleAproval = (orderId: string) => {
             messageApi.error(data.message)
             return
           }
+          if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+            messageApi.error(data.message)
+            if (data.errors) {
+              for (const key in data.errors) {
+                if (data.errors[key] && data.errors[key].msg) {
+                  messageApi.error(data.errors[key].msg);
+                }
+              }
+            }
+            return;
+          }
           if(data.code == RESPONSE_CODE.ORDER_APPROVAL_SUCCESSFUL){
               messageApi.success(data.message)
           }
@@ -334,6 +356,17 @@ const handleConfirm = (orderID: string) => {
             }).then((response) => {
               return response.json()
             }).then((data) => {
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
+                return;
+              }
               if(data.code == RESPONSE_CODE.PAYMENT_CONFIRMATION_SUCCESSFUL) {
                   messageApi.success(data.message)
               } else {
@@ -391,6 +424,17 @@ const handleCancel = (orderID: string) => {
         }).then(response => {
             return response.json()
         }).then((data) => {
+            if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+              messageApi.error(data.message)
+              if (data.errors) {
+                for (const key in data.errors) {
+                  if (data.errors[key] && data.errors[key].msg) {
+                    messageApi.error(data.errors[key].msg);
+                  }
+                }
+              }
+              return;
+            }
             if(data.code == RESPONSE_CODE.CANCEL_ORDER_SUCCESSFUL){
                 setShowcancelmodal(false)
                 messageApi.success(data.message)
@@ -450,6 +494,17 @@ const handleReject = (orderID: string) => {
             }).then(response => {
               return response.json()
             }).then((data) => {
+              if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                messageApi.error(data.message)
+                if (data.errors) {
+                  for (const key in data.errors) {
+                    if (data.errors[key] && data.errors[key].msg) {
+                      messageApi.error(data.errors[key].msg);
+                    }
+                  }
+                }
+                return;
+              }
               if(data.code == RESPONSE_CODE.ORDER_APPROVAL_FAILED){
                 messageApi.error(data.message)
                 return

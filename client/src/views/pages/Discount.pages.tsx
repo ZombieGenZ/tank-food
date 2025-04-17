@@ -212,6 +212,17 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                         messageApi.error(data.message)
                         return;
                     }
+                    if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                      messageApi.error(data.message)
+                      if (data.errors) {
+                        for (const key in data.errors) {
+                          if (data.errors[key] && data.errors[key].msg) {
+                            messageApi.error(data.errors[key].msg);
+                          }
+                        }
+                      }
+                      return;
+                    }
                     if(data.code == RESPONSE_CODE.CREATE_VOUCHER_SUCCESSFUL) {
                         messageApi.success(data.message)
                         const body = {
@@ -289,6 +300,17 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                         messageApi.error(data.message)
                         return;
                     }
+                    if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                      messageApi.error(data.message)
+                      if (data.errors) {
+                        for (const key in data.errors) {
+                          if (data.errors[key] && data.errors[key].msg) {
+                            messageApi.error(data.errors[key].msg);
+                          }
+                        }
+                      }
+                      return;
+                    }
                     if(data.code == RESPONSE_CODE.UPDATE_VOUCHER_SUCCESSFUL) {
                         messageApi.success(data.message)
                         const body = {
@@ -360,6 +382,17 @@ const DiscountCodeManagement: React.FC<Props> = (props) => {
                     if(data.code == RESPONSE_CODE.DELETE_VOUCHER_FAILED) {
                         messageApi.error(data.message)
                         return;
+                    }
+                    if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+                      messageApi.error(data.message)
+                      if (data.errors) {
+                        for (const key in data.errors) {
+                          if (data.errors[key] && data.errors[key].msg) {
+                            messageApi.error(data.errors[key].msg);
+                          }
+                        }
+                      }
+                      return;
                     }
                     if(data.code == RESPONSE_CODE.DELETE_VOUCHER_SUCCESSFUL) {
                         messageApi.success(data.message)

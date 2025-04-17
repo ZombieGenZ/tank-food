@@ -140,6 +140,17 @@ export default function ChangePassword(props: Props): JSX.Element {
       }).then((res) => {
         return res.json()
       }).then((data) => {
+        if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
+          messageApi.error(data.message)
+          if (data.errors) {
+            for (const key in data.errors) {
+              if (data.errors[key] && data.errors[key].msg) {
+                messageApi.error(data.errors[key].msg);
+              }
+            }
+          }
+          return;
+        }
         if (data.code === RESPONSE_CODE.FORGOT_PASSWORD_SUCCESSFUL) {
           setMessage({ type: "success", text: data.message })
           messageApi.success(data.message)

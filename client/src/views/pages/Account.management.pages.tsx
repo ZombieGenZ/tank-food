@@ -299,9 +299,6 @@ const Account: React.FC<Props> = (props) => {
             messageApi.open({
               type: 'error',
               content: String(error),
-              style: {
-                marginTop: '10vh',
-              },
             })
             return;
           } finally {
@@ -362,12 +359,12 @@ const Account: React.FC<Props> = (props) => {
       email: user.email,
       phone: user.phone,
       role: user.role === 3
-        ? "Admin"
+        ? language() === "Tiếng Việt" ? "Quản trị viên" : "Admin"
         : user.role === 2
-          ? "Shipper"
+          ? language() === "Tiếng Việt" ? "Người giao hàng" : "Shipper"
           : user.role === 1
-            ? "Employee"
-            : language() == "Tiếng Việt"
+            ? language() === "Tiếng Việt" ? "Nhân viên" : "Employee"
+            : language() === "Tiếng Việt"
               ? "Khách hàng"
               : "Customer",
       active: user.penalty
