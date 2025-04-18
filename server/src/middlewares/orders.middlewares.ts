@@ -321,6 +321,8 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
     const new_bill = total_price - voucherPrivate.discount
 
     req.total_price = new_bill > 0 ? new_bill : 0
+    
+    req.discount = total_price - new_bill
 
     await voucherPrivateService.useVoucher(voucherPrivate)
 
@@ -340,7 +342,10 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
       return
     }
 
-    if (voucherPublic.quantity <= 0 || voucherPublic.status !== VoucherPublicStatusEnum.AVAILABLE) {
+    if (
+      voucherPublic.quantity <= 0 ||
+      voucherPublic.status !== VoucherPublicStatusEnum.AVAILABLE
+    ) {
       res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json({
         code: RESPONSE_CODE.VOUCHER_INVALID,
         message:
@@ -367,6 +372,8 @@ export const voucherPublicAndPrivateValidator = async (req: Request, res: Respon
     const new_bill = total_price - voucherPublic.discount
 
     req.total_price = new_bill > 0 ? new_bill : 0
+
+    req.discount = total_price - new_bill
 
     await voucherPublicService.useVoucher(voucherPublic)
 
@@ -1368,6 +1375,8 @@ export const voucherPublicValidator = async (req: Request, res: Response, next: 
   const new_bill = total_price - voucherPublic.discount
 
   req.total_price = new_bill > 0 ? new_bill : 0
+
+  req.discount = total_price - new_bill
 
   await voucherPublicService.useVoucher(voucherPublic)
 

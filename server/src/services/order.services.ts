@@ -35,6 +35,12 @@ import { notificationRealtime } from '~/utils/realtime.utils'
 import { UserRoleEnum } from '~/constants/users.constants'
 import { serverLanguage } from '~/index'
 import notificationService from './notifications.services'
+import path from 'path'
+import fs from 'fs'
+import PDFDocument from 'pdfkit'
+import { formatDateFull2 } from '~/utils/date.utils'
+
+const BILL_DIR = path.join(__dirname, '../../../client/public/bills')
 
 class OrderService {
   async orderOnline(
@@ -42,6 +48,7 @@ class OrderService {
     user: User,
     total_quantity: number,
     total_price: number,
+    discount: number,
     product_list: ProductList[]
   ) {
     const delivery_latitude = Number(process.env.LOCATION_DELIVERY_LATITUDE as string)
@@ -79,6 +86,7 @@ class OrderService {
       total_quantity: total_quantity,
       total_price: total_price,
       discount_code: payload.voucher,
+      discount: discount,
       fee: fee,
       vat: vat,
       total_bill: total_bill,
@@ -173,6 +181,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -213,8 +222,6 @@ class OrderService {
       ])
       .next()
 
-    const language = payload.language || serverLanguage
-
     await Promise.all([
       notificationRealtime(`freshSync-employee`, 'create-order', 'order/create', orderWithDetails),
       notificationRealtime(
@@ -222,16 +229,7 @@ class OrderService {
         'create-order-booking',
         `order/${user._id}/create`,
         orderWithDetails
-      ),
-      sendMail(
-        payload.email,
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).subject
-          : ENGLIS_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).subject,
-        language == LANGUAGE.VIETNAMESE
-          ? VIETNAMESE_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).html
-          : ENGLIS_DYNAMIC_MAIL.electronicInvoice(product_list, total_price, fee, vat, total_bill).html
-        )
+      )
     ])
 
     return {
@@ -259,113 +257,189 @@ class OrderService {
 
     await paymentHistoryService.insertHistory(payload)
 
-    const orderWithDetails = await databaseService.order
-      .aggregate([
-        { $match: { _id: new ObjectId(order_id) } },
-        {
-          $lookup: {
-            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
-            localField: 'product.product_id',
-            foreignField: '_id',
-            as: 'product_details'
-          }
-        },
-        {
-          $lookup: {
-            from: process.env.DATABASE_CATEGORY_COLLECTION as string,
-            localField: 'product_details.category',
-            foreignField: '_id',
-            as: 'category_details'
-          }
-        },
-        {
-          $addFields: {
-            product: {
-              $map: {
-                input: '$product',
-                as: 'p',
-                in: {
-                  $mergeObjects: [
-                    '$$p',
-                    {
-                      $arrayElemAt: [
-                        {
-                          $filter: {
-                            input: '$product_details',
-                            as: 'pd',
-                            cond: { $eq: ['$$p.product_id', '$$pd._id'] }
-                          }
-                        },
-                        0
-                      ]
-                    },
-                    {
-                      category: {
+    const [orderWithDetails, orderBills] = await Promise.all([
+      databaseService.order
+        .aggregate([
+          { $match: { _id: new ObjectId(order_id) } },
+          {
+            $lookup: {
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product_details'
+            }
+          },
+          {
+            $lookup: {
+              from: process.env.DATABASE_CATEGORY_COLLECTION as string,
+              localField: 'product_details.category',
+              foreignField: '_id',
+              as: 'category_details'
+            }
+          },
+          {
+            $addFields: {
+              product: {
+                $map: {
+                  input: '$product',
+                  as: 'p',
+                  in: {
+                    $mergeObjects: [
+                      '$$p',
+                      {
                         $arrayElemAt: [
                           {
                             $filter: {
-                              input: '$category_details',
-                              as: 'cd',
-                              cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              input: '$product_details',
+                              as: 'pd',
+                              cond: { $eq: ['$$p.product_id', '$$pd._id'] }
                             }
                           },
                           0
                         ]
+                      },
+                      {
+                        category: {
+                          $arrayElemAt: [
+                            {
+                              $filter: {
+                                input: '$category_details',
+                                as: 'cd',
+                                cond: { $eq: ['$$p.product_id', '$$cd._id'] }
+                              }
+                            },
+                            0
+                          ]
+                        }
                       }
-                    }
-                  ]
+                    ]
+                  }
                 }
               }
             }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: { $first: '$product' },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
           }
-        },
-        {
-          $group: {
-            _id: '$_id',
-            product: { $first: '$product' },
-            total_quantity: { $first: '$total_quantity' },
-            total_price: { $first: '$total_price' },
-            discount_code: { $first: '$discount_code' },
-            discount: { $first: '$discount' },
-            fee: { $first: '$fee' },
-            vat: { $first: '$vat' },
-            total_bill: { $first: '$total_bill' },
-            delivery_type: { $first: '$delivery_type' },
-            shipper: { $first: '$shipper' },
-            user: { $first: '$user' },
-            name: { $first: '$name' },
-            email: { $first: '$email' },
-            phone: { $first: '$phone' },
-            delivery_address: { $first: '$delivery_address' },
-            receiving_address: { $first: '$receiving_address' },
-            delivery_nation: { $first: '$delivery_nation' },
-            receiving_nation: { $first: '$receiving_nation' },
-            delivery_longitude: { $first: '$delivery_longitude' },
-            receiving_longitude: { $first: '$receiving_longitude' },
-            delivery_latitude: { $first: '$delivery_latitude' },
-            receiving_latitude: { $first: '$receiving_latitude' },
-            distance: { $first: '$distance' },
-            suggested_route: { $first: '$suggested_route' },
-            estimated_time: { $first: '$estimated_time' },
-            node: { $first: '$node' },
-            is_first_transaction: { $first: '$is_first_transaction' },
-            payment_type: { $first: '$payment_type' },
-            payment_status: { $first: '$payment_status' },
-            order_status: { $first: '$order_status' },
-            cancellation_reason: { $first: '$cancellation_reason' },
-            moderated_by: { $first: '$moderated_by' },
-            canceled_by: { $first: '$canceled_by' },
-            created_at: { $first: '$created_at' },
-            confirmmed_at: { $first: '$confirmmed_at' },
-            delivering_at: { $first: '$delivering_at' },
-            delivered_at: { $first: '$delivered_at' },
-            completed_at: { $first: '$completed_at' },
-            updated_at: { $first: '$updated_at' },
-            canceled_at: { $first: '$canceled_at' }
+        ])
+        .next(),
+      databaseService.order
+        .aggregate([
+          {
+            $match: {
+              _id: new ObjectId(order_id)
+            }
+          },
+          {
+            $unwind: '$product'
+          },
+          {
+            $lookup: {
+              from: process.env.DATABASE_PRODUCT_COLLECTION as string,
+              localField: 'product.product_id',
+              foreignField: '_id',
+              as: 'product.data'
+            }
+          },
+          {
+            $addFields: {
+              'product.data': { $arrayElemAt: ['$product.data', 0] }
+            }
+          },
+          {
+            $group: {
+              _id: '$_id',
+              product: { $push: '$product' },
+              total_quantity: { $first: '$total_quantity' },
+              total_price: { $first: '$total_price' },
+              discount_code: { $first: '$discount_code' },
+              discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
+              fee: { $first: '$fee' },
+              vat: { $first: '$vat' },
+              total_bill: { $first: '$total_bill' },
+              delivery_type: { $first: '$delivery_type' },
+              shipper: { $first: '$shipper' },
+              user: { $first: '$user' },
+              name: { $first: '$name' },
+              email: { $first: '$email' },
+              phone: { $first: '$phone' },
+              delivery_address: { $first: '$delivery_address' },
+              receiving_address: { $first: '$receiving_address' },
+              delivery_nation: { $first: '$delivery_nation' },
+              receiving_nation: { $first: '$receiving_nation' },
+              delivery_longitude: { $first: '$delivery_longitude' },
+              receiving_longitude: { $first: '$receiving_longitude' },
+              delivery_latitude: { $first: '$delivery_latitude' },
+              receiving_latitude: { $first: '$receiving_latitude' },
+              distance: { $first: '$distance' },
+              suggested_route: { $first: '$suggested_route' },
+              estimated_time: { $first: '$estimated_time' },
+              node: { $first: '$node' },
+              is_first_transaction: { $first: '$is_first_transaction' },
+              payment_type: { $first: '$payment_type' },
+              payment_status: { $first: '$payment_status' },
+              order_status: { $first: '$order_status' },
+              cancellation_reason: { $first: '$cancellation_reason' },
+              moderated_by: { $first: '$moderated_by' },
+              canceled_by: { $first: '$canceled_by' },
+              created_at: { $first: '$created_at' },
+              confirmmed_at: { $first: '$confirmmed_at' },
+              delivering_at: { $first: '$delivering_at' },
+              delivered_at: { $first: '$delivered_at' },
+              completed_at: { $first: '$completed_at' },
+              updated_at: { $first: '$updated_at' },
+              canceled_at: { $first: '$canceled_at' }
+            }
           }
-        }
-      ])
-      .next()
+        ]).toArray()
+    ])
+
+    const language = serverLanguage
+    const orderBill = orderBills[0]
 
     const data = {
       ...payload,
@@ -397,7 +471,17 @@ class OrderService {
       notificationRealtime(`freshSync-employee`, 'checkout-order', `order/checkout`, data),
       notificationService.sendNotificationAllEmployee(
         ` 🔔 Đơn hàng #${order._id} đã được đặt và thanh toán thành công. Vui lòng kiểm tra và xác nhận đơn hàng!`
-      )
+      ),
+      orderBill.email &&
+      sendMail(
+        orderBill.email,
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_DYNAMIC_MAIL.electronicInvoice(orderBill.product, orderBill.total_price, orderBill.fee, orderBill.vat, orderBill.total_bill).subject
+          : ENGLIS_DYNAMIC_MAIL.electronicInvoice(orderBill.product, orderBill.total_price, orderBill.fee, orderBill.vat, orderBill.total_bill).subject,
+        language == LANGUAGE.VIETNAMESE
+          ? VIETNAMESE_DYNAMIC_MAIL.electronicInvoice(orderBill.product, orderBill.total_price, orderBill.fee, orderBill.vat, orderBill.total_bill).html
+          : ENGLIS_DYNAMIC_MAIL.electronicInvoice(orderBill.product, orderBill.total_price, orderBill.fee, orderBill.vat, orderBill.total_bill).html
+        )
     ])
 
     if (order.user) {
@@ -478,6 +562,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -595,6 +680,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -715,6 +801,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -832,6 +919,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -986,6 +1074,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -1132,6 +1221,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -1294,6 +1384,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -1351,7 +1442,9 @@ class OrderService {
         notificationService.sendNotification(
           `❌ Đơn hàng #${order._id} của bạn đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ bộ phận hỗ trợ.`,
           user._id
-        )
+        ),
+      order.order_status == OrderStatusEnum.COMPLETED &&
+        this.removeBill(order._id)
     ])
   }
   async orderCompletionConfirmation(payload: OrderCompletionConfirmationRequestsBody, order: Order) {
@@ -1438,6 +1531,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -1495,7 +1589,8 @@ class OrderService {
       notificationRealtime('freshSync-statistical', 'update-chart', 'statistical/chart', dataStatistical),
       notificationRealtime('freshSync-statistical', 'update-order-complete', 'statistical/complete', data),
       order.user &&
-        notificationRealtime(`freshSync-user-${order.user}`, 'complete-order-booking', `order/${order.user}/complete`, data)
+        notificationRealtime(`freshSync-user-${order.user}`, 'complete-order-booking', `order/${order.user}/complete`, data),
+      this.generateBill(order._id)
     ])
   }
   async getNewOrderShipper(user: User) {
@@ -1575,6 +1670,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -1693,6 +1789,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -1817,6 +1914,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -1938,6 +2036,7 @@ class OrderService {
               total_price: { $first: '$total_price' },
               discount_code: { $first: '$discount_code' },
               discount: { $first: '$discount' },
+              bill_url: { $first: '$bill_url' },
               fee: { $first: '$fee' },
               vat: { $first: '$vat' },
               total_bill: { $first: '$total_bill' },
@@ -2068,6 +2167,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -2206,6 +2306,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -2362,6 +2463,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -2426,13 +2528,15 @@ class OrderService {
       notificationService.sendNotification(
         `✅ Đơn hàng #${order._id} đã hoàn tất. Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi!`,
         order._id
-      )
+      ),
+      this.generateBill(order._id)
     ])
   }
   async orderOffline(
     payload: OrderOfflineRequestsBody,
     total_quantity: number,
     total_price: number,
+    discount: number,
     product_list: ProductList[]
   ) {
     const vat = (total_price / 100) * Number(process.env.PAYMENT_VAT)
@@ -2441,6 +2545,8 @@ class OrderService {
     const order_id = new ObjectId()
     const order = new Order({
       _id: order_id,
+      discount_code: payload.voucher,
+      discount: discount,
       delivery_type: DeliveryTypeEnum.COUNTER,
       payment_type: payload.payment_type,
       product: product_list.map(({ data, ...rest }) => rest),
@@ -2451,6 +2557,8 @@ class OrderService {
     })
 
     await databaseService.order.insertOne(order)
+
+    await this.generateBill(order._id)
 
     const orderWithDetails = await databaseService.order
       .aggregate([
@@ -2520,6 +2628,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -2668,6 +2777,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -2785,6 +2895,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -2913,6 +3024,7 @@ class OrderService {
             total_price: { $first: '$total_price' },
             discount_code: { $first: '$discount_code' },
             discount: { $first: '$discount' },
+            bill_url: { $first: '$bill_url' },
             fee: { $first: '$fee' },
             vat: { $first: '$vat' },
             total_bill: { $first: '$total_bill' },
@@ -3018,7 +3130,7 @@ class OrderService {
       ])
       .toArray()
 
-    const products = aggregateResult[0]?.product || [];
+    const products = aggregateResult[0]?.product || []
 
     return {
       payment_qr_url: `https://qr.sepay.vn/img?acc=${process.env.BANK_ACCOUNT_NO}&bank=${process.env.BANK_BANK_ID}&amount=${order.total_bill}&des=DH${order._id}&template=compact`,
@@ -3033,6 +3145,293 @@ class OrderService {
       vat: order.vat,
       total_bill: order.total_bill,
       distance: order.distance
+    }
+  }
+  async generateBill(order_id: ObjectId) {
+    const orders = await databaseService.order
+      .aggregate([
+        {
+          $match: {
+            _id: order_id
+          }
+        },
+        {
+          $unwind: '$product'
+        },
+        {
+          $lookup: {
+            from: process.env.DATABASE_PRODUCT_COLLECTION as string,
+            localField: 'product.product_id',
+            foreignField: '_id',
+            as: 'product.data'
+          }
+        },
+        {
+          $addFields: {
+            'product.data': { $arrayElemAt: ['$product.data', 0] }
+          }
+        },
+        {
+          $group: {
+            _id: '$_id',
+            product: { $push: '$product' },
+            total_quantity: { $first: '$total_quantity' },
+            total_price: { $first: '$total_price' },
+            discount_code: { $first: '$discount_code' },
+            discount: { $first: '$discount' },
+            fee: { $first: '$fee' },
+            vat: { $first: '$vat' },
+            total_bill: { $first: '$total_bill' },
+            delivery_type: { $first: '$delivery_type' },
+            shipper: { $first: '$shipper' },
+            user: { $first: '$user' },
+            name: { $first: '$name' },
+            email: { $first: '$email' },
+            phone: { $first: '$phone' },
+            delivery_address: { $first: '$delivery_address' },
+            receiving_address: { $first: '$receiving_address' },
+            delivery_nation: { $first: '$delivery_nation' },
+            receiving_nation: { $first: '$receiving_nation' },
+            delivery_longitude: { $first: '$delivery_longitude' },
+            receiving_longitude: { $first: '$receiving_longitude' },
+            delivery_latitude: { $first: '$delivery_latitude' },
+            receiving_latitude: { $first: '$receiving_latitude' },
+            distance: { $first: '$distance' },
+            suggested_route: { $first: '$suggested_route' },
+            estimated_time: { $first: '$estimated_time' },
+            node: { $first: '$node' },
+            is_first_transaction: { $first: '$is_first_transaction' },
+            payment_type: { $first: '$payment_type' },
+            payment_status: { $first: '$payment_status' },
+            order_status: { $first: '$order_status' },
+            cancellation_reason: { $first: '$cancellation_reason' },
+            moderated_by: { $first: '$moderated_by' },
+            canceled_by: { $first: '$canceled_by' },
+            created_at: { $first: '$created_at' },
+            confirmmed_at: { $first: '$confirmmed_at' },
+            delivering_at: { $first: '$delivering_at' },
+            delivered_at: { $first: '$delivered_at' },
+            completed_at: { $first: '$completed_at' },
+            updated_at: { $first: '$updated_at' },
+            canceled_at: { $first: '$canceled_at' }
+          }
+        }
+      ]).toArray()
+
+    const order = orders[0]
+
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 50
+    })
+    const fileName = `bill_${order._id.toString()}.pdf`
+    const filePath = path.join(BILL_DIR, fileName)
+    const stream = fs.createWriteStream(filePath)
+
+    doc.pipe(stream)
+
+    doc.registerFont('Roboto-Regular', path.join(__dirname, '../../fonts/Roboto-Regular.ttf'))
+    doc.registerFont('Roboto-Bold', path.join(__dirname, '../../fonts/Roboto-Bold.ttf'))
+    doc.registerFont('Roboto-Italic', path.join(__dirname, '../../fonts/Roboto-Italic.ttf'))
+
+    const primaryColor = '#FF6B35'
+    const secondaryColor = '#333333'
+    const accentColor = '#4CB944'
+
+    const pageWidth = doc.page.width - 100
+
+    doc.rect(50, 50, 150, 50).fillOpacity(0.1).fill(primaryColor).fillOpacity(1)
+    doc.font('Roboto-Bold').fontSize(18).fillColor(primaryColor).text(process.env.TRADEMARK_NAME as string, 75, 65)
+    doc.font('Roboto-Regular').fontSize(10).fillColor(secondaryColor).text(process.env.SLOGAN as string, 75, 85)
+
+    doc.font('Roboto-Bold').fontSize(24).fillColor(primaryColor).text('HÓA ĐƠN', 400, 60)
+    
+    doc.roundedRect(350, 90, 200, 50, 5).fillOpacity(0.05).fill(primaryColor).fillOpacity(1).stroke(primaryColor)
+    doc.fontSize(10).fillColor(secondaryColor)
+    doc.font('Roboto-Regular').text('MÃ ĐƠN:', 360, 100)
+    doc.font('Roboto-Bold').text(order._id.toString().substring(0, 8).toUpperCase(), 440, 100)
+    doc.font('Roboto-Regular').text('NGÀY:', 360, 120)
+    doc.font('Roboto-Bold').text(formatDateFull2(order.created_at), 440, 120)
+
+    doc.moveTo(50, 150).lineTo(550, 150).lineWidth(1).stroke(primaryColor)
+
+    doc.font('Roboto-Bold').fontSize(14).fillColor(secondaryColor).text('THÔNG TIN KHÁCH HÀNG', 50, 170)
+    
+    doc.font('Roboto-Regular').fontSize(10).fillColor(secondaryColor)
+    doc.text(`Tên: ${order.name || 'Khách hàng'}`, 50, 195)
+    if (order.phone) doc.text(`SĐT: ${order.phone}`, 50, 210)
+    
+    doc.font('Roboto-Bold').fontSize(14).fillColor(secondaryColor).text('THÔNG TIN ĐƠN HÀNG', 300, 170)
+    
+    doc.font('Roboto-Regular').fontSize(10).fillColor(secondaryColor)
+    doc.text(`Loại: ${order.delivery_type == DeliveryTypeEnum.COUNTER ? 'Tại quầy' : 'Giao hàng'}`, 300, 195)
+    if (order.delivery_type != DeliveryTypeEnum.COUNTER) {
+      doc.text(`Địa chỉ: ${order.delivery_address || 'Không có'}`, 300, 210, {
+        width: 250,
+        ellipsis: true
+      })
+    }
+
+    doc.moveTo(50, 240).lineTo(550, 240).lineWidth(1).stroke(primaryColor)
+
+    const tableTop = 270
+    const tableLeft = 50
+    const tableWidth = 500
+    const headerHeight = 30
+    const rowHeight = 25
+    const columns: { name: string, width: number, align: 'center' | 'left' | 'right' }[] = [
+      { name: 'SỐ LƯỢNG', width: 70, align: 'center' },
+      { name: 'MÓN ĂN', width: 280, align: 'left' },
+      { name: 'ĐƠN GIÁ', width: 75, align: 'right' },
+      { name: 'THÀNH TIỀN', width: 75, align: 'right' }
+    ]
+
+    doc.fillColor(primaryColor).rect(tableLeft, tableTop, tableWidth, headerHeight).fill()
+    
+    let xPos = tableLeft
+    doc.font('Roboto-Bold').fontSize(10).fillColor('#FFFFFF')
+    columns.forEach(column => {
+      doc.text(column.name, xPos + 5, tableTop + 10, { width: column.width - 10, align: column.align })
+      xPos += column.width
+    })
+
+    let yPos = tableTop + headerHeight
+    doc.font('Roboto-Regular').fontSize(10).fillColor(secondaryColor)
+    
+    order.product.forEach((item: ProductList, index: number) => {
+      if (index % 2 === 0) {
+        doc.rect(tableLeft, yPos, tableWidth, rowHeight).fillOpacity(0.05).fill(primaryColor).fillOpacity(1)
+      }
+      
+      const product_name = item.data
+        ? serverLanguage == LANGUAGE.VIETNAMESE
+          ? item.data.title_translate_1_language == LANGUAGE.VIETNAMESE
+            ? item.data.title_translate_1
+            : item.data.title_translate_2
+          : item.data.title_translate_2
+        : item.product_id
+
+      xPos = tableLeft
+      
+      doc.text(item.quantity.toString(), xPos + 5, yPos + 7, 
+        { width: columns[0].width - 10, align: columns[0].align })
+      xPos += columns[0].width
+      
+      doc.text(product_name, xPos + 5, yPos + 7, 
+        { width: columns[1].width - 10, align: columns[1].align })
+      xPos += columns[1].width
+      
+      doc.text(`${(item.price ? item.price / item.quantity : 0).toLocaleString('vi-VN')}`, xPos + 5, yPos + 7, 
+        { width: columns[2].width - 10, align: columns[2].align })
+      xPos += columns[2].width
+      
+      doc.text(`${(item.price || 0).toLocaleString('vi-VN')}`, xPos + 5, yPos + 7, 
+        { width: columns[3].width - 10, align: columns[3].align })
+      
+      yPos += rowHeight
+    })
+
+    const summaryBoxTop = yPos + 20
+    const summaryBoxWidth = 220
+    const summaryBoxLeft = 550 - summaryBoxWidth
+    
+    doc.roundedRect(summaryBoxLeft, summaryBoxTop, summaryBoxWidth, 120, 5)
+      .fillOpacity(0.05).fill(primaryColor).fillOpacity(1).stroke(primaryColor)
+    
+    doc.font('Roboto-Regular').fontSize(10).fillColor(secondaryColor)
+    
+    doc.text('Tổng số lượng:', summaryBoxLeft + 10, summaryBoxTop + 15, 
+      { width: 100, align: 'left' })
+    doc.text(`${order.total_quantity}`, summaryBoxLeft + 110, summaryBoxTop + 15, 
+      { width: 100, align: 'right', ellipsis: true })
+    
+    doc.text('Tổng tiền hàng:', summaryBoxLeft + 10, summaryBoxTop + 35, 
+      { width: 100, align: 'left' })
+    doc.text(`${order.total_price.toLocaleString('vi-VN')} VND`, summaryBoxLeft + 110, summaryBoxTop + 35, 
+      { width: 100, align: 'right', ellipsis: true })
+    
+    if (order.discount > 0) {
+      doc.text('Giảm giá:', summaryBoxLeft + 10, summaryBoxTop + 55, 
+        { width: 100, align: 'left' })
+      doc.fillColor(accentColor).text(`-${order.discount.toLocaleString('vi-VN')} VND`, 
+        summaryBoxLeft + 110, summaryBoxTop + 55, 
+        { width: 100, align: 'right', ellipsis: true })
+      doc.fillColor(secondaryColor)
+    }
+    
+    doc.text('VAT:', summaryBoxLeft + 10, summaryBoxTop + 75, 
+      { width: 100, align: 'left' })
+    doc.text(`${order.vat.toLocaleString('vi-VN')} VND`, summaryBoxLeft + 110, summaryBoxTop + 75, 
+      { width: 100, align: 'right', ellipsis: true })
+    
+    doc.moveTo(summaryBoxLeft + 10, summaryBoxTop + 95)
+      .lineTo(summaryBoxLeft + summaryBoxWidth - 10, summaryBoxTop + 95)
+      .lineWidth(0.5).stroke(primaryColor)
+    
+    doc.font('Roboto-Bold').fontSize(12).fillColor(primaryColor)
+    doc.text('TỔNG CỘNG:', summaryBoxLeft + 10, summaryBoxTop + 100, 
+      { width: 100, align: 'left' })
+    doc.text(`${order.total_bill.toLocaleString('vi-VN')} VND`, summaryBoxLeft + 110, summaryBoxTop + 100, 
+      { width: 100, align: 'right', ellipsis: true })
+
+    const paymentInfoTop = summaryBoxTop + 150
+    doc.font('Roboto-Bold').fontSize(12).fillColor(secondaryColor)
+    doc.text('PHƯƠNG THỨC THANH TOÁN', 50, paymentInfoTop)
+    
+    doc.font('Roboto-Regular').fontSize(10)
+    doc.text(`${order.payment_type === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'}`, 50, paymentInfoTop + 20)
+    doc.text(`Trạng thái: ${order.payment_status === PaymentStatusEnum.PAID ? 'Đã thanh toán' : 'Chưa thanh toán'}`, 
+      50, paymentInfoTop + 35)
+
+    const footerTop = doc.page.height - 100
+    
+    doc.moveTo(50, footerTop).lineTo(550, footerTop).lineWidth(1).stroke(primaryColor)
+    
+    doc.font('Roboto-Bold').fontSize(12).fillColor(primaryColor)
+    doc.text('CẢM ƠN QUÝ KHÁCH ĐÃ SỬ DỤNG DỊCH VỤ!', 0, footerTop + 15, { align: 'center' })
+    
+    doc.font('Roboto-Regular').fontSize(8).fillColor(secondaryColor)
+    doc.text(`  Hotline: ${process.env.SUPPORT_PHONE} | Website: ${process.env.APP_URL_DISPLAY} | Email: ${process.env.SUPPORT_EMAIL}`, 0, footerTop + 35, { align: 'center' })
+
+    doc.end()
+
+    await new Promise<void>((resolve, reject) => {
+      stream.on('finish', () => resolve())
+      stream.on('error', (err) => reject(err))
+    })
+
+    await databaseService.order.updateOne(
+      {
+        _id: order._id
+      },
+      {
+        $set: {
+          bill_url: `${process.env.APP_URL}/bills/${fileName}`
+        }
+      }
+    )
+  }
+  async removeBill(order_id: ObjectId) {
+    const fileName = `bill_${order_id.toString()}.pdf`
+    const filePath = path.join(BILL_DIR, fileName)
+    try {
+      await Promise.all([
+      fs.unlinkSync(filePath),
+      databaseService.order.updateOne(
+        {
+          _id: order_id
+        },
+        {
+          $set: {
+            bill_url: ''
+          }
+        }
+      )
+      ])
+    } catch (err: any) {
+      if (err.code !== 'ENOENT') {
+        console.error(`\x1b[31mLỗi khi xóa file \x1b[33m${fileName}\x1b[31m: \x1b[33m${err.message}`)
+      }
     }
   }
 }

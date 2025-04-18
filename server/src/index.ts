@@ -65,7 +65,7 @@ import api_categories from '~/routes/categories.routes'
 import api_products from '~/routes/products.routes'
 import api_voucher_public from '~/routes/voucherPublic.routes'
 import api_voucher_private from '~/routes/voucherPrivate.routes'
-import api_order_online from '~/routes/orders.routes'
+import api_order from '~/routes/orders.routes'
 import api_statistical from '~/routes/statistical.routes'
 import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
@@ -76,7 +76,7 @@ app.use('/api/categories', api_categories)
 app.use('/api/products', api_products)
 app.use('/api/voucher-public', api_voucher_public)
 app.use('/api/voucher-private', api_voucher_private)
-app.use('/api/orders', api_order_online)
+app.use('/api/orders', api_order)
 app.use('/api/statistical', api_statistical)
 app.use('/api/account-management', api_account_management)
 app.use('/api/contact', api_contact)

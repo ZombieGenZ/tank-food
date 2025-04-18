@@ -26,5 +26,6 @@ declare module 'express' {
     product_list?: ProductList[]
     order?: Order
     banned_time?: Date
+    discount?: number
   }
 }

@@ -41,9 +41,10 @@ export const orderOnlineController = async (
 
   const total_quantity = req.total_quantity as number
   const total_price = req.total_price as number
+  const discount = req.discount as number
 
   try {
-    const infomation = await orderOnlineService.orderOnline(req.body, user, total_quantity, total_price, product_list)
+    const infomation = await orderOnlineService.orderOnline(req.body, user, total_quantity, total_price, discount, product_list)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE
@@ -546,9 +547,10 @@ export const orderOfflineController = async (
 
   const total_quantity = req.total_quantity as number
   const total_price = req.total_price as number
+  const discount = req.discount as number
 
   try {
-    const infomation = await orderOnlineService.orderOffline(req.body, total_quantity, total_price, product_list)
+    const infomation = await orderOnlineService.orderOffline(req.body, total_quantity, total_price, discount, product_list)
 
     await writeInfoLog(
       serverLanguage == LANGUAGE.VIETNAMESE

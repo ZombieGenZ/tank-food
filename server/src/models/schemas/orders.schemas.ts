@@ -13,6 +13,7 @@ interface OrderType {
   total_quantity: number
   total_price: number
   discount_code?: string
+  discount?: number
   fee?: number
   vat: number
   total_bill: number
@@ -38,6 +39,7 @@ interface OrderType {
   payment_type: PaymentTypeEnum
   payment_status?: PaymentStatusEnum
   order_status?: OrderStatusEnum
+  bill_url?: string
   cancellation_reason?: string
   moderated_by?: ObjectId
   canceled_by?: ObjectId
@@ -56,6 +58,7 @@ export default class Order {
   total_quantity: number
   total_price: number
   discount_code: string
+  discount: number
   fee: number
   vat: number
   total_bill: number
@@ -81,6 +84,7 @@ export default class Order {
   payment_type: PaymentTypeEnum
   payment_status: PaymentStatusEnum
   order_status: OrderStatusEnum
+  bill_url: string
   cancellation_reason: string
   moderated_by: ObjectId | null
   canceled_by: ObjectId | null
@@ -100,6 +104,7 @@ export default class Order {
     this.total_quantity = order.total_quantity
     this.total_price = order.total_price
     this.discount_code = order.discount_code || ''
+    this.discount = order.discount || 0
     this.fee = order.fee || 0
     this.vat = order.vat
     this.total_bill = order.total_bill
@@ -125,6 +130,7 @@ export default class Order {
     this.payment_type = order.payment_type
     this.payment_status = order.payment_status || PaymentStatusEnum.PENDING
     this.order_status = order.order_status || OrderStatusEnum.PENDING
+    this.bill_url = order.bill_url || ''
     this.cancellation_reason = order.cancellation_reason || ''
     this.moderated_by = order.moderated_by || null
     this.canceled_by = order.canceled_by || null

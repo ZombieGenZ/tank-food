@@ -57,6 +57,7 @@ export interface OrderOfflineRequestsBody {
   language?: string
   product: ProductList[]
   payment_type: number
+  voucher?: string
 }
 
 export interface PaymentConfirmationRequestsBody {

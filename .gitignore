@@ -30,8 +30,10 @@ dist-ssr
 server/backups/**
 !server/backups/.gitkeep
 client/public/images/upload/products/**
+client/public/bills/**
+!client/public/bills/.gitkeep
 !client/public/images/upload/products/temporary/
-!client/public/images/upload/products/temporary/note.txt
+!client/public/images/upload/products/temporary/.gitkeep
 
 test/
 
