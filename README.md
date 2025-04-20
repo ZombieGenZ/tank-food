@@ -69,14 +69,7 @@ TANK-Food là một nền tảng đặt đồ ăn nhanh trực tuyến, cung c�
 
 ---
 
-### **6. Hệ thống giám sát hiệu năng máy chủ** 📊
-- **Ngôn ngữ server**: Python hoặc Rust.
-- **Client giám sát**: WPF C#.
-- **Realtime**: WebSocket.
-
----
-
-### **7. Công cụ phát triển** 🛠️
+### **6. Công cụ phát triển** 🛠️
 - **Vite**: Công cụ build nhanh.
 - **ESLint**: Kiểm tra và sửa lỗi code.
 - **TypeScript**: Ngôn ngữ lập trình mạnh mẽ.
