@@ -175,8 +175,8 @@ const Signup: React.FC<Props> = (props) => {
         }).then(response => {
           return response.json()
         }).then((data) => {
-          if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED || data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-            messageApi.error(data.errors.email.msg)
+          if(data.code == RESPONSE_CODE.AUTHENTICATION_FAILED) {
+            messageApi.error(data.message)
             return
           }
           messageApi.success("Gửi email yêu cầu đặt lại mật khẩu thành công. Vui lòng kiểm tra hòm thư của bạn !")
@@ -266,10 +266,15 @@ const Signup: React.FC<Props> = (props) => {
                     })
                   }
                   if(data.code == RESPONSE_CODE.INPUT_DATA_ERROR) {
-                    messageApi.open({
-                      type: 'error',
-                      content: data.errors.email.msg,
-                    })
+                    messageApi.error(data.message)
+                    if (data.errors) {
+                      for (const key in data.errors) {
+                        if (data.errors[key] && data.errors[key].msg) {
+                          messageApi.error(data.errors[key].msg);
+                        }
+                      }
+                    }
+                    return;
                   }
                   if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
                     localStorage.setItem('access_token', data.authenticate.access_token)
