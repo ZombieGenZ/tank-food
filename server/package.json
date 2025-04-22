@@ -1,6 +1,6 @@
 {
   "name": "tank-food-server",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
@@ -29,6 +29,7 @@
     "@types/node": "^22.10.7",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.17",
+    "@types/pdfkit": "^0.13.9",
     "@types/qrcode": "^1.5.5",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
@@ -65,6 +66,7 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
+    "pdfkit": "^0.17.0",
     "qrcode": "^1.5.4",
     "sharp": "^0.33.5",
     "socket.io": "^4.8.1",
