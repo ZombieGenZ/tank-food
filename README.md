@@ -124,7 +124,9 @@ Xem chi tiết hơn trong [Hướng dẩn cài đặt](./INSTALLATION_STEPS.md).
 ---
 
 ## Bản quyền 📜
-Dự án này được phát hành theo giấy phép MIT. Xem chi tiết trong tệp `LICENSE`.
+Dự án này được phát hành theo giấy phép [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/). Xem chi tiết trong tệp `LICENSE`.
+
+[![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
 ---
 
@@ -145,3 +147,13 @@ Dự án này được phát hành theo giấy phép MIT. Xem chi tiết trong t
 | Bùi Đăng Khoa              | 💻 Lập Trình Backend    |
 
 ---
+
+## Lưu ý quan trọng ⚠️
+
+Mã nguồn và các tài liệu trong repository này được cung cấp nhằm mục đích tham khảo và hỗ trợ học tập. Bạn có thể sử dụng chúng để nghiên cứu và hiểu cách các chức năng được triển khai.
+
+**Lưu ý:**
+- Nghiêm cấm mọi hành vi sao chép, phân phối lại hoặc sử dụng mã nguồn này (hoặc bất kỳ phần nào của nó) cho các dự án thương mại hoặc bất kỳ mục đích nào khác ngoài việc học tập cá nhân mà không có sự cho phép rõ ràng từ tác giả.
+- Việc sửa đổi hoặc tạo ra các tác phẩm phái sinh từ mã nguồn này và phân phối chúng cũng không được phép.
+
+Chúng tôi khuyến khích bạn sử dụng thông tin này để mở rộng kiến thức và kỹ năng của mình. Nếu bạn có bất kỳ câu hỏi hoặc muốn sử dụng sản phẩm này cho mục đích khác, vui lòng liên hệ với tác giả qua thông tin liên hệ được cung cấp ở trên.
