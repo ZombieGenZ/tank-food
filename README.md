@@ -124,7 +124,7 @@ Xem chi tiết hơn trong [Hướng dẩn cài đặt](./INSTALLATION_STEPS.md).
 ---
 
 ## Bản quyền 📜
-Dự án này được phát hành theo giấy phép [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/). Xem chi tiết trong tệp `LICENSE`.
+This project is licensed under the [Attribution-NonCommercial-NoDerivs 4.0 International (CC BY-NC-ND 4.0)](./LICENSE).
 
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
