@@ -1,6 +1,6 @@
 {
   "name": "tank-food-server",
-  "version": "0.7.9",
+  "version": "0.8.0",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
@@ -13,7 +13,6 @@
     "prettier:fix": "prettier --write ."
   },
   "author": "TANK Groups",
-  "license": "MIT",
   "description": "Máy chủ của dự án TANK-Travel food",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
