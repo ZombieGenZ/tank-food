@@ -10,6 +10,7 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  base: '/tank-food-client/',
   server: {
     host: '0.0.0.0',
     port: Number(process.env.APP_PORT) || 80,

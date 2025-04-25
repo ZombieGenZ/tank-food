@@ -26,6 +26,7 @@
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
     "@tailwindcss/vite": "^4.0.11",
+    "@types/leaflet": "^1.9.17",
     "@vitalets/google-translate-api": "^9.2.1",
     "antd": "^5.24.3",
     "antd-style": "^3.7.1",
