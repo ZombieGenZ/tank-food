@@ -55,10 +55,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs')
 app.set('trust proxy', true)
 
-app.get('/', (req, res) => {
-  res.send('Hello world')
-})
-
 // import api router
 import api_users from '~/routes/users.routes'
 import api_categories from '~/routes/categories.routes'
