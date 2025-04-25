@@ -1,7 +1,7 @@
 {
   "name": "tank-food-server",
   "private": true,
-  "version": "0.8.0",
+  "version": "0.8.1",
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon",
