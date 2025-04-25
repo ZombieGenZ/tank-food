@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "tank-food-client",
   "private": true,
   "version": "0.8.0",
   "type": "module",
@@ -50,11 +50,11 @@
     "simple-keyboard-layouts": "^3.4.78",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
+    "tank-food-client": "file:",
     "tsparticles": "^3.8.1"
   },
   "author": "TANK Groups",
-  "license": "MIT",
-  "description": "Máy khách của dự án TANK-Travel food",
+  "description": "Máy khách của dự án TANK-Food",
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/aos": "^3.0.7",

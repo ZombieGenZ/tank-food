@@ -1,5 +1,6 @@
 {
   "name": "tank-food-server",
+  "private": true,
   "version": "0.8.0",
   "main": "index.js",
   "scripts": {
@@ -13,7 +14,7 @@
     "prettier:fix": "prettier --write ."
   },
   "author": "TANK Groups",
-  "description": "Máy chủ của dự án TANK-Travel food",
+  "description": "Máy chủ của dự án TANK-Food",
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "@types/archiver": "^6.0.3",
