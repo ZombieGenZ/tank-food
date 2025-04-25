@@ -4,6 +4,7 @@ import { autoUnBanAccountExpiredBanned } from './functions/autoUnBanAccountExpir
 import { isLastDayOfMonth } from '~/utils/date.utils'
 import { statisticalReport } from './functions/statisticalReport.functions'
 import { autoExpiredVoucherPublic } from './functions/autoExpiredVoucherPublic.functions'
+import { autoCallService } from './functions/autoCallService.functions'
 
 const runAllCrons = () => {
   // Cron job dùng để backup file mỗi ngày vào lúc 12h trưa và 0h đêm
@@ -16,8 +17,10 @@ const runAllCrons = () => {
       statisticalReport()
     }
   })
-    // Cron job dùng để tự động kiểm tra và tự động vô hiệu hóa voucher khi đã hết thời gian sử dụng
-    cron.schedule('* * * * *', autoExpiredVoucherPublic)
+  // Cron job dùng để tự động kiểm tra và tự động vô hiệu hóa voucher khi đã hết thời gian sử dụng
+  cron.schedule('* * * * *', autoExpiredVoucherPublic)
+  // Cron job dùng để tự động gọi API kiểm tra sự sống (Render Only)
+  cron.schedule('* * * * *', autoCallService)
 }
 
 export default runAllCrons

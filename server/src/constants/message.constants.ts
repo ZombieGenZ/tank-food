@@ -1183,3 +1183,7 @@ export class ENGLIS_DYNAMIC_MESSAGE {
     return `Failed to retrieve payment information (User: ${user_id}) (IP: ${ip}) | Error: ${err}`
   }
 }
+
+export const GLOBAL_MESSAGE = {
+  SERVICE_IS_RUNNING: `Service is running | ${process.env.API_URL}`
+}

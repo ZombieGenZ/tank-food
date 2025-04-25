@@ -70,6 +70,7 @@ import api_statistical from '~/routes/statistical.routes'
 import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
 import api_notification from '~/routes/notification.routes'
+import api_auto_call_service from '~/routes/autoCallService.routes'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
@@ -81,6 +82,7 @@ app.use('/api/statistical', api_statistical)
 app.use('/api/account-management', api_account_management)
 app.use('/api/contact', api_contact)
 app.use('/api/notification', api_notification)
+app.use('/api/auto-call-service', api_auto_call_service)
 
 app.use(notFoundHandler);
 
