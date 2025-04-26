@@ -40,7 +40,7 @@ import fs from 'fs'
 import PDFDocument from 'pdfkit'
 import { formatDateFull2 } from '~/utils/date.utils'
 
-const BILL_DIR = path.join(__dirname, '../../../client/public/bills')
+const BILL_DIR = path.join(__dirname, '../../public/bills')
 
 class OrderService {
   async orderOnline(

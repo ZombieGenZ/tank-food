@@ -14,9 +14,6 @@ export const languageValidator = (req: Request, res: Response, next: NextFunctio
   }
 
   if (typeof language !== 'string' || (language !== LANGUAGE.VIETNAMESE && language !== LANGUAGE.ENGLISH)) {
-    console.log(typeof language !== 'string')
-    console.log(!(language in LANGUAGE))
-    console.log(language)
     res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json(
       {
         code: RESPONSE_CODE.INVALID_LANGUAGE,
@@ -40,7 +37,7 @@ export const languageUploadImageValidator = async (req: Request, res: Response, 
     return
   }
 
-  if (typeof language !== 'string' || !(language in LANGUAGE)) {
+  if (typeof language !== 'string' || (language !== LANGUAGE.VIETNAMESE && language !== LANGUAGE.ENGLISH)) {
     await deleteTemporaryFile(req.file)
     res.status(HTTPSTATUS.UNPROCESSABLE_ENTITY).json(
       {
@@ -53,4 +50,6 @@ export const languageUploadImageValidator = async (req: Request, res: Response, 
     )
     return
   }
+
+  next()
 }

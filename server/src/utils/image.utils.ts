@@ -5,7 +5,7 @@ import path from 'path'
 
 const storageProduct = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../../client/public/images/upload/products/temporary')
+    const uploadPath = path.join(__dirname, '../../public/images/upload/products/temporary')
     fse
       .ensureDir(uploadPath)
       .then(() => {

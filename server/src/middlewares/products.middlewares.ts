@@ -43,7 +43,7 @@ export const setupProductImage = async (req: Request, res: Response, next: NextF
       }
     }
 
-    const directoryPath = path.join(__dirname, `../../../client/public/images/upload/products/${user._id}`)
+    const directoryPath = path.join(__dirname, `../../public/images/upload/products/${user._id}`)
 
     if (!fs.existsSync(directoryPath)) {
       fs.mkdirSync(directoryPath, { recursive: true })
@@ -55,7 +55,7 @@ export const setupProductImage = async (req: Request, res: Response, next: NextF
       return next(err)
     }
 
-    const watermarkImagePath = path.join(__dirname, '../../../client/public/images/system/watermark.png')
+    const watermarkImagePath = path.join(__dirname, '../../public/images/system/watermark.png')
     const imgPath = path.join(directoryPath, image.filename)
 
     const metadata = await sharp(imgPath).metadata()
@@ -86,7 +86,7 @@ export const setupProductImage = async (req: Request, res: Response, next: NextF
     fs.renameSync(imgPath + '_temp', imgPath)
 
     const img: ImageType = {
-      path: `../../../client/public/images/upload/products/${user._id}/${image.filename}`,
+      path: `../../public/images/upload/products/${user._id}/${image.filename}`,
       type: image.mimetype,
       url: `${process.env.IMAGE_URL}/images/upload/products/${user._id}/${image.filename}`,
       size: image.size

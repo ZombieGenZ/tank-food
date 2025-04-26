@@ -8,7 +8,7 @@ import { LANGUAGE } from '~/constants/language.constants'
 const MAX_BACKUP_FILES = Number(process.env.MAX_BACKUP_FILES as string) || 14
 
 export const compressPuclicFolder = async (date: Date) => {
-  const sourceDirectory = path.join(__dirname, '../../../client/public/images/upload')
+  const sourceDirectory = path.join(__dirname, '../../public/images/upload')
   const backupDir = path.join(__dirname, '../../backups')
   const outputZipFile = path.join(backupDir, `${formatDateFull(date)}-${process.env.TRADEMARK_NAME}-Upload.zip`)
 

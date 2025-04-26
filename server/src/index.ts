@@ -50,6 +50,7 @@ app.use((req, res, next) => {
 
 app.use(express.json())
 app.use(expressUserAgent.express())
+app.use(express.static(path.join(__dirname, '../public')))
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs')
@@ -67,6 +68,7 @@ import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
 import api_notification from '~/routes/notification.routes'
 import api_auto_call_service from '~/routes/autoCallService.routes'
+import path from 'path'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)

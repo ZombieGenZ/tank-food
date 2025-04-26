@@ -32,11 +32,11 @@ dist-ssr
 
 server/backups/**
 !server/backups/.gitkeep
-client/public/images/upload/products/**
-client/public/bills/**
-!client/public/bills/.gitkeep
-!client/public/images/upload/products/temporary/
-!client/public/images/upload/products/temporary/.gitkeep
+server/public/images/upload/products/**
+server/public/bills/**
+!server/public/bills/.gitkeep
+!server/public/images/upload/products/temporary/
+!server/public/images/upload/products/temporary/.gitkeep
 
 test/
 
