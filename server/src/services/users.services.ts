@@ -35,7 +35,7 @@ class UserService {
     const user_id = new ObjectId()
 
     const emailVerifyToken = await this.signEmailVerify(user_id.toString())
-    const emailVerifyUrl = `${process.env.APP_URL}/api/users/verify-account?token=${emailVerifyToken}&language=${language}`
+    const emailVerifyUrl = `${process.env.APP_URL}/verify-account?token=${emailVerifyToken}&language=${language}`
 
     await databaseService.users.insertOne(
       new User({
