@@ -50,7 +50,7 @@ const router = express.Router()
 router.post(
   '/register',
   languageValidator,
-  // verifyRequestValidator,
+  verifyRequestValidator,
   registerUserValidator,
   wrapRequestHandler(registerUserController)
 )
@@ -69,7 +69,7 @@ router.post(
 router.post(
   '/login',
   languageValidator,
-  // verifyRequestValidator,
+  verifyRequestValidator,
   loginUserValidator,
   wrapRequestHandler(loginUserController)
 )
@@ -163,7 +163,7 @@ router.put(
 router.post(
   '/verify-email-verify-token',
   languageValidator,
-  // verifyEmailVerifyTokenValidator,
+  verifyEmailVerifyTokenValidator,
   wrapRequestHandler(verifyEmailVerifyTokenController)
 )
 

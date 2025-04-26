@@ -530,7 +530,7 @@ export const verifyEmailVerifyTokenValidator = async (req: Request, res: Respons
         }
       }
     },
-    ['body']
+    ['query']
   )
   .run(req)
   .then(() => {

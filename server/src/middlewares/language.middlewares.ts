@@ -6,7 +6,7 @@ import { RESPONSE_CODE } from '~/constants/responseCode.constants'
 import { deleteTemporaryFile } from '~/utils/image.utils'
 
 export const languageValidator = (req: Request, res: Response, next: NextFunction) => {
-  const language = req.body.language
+  const language = req.query.language || req.body.language
 
   if (!language) {
     next()
@@ -30,7 +30,7 @@ export const languageValidator = (req: Request, res: Response, next: NextFunctio
 }
 
 export const languageUploadImageValidator = async (req: Request, res: Response, next: NextFunction) => {
-  const language = req.body.language
+  const language = req.query.language || req.body.language
 
   if (!language) {
     next()
