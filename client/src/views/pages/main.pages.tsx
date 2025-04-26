@@ -96,7 +96,7 @@ interface CartItem {
 
 interface Props {
   isLoading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 const FormMain = (): JSX.Element => {
@@ -593,8 +593,6 @@ const addNotification = (newMessage: string) => {
               <Route path='/voucher' element={<VoucherPrivate aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/errorpage' element={<NotFoundPage />}/>
               <Route path='/verify-account' element={<ResultVerifyAccount />}/>
-              <Route path="/verify-account" element={<ResultVerifyAccount />} />
-              <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
               <Route path="*/verify-account" element={<ResultVerifyAccount />} />
               <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
             </Routes>
@@ -615,8 +613,6 @@ const addNotification = (newMessage: string) => {
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>} />
           <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           <Route path='/errorpage' element={<NotFoundPage />}/>
-          <Route path="/verify-account" element={<ResultVerifyAccount />} />
-          <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
           <Route path="*/verify-account" element={<ResultVerifyAccount />} />
           <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
         </Routes>
@@ -643,8 +639,6 @@ const addNotification = (newMessage: string) => {
             <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           </>}
           <Route path='/errorpage' element={<NotFoundPage />}/>
-          <Route path="/verify-account" element={<ResultVerifyAccount />} />
-          <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
           <Route path="*/verify-account" element={<ResultVerifyAccount />} />
           <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
         </Routes>

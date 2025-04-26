@@ -1,7 +1,7 @@
 // import { useCallback, useRef } from "react";
 import FormMain from "./views/pages/main.pages";
 // import { useWindowScroll } from "@mantine/hooks";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 // import { Transition } from "@mantine/core";
 import OrderAtStore from "./views/pages/OrderAtStore.pages";
 import ResultVerifyAccount from "./views/pages/ResultVerifyAccount.pages";
@@ -21,13 +21,13 @@ const App = () => {
 
   return (
     <div>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/*" element={<FormMain />} />
           <Route path="/orderatstore" element={<OrderAtStore />} />
           <Route path="/resultverifyaccount" element={<ResultVerifyAccount />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
 
       {/* Nút cuộn lên trên chỉ hiển thị khi cuộn xuống hơn 500px */}
       {/* <Transition transition="slide-up" mounted={scroll.y > 0}>
