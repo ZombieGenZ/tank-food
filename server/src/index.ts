@@ -3,6 +3,7 @@ import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import path from 'path'
 import bodyParser from 'body-parser'
 import databaseService from './services/database.services'
 import { startBot, stopBot } from './utils/discord.utils'
@@ -68,7 +69,6 @@ import api_account_management from '~/routes/accountManagement.routes'
 import api_contact from '~/routes/contact.routes'
 import api_notification from '~/routes/notification.routes'
 import api_auto_call_service from '~/routes/autoCallService.routes'
-import path from 'path'
 
 app.use('/api/users', api_users)
 app.use('/api/categories', api_categories)
