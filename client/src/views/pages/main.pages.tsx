@@ -570,9 +570,9 @@ const addNotification = (newMessage: string) => {
                 <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>} />
                 <Route path='/errorpage' element={<NotFoundPage />}/>
                 <Route path="/verify-account" element={<ResultVerifyAccount />} />
-                <Route path="/#/verify-account" element={<ResultVerifyAccount />} />
                 <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
-                <Route path="/#/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+                <Route path="*/verify-account" element={<ResultVerifyAccount />} />
+                <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
               </Routes>
             </div>
           </div>
@@ -593,8 +593,10 @@ const addNotification = (newMessage: string) => {
               <Route path='/voucher' element={<VoucherPrivate aLert={{ addNotification: addNotification }} isLoading={loadingCP} setLoading={setLoadingCP}/>}/>
               <Route path='/errorpage' element={<NotFoundPage />}/>
               <Route path='/verify-account' element={<ResultVerifyAccount />}/>
-              <Route path="/#/verify-account" element={<ResultVerifyAccount />} />
-              <Route path="/#/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+              <Route path="/verify-account" element={<ResultVerifyAccount />} />
+              <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+              <Route path="*/verify-account" element={<ResultVerifyAccount />} />
+              <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
             </Routes>
           </>
         )}
@@ -613,8 +615,10 @@ const addNotification = (newMessage: string) => {
           <Route path='/profile' element={<ProfilePage isLoading={loadingCP} setLoading={setLoadingCP} addNotification={addNotification}/>} />
           <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           <Route path='/errorpage' element={<NotFoundPage />}/>
-          <Route path="/#/verify-account" element={<ResultVerifyAccount />} />
-          <Route path="/#/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+          <Route path="/verify-account" element={<ResultVerifyAccount />} />
+          <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+          <Route path="*/verify-account" element={<ResultVerifyAccount />} />
+          <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
         </Routes>
       </div>
     ) : (
@@ -639,8 +643,10 @@ const addNotification = (newMessage: string) => {
             <Route path='/verify-account' element={<ResultVerifyAccount />}/>
           </>}
           <Route path='/errorpage' element={<NotFoundPage />}/>
-          <Route path="/#/verify-account" element={<ResultVerifyAccount />} />
-          <Route path="/#/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+          <Route path="/verify-account" element={<ResultVerifyAccount />} />
+          <Route path="/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
+          <Route path="*/verify-account" element={<ResultVerifyAccount />} />
+          <Route path="*/forgot-password" element={<ChangePassword isLoading={loadingCP} setLoading={setLoadingCP} />} />
         </Routes>
       </div>
     )}
