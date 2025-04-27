@@ -25,7 +25,7 @@ import Notification from '~/models/schemas/notifications.shemas'
 
 dotenv.config()
 
-const uri = process.env.DATABASE_URL
+const uri = process.env.DATABASE_URL as string
 
 class DatabaseService {
   private client: MongoClient
