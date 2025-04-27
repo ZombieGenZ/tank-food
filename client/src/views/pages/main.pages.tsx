@@ -1,3 +1,10 @@
+// Bản quyền (c) 2025 TANK Groups
+//
+// Tác phẩm này được cấp phép theo Giấy phép Creative Commons
+// Attribution-NonCommercial-NoDerivatives 4.0 International.
+// Để xem một bản sao của giấy phép này, vui lòng truy cập
+// http://creativecommons.org/licenses/by-nc-nd/4.0/
+
 import { NavbarUser, NavbarEmployee, NavbarShipper, Customer } from '../components/navbar_component.tsx';
 import { IoIosLogIn } from "react-icons/io";
 import { IoMenu } from "react-icons/io5";

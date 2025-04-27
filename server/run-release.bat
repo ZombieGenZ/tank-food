@@ -1,3 +1,10 @@
+@REM Bản quyền (c) 2025 TANK Groups
+@REM
+@REM Tác phẩm này được cấp phép theo Giấy phép Creative Commons
+@REM Attribution-NonCommercial-NoDerivatives 4.0 International.
+@REM Để xem một bản sao của giấy phép này, vui lòng truy cập
+@REM http://creativecommons.org/licenses/by-nc-nd/4.0/
+
 @echo off
 chcp 65001 > nul
 title TANK-Food Server

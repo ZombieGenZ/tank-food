@@ -1,3 +1,10 @@
+// Bản quyền (c) 2025 TANK Groups
+//
+// Tác phẩm này được cấp phép theo Giấy phép Creative Commons
+// Attribution-NonCommercial-NoDerivatives 4.0 International.
+// Để xem một bản sao của giấy phép này, vui lòng truy cập
+// http://creativecommons.org/licenses/by-nc-nd/4.0/
+
 import { Db, MongoClient, Collection, IndexSpecification, CreateIndexesOptions } from 'mongodb'
 import dotenv from 'dotenv'
 import User from '~/models/schemas/users.schemas'
@@ -18,7 +25,7 @@ import Notification from '~/models/schemas/notifications.shemas'
 
 dotenv.config()
 
-const uri = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@tank-food.l2yv7.mongodb.net/?retryWrites=true&w=majority&appName=TANK-Food`
+const uri = process.env.DATABASE_URL
 
 class DatabaseService {
   private client: MongoClient
