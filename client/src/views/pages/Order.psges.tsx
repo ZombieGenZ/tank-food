@@ -25,6 +25,7 @@ interface NotificationProps {
 }
 
 interface Order {
+    bill_url: string;
     _id: string;
     canceled_at: string;
     canceled_by: string | null;
@@ -541,6 +542,10 @@ const handleReject = (orderID: string) => {
     checkToken();
 }
 
+const OpenBillPDF = (link: string) => {
+  window.open(link, '_blank');
+}
+
   useEffect(() => {
     const body = {
         language: null,
@@ -558,6 +563,7 @@ const handleReject = (orderID: string) => {
     }).then((data) => {
         if(data.code == RESPONSE_CODE.GET_ORDER_SUCCESSFUL) {
             setWaitData(data.order.map((order: Order) => ({...order, address: order.delivery_type == 0 ? "Tại quầy" : order.receiving_address})))
+            console.log(data)
         } else {
             messageApi.error(data.message)
             return;
@@ -911,7 +917,13 @@ const handleReject = (orderID: string) => {
             }
 
             {order.order_status == 5 ? <p className='text-red-500 font-bold'>{language() == "Tiếng Việt" ? "Đơn hàng đã bị từ chối hoặc bị huỷ" : "Order has been rejected or cancelled"}</p> :
-            order.order_status == 4 ? <p className='text-green-500 font-bold'>{language() == "Tiếng Việt" ? "Hoàn thành đơn hàng" : "Order completed"}</p> :
+            order.order_status == 4 ? <div className='flex gap-4 items-center'>
+              <p className='text-green-500 font-bold'>{language() == "Tiếng Việt" ? "Hoàn thành đơn hàng" : "Order completed"}</p>
+              <button
+              onClick={() => OpenBillPDF(order.bill_url)}
+                className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >Xuất bill</button>
+            </div> :
               <button
                 onClick={() => showModalCancel(order._id)}
                 className="bg-gray-500 cursor-pointer hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
