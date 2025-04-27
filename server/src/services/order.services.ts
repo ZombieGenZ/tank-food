@@ -3413,7 +3413,7 @@ class OrderService {
       },
       {
         $set: {
-          bill_url: `${process.env.APP_URL}/bills/${fileName}`
+          bill_url: `${process.env.API_URL}/bills/${fileName}`
         }
       }
     )
