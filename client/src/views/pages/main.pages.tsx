@@ -374,14 +374,10 @@ const addNotification = (newMessage: string) => {
                     messageApi.open({
                       type: 'success',
                       content: 'Đăng xuất thành công',
-                      style: {
-                        marginTop: "10vh",
-                      }, 
                     }).then(() => {
                       localStorage.setItem('isAdminView', JSON.stringify(false))
-                      window.location.reload()
-                    }).then(() => { 
                       navigate('/')
+                      window.location.reload()
                     })
                   } else {
                     messageApi.error(data.message)
@@ -504,7 +500,7 @@ const addNotification = (newMessage: string) => {
           }
       };
     checkToken();
-  }, [refresh_token, access_token]);
+  }, [refresh_token, access_token, messageApi]);
 
   // useEffect(() => {
   //     navigate(window.location); 
@@ -952,7 +948,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
       key: '1',
       label: (
         <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
-          <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Account Information"}
+          <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Profile"}
         </button>
       ),
     },

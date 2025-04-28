@@ -389,10 +389,9 @@ const Signup: React.FC<Props> = (props) => {
       } finally {
         setTimeout(() => {
           props.setLoading(false)
-        }, 2000)
+        }, 7000)
       }
     };
-
 
     const showForm = (type: string) => {
       setFormType(type);

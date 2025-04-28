@@ -217,37 +217,31 @@ const SealPage =({ addToCart, cart, setIsloading, props }: CategoryProps): JSX.E
 
   useEffect(() => {
     const checkToken = async () => {
-      const isValid = await Verify(refresh_token, access_token);
-        if (isValid) {
-          const body = {
-            language: null,
-            refresh_token: refresh_token
-          }
-
-          fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify(body)
-          }).then(response => {
-            return response.json()
-          }).then((data) => {
-            if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
-              messageApi.error("Lỗi khi lấy danh sách voucher");
-              return
-            }
-            if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
-              setVoucher(data.voucher)
-            }
-          })
-        } else {
-          messageApi.error(language() == "Tiếng Việt" ? "Người dùng không hợp lệ" : "Invalid User")
+      const body = {
+        language: null,
+      }
+  
+      fetch(`${import.meta.env.VITE_API_URL}/api/voucher-public/get-voucher`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body)
+      }).then(response => {
+        return response.json()
+      }).then((data) => {
+        if(data.code == RESPONSE_CODE.GET_VOUCHER_FAILED) {
+          messageApi.error("Lỗi khi lấy danh sách voucher");
+          return
         }
+        if(data.code == RESPONSE_CODE.GET_VOUCHER_SUCCESSFUL) {
+          setVoucher(data.voucher)
+          console.log(data.voucher)
+        }
+      })
     };
     checkToken()
-  }, [refresh_token, access_token, messageApi])
+  }, [messageApi])
 
   useEffect(() => {
     console.log("Show cart: ", cart)
