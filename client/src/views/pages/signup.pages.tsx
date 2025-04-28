@@ -283,6 +283,10 @@ const Signup: React.FC<Props> = (props) => {
                     }
                     return;
                   }
+                  if(data.code == RESPONSE_CODE.INVALID_CAPTCHA) {
+                    messageApi.error(data.message)
+                    return
+                  }
                   if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
                     localStorage.setItem('access_token', data.authenticate.access_token)
                     localStorage.setItem('refresh_token', data.authenticate.refresh_token)
@@ -316,10 +320,10 @@ const Signup: React.FC<Props> = (props) => {
 
     // Nút đăng nhập
     const handleLoginSubmit = (e: FormEvent) => {
-      // if (!captchaToken) {
-      //   messageApi.error('Vui lòng hoàn thành CAPTCHA');
-      //   return;
-      // }
+      if (!captchaToken) {
+        messageApi.error('Vui lòng hoàn thành CAPTCHA');
+        return;
+      }
       try {
         props.setLoading(true)
         e.preventDefault();
@@ -328,7 +332,7 @@ const Signup: React.FC<Props> = (props) => {
             language: null,
             email: loginData.email.trim(),
             password: loginData.password.trim(),
-            'cf-turnstile-response': captchaToken || null
+            'cf-turnstile-response': captchaToken
           }
           fetch(`${import.meta.env.VITE_API_URL}/api/users/login` , {
             method: 'POST',
@@ -356,6 +360,10 @@ const Signup: React.FC<Props> = (props) => {
               }
               return;
             }
+            if(data.code == RESPONSE_CODE.INVALID_CAPTCHA) {
+              messageApi.error(data.message)
+              return
+            } 
             if(data.code == RESPONSE_CODE.USER_LOGIN_SUCCESSFUL) {
               localStorage.setItem('access_token', data.authenticate.access_token)
               localStorage.setItem('refresh_token', data.authenticate.refresh_token)

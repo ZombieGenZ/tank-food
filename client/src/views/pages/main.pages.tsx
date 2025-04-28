@@ -315,7 +315,7 @@ const addNotification = (newMessage: string) => {
         key: '1',
         label: (
           <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile')}>
-            <FaRegUserCircle /> Thông tin tài khoản
+            <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Account Information"}
           </button>
         ),
       },
@@ -323,7 +323,7 @@ const addNotification = (newMessage: string) => {
         key: '2',
         label: (
           <button className="flex cursor-pointer gap-2 items-center" onClick={() => {localStorage.setItem('isAdminView', JSON.stringify(false)); setIsAdminView(false); checkTokenRouter('/')}}>
-            <FaHome /> {language === "Tiếng Việt" ? "Trang chủ" : "Main User"}
+            <FaHome /> {language === "Tiếng Việt" ? "Trang chủ" : "Home"}
           </button>
         ),
       },
@@ -331,7 +331,7 @@ const addNotification = (newMessage: string) => {
         key: '3',
         label: (
           <button className='flex cursor-pointer gap-2 items-center' onClick={() => Logout()}>
-            <IoLogOutOutline /> Đăng xuất
+            <IoLogOutOutline /> {language === "Tiếng Việt" ? "Đăng xuất" : "Logout"}
           </button>
         ),
       },
@@ -933,7 +933,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
       key: '1',
       label: (
         <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate("/profile", { replace: true, state: userInfo })}>
-          <FaRegUserCircle /> Thông tin tài khoản
+          <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Account Information"}
         </button>
       ),
     },
@@ -941,7 +941,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
       key: '2',
       label: (
         <button onClick={() => Logout()} className='flex cursor-pointer gap-2 items-center'>
-          <IoLogOutOutline /> Đăng xuất
+          <IoLogOutOutline /> {language === "Tiếng Việt" ? "Đăng xuất" : "Logout"}
         </button>
       ),
     },
@@ -952,7 +952,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
       key: '1',
       label: (
         <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile', { replace: true, state: userInfo })}>
-          <FaRegUserCircle /> Thông tin tài khoản
+          <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Account Information"}
         </button>
       ),
     },
@@ -968,7 +968,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
       key: '3',
       label: (
         <button className='flex cursor-pointer gap-2 items-center' onClick={() => Logout()}>
-          <IoLogOutOutline /> Đăng xuất
+          <IoLogOutOutline /> {language === "Tiếng Việt" ? "Đăng xuất" : "Logout"}
         </button>
       ),
     },

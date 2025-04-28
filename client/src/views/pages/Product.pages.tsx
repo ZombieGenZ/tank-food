@@ -684,7 +684,7 @@ function ProductManagement(props: Props): JSX.Element {
                     </div>
                 </div>
                 <div className=" flex gap-2 flex-col">
-                    <p>{language() == "Tiếng Việt" ? "Giảm giá:" : "Discount:"}</p>
+                    <p>{language() == "Tiếng Việt" ? "Giảm giá (%):" : "Discount (%):"}</p>
                     <div>
                         <InputNumber placeholder="VNĐ" min={0} max={100} value={discount} onChange={handleChangeDiscount}/>
                     </div>
