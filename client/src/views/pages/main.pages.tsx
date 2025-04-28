@@ -315,7 +315,7 @@ const addNotification = (newMessage: string) => {
         key: '1',
         label: (
           <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate('/profile')}>
-            <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Account Information"}
+            <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Profile"}
           </button>
         ),
       },
@@ -933,7 +933,7 @@ function NavigationButtons({ role, cartItemCount, userInfo, notification, toggle
       key: '1',
       label: (
         <button className='flex cursor-pointer gap-2 items-center' onClick={() => navigate("/profile", { replace: true, state: userInfo })}>
-          <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Account Information"}
+          <FaRegUserCircle /> {language === "Tiếng Việt" ? "Thông tin tài khoản" : "Profile"}
         </button>
       ),
     },
